@@ -1,6 +1,6 @@
 <?php
 
-namespace Elementary;
+namespace Jabli\Aids;
 
 class Cache {
 
@@ -13,7 +13,7 @@ class Cache {
 		$cache->setCacheDirectory(TMP_PATH);
 		$cache->setPrefixSize(0);
 
-		return \Elementary\JSON::decodeAsArray($cache->getOrCreate(self::getCacheName($name), array('max-age' => 1), $callback));
+		return \Jabli\Aids\JSON::decodeAsArray($cache->getOrCreate(self::getCacheName($name), array('max-age' => 1), $callback));
 	}
 
 	static function getCacheName($name) {
