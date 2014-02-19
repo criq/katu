@@ -12,7 +12,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Elementary\\": "src/"
+			"Jabli\\Aids\\": "src/"
 		}
 	}
 }
