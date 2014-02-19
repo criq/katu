@@ -1,6 +1,6 @@
 {
-	"name": "jabli/elementary",
-	"description": "elementary",
+	"name": "jabli/aids",
+	"description": "aids",
 	"type": "library",
 	"require" : {
 		"php": ">=5.3.0",
