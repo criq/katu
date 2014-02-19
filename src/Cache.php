@@ -6,7 +6,7 @@ class Cache {
 
 	static function getArray($name, $callback) {
 		if (!defined('TMP_PATH')) {
-			throw new Exception("Undefined tmp folder.");
+			throw new Exception("Undefined TMP_PATH.");
 		}
 
 		$cache = new \Gregwar\Cache\Cache;
