@@ -20,12 +20,12 @@ class WebService {
 		return TRUE;
 	}
 
-	static function post($endpoint, $params) {
+	static function useMethod($method, $endpoint, $params = array()) {
 		$curl = new \Curl();
-		$curl->post(URL::joinPaths(BASE_URL, $endpoint), $params);
+		$curl->$method(URL::joinPaths(Config::get('base_url'), $endpoint), $params);
 
 		if ($curl->http_status_code == 200) {
-			return TRUE;
+			return JSON::decodeAsArray($curl->response);
 		}
 
 		$array = JSON::decodeAsArray($curl->response);
@@ -34,6 +34,14 @@ class WebService {
 		}
 
 		return FALSE;
+	}
+
+	static function get($endpoint, $params = array()) {
+		return self::useMethod('get', $endpoint, $params);
+	}
+
+	static function post($endpoint, $params = array()) {
+		return self::useMethod('post', $endpoint, $params);
 	}
 
 }

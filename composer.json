@@ -8,7 +8,7 @@
 		"ext-json": "*",
 		"dabble/dabble": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
-		"gregwar/cache": "dev-master"
+		"gregwar/cache": "*"
 	},
 	"autoload": {
 		"psr-4": {
