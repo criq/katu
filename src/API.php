@@ -2,7 +2,7 @@
 
 namespace Jabli\Aids;
 
-class WebService {
+class API {
 
 	static function success($res = NULL) {
 		echo JSON::encode($res);
@@ -22,7 +22,7 @@ class WebService {
 
 	static function useMethod($method, $endpoint, $params = array()) {
 		$curl = new \Curl();
-		$curl->$method(URL::joinPaths(Config::get('base_url'), $endpoint), $params);
+		$curl->$method(URL::joinPaths(Config::get('api_url'), $endpoint), $params);
 
 		if ($curl->http_status_code == 200) {
 			return JSON::decodeAsArray($curl->response);
