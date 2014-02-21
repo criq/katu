@@ -4,7 +4,7 @@ namespace Jabli\Aids;
 
 class Cache {
 
-	static function getArray($name, $callback) {
+	static function getArray($name, $callback, $timeout = NULL) {
 		if (!defined('TMP_PATH')) {
 			throw new Exception("Undefined TMP_PATH.");
 		}
@@ -13,7 +13,12 @@ class Cache {
 		$cache->setCacheDirectory(TMP_PATH);
 		$cache->setPrefixSize(0);
 
-		return JSON::decodeAsArray($cache->getOrCreate(self::getCacheName($name), array('max-age' => 1), $callback));
+		$opts = array();
+		if (isset($timeout) && $timeout) {
+			$opts['max-age'] = $timeout;
+		}
+
+		return JSON::decodeAsArray($cache->getOrCreate(self::getCacheName($name), $opts, $callback));
 	}
 
 	static function getCacheName($name) {
