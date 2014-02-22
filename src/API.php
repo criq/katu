@@ -10,7 +10,7 @@ class API {
 		return TRUE;
 	}
 
-	static function error($error) {
+	static function error($error = NULL) {
 		echo JSON::encode(array(
 			'error' => array(
 				'message' => $error,
