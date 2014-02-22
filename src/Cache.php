@@ -21,6 +21,10 @@ class Cache {
 		return JSON::decodeAsArray($cache->getOrCreate(self::getCacheName($name), $opts, $callback));
 	}
 
+	static function setArray($var) {
+		return JSON::encode($var);
+	}
+
 	static function getCacheName($name) {
 		return implode('__', (array) $name);
 	}
