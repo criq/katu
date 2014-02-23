@@ -7,7 +7,6 @@
 		"ext-curl": "*",
 		"ext-json": "*",
 		"dabble/dabble": "@stable",
-		"vrana/notorm": "dev-master",
 		"php-curl-class/php-curl-class": "@stable",
 		"gregwar/cache": "*",
 		"mustangostang/spyc": "*",

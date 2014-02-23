@@ -20,6 +20,10 @@ class API {
 		return TRUE;
 	}
 
+	static function getURL($endpoint, $params) {
+		return URL::joinPaths(Config::get('api_url'), $endpoint) . '?' . http_build_query($params);
+	}
+
 	static function useMethod($method, $endpoint, $params = array()) {
 		$curl = new \Curl();
 		$curl->$method(URL::joinPaths(Config::get('api_url'), $endpoint), $params);
