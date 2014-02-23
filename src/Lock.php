@@ -4,19 +4,38 @@ namespace Jabli\Aids;
 
 class Lock {
 
-	static function set($timeout, $filename = '.lock') {
-		if (file_exists($filename) && filectime($filename) > time() - $timeout) {
+	public $timeout;
+	public $path;
+
+	public function __construct() {
+		if (!func_get_arg(0)) {
+			throw new Exception("Misisng lock timeout.");
+		}
+
+		$this->timeout = func_get_arg(0);
+
+		if (!func_get_arg(1)) {
+			throw new Exception("Misisng lock name.");
+		}
+
+		if (!defined('TMP_PATH')) {
+			throw new Exception("Undefined TMP_PATH.");
+		}
+
+		$this->path = rtrim(TMP_PATH, '/') . '/.lock__' . implode('__', array_slice(func_get_args(), 1));
+
+		if (file_exists($this->path) && filectime($this->path) > time() - $this->timeout) {
 			throw new Exception("Lock exists.");
 		}
 
-		touch($filename);
+		touch($this->path);
 
 		return TRUE;
 	}
 
-	static function remove($filename = '.lock') {
-		if (file_exists($filename)) {
-			unlink($filename);
+	public function unlock() {
+		if (file_exists($this->path)) {
+			unlink($this->path);
 		}
 
 		return TRUE;
