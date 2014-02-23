@@ -9,7 +9,8 @@
 		"dabble/dabble": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"gregwar/cache": "*",
-		"mustangostang/spyc": "*"
+		"mustangostang/spyc": "*",
+		"monolog/monolog": "@stable"
 	},
 	"autoload": {
 		"psr-4": {
