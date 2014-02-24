@@ -24,7 +24,7 @@ class Lock {
 
 		$this->path = rtrim(TMP_PATH, '/') . '/.lock__' . implode('__', array_slice(func_get_args(), 1));
 
-		if (file_exists($this->path) && filectime($this->path) > time() - $this->timeout) {
+		if (file_exists($this->path) && filectime($this->path) > (time() - $this->timeout)) {
 			throw new Exception("Lock exists.");
 		}
 
