@@ -26,7 +26,6 @@ class Config {
 			throw new Exception("No config file found.");
 		}
 
-		$filename = rtrim(BASE_DIR) . '/config/init.php';
 		if (!is_readable($filename)) {
 			throw new Exception("Unable to read config file at " . $filename . ".");
 		}
