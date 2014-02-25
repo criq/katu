@@ -7,10 +7,11 @@
 		"ext-curl": "*",
 		"ext-json": "*",
 		"dabble/dabble": "@stable",
+		"monolog/monolog": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"gregwar/cache": "*",
-		"mustangostang/spyc": "*",
-		"monolog/monolog": "@stable"
+		"jwage/easy-csv": "*",
+		"mustangostang/spyc": "*"
 	},
 	"autoload": {
 		"psr-4": {
