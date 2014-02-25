@@ -4,10 +4,14 @@ namespace Jabli\Aids;
 
 class Download {
 
-	static function set($filename) {
+	static function dump($filename, $save_as = NULL, $disposition = 'attachment') {
+		if (!$save_as) {
+			$save_as = $filename;
+		}
+
 		header('Content-Length: ' . filesize($filename));
 		header('Content-Transfer-Encoding: Binary');
-		header('Content-Disposition: attachment; filename=' . basename($filename));
+		header('Content-Disposition: ' . $disposition . '; filename=' . basename($save_as));
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate');
 		header('Pragma: public');
