@@ -35,6 +35,9 @@ class API {
 		$array = JSON::decodeAsArray($curl->response);
 		if (isset($array['error']['message'])) {
 			throw new Exception($array['error']['message']);
+		} else {
+			throw new Exception("An error occured.");
+			trigger_error($curl->response);
 		}
 
 		return FALSE;
