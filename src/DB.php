@@ -8,8 +8,12 @@ class DB {
 		return new \Dabble\Database($config['host'], $config['user'], $config['pswd'], $config['name']);
 	}
 
-	static function getNotORM($config) {
-		return new \NotORM(new \PDO('mysql:dbname=' . $config['name'] . ';host=' . $config['host'], $config['user'], $config['pswd']));
+	static function getInstance($config = NULL) {
+		if (!isset($GLOBALS['db'])) {
+			$GLOBALS['db'] = self::connect(Config::get('db'));
+		}
+
+		return $GLOBALS['db'];
 	}
 
 }
