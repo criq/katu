@@ -24,7 +24,7 @@ class API {
 		return URL::joinPaths(Config::get('api_url'), $endpoint) . '?' . http_build_query($params);
 	}
 
-	static function useMethod($method, $endpoint, $params = array()) {
+	static function useMethod($method, $endpoint, $params = array(), &$curl) {
 		$curl = new \Curl();
 		$curl->$method(URL::joinPaths(Config::get('api_url'), $endpoint), $params);
 
@@ -43,12 +43,12 @@ class API {
 		return FALSE;
 	}
 
-	static function get($endpoint, $params = array()) {
-		return self::useMethod('get', $endpoint, $params);
+	static function get($endpoint, $params = array(), &$curl) {
+		return self::useMethod('get', $endpoint, $params, $curl);
 	}
 
-	static function post($endpoint, $params = array()) {
-		return self::useMethod('post', $endpoint, $params);
+	static function post($endpoint, $params = array(), &$curl) {
+		return self::useMethod('post', $endpoint, $params, $curl);
 	}
 
 }
