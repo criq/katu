@@ -1,8 +1,8 @@
 <?php
 
-namespace Jabli\Aids;
+namespace Jabli\Aids\DB;
 
-class DB {
+class Connection {
 
 	static function connect($config) {
 		return new \Dabble\Database($config['host'], $config['user'], $config['pswd'], $config['name']);
