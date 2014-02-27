@@ -4,16 +4,28 @@ namespace Jabli\Aids;
 
 class Model {
 
+	static function getDB() {
+		return DB::getInstance();
+	}
+
+	static function getClass() {
+		return get_called_class();
+	}
+
 	static function getTable() {
-		$class = get_called_class();
+		$class = self::getClass();
 
 		return $class::TABLE;
 	}
 
-	static function getPrimaryKey() {
-		$db = DB::getInstance();
+	static function insert($properties) {
+		self::getDB()->insert(self::getTable(), $properties, $id);
 
-		foreach ($db->query(" SHOW COLUMNS FROM " . self::getTable())->fetch_all() as $row) {
+		return self::getByPK($id);
+	}
+
+	static function getPrimaryKey() {
+		foreach (self::getDB()->query(" SHOW COLUMNS FROM " . self::getTable())->fetch_all() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
 			}
@@ -22,28 +34,32 @@ class Model {
 		return FALSE;
 	}
 
-	static function getByPK($pk) {
-		$db = DB::getInstance();
-		$class = get_called_class();
+	static function getByProperties($properties) {
+		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . self::getTable() . " WHERE ( 1 ) ";
 
-		$res = $db->query(" SELECT * FROM " . self::getTable() . " WHERE ( " . self::getPrimaryKey() . " = :pk ) ", array(
-			'pk' => $pk,
-		))->fetch_one();
-
-		if (!$res) {
-			return FALSE;
+		foreach ($properties as $property => $value) {
+			$sql .= " AND ( " . $property . " = :" . $property . " ) ";
 		}
 
-		return self::getFromAssoc($res);
+		return self::getDB()->query($sql, $properties);
+	}
+
+	static function getByProperty($property, $value) {
+		return self::getByProperties(array(
+			$property => $value,
+		));
+	}
+
+	static function getByPK($pk) {
+		return self::getByProperty(self::getPrimaryKey(), $pk);
 	}
 
 	static function getFromAssoc($array) {
-		$class = get_called_class();
-
 		if (!$array) {
 			return FALSE;
 		}
 
+		$class = self::getClass();
 		$object = new $class;
 
 		foreach ($array as $key => $value) {
