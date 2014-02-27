@@ -17,7 +17,12 @@ class Result {
 			$class = $this->class;
 		}
 
-		return $class::getFromAssoc($this->res->fetch_one());
+		$object = $class::getFromAssoc($this->res->fetch_one());
+		if ($object) {
+			$object->save();
+		}
+
+		return $object;
 	}
 
 }

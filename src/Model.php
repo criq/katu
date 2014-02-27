@@ -52,7 +52,7 @@ class Model {
 	public function save() {
 		if ($this->updated) {
 
-			$pk = self::getPrimaryKey();
+			$pk = self::getPKName();
 			$columns = self::getColumns();
 			$properties = array();
 
@@ -64,7 +64,7 @@ class Model {
 
 			if ($properties) {
 				self::getDB()->update(self::getTable(), $properties, array(
-					self::getPrimaryKey() => $this->ID,
+					self::getPKName() => $this->ID,
 				));
 			}
 
@@ -74,7 +74,7 @@ class Model {
 		return TRUE;
 	}
 
-	static function getPrimaryKey() {
+	static function getPKName() {
 		foreach (self::getDB()->query(" SHOW COLUMNS FROM " . self::getTable())->fetch_all() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
@@ -101,7 +101,11 @@ class Model {
 	}
 
 	static function getByPK($pk) {
-		return self::getByProperty(self::getPrimaryKey(), $pk);
+		return self::getByProperty(self::getPKName(), $pk);
+	}
+
+	public function getPK() {
+		return $this->{self::getPKName()};
 	}
 
 	static function getFromAssoc($array) {
