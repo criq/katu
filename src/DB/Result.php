@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Aids\DB;
+namespace Jabli\Utils\DB;
 
 class Result {
 

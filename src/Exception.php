@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Aids;
+namespace Jabli;
 
 class Exception extends \Exception {
 

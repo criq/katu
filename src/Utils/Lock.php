@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Aids;
+namespace Jabli\Utils;
 
 class Lock {
 

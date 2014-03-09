@@ -16,7 +16,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Aids\\": "src/"
+			"Jabli\\": "src/"
 		}
 	}
 }
