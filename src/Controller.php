@@ -13,7 +13,7 @@ class Controller {
 			'auto_reload' => TRUE,
 		));
 
-		echo $twig->render($view . '.tpl', $data);
+		echo trim($twig->render($view . '.tpl', $data));
 
 		return TRUE;
 	}
