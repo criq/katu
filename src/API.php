@@ -5,13 +5,13 @@ namespace Jabli;
 class API {
 
 	static function success($res = NULL) {
-		echo JSON::encode($res);
+		echo Utils\JSON::encode($res);
 
 		return TRUE;
 	}
 
 	static function error($error = NULL) {
-		echo JSON::encode(array(
+		echo Utils\JSON::encode(array(
 			'error' => array(
 				'message' => $error,
 			),
@@ -21,18 +21,18 @@ class API {
 	}
 
 	static function getURL($endpoint, $params) {
-		return URL::joinPaths(Config::get('api_url'), $endpoint) . '?' . http_build_query($params);
+		return Utils\URL::joinPaths(Config::get('api_url'), $endpoint) . '?' . http_build_query($params);
 	}
 
 	static function useMethod($method, $endpoint, $params = array(), &$curl = NULL) {
 		$curl = new \Curl();
-		$curl->$method(URL::joinPaths(Config::get('api_url'), $endpoint), $params);
+		$curl->$method(Utils\URL::joinPaths(Config::get('api_url'), $endpoint), $params);
 
 		if ($curl->http_status_code == 200) {
-			return JSON::decodeAsArray($curl->response);
+			return Utils\JSON::decodeAsArray($curl->response);
 		}
 
-		$array = JSON::decodeAsArray($curl->response);
+		$array = Utils\JSON::decodeAsArray($curl->response);
 		if (isset($array['error']['message'])) {
 			throw new Exception($array['error']['message']);
 		} else {

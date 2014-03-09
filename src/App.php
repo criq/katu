@@ -2,8 +2,6 @@
 
 namespace Jabli;
 
-use \Slim\Slim;
-
 class App {
 
 	static function initialize() {
@@ -39,14 +37,14 @@ class App {
 	}
 
 	static function getApp() {
-		$app = Slim::getInstance();
+		$app = \Slim\Slim::getInstance();
 		if (!$app) {
 			self::initialize();
 			$config = array(
 				'templates.path' => './app/Views/',
 			);
 			$config = array_merge($config, Config::get('slim'));
-			$app = new Slim($config);
+			$app = new \Slim\Slim($config);
 		}
 
 		return $app;
@@ -70,8 +68,7 @@ class App {
 					$callable = $ns . '::' . $method[0];
 
 					if (is_callable($callable)) {
-						$app->response->setStatus(200);
-						return API::success(call_user_func_array($callable, array()));
+						return call_user_func_array($callable, array());
 					} else {
 						throw new Exception("Invalid method.");
 					}
