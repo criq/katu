@@ -11,6 +11,8 @@
 		"dabble/dabble": "@stable",
 		"monolog/monolog": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
+		"twig/twig": "@stable",
+		"twig/extensions": "@stable",
 		"gregwar/cache": "*",
 		"jwage/easy-csv": "*",
 		"mustangostang/spyc": "*",
