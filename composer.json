@@ -18,8 +18,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Jabli\\": "src/",
-			"App\\": "./app/"
+			"Jabli\\": "src/"
 		}
 	}
 }
