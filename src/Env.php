@@ -11,7 +11,7 @@ class Env {
 	}
 
 	static function getWholeHash() {
-		return sha1(JSON::encodeStandard(self::getEnvProperties()));
+		return sha1(Utils\JSON::encodeStandard(self::getEnvProperties()));
 	}
 
 	static function getEnvProperties() {
