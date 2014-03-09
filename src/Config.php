@@ -13,6 +13,7 @@ class Config {
 		$locations = array(
 			rtrim(BASE_DIR) . '/config.php',
 			rtrim(BASE_DIR) . '/config/init.php',
+			rtrim(BASE_DIR) . '/app/Config/init.php',
 		);
 
 		foreach ($locations as $location) {
@@ -39,7 +40,7 @@ class Config {
 			if (isset($config[$key])) {
 				$config = $config[$key];
 			} else {
-				throw new Exception("Invalid config key.");
+				throw new Exception("Invalid config key " . $key . ".");
 			}
 		}
 
@@ -55,7 +56,7 @@ class Config {
 				if (isset($config[$key])) {
 					$config = $config[$key];
 				} else {
-					throw new Exception("Invalid config key.");
+					throw new Exception("Invalid config key " . $key . ".");
 				}
 			}
 
