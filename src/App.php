@@ -42,7 +42,11 @@ class App {
 		$app = Slim::getInstance();
 		if (!$app) {
 			self::initialize();
-			$app = new Slim(Config::get('slim'));
+			$config = array(
+				'templates.path' => './app/Views/',
+			);
+			$config = array_merge($config, Config::get('slim'));
+			$app = new Slim($config);
 		}
 
 		return $app;
