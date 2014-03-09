@@ -1,6 +1,6 @@
 {
-	"name": "jabli/aids",
-	"description": "aids",
+	"name": "jabli/fw",
+	"description": "jabli fw",
 	"type": "library",
 	"require" : {
 		"php": ">=5.3.0",
