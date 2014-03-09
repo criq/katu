@@ -52,4 +52,48 @@ class App {
 		return DB\Connection::getInstance();
 	}
 
+	static function run() {
+		$catch_all = function() {
+			$app = self::getApp();
+
+			try {
+
+				// Map URL to controller method.
+				$parts = array_filter(explode('/', $app->request->getResourceUri()));
+				if ($parts) {
+					$ns       = '\App\Controllers\\' . implode('\\', array_map('ucfirst', array_slice($parts, 0, -1)));
+					$method   = array_slice($parts, -1);
+					$callable = $ns . '::' . $method[0];
+
+					if (is_callable($callable)) {
+						$app->response->setStatus(200);
+						return API::success(call_user_func_array($callable, array()));
+					} else {
+						throw new Exception("Invalid method.");
+					}
+				}
+
+			} catch (Exception $e) {
+				$app->response->setStatus(400);
+			}
+
+			$app->response->setStatus(400);
+		};
+
+		$app = self::getApp();
+
+		// Set up routes.
+		$routes = Config::getSpec('routes');
+		foreach ($routes as $url => $callable) {
+			$app->get( $url, array("\App\Controllers\\" . $callable[0], $callable[1]));
+			$app->post($url, array("\App\Controllers\\" . $callable[0], $callable[1]));
+		}
+
+		// Catch-all.
+		$app->get( '.+', $catch_all);
+		$app->post('.+', $catch_all);
+
+		$app->run();
+	}
+
 }

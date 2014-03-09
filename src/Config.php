@@ -48,10 +48,9 @@ class Config {
 	}
 
 	static function getSpec() {
-		$specific = BASE_DIR . '/config/' . func_get_arg(0) . '.php';
+		$specific = BASE_DIR . '/app/Config/' . func_get_arg(0) . '.php';
 		if (is_readable($specific)) {
 			$config = include $specific;
-
 			foreach (array_slice(func_get_args(), 1) as $key) {
 				if (isset($config[$key])) {
 					$config = $config[$key];
