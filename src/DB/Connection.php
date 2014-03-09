@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Utils\DB;
+namespace Jabli\DB;
 
 class Connection {
 
@@ -10,7 +10,7 @@ class Connection {
 
 	static function getInstance($config = NULL) {
 		if (!isset($GLOBALS['db'])) {
-			$GLOBALS['db'] = self::connect(\Jabli\Utils\Config::get('db'));
+			$GLOBALS['db'] = self::connect(\Jabli\Config::get('db'));
 		}
 
 		return $GLOBALS['db'];
