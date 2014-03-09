@@ -3,11 +3,6 @@
 	"description": "aids",
 	"type": "library",
 	"require" : {
-		"php": ">=5.3.0",
-		"ext-curl": "*",
-		"ext-json": "*",
-		"slim/slim": "@stable",
-		"slim/extras": "@stable",
 		"dabble/dabble": "@stable",
 		"monolog/monolog": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
@@ -18,8 +13,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Aids\\": "src/",
-			"App\\": "./app/"
+			"Aids\\": "src/"
 		}
 	}
 }
