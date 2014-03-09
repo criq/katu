@@ -16,7 +16,8 @@
 		"gregwar/cache": "*",
 		"jwage/easy-csv": "*",
 		"mustangostang/spyc": "*",
-		"ircmaxell/random-lib": "1.0.*@dev"
+		"ircmaxell/random-lib": "1.0.*@dev",
+		"facebook/php-sdk": "@stable"
 	},
 	"autoload": {
 		"psr-4": {
