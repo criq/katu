@@ -6,6 +6,8 @@
 		"php": ">=5.3.0",
 		"ext-curl": "*",
 		"ext-json": "*",
+		"slim/slim": "@stable",
+		"slim/extras": "@stable",
 		"dabble/dabble": "@stable",
 		"monolog/monolog": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
