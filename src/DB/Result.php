@@ -12,6 +12,10 @@ class Result {
 		$this->class = $class;
 	}
 
+	public function getTotal() {
+		return (int) $this->res->num_rows;
+	}
+
 	public function getOne($class = NULL) {
 		if (!$class && $this->class) {
 			$class = $this->class;

@@ -6,6 +6,9 @@ class Model {
 
 	private $updated = FALSE;
 
+	public $id;
+	public $time_created;
+
 	static function getDB() {
 		return DB\Connection::getInstance();
 	}
@@ -30,7 +33,11 @@ class Model {
 		return $columns;
 	}
 
-	static function insert($properties) {
+	static function insert($properties = array()) {
+		if (in_array('time_created', self::getColumns())) {
+			$properties['time_created'] = \Jabli\Utils\Datetime::get()->getDBDatetimeFormat();
+		}
+
 		self::getDB()->insert(self::getTable(), $properties, $id);
 
 		return self::getByPK($id)->getOne();
@@ -84,7 +91,7 @@ class Model {
 		return FALSE;
 	}
 
-	static function getByProperties($properties) {
+	static function getByProperties($properties = array()) {
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . self::getTable() . " WHERE ( 1 ) ";
 
 		foreach ($properties as $property => $value) {
@@ -136,7 +143,39 @@ class Model {
 			}
 		}
 
+		// Bind getter.
+		if (preg_match('#^get(?<property>[a-z]+)$#i', $name, $match) && count($args) == 0) {
+			$object = $this->getBoundObject($match['property']);
+			if ($object) {
+				return $object;
+			}
+		}
+
 		user_error('Undeclared class method.');
+	}
+
+	static function getIDProperties() {
+		return array_values(array_filter(array_map(function($i) {
+			return preg_match('#^(?<property>[a-z_]+)_id$#', $i) ? $i : NULL;
+		}, self::getColumns())));
+	}
+
+	public function getBoundObject($model) {
+		if (!class_exists('\\App\\Models\\' . $model)) {
+			return FALSE;
+		}
+
+		foreach (self::getIDProperties() as $property) {
+			$_model = '\\App\\Models\\' . implode(array_map('ucfirst', explode('_', substr($property, 0, -3))));
+			if ($_model) {
+				$object = $_model::getByPK($this->{$property})->getOne();
+				if ($object) {
+					return $object;
+				}
+			}
+		}
+
+		return FALSE;
 	}
 
 	static function getPropertyName($property) {
