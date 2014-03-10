@@ -2,7 +2,7 @@
 
 namespace Jabli;
 
-class App {
+class FW {
 
 	static function initialize() {
 		// Constants.
@@ -22,6 +22,7 @@ class App {
 			define('LOGGER_CONTEXT', 'app');
 		}
 
+		// Timezone.
 		try {
 			date_default_timezone_set(Config::get('timezone'));
 		} catch (Exception $e) {

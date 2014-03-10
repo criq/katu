@@ -11,7 +11,7 @@ class URL {
 	}
 
 	static function getCurrent() {
-		$app = \Jabli\App::getApp();
+		$app = \Jabli\FW::getApp();
 
 		return $app->request->getUrl() . $app->request->getPath();
 	}

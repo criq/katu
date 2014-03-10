@@ -2,12 +2,14 @@
 
 namespace Jabli;
 
-use \Jabli\App;
+use \Jabli\FW;
 
 class Controller {
 
-	static function render($view, $data = array()) {
-		$app = App::getApp();
+	static $data = array();
+
+	static function render($view) {
+		$app = FW::getApp();
 
 		$loader = new \Twig_Loader_Filesystem('./app/Views/');
 		$twig   = new \Twig_Environment($loader, array(
@@ -19,12 +21,24 @@ class Controller {
 			return Utils\URL::getSite($string);
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('getCSRFToken', function () {
+			return Utils\CSRF::getFreshToken();
+		}));
+
 		$app->response->setStatus(200);
 		$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
-		echo trim($twig->render($view . '.tpl', $data));
+		echo trim($twig->render($view . '.tpl', static::$data));
 
 		return TRUE;
+	}
+
+	static function isSubmittedWithToken($name = NULL) {
+		$app = App::getApp();
+
+		return $app->request->params('form_submitted')
+			&& $app->request->params('form_name') == $name
+			&& Utils\CSRF::isValidToken($app->request->params('form_token'));
 	}
 
 }
