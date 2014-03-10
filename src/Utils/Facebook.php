@@ -11,6 +11,10 @@ class Facebook {
 			'appId'  => \Jabli\Config::get('facebook', 'app_id'),
 			'secret' => \Jabli\Config::get('facebook', 'secret'),
 		));
+
+		$this->facebook->setAccessToken($this->getAccessToken());
+
+		return TRUE;
 	}
 
 	public function getLoginURL() {
@@ -64,6 +68,14 @@ class Facebook {
 
 	public function resetAccessToken() {
 		return \Jabli\Cookie::unsetCookie($this->getCookieName('access_token'));
+	}
+
+	static function setUser($user_id) {
+		return \Jabli\Session::set('facebook_user_id', $user_id);
+	}
+
+	static function getUser($user_id) {
+		return \Jabli\Session::get('facebook_user_id');
 	}
 
 }
