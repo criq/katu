@@ -10,4 +10,18 @@ class URL {
 		}, func_get_args()));
 	}
 
+	static function getCurrent() {
+		$app = \Jabli\App::getApp();
+
+		return $app->request->getUrl() . $app->request->getPath();
+	}
+
+	static function getBase() {
+		return \Jabli\Config::get('base_url');
+	}
+
+	static function getSite($uri) {
+		return self::joinPaths(self::getBase(), $uri);
+	}
+
 }
