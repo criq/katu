@@ -28,7 +28,7 @@ class CSRF {
 	}
 
 	static function getTokens() {
-		return \Jabli\Session::get('csrf_tokens');
+		return (array) \Jabli\Session::get('csrf_tokens');
 	}
 
 	static function isValidToken($token) {

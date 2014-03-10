@@ -9,32 +9,36 @@ class Controller {
 	static $data = array();
 
 	static function render($view) {
-		$app = FW::getApp();
+		try {
 
-		$loader = new \Twig_Loader_Filesystem('./app/Views/');
-		$twig   = new \Twig_Environment($loader, array(
-			'cache'       => Utils\FS::joinPaths(TMP_PATH, 'twig'),
-			'auto_reload' => TRUE,
-		));
+			$app = FW::getApp();
 
-		$twig->addFilter(new \Twig_SimpleFilter('url', function ($string) {
-			return Utils\URL::getSite($string);
-		}));
+			$loader = new \Twig_Loader_Filesystem('./app/Views/');
+			$twig   = new \Twig_Environment($loader, array(
+				'cache'       => Utils\FS::joinPaths(TMP_PATH, 'twig'),
+				'auto_reload' => TRUE,
+			));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCSRFToken', function () {
-			return Utils\CSRF::getFreshToken();
-		}));
+			$twig->addFilter(new \Twig_SimpleFilter('url', function($string) {
+				return Utils\URL::getSite($string);
+			}));
 
-		$app->response->setStatus(200);
-		$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
+			$twig->addFunction(new \Twig_SimpleFunction('getCSRFToken', function() {
+				return Utils\CSRF::getFreshToken();
+			}));
 
-		echo trim($twig->render($view . '.tpl', static::$data));
+			$app->response->setStatus(200);
+			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
-		return TRUE;
+			echo trim($twig->render($view . '.tpl', static::$data));
+
+			return TRUE;
+
+		} catch (Exception $e) { die('Error rendering the template.'); }
 	}
 
 	static function isSubmittedWithToken($name = NULL) {
-		$app = App::getApp();
+		$app = FW::getApp();
 
 		return $app->request->params('form_submitted')
 			&& $app->request->params('form_name') == $name

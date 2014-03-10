@@ -82,20 +82,24 @@ class FW {
 			$app->response->setStatus(400);
 		};
 
-		$app = self::getApp();
+		try {
 
-		// Set up routes.
-		$routes = Config::getSpec('routes');
-		foreach ($routes as $url => $callable) {
-			$app->get( $url, array("\App\Controllers\\" . $callable[0], $callable[1]));
-			$app->post($url, array("\App\Controllers\\" . $callable[0], $callable[1]));
-		}
+			$app = self::getApp();
 
-		// Catch-all.
-		$app->get( '.+', $catch_all);
-		$app->post('.+', $catch_all);
+			// Set up routes.
+			$routes = Config::getSpec('routes');
+			foreach ($routes as $url => $callable) {
+				$app->get( $url, array("\App\Controllers\\" . $callable[0], $callable[1]));
+				$app->post($url, array("\App\Controllers\\" . $callable[0], $callable[1]));
+			}
 
-		$app->run();
+			// Catch-all.
+			$app->get( '.+', $catch_all);
+			$app->post('.+', $catch_all);
+
+			$app->run();
+
+		} catch (Exception $e) { die('Error runnung application.'); }
 	}
 
 }
