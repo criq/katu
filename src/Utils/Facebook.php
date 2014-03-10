@@ -54,28 +54,28 @@ class Facebook {
 		return FALSE;
 	}
 
-	public function getCookieName($suffix = NULL) {
+	public function getVariableName($suffix = NULL) {
 		return 'facebook_' . $this->getAppID() . ($suffix ? '_' . $suffix : NULL);
 	}
 
 	public function setAccessToken($access_token) {
-		return \Jabli\Cookie::setCookie($this->getCookieName('access_token'), $access_token);
+		return \Jabli\Cookie::setCookie($this->getVariableName('access_token'), $access_token);
 	}
 
 	public function getAccessToken() {
-		return \Jabli\Cookie::getCookie($this->getCookieName('access_token'));
+		return \Jabli\Cookie::getCookie($this->getVariableName('access_token'));
 	}
 
 	public function resetAccessToken() {
-		return \Jabli\Cookie::unsetCookie($this->getCookieName('access_token'));
+		return \Jabli\Cookie::unsetCookie($this->getVariableName('access_token'));
 	}
 
-	static function setUser($user_id) {
-		return \Jabli\Session::set('facebook_user_id', $user_id);
+	public function setUser($user_id) {
+		return \Jabli\Session::set($this->getVariableName('user_id'), $user_id);
 	}
 
-	static function getUser($user_id) {
-		return \Jabli\Session::get('facebook_user_id');
+	public function getUser($user_id) {
+		return \Jabli\Session::get($this->getVariableName('user_id'));
 	}
 
 }
