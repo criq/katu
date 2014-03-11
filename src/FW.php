@@ -84,7 +84,7 @@ class FW {
 			$app = self::getApp();
 
 			// Set up routes.
-			$routes = Config::getSpec('routes');
+			$routes = (array) Config::getSpec('routes');
 			foreach ($routes as $url => $callable) {
 				$app->get( $url, array("\App\Controllers\\" . $callable[0], $callable[1]));
 				$app->post($url, array("\App\Controllers\\" . $callable[0], $callable[1]));

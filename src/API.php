@@ -5,12 +5,22 @@ namespace Jabli;
 class API {
 
 	static function success($res = NULL) {
+		$app = FW::getApp();
+
+		$app->response->setStatus(200);
+		$app->response->headers->set('Content-Type', 'application/json');
+
 		echo Utils\JSON::encode($res);
 
 		return TRUE;
 	}
 
 	static function error($error = NULL) {
+		$app = FW::getApp();
+
+		$app->response->setStatus(400);
+		$app->response->headers->set('Content-Type', 'application/json');
+
 		echo Utils\JSON::encode(array(
 			'error' => array(
 				'message' => $error,
