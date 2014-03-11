@@ -8,7 +8,7 @@ class API {
 		$app = FW::getApp();
 
 		$app->response->setStatus(200);
-		$app->response->headers->set('Content-Type', 'application/json');
+		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
 
 		echo Utils\JSON::encode($res);
 
@@ -19,7 +19,7 @@ class API {
 		$app = FW::getApp();
 
 		$app->response->setStatus(400);
-		$app->response->headers->set('Content-Type', 'application/json');
+		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
 
 		echo Utils\JSON::encode(array(
 			'error' => array(
