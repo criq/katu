@@ -40,12 +40,7 @@ class FW {
 	static function getApp() {
 		$app = \Slim\Slim::getInstance();
 		if (!$app) {
-			self::initialize();
-			$config = array(
-				'templates.path' => './app/Views/',
-			);
-			$config = array_merge($config, Config::get('slim'));
-			$app = new \Slim\Slim($config);
+			$app = new \Slim\Slim(Config::get('slim'));
 		}
 
 		return $app;
@@ -56,6 +51,8 @@ class FW {
 	}
 
 	static function run() {
+		self::initialize();
+
 		$catch_all = function() {
 			$app = self::getApp();
 
@@ -99,7 +96,7 @@ class FW {
 
 			$app->run();
 
-		} catch (Exception $e) { die('Error runnung application.'); }
+		} catch (Exception $e) { die('Error running application.'); }
 	}
 
 }
