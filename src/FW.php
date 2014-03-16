@@ -96,7 +96,12 @@ class FW {
 
 			$app->run();
 
-		} catch (Exception $e) { die('Error running application.'); }
+		} catch (Exception $e) {
+
+			user_error($e);
+			die('Error running application.');
+
+		}
 	}
 
 }

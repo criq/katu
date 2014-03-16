@@ -34,7 +34,12 @@ class Controller {
 
 			return TRUE;
 
-		} catch (Exception $e) { die('Error rendering the template.'); }
+		} catch (Exception $e) {
+
+			user_error($e);
+			die('Error rendering the template.');
+
+		}
 	}
 
 	static function isSubmittedWithToken($name = NULL) {
