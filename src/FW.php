@@ -86,8 +86,8 @@ class FW {
 			// Set up routes.
 			$routes = (array) Config::getSpec('routes');
 			foreach ($routes as $url => $callable) {
-				$app->get( $url, array("\App\Controllers\\" . $callable[0], $callable[1]));
-				$app->post($url, array("\App\Controllers\\" . $callable[0], $callable[1]));
+				$app->get( rtrim($url, '/') . '/?', array("\App\Controllers\\" . $callable[0], $callable[1]));
+				$app->post(rtrim($url, '/') . '/?', array("\App\Controllers\\" . $callable[0], $callable[1]));
 			}
 
 			// Catch-all.

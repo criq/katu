@@ -42,6 +42,10 @@ class Controller {
 		}
 	}
 
+	static function addError($error) {
+		return self::$data['errors'][] = $error;
+	}
+
 	static function isSubmittedWithToken($name = NULL) {
 		$app = FW::getApp();
 
