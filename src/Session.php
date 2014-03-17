@@ -4,9 +4,13 @@ namespace Jabli;
 
 class Session {
 
-	static function get($name) {
+	static function get($name = NULL) {
 		if (!session_id()) {
 			session_start();
+		}
+
+		if (!$name) {
+			return $_SESSION;
 		}
 
 		if (!isset($_SESSION[$name])) {

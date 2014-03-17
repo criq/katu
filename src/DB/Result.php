@@ -29,4 +29,17 @@ class Result {
 		return $object;
 	}
 
+	public function getObjects($class = NULL) {
+		if (!$class && $this->class) {
+			$class = $this->class;
+		}
+
+		$objects = array();
+		foreach ($this->res->fetch_all() as $item) {
+			$objects[] = $class::getFromAssoc($item);
+		}
+
+		return $objects;
+	}
+
 }

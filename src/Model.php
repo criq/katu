@@ -40,7 +40,7 @@ class Model {
 
 		self::getDB()->insert(self::getTable(), $properties, $id);
 
-		return self::getByPK($id)->getOne();
+		return self::getByPK($id);
 	}
 
 	public function update($property, $value) {
@@ -91,6 +91,10 @@ class Model {
 		return FALSE;
 	}
 
+	static function getAll() {
+		return self::getByProperties();
+	}
+
 	static function getByProperties($properties = array()) {
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . self::getTable() . " WHERE ( 1 ) ";
 
@@ -108,7 +112,7 @@ class Model {
 	}
 
 	static function getByPK($pk) {
-		return self::getByProperty(self::getPKName(), $pk);
+		return self::getByProperty(self::getPKName(), $pk)->getOne();
 	}
 
 	public function getPK() {
@@ -168,7 +172,7 @@ class Model {
 		foreach (self::getIDProperties() as $property) {
 			$_model = '\\App\\Models\\' . implode(array_map('ucfirst', explode('_', substr($property, 0, -3))));
 			if ($_model) {
-				$object = $_model::getByPK($this->{$property})->getOne();
+				$object = $_model::getByPK($this->{$property});
 				if ($object) {
 					return $object;
 				}
