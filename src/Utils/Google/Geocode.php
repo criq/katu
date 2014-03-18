@@ -9,12 +9,26 @@ use \Jabli\Config,
 
 class Geocode {
 
-	static function getByLatLng($lat, $lng) {
-		return JSON::decodeAsArray(Cache::getURL(URL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
-			'address' => implode(',', array($lat, $lng)),
+	static function geocode($address) {
+		$arr = JSON::decodeAsArray(Cache::getURL(URL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
+			'address' => $address,
 			'sensor'  => 'false',
 			'key'     => Config::get('google', 'api_key'),
 		))));
+
+		if (!isset($arr['results'][0])) {
+			return FALSE;
+		}
+
+		return new GeocodeAddress($arr['results'][0]);
+	}
+
+	static function getByLatLng($lat, $lng) {
+		return self::geocode(implode(',', array($lat, $lng)));
+	}
+
+	static function getByAddress() {
+		return self::geocode(implode(',', func_get_args()));
 	}
 
 }
