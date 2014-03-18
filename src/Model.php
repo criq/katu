@@ -71,7 +71,7 @@ class Model {
 
 			if ($properties) {
 				self::getDB()->update(self::getTable(), $properties, array(
-					self::getPKName() => $this->ID,
+				self::getPKName() => $this->getPK(),
 				));
 			}
 
@@ -79,6 +79,12 @@ class Model {
 		}
 
 		return TRUE;
+	}
+
+	public function delete() {
+		return self::getDB()->delete(self::getTable(), array(
+			$this->getPKName() => $this->getPK(),
+		));
 	}
 
 	static function getPKName() {
@@ -119,6 +125,17 @@ class Model {
 		return $this->{self::getPKName()};
 	}
 
+	static function getOrCreate() {
+		$object = self::getByProperties(func_get_arg(0))->getOne();
+		if (!$object) {
+			$callable = array(get_called_class(), 'create');
+			$args = array_slice(func_get_args(), 1);
+			$object = call_user_func_array($callable, $args);
+		}
+
+		return $object;
+	}
+
 	static function getFromAssoc($array) {
 		if (!$array) {
 			return FALSE;
@@ -155,7 +172,7 @@ class Model {
 			}
 		}
 
-		user_error('Undeclared class method.');
+		user_error('Undeclared class method ' . $name . '.');
 	}
 
 	static function getIDProperties() {
