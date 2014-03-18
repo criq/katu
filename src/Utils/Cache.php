@@ -29,4 +29,17 @@ class Cache {
 		return implode('__', (array) $name);
 	}
 
+	static function getURL($url, $timeout = NULL) {
+		return \Jabli\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
+
+			$curl = new \Curl;
+			if ($curl->get($url)) {
+				throw new \Jabli\Exception("Error getting URL.");
+			}
+
+			return $curl->response;
+
+		}, $timeout);
+	}
+
 }

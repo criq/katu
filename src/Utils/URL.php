@@ -24,4 +24,8 @@ class URL {
 		return self::joinPaths(self::getBase(), $uri);
 	}
 
+	static function make($url, $params = array()) {
+		return $url . ($params ? '?' . http_build_query($params) : NULL);
+	}
+
 }
