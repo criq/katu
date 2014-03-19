@@ -35,6 +35,11 @@ class FW {
 		$handler = new \Monolog\ErrorHandler($logger);
 		$handler->registerErrorHandler(array(), FALSE);
 		$handler->registerFatalHandler();
+
+		// Header can and probably will be overwritten by app.
+		header('Content-Type: text/html; charset=UTF-8');
+
+		return TRUE;
 	}
 
 	static function getApp() {

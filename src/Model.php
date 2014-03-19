@@ -101,20 +101,22 @@ class Model {
 		return self::getByProperties();
 	}
 
-	static function getByProperties($properties = array()) {
+	static function getByProperties($properties = array(), $params = array()) {
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . self::getTable() . " WHERE ( 1 ) ";
 
 		foreach ($properties as $property => $value) {
 			$sql .= " AND ( " . $property . " = :" . $property . " ) ";
 		}
 
+		if (isset($params[\Jabli\DB\Result::ORDERBY])) {
+			$sql .= " ORDER BY " . $params[\Jabli\DB\Result::ORDERBY];
+		}
+
 		return new DB\Result(self::getDB()->query($sql, $properties), get_called_class());
 	}
 
-	static function getByProperty($property, $value) {
-		return self::getByProperties(array(
-			$property => $value,
-		));
+	static function getByProperty($property, $value, $params = array()) {
+		return self::getByProperties(array($property => $value), $params);
 	}
 
 	static function getByPK($pk) {

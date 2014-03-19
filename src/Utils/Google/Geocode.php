@@ -11,9 +11,10 @@ class Geocode {
 
 	static function geocode($address) {
 		$arr = JSON::decodeAsArray(Cache::getURL(URL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
-			'address' => $address,
-			'sensor'  => 'false',
-			'key'     => Config::get('google', 'api_key'),
+			'address'  => $address,
+			'sensor'   => 'false',
+			'language' => 'cs',
+			'key'      => Config::get('google', 'api_key'),
 		))));
 
 		if (!isset($arr['results'][0])) {
