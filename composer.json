@@ -18,7 +18,7 @@
 		"mustangostang/spyc": "*",
 		"ircmaxell/random-lib": "1.0.*@dev",
 		"facebook/php-sdk": "@stable",
-		"egulias/email-validator": "dev-master"
+		"egulias/email-validator": "*"
 	},
 	"autoload": {
 		"psr-4": {
