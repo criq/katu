@@ -17,7 +17,8 @@
 		"jwage/easy-csv": "*",
 		"mustangostang/spyc": "*",
 		"ircmaxell/random-lib": "1.0.*@dev",
-		"facebook/php-sdk": "@stable"
+		"facebook/php-sdk": "@stable",
+		"egulias/email-validator": "1.0.*@dev"
 	},
 	"autoload": {
 		"psr-4": {
