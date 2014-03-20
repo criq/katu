@@ -9,6 +9,28 @@ class Model {
 	public $id;
 	public $time_created;
 
+	public function __call($name, $args) {
+		// Setter.
+		if (preg_match('#^set(?<property>[a-z]+)$#i', $name, $match) && count($args) == 1) {
+			$property = $match['property'];
+			$value    = $args[0];
+
+			if ($this->update($property, $value)) {
+				return TRUE;
+			}
+		}
+
+		// Bind getter.
+		if (preg_match('#^get(?<property>[a-z]+)$#i', $name, $match) && count($args) == 0) {
+			$object = $this->getBoundObject($match['property']);
+			if ($object) {
+				return $object;
+			}
+		}
+
+		user_error('Undeclared class method ' . $name . '.');
+	}
+
 	static function getDB() {
 		return DB\Connection::getInstance();
 	}
@@ -155,28 +177,6 @@ class Model {
 		return $object;
 	}
 
-	public function __call($name, $args) {
-		// Setter.
-		if (preg_match('#^set(?<property>[a-z]+)$#i', $name, $match) && count($args) == 1) {
-			$property = $match['property'];
-			$value    = $args[0];
-
-			if ($this->update($property, $value)) {
-				return TRUE;
-			}
-		}
-
-		// Bind getter.
-		if (preg_match('#^get(?<property>[a-z]+)$#i', $name, $match) && count($args) == 0) {
-			$object = $this->getBoundObject($match['property']);
-			if ($object) {
-				return $object;
-			}
-		}
-
-		user_error('Undeclared class method ' . $name . '.');
-	}
-
 	static function getIDProperties() {
 		return array_values(array_filter(array_map(function($i) {
 			return preg_match('#^(?<property>[a-z_]+)_id$#', $i) ? $i : NULL;
@@ -184,13 +184,14 @@ class Model {
 	}
 
 	public function getBoundObject($model) {
-		if (!class_exists('\\App\\Models\\' . $model)) {
+		$ns_model = '\\App\\Models\\' . $model;
+		if (!class_exists($ns_model)) {
 			return FALSE;
 		}
 
 		foreach (self::getIDProperties() as $property) {
 			$_model = '\\App\\Models\\' . implode(array_map('ucfirst', explode('_', substr($property, 0, -3))));
-			if ($_model) {
+			if ($_model && $ns_model == $_model) {
 				$object = $_model::getByPK($this->{$property});
 				if ($object) {
 					return $object;
