@@ -12,10 +12,10 @@ class Model {
 	public function __call($name, $args) {
 		// Setter.
 		if (preg_match('#^set(?<property>[a-z]+)$#i', $name, $match) && count($args) == 1) {
-			$property = $match['property'];
+			$property = $this->getPropertyName($match['property']);
 			$value    = $args[0];
 
-			if ($this->update($property, $value)) {
+			if ($property && $this->update($property, $value)) {
 				return TRUE;
 			}
 		}
