@@ -46,10 +46,25 @@ class Model {
 	}
 
 	static function getColumns() {
+		return array_keys(self::getColumnDetails());
+	}
+
+	static function getColumnDetails() {
 		$columns = array();
 
 		foreach (self::getDB()->query(" SHOW COLUMNS FROM " . self::getTable())->fetch_all() as $row) {
-			$columns[] = $row['Field'];
+			$_row = array();
+
+			if (preg_match('#^(?<type>int|char)\((?<length>[0-9]+)\)#', $row['Type'], $match)) {
+				$_row['type']   = (string) $match['type'];
+				$_row['length'] = (int) $match['length'];
+			}
+
+			$_row['null'] = (bool) ($row['Null'] != 'NO');
+			$_row['key'] = (string) ($row['Key']);
+			$_row['default'] = ($row['Default']);
+
+			$columns[$row['Field']] = $_row;
 		}
 
 		return $columns;
@@ -210,6 +225,21 @@ class Model {
 		}
 
 		return FALSE;
+	}
+
+	static function getColumnUniqueID($column) {
+		$columns = self::getColumnDetails();
+		if (!isset($columns[$column]['length'])) {
+			throw new Exception("Unable to get column length.");
+		}
+
+		do {
+
+			$string = \Jabli\Utils\Random::getIDString($columns[$column]['length']);
+
+		} while (self::getByProperty($column, $string)->getOne());
+
+		return $string;
 	}
 
 }

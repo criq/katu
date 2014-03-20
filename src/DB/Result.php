@@ -14,6 +14,10 @@ class Result {
 		$this->class = $class;
 	}
 
+	static function get($res, $class = NULL) {
+		return new self($res, $class);
+	}
+
 	public function getTotal() {
 		return (int) $this->res->num_rows;
 	}
@@ -42,6 +46,10 @@ class Result {
 		}
 
 		return $objects;
+	}
+
+	public function getArray() {
+		return (array) $this->res->fetch_all();
 	}
 
 }

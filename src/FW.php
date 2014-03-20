@@ -91,14 +91,13 @@ class FW {
 			// Set up routes.
 			$routes = (array) Config::getSpec('routes');
 			foreach ($routes as $url => $callable) {
-				$app->get( rtrim($url, '/') . '/?', array("\App\Controllers\\" . $callable[0], $callable[1]));
-				$app->post(rtrim($url, '/') . '/?', array("\App\Controllers\\" . $callable[0], $callable[1]));
+				$app->map(rtrim($url, '/') . '/?', array("\App\Controllers\\" . $callable[0], $callable[1]))->via('GET', 'POST');
 			}
 
 			// Catch-all.
-			$app->get( '.+', $catch_all);
-			$app->post('.+', $catch_all);
+			$app->map('.+', $catch_all)->via('GET', 'POST');
 
+			// Run the app.
 			$app->run();
 
 		} catch (Exception $e) {
