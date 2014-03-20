@@ -8,12 +8,12 @@ class Controller {
 
 	static $data = array();
 
-	static function render($template) {
+	static function render($template, $code = 200) {
 		$app = FW::getApp();
 
 		try {
 
-			$app->response->setStatus(200);
+			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
 			echo View::render($template, static::$data);
@@ -26,6 +26,18 @@ class Controller {
 			die('Error rendering the template.');
 
 		}
+	}
+
+	static function renderError($code = 500) {
+		return self::render('Errors/' . $code, $code);
+	}
+
+	static function renderNotFound($code = 404) {
+		return self::renderError($code);
+	}
+
+	static function renderUnauthorized($code = 401) {
+		return self::renderError($code);
 	}
 
 	static function addError($error) {

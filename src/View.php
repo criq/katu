@@ -31,6 +31,8 @@ class View {
 		$data['_server']['api_url']  = Config::get('api_url');
 		$data['_server']['timezone'] = Config::get('timezone');
 
+		$data['_user'] = \App\Models\User::getLoggedIn();
+
 		// @todo
 		\Jabli\Utils\CSS::implode();
 
