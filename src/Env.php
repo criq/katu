@@ -16,7 +16,7 @@ class Env {
 
 	static function getEnvProperties() {
 		return array(
-			'host' => $_SERVER['HTTP_HOST'],
+			'host' => $_SERVER['SERVER_NAME'],
 			'dir'  => BASE_DIR,
 		);
 	}
