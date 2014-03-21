@@ -11,14 +11,23 @@ class Email {
 		$message->setSubject($params['subject']);
 		$message->setTo($params['to']);
 
-		// Plain.
-		if (strip_tags($params['body']) == $params['body']) {
-			$message->setBody($params['body'], 'text/plain');
+		if (isset($params['body'])) {
+			if (strip_tags($params['body']) == $params['body']) {
+				// Plain.
+				$message->setBody($params['body'], 'text/plain');
+			} else {
+				// HTML.
+				$message->setBody($params['body'], 'text/html');
+				$message->addPart(strip_tags($params['body']), 'text/plain');
+			}
+		}
 
-		// HTML.
-		} else {
-			$message->setBody($params['body'], 'text/html');
-			$message->addPart(strip_tags($params['body']), 'text/plain');
+		if (isset($params['body_plain'])) {
+			$message->addPart($params['body_plain'], 'text/plain');
+		}
+
+		if (isset($params['body_html'])) {
+			$message->addPart($params['body_html'], 'text/html');
 		}
 
 		if (isset($params['from'])) {
