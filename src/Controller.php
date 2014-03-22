@@ -8,12 +8,17 @@ class Controller {
 
 	static $data = array();
 
+	static function redirect($url, $code = 301) {
+		$app = FW::getApp();
+
+		$app->redirect($url, $code);
+		die;
+	}
+
 	static function render($template, $code = 200) {
 		$app = FW::getApp();
 
 		try {
-
-			var_dump("A"); die;
 
 			ob_end_clean();
 
