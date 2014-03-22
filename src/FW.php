@@ -45,7 +45,12 @@ class FW {
 	static function getApp() {
 		$app = \Slim\Slim::getInstance();
 		if (!$app) {
-			$app = new \Slim\Slim(Config::get('slim'));
+			try {
+				$config = Config::get('slim');
+			} catch (Exception $e) {
+				$config = array();
+			}
+			$app = new \Slim\Slim($config);
 		}
 
 		return $app;
