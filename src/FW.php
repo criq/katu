@@ -39,6 +39,10 @@ class FW {
 		// Header can and probably will be overwritten by app.
 		header('Content-Type: text/html; charset=UTF-8');
 
+		// Session.
+		var_dump(implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2))); die;
+		session_set_cookie_params(86400, '/');
+
 		return TRUE;
 	}
 
