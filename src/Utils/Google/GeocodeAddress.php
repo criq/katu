@@ -14,19 +14,18 @@ class GeocodeAddress {
 	public $country;
 	public $zip;
 	public $formatted;
-	public $lat;
-	public $lng;
+	public $latlng;
 
 	static $mapping = array(
-		'street_number' => 'number',
-		'route' => 'street',
-		'neighborhood' => 'neighborhood',
-		'sublocality' => 'part',
-		'locality' => 'city',
+		'street_number'               => 'number',
+		'route'                       => 'street',
+		'neighborhood'                => 'neighborhood',
+		'sublocality'                 => 'part',
+		'locality'                    => 'city',
 		'administrative_area_level_2' => 'county',
 		'administrative_area_level_1' => 'district',
-		'country' => 'country',
-		'postal_code' => 'zip',
+		'country'                     => 'country',
+		'postal_code'                 => 'zip',
 	);
 
 	public function __construct($geo) {
@@ -40,8 +39,7 @@ class GeocodeAddress {
 
 		$this->formatted = $geo['formatted_address'];
 
-		$this->lat = $geo['geometry']['location']['lat'];
-		$this->lng = $geo['geometry']['location']['lng'];
+		$this->latlng = new \Jabli\Types\LatLng($geo['geometry']['location']['lat'], $geo['geometry']['location']['lng']);
 	}
 
 }
