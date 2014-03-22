@@ -13,6 +13,8 @@ class Controller {
 
 		try {
 
+			ob_end_clean();
+
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
