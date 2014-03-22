@@ -4,6 +4,9 @@ namespace Jabli;
 
 class Env {
 
+	const ENV_DEV  = 0;
+	const ENV_PROD = 1;
+
 	static function getHash() {
 		$hash = self::getWholeHash();
 
