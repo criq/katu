@@ -40,7 +40,7 @@ class FW {
 		header('Content-Type: text/html; charset=UTF-8');
 
 		// Session.
-		session_set_cookie_params(86400, '/', implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2)));
+		session_set_cookie_params(86400, '/', '.' . implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2)));
 
 		return TRUE;
 	}
