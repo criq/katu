@@ -45,7 +45,7 @@ class Controller {
 			self::$data['_errors'] = array();
 		}
 
-		self::$data['_errors'][] = $error;
+		self::$data['_errors'][] = trim($error);
 		self::$data['_errors'] = array_filter(self::$data['_errors']);
 
 		return TRUE;
