@@ -9,9 +9,7 @@ class Controller {
 	static $data = array();
 
 	static function redirect($url, $code = 301) {
-		$app = FW::getApp();
-
-		$app->redirect($url, $code);
+		FW::getApp()->redirect($url, $code);
 		die;
 	}
 
