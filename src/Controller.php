@@ -41,6 +41,10 @@ class Controller {
 	}
 
 	static function addError($error) {
+		if (!isset(self::$data['_errors'])) {
+			self::$data['_errors'] = array();
+		}
+
 		return self::$data['_errors'][] = $error;
 	}
 
