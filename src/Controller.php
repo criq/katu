@@ -13,10 +13,12 @@ class Controller {
 
 		try {
 
+			var_dump("A"); die;
+
 			ob_end_clean();
 
-			#$app->response->setStatus($code);
-			#$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
+			$app->response->setStatus($code);
+			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
 			echo View::render($template, static::$data);
 
