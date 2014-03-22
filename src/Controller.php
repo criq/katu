@@ -9,8 +9,11 @@ class Controller {
 	static $data = array();
 
 	static function redirect($url, $code = 301) {
-		FW::getApp()->redirect($url, $code);
-		die;
+		try {
+			FW::getApp()->redirect($url, $code);
+		} catch (Exception $e) {
+			die;
+		}
 	}
 
 	static function render($template, $code = 200) {
