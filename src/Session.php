@@ -12,7 +12,7 @@ class Session {
 	static function setCookieParams() {
 		try {
 			$config = \Jabli\Config::get('session');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$config = array();
 		}
 

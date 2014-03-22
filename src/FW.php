@@ -25,7 +25,7 @@ class FW {
 		// Timezone.
 		try {
 			date_default_timezone_set(Config::get('timezone'));
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 
 		}
 
@@ -77,7 +77,7 @@ class FW {
 					}
 				}
 
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				$app->response->setStatus(400);
 			}
 
@@ -100,7 +100,7 @@ class FW {
 			// Run the app.
 			$app->run();
 
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 
 			user_error($e);
 			die('Error running application.');

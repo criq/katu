@@ -39,7 +39,7 @@ class CSS {
 			$imploded_path = FS::joinPaths(BASE_DIR, \Jabli\Config::get('css', 'path'), \Jabli\Config::get('css', 'filename'));
 			file_put_contents($imploded_path, "\n" . $css . "\n");
 
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 
 			return FALSE;
 		}

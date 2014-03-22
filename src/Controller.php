@@ -28,7 +28,7 @@ class Controller {
 
 			return TRUE;
 
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 
 			user_error($e);
 			die('Error rendering the template.');
