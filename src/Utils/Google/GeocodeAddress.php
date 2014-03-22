@@ -39,7 +39,7 @@ class GeocodeAddress {
 
 		$this->formatted = $geo['formatted_address'];
 
-		$this->latlng = new \Jabli\Types\LatLng($geo['geometry']['location']['lat'], $geo['geometry']['location']['lng']);
+		$this->latlng = new \Jabli\Types\Geo\LatLng($geo['geometry']['location']['lat'], $geo['geometry']['location']['lng']);
 	}
 
 }
