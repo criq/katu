@@ -11,7 +11,7 @@ class Controller {
 	static function redirect($url, $code = 301) {
 		try {
 			FW::getApp()->redirect($url, $code);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			die;
 		}
 	}
