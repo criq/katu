@@ -12,7 +12,7 @@ class Controller {
 		try {
 			FW::getApp()->redirect($url, $code);
 		} catch (\Exception $e) {
-			die;
+			var_dump($e);
 		}
 	}
 
