@@ -28,4 +28,13 @@ class URL {
 		return $url . ($params ? '?' . http_build_query($params) : NULL);
 	}
 
+	static function get2ndLevelDomain($url) {
+		$parsed = parse_url($url);
+		if (!isset($parsed['host'])) {
+			throw new \Jabli\Exception("Invalid URL host.");
+		}
+
+		return implode('.', array_slice(explode('.', $parsed['host']), -2));
+	}
+
 }

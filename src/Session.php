@@ -32,7 +32,7 @@ class Session {
 	}
 
 	static function getDefautCookieDomain() {
-		return '.' . implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
+		return '.' . Utils\URL::get2ndLevelDomain(\Jabli\Config::get('base_url'));
 	}
 
 	static function get($name = NULL) {
