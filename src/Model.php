@@ -132,8 +132,8 @@ class Model {
 		return FALSE;
 	}
 
-	static function getAll() {
-		return self::getByProperties();
+	static function getAll($params = array()) {
+		return self::getByProperties(array(), $params);
 	}
 
 	static function getByProperties($properties = array(), $params = array()) {
