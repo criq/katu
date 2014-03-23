@@ -33,8 +33,11 @@ class View {
 
 		$data['_user'] = \App\Models\User::getLoggedIn();
 
-		// @todo
-		\Jabli\Utils\CSS::implode();
+		try {
+			if (Config::get('css', 'implode')) {
+				\Jabli\Utils\CSS::implode();
+			}
+		} catch (Exception $e) {}
 
 		return trim($twig->render($template . '.tpl', $data));
 	}
