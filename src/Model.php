@@ -40,9 +40,7 @@ class Model {
 	}
 
 	static function getTable() {
-		$class = self::getClass();
-
-		return $class::TABLE;
+		return static::TABLE;
 	}
 
 	static function getColumns() {
