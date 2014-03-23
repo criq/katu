@@ -18,6 +18,8 @@ class Session {
 
 		$config = array_merge(self::getDefaultConfig(), $config);
 
+		var_dump($config); die;
+
 		return session_set_cookie_params($config['lifetime'], $config['path'], $config['domain'], $config['secure'], $config['httponly']);
 	}
 
