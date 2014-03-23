@@ -20,4 +20,12 @@ class Datetime extends \DateTime {
 		return ($this->getTimestamp() + $timeout) >= time();
 	}
 
+	public function isInFuture() {
+		return $this->getTimestamp() > time();
+	}
+
+	public function isInPast() {
+		return $this->getTimestamp() < time();
+	}
+
 }
