@@ -5,7 +5,7 @@ namespace Jabli;
 class Cookie {
 
 	static function setCookie($name, $value = NULL, $timeout = 0) {
-		return setcookie($name, $value, $timeout ? (time() + $timeout) : 0, '/');
+		return setcookie($name, $value, $timeout ? (time() + $timeout) : 0, '/', Utils\URL::get2ndLevelDomain());
 	}
 
 	static function getCookie($name) {
