@@ -39,6 +39,12 @@ class FW {
 		// Header can and probably will be overwritten by app.
 		header('Content-Type: text/html; charset=UTF-8');
 
+		// Session.
+		if (!session_id()) {
+			session_start();
+			\Jabli\Session::setCookieParams();
+		}
+
 		return TRUE;
 	}
 
