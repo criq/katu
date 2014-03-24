@@ -5,7 +5,7 @@ namespace Jabli\Utils;
 class Email {
 
 	static function send($params) {
-		$mailer = \Swift_Mailer::newInstance(\Swift_SendmailTransport::newInstance('/usr/sbin/sendmail'));
+		$mailer = \Swift_Mailer::newInstance(\Swift_SendmailTransport::newInstance('/usr/sbin/sendmail -bs'));
 		$message = \Swift_Message::newInstance();
 
 		$message->setSubject($params['subject']);
