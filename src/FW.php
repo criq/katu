@@ -97,9 +97,12 @@ class FW {
 			$app = self::getApp();
 
 			// Set up routes.
-			$routes = (array) Config::getSpec('routes');
-			foreach ($routes as $url => $callable) {
-				$app->map(rtrim($url, '/') . '/?', array("\App\Controllers\\" . $callable[0], $callable[1]))->via('GET', 'POST');
+			foreach ((array) Config::getSpec('routes') as $route) {
+				try {
+					$app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
+				} catch (\Exception $e) {
+
+				}
 			}
 
 			// Catch-all.
