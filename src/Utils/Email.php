@@ -2,48 +2,33 @@
 
 namespace Jabli\Utils;
 
-class Email {
+class Email extends \Swift_Message {
 
-	static function send($params) {
+	private $transport;
+	private $mailer;
+
+	public function __construct() {
 		$config = \Jabli\Config::getSpec('mandrill');
 
-		$transport = \Swift_SmtpTransport::newInstance($config['host'], $config['port'])
+		$this->transport = \Swift_SmtpTransport::newInstance($config['host'], $config['port'])
 			->setUsername($config['username'])
 			->setPassword($config['password']);
-		$mailer  = \Swift_Mailer::newInstance($transport);
 
-		$message = \Swift_Message::newInstance();
-		$message->setSubject($params['subject']);
-		$message->setTo($params['to']);
+		$this->mailer = \Swift_Mailer::newInstance($this->transport);
 
-		if (isset($params['body'])) {
-			if (strip_tags($params['body']) == $params['body']) {
-				// Plain.
-				$message->setBody($params['body'], 'text/plain');
-			} else {
-				// HTML.
-				$message->setBody($params['body'], 'text/html');
-				$message->addPart(strip_tags($params['body']), 'text/plain');
-			}
-		}
+		return parent::__construct();
+	}
 
-		if (isset($params['body_plain'])) {
-			$message->addPart($params['body_plain'], 'text/plain');
-		}
+	public function setPlainBody($body) {
+		return $this->addPart($body, 'text/plain');
+	}
 
-		if (isset($params['body_html'])) {
-			$message->addPart($params['body_html'], 'text/html');
-		}
+	public function setHTMLBody($body) {
+		return $this->addPart($body, 'text/html');
+	}
 
-		if (isset($params['from'])) {
-			$message->setFrom($params['from']);
-		}
-
-		if (isset($params['bcc'])) {
-			$message->setBcc($params['bcc']);
-		}
-
-		return $mailer->send($message);
+	public function send() {
+		return $this->mailer->send($this);
 	}
 
 }
