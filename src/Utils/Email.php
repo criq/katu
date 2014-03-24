@@ -5,9 +5,14 @@ namespace Jabli\Utils;
 class Email {
 
 	static function send($params) {
-		$mailer = \Swift_Mailer::newInstance(\Swift_SendmailTransport::newInstance('/usr/sbin/sendmail -bs'));
-		$message = \Swift_Message::newInstance();
+		$config = \Jabli\Config::getSpec('mandrill');
 
+		$transport = \Swift_SmtpTransport::newInstance($config['host'], $config['port'])
+			->setUsername($config['username'])
+			->setPassword($config['password']);
+		$mailer  = \Swift_Mailer::newInstance($transport);
+
+		$message = \Swift_Message::newInstance();
 		$message->setSubject($params['subject']);
 		$message->setTo($params['to']);
 
