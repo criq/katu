@@ -19,7 +19,8 @@
 		"ircmaxell/random-lib": "1.0.*@dev",
 		"facebook/php-sdk": "@stable",
 		"egulias/email-validator": "1.*",
-		"swiftmailer/swiftmailer": "5.*"
+		"swiftmailer/swiftmailer": "5.*",
+		"michelf/php-markdown": "1.*@dev"
 	},
 	"autoload": {
 		"psr-4": {
