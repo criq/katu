@@ -16,7 +16,7 @@
 		"gregwar/cache": "*",
 		"jwage/easy-csv": "*",
 		"mustangostang/spyc": "*",
-		"ircmaxell/random-lib": "1.0.*@dev",
+		"ircmaxell/random-lib": "1.*@dev",
 		"facebook/php-sdk": "@stable",
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
