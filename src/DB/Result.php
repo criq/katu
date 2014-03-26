@@ -23,6 +23,10 @@ class Result {
 		return (int) $this->res->num_rows;
 	}
 
+	public function getPagination() {
+		return new \Jabli\Types\Pagination($this->res->found_rows, $this->res->limit, $this->res->page);
+	}
+
 	public function getOne($class = NULL) {
 		if (!$class && $this->class) {
 			$class = $this->class;

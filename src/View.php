@@ -7,7 +7,10 @@ class View {
 	static function render($template, $data = array()) {
 		$app = \Jabli\FW::getApp();
 
-		$loader = new \Twig_Loader_Filesystem(realpath(BASE_DIR . '/app/Views/'));
+		$loader = new \Twig_Loader_Filesystem(array(
+			realpath(BASE_DIR . '/app/Views/'),
+			realpath(BASE_DIR . '/vendor/jabli/fw/src/Views'),
+		));
 		$twig   = new \Twig_Environment($loader, array(
 			'cache'       => Utils\FS::joinPaths(TMP_PATH, 'twig'),
 			'auto_reload' => TRUE,
@@ -21,6 +24,12 @@ class View {
 			foreach ((array) func_get_args() as $arg) {
 				var_dump($arg);
 			}
+		}));
+
+		$twig->addFunction(new \Twig_SimpleFunction('getPages', function() {
+			$pagination = func_get_arg(0);
+
+			return $pagination->getPaginationPages(func_get_arg(1));
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCSRFToken', function() {
