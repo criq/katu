@@ -4,10 +4,13 @@ namespace Jabli\DB\Types;
 
 class Page {
 
-	public $perpage = 1;
-	public $page    = 1;
+	const DEFAULT_PAGE    = 1;
+	const DEFAULT_PERPAGE = 50;
 
-	public function __construct($perpage = 1, $page = 1) {
+	public $perpage = self::DEFAULT_PERPAGE;
+	public $page    = self::DEFAULT_PAGE;
+
+	public function __construct($page = self::DEFAULT_PAGE, $perpage = self::DEFAULT_PERPAGE) {
 		if (!(int) $perpage) {
 			throw new Exception("Invalid per page.");
 		}
