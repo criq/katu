@@ -147,6 +147,10 @@ class Model {
 			$sql .= " ORDER BY " . $params[\Jabli\DB\Result::ORDERBY];
 		}
 
+		if (isset($params[\Jabli\DB\Result::PAGE])) {
+			$sql .= " LIMIT " . $params[\Jabli\DB\Result::PAGE]->getLimit();
+		}
+
 		return new DB\Result(self::getDB()->query($sql, $properties), get_called_class());
 	}
 

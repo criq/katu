@@ -4,7 +4,8 @@ namespace Jabli\DB;
 
 class Result {
 
-	const ORDERBY = 0;
+	const ORDERBY = 'order_by';
+	const PAGE    = 'page';
 
 	public $res;
 	public $class;
