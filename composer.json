@@ -21,7 +21,7 @@
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
 		"michelf/php-markdown": "1.*@dev",
-		"webignition/url": "dev-master"
+		"webignition/url": "@dev"
 	},
 	"autoload": {
 		"psr-4": {
