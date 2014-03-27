@@ -28,6 +28,22 @@ class Pagination {
 		$this->page    = (int) $page;
 	}
 
+	static function getPageIdent() {
+		return \Jabli\Config::get('pagination', 'page_ident');
+	}
+
+	static function getPageFromRequest($params) {
+		if (!isset($params[self::getPageIdent()])) {
+			return 1;
+		}
+
+		if ($params[self::getPageIdent()] < 1) {
+			return 1;
+		}
+
+		return (int) $params[self::getPageIdent()];
+	}
+
 	public function getMinPage() {
 		return (int) 1;
 	}
