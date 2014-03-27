@@ -26,10 +26,24 @@ class View {
 			}
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {
+			return call_user_func_array(array('\Jabli\Config', 'get'), func_get_args());
+		}));
+
 		$twig->addFunction(new \Twig_SimpleFunction('getPages', function() {
 			$pagination = func_get_arg(0);
 
 			return $pagination->getPaginationPages(func_get_arg(1));
+		}));
+
+		$twig->addFunction(new \Twig_SimpleFunction('getPaginationURL', function() {
+			$url        =          new \Jabli\Types\URL(func_get_arg(0));
+			$page       = (int)    func_get_arg(1);
+			$page_ident = (string) func_get_arg(2);
+
+			$url->addParam($page_ident, $page);
+
+			return $url->value;
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCSRFToken', function() {
