@@ -20,8 +20,7 @@
 		"facebook/php-sdk": "@stable",
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
-		"michelf/php-markdown": "1.*@dev",
-		"webignition/url": "@dev"
+		"michelf/php-markdown": "1.*@dev"
 	},
 	"autoload": {
 		"psr-4": {

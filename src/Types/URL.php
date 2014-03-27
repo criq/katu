@@ -4,6 +4,8 @@ namespace Jabli\Types;
 
 class URL {
 
+	const DEFAULT_SCHEME = 'http';
+
 	public $value;
 
 	public function __construct($value) {
@@ -19,32 +21,43 @@ class URL {
 	}
 
 	public function addParam($name, $value, $overwrite = TRUE) {
-		$parsed = parse_url($this->value);
+		$parts = parse_url($this->value);
 
-		if (!$overwrite && isset($parsed['query'][$name])) {
+		if (!$overwrite && isset($parts['query'][$name])) {
 			throw new Exception("Query param already exists.");
 		}
 
-		$parsed['query'][$name] = $value;
+		$parts['query'][$name] = $value;
 
-		return self::buildURL($parsed);
+		$this->value = self::buildURL($parts);
+
+		return TRUE;
 	}
 
-	static function buildURL($params) {
+	static function buildURL($parts) {
+		$url = '';
 
+		if (!isset($parts['host'])) {
+			throw new Exception("Missing host");
+		}
 
-		var_dump($parsed);
+		if (!isset($parts['scheme'])) {
+			$url .= self::DEFAULT_SCHEME;
+		} else {
+			$url .= $parts['scheme'];
+		}
 
-		/*
-		scheme - e.g. http
-		host
-		port
-		user
-		pass
-		path
-		query - after the question mark ?
-		fragment - after the hashmark #
-		*/
+		$url .= '://' . $parts['host'];
+
+		if (isset($parts['path'])) {
+			$url .= $parts['path'];
+		}
+
+		if (isset($parts['query'])) {
+			$url .= '?' . http_build_query($parts['query']);
+		}
+
+		return $url;
 	}
 
 }
