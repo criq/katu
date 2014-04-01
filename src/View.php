@@ -54,7 +54,9 @@ class View {
 		$data['_server']['api_url']  = Config::get('api_url');
 		$data['_server']['timezone'] = Config::get('timezone');
 
-		$data['_user'] = \App\Models\User::getLoggedIn();
+		if (class_exists('\App\Models\User')) {
+			$data['_user'] = \App\Models\User::getLoggedIn();
+		}
 
 		try {
 			if (Config::get('css', 'implode')) {
