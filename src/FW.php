@@ -97,11 +97,14 @@ class FW {
 			$app = self::getApp();
 
 			// Set up routes.
-			foreach ((array) Config::getSpec('routes') as $route) {
+			foreach ((array) Config::getSpec('routes') as $name => $route) {
 				try {
-					$app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
+					$_route = $app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
+					if (is_string($name) && trim($name)) {
+						$_route->name($name);
+					}
 				} catch (\Exception $e) {
-
+					#var_dump($e->getMessage());
 				}
 			}
 
