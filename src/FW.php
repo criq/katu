@@ -28,7 +28,7 @@ class FW {
 		try {
 			date_default_timezone_set(Config::getApp('timezone'));
 		} catch (\Exception $e) {
-
+			// Just use default timezone.
 		}
 
 		// Logger.
@@ -52,7 +52,7 @@ class FW {
 		if (!$app) {
 			try {
 				$config = Config::getApp('slim');
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				$config = array();
 			}
 			$app = new \Slim\Slim($config);
@@ -85,27 +85,19 @@ class FW {
 		$catch_all = function() {
 			$app = self::getApp();
 
-			try {
+			// Map URL to controller method.
+			$parts = array_filter(explode('/', $app->request->getResourceUri()));
+			if ($parts) {
+				$ns       = '\App\Controllers\\' . implode('\\', array_map('ucfirst', array_slice($parts, 0, -1)));
+				$method   = array_slice($parts, -1);
+				$callable = $ns . '::' . $method[0];
 
-				// Map URL to controller method.
-				$parts = array_filter(explode('/', $app->request->getResourceUri()));
-				if ($parts) {
-					$ns       = '\App\Controllers\\' . implode('\\', array_map('ucfirst', array_slice($parts, 0, -1)));
-					$method   = array_slice($parts, -1);
-					$callable = $ns . '::' . $method[0];
-
-					if (is_callable($callable)) {
-						return call_user_func_array($callable, array());
-					} else {
-						throw new Exception("Invalid method.");
-					}
+				if (is_callable($callable)) {
+					return call_user_func_array($callable, array());
+				} else {
+					throw new Exception("Invalid method.");
 				}
-
-			} catch (\Exception $e) {
-				$app->response->setStatus(400);
 			}
-
-			$app->response->setStatus(400);
 		};
 
 		try {
@@ -117,19 +109,23 @@ class FW {
 				// Set up routes.
 				foreach ((array) Config::get('routes') as $name => $route) {
 					try {
+
 						$_route = $app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
 						if (is_string($name) && trim($name)) {
 							$_route->name($name);
 						}
+
 					} catch (\Exception $e) {
-						#var_dump($e->getMessage());
+
+						user_error($e);
+						die(View::render('FW/Errors/default', array('error' => 'A route error occured.')));
+
 					}
 				}
 
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 
-				user_error($e);
-				die(View::render('FW/Errors/default', array('error' => 'An error occured.')));
+				// Nothing to do, no custom routes defined.
 
 			}
 

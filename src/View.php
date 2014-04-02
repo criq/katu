@@ -55,7 +55,7 @@ class View {
 		$data['_server']['api_url']  = Config::getApp('api_url');
 		try {
 			$data['_server']['timezone'] = Config::getApp('timezone');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 
 		}
 
@@ -67,7 +67,7 @@ class View {
 			if (Config::getApp('css', 'implode')) {
 				\Jabli\Utils\CSS::implode();
 			}
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 
 		}
 
