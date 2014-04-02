@@ -127,7 +127,10 @@ class FW {
 				}
 
 			} catch (Exception $e) {
-				#var_dump($e->getMessage());
+
+				user_error($e);
+				die(View::render('FW/Errors/default', array('error' => 'An error occured.')));
+
 			}
 
 			// Catch-all.
@@ -139,7 +142,7 @@ class FW {
 		} catch (\Exception $e) {
 
 			user_error($e);
-			die('Error running application.');
+			die(View::render('FW/Errors/default', array('error' => 'Error running application.')));
 
 		}
 	}

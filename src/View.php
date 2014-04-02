@@ -7,10 +7,11 @@ class View {
 	static function render($template, $data = array()) {
 		$app = \Jabli\FW::getApp();
 
-		$loader = new \Twig_Loader_Filesystem(array(
+		$dirs = array_filter(array(
 			realpath(BASE_DIR . '/app/Views/'),
 			realpath(BASE_DIR . '/vendor/jabli/fw/src/Views'),
 		));
+		$loader = new \Twig_Loader_Filesystem($dirs);
 		$twig   = new \Twig_Environment($loader, array(
 			'cache'       => Utils\FS::joinPaths(TMP_PATH, 'twig'),
 			'auto_reload' => TRUE,
@@ -52,7 +53,11 @@ class View {
 
 		$data['_server']['base_url'] = Config::getApp('base_url');
 		$data['_server']['api_url']  = Config::getApp('api_url');
-		$data['_server']['timezone'] = Config::getApp('timezone');
+		try {
+			$data['_server']['timezone'] = Config::getApp('timezone');
+		} catch (Exception $e) {
+
+		}
 
 		if (class_exists('\App\Models\User')) {
 			$data['_user'] = \App\Models\User::getLoggedIn();
@@ -62,7 +67,9 @@ class View {
 			if (Config::getApp('css', 'implode')) {
 				\Jabli\Utils\CSS::implode();
 			}
-		} catch (Exception $e) {}
+		} catch (Exception $e) {
+
+		}
 
 		return trim($twig->render($template . '.tpl', $data));
 	}
