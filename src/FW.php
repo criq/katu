@@ -2,6 +2,8 @@
 
 namespace Jabli;
 
+use Jabli\Exception;
+
 class FW {
 
 	static function initialize() {
@@ -59,8 +61,22 @@ class FW {
 		return $app;
 	}
 
-	static function getDB() {
-		return DB\Connection::getInstance();
+	static function getDB($name = NULL) {
+		$names = array_keys(Config::getDB());
+
+		if ($name) {
+			if (!in_array($name, $names)) {
+				throw new Exception("Invalid database connection name.");
+			}
+
+			return DB\Connection::getInstance($name);
+		} else {
+			if (count($names) > 1) {
+				throw new Exception("Ambiguous database connection name.");
+			}
+		}
+
+		return DB\Connection::getInstance($names[0]);
 	}
 
 	static function run() {

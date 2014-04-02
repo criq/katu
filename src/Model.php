@@ -33,15 +33,23 @@ class Model {
 	}
 
 	static function getDB() {
-		return DB\Connection::getInstance();
+		if (!defined('static::DATABASE')) {
+			throw new Exception("Undefined database.");
+		}
+
+		return DB\Connection::getInstance(static::DATABASE);
+	}
+
+	static function getTable() {
+		if (!defined('static::TABLE')) {
+			throw new Exception("Undefined table.");
+		}
+
+		return static::TABLE;
 	}
 
 	static function getClass() {
 		return get_called_class();
-	}
-
-	static function getTable() {
-		return static::TABLE;
 	}
 
 	static function getColumns() {
