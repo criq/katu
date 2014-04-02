@@ -8,7 +8,7 @@ class Email extends \Swift_Message {
 	private $mailer;
 
 	public function __construct() {
-		$config = \Jabli\Config::getSpec('mandrill');
+		$config = \Jabli\Config::get('mandrill');
 
 		$this->transport = \Swift_SmtpTransport::newInstance($config['host'], $config['port'])
 			->setUsername($config['username'])

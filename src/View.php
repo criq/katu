@@ -50,16 +50,16 @@ class View {
 			return Utils\CSRF::getFreshToken();
 		}));
 
-		$data['_server']['base_url'] = Config::get('base_url');
-		$data['_server']['api_url']  = Config::get('api_url');
-		$data['_server']['timezone'] = Config::get('timezone');
+		$data['_server']['base_url'] = Config::getApp('base_url');
+		$data['_server']['api_url']  = Config::getApp('api_url');
+		$data['_server']['timezone'] = Config::getApp('timezone');
 
 		if (class_exists('\App\Models\User')) {
 			$data['_user'] = \App\Models\User::getLoggedIn();
 		}
 
 		try {
-			if (Config::get('css', 'implode')) {
+			if (Config::getApp('css', 'implode')) {
 				\Jabli\Utils\CSS::implode();
 			}
 		} catch (Exception $e) {}

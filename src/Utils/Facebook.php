@@ -8,8 +8,8 @@ class Facebook {
 
 	public function __construct() {
 		$this->facebook = new \Facebook(array(
-			'appId'  => \Jabli\Config::get('facebook', 'app_id'),
-			'secret' => \Jabli\Config::get('facebook', 'secret'),
+			'appId'  => \Jabli\Config::getApp('facebook', 'app_id'),
+			'secret' => \Jabli\Config::getApp('facebook', 'secret'),
 		));
 
 		$this->facebook->setAccessToken($this->getAccessToken());

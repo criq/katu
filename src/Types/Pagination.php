@@ -29,7 +29,7 @@ class Pagination {
 	}
 
 	static function getPageIdent() {
-		return \Jabli\Config::get('pagination', 'page_ident');
+		return \Jabli\Config::getApp('pagination', 'page_ident');
 	}
 
 	static function getPageFromRequest($params) {

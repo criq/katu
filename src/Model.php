@@ -4,10 +4,11 @@ namespace Jabli;
 
 class Model {
 
-	private $updated = FALSE;
-
 	public $id;
 	public $time_created;
+
+	protected $__updated = FALSE;
+	static $__definition = array();
 
 	public function __call($name, $args) {
 		// Setter.
@@ -82,7 +83,7 @@ class Model {
 		if (property_exists($this, $property)) {
 			if ($this->$property !== $value) {
 				$this->$property = $value;
-				$this->updated   = TRUE;
+				$this->__updated = TRUE;
 			}
 
 			return TRUE;
@@ -92,7 +93,7 @@ class Model {
 	}
 
 	public function save() {
-		if ($this->updated) {
+		if ($this->__updated) {
 
 			$pk = self::getPKName();
 			$columns = self::getColumns();
@@ -110,7 +111,7 @@ class Model {
 				));
 			}
 
-			$this->updated = FALSE;
+			$this->__updated = FALSE;
 		}
 
 		return TRUE;

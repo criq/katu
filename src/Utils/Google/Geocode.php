@@ -14,7 +14,7 @@ class Geocode {
 			'address'  => $address,
 			'sensor'   => 'false',
 			'language' => 'cs',
-			'key'      => Config::get('google', 'api_key'),
+			'key'      => Config::getApp('google', 'api_key'),
 		))));
 
 		if (!isset($arr['results'][0])) {

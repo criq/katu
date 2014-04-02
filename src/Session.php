@@ -11,7 +11,7 @@ class Session {
 
 	static function setCookieParams() {
 		try {
-			$config = \Jabli\Config::get('session');
+			$config = \Jabli\Config::getApp('session');
 		} catch (\Exception $e) {
 			$config = array();
 		}
@@ -32,7 +32,7 @@ class Session {
 	}
 
 	static function getDefautCookieDomain() {
-		return '.' . Utils\URL::get2ndLevelDomain(\Jabli\Config::get('base_url'));
+		return '.' . Utils\URL::get2ndLevelDomain(\Jabli\Config::getApp('base_url'));
 	}
 
 	static function get($name = NULL) {

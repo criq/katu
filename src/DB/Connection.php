@@ -10,7 +10,7 @@ class Connection {
 
 	static function getInstance($config = NULL) {
 		if (!isset($GLOBALS['db'])) {
-			$GLOBALS['db'] = self::connect(\Jabli\Config::get('db'));
+			$GLOBALS['db'] = self::connect(\Jabli\Config::getApp('db'));
 		}
 
 		return $GLOBALS['db'];

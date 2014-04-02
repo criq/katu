@@ -24,7 +24,7 @@ class FW {
 
 		// Timezone.
 		try {
-			date_default_timezone_set(Config::get('timezone'));
+			date_default_timezone_set(Config::getApp('timezone'));
 		} catch (\Exception $e) {
 
 		}
@@ -49,7 +49,7 @@ class FW {
 		$app = \Slim\Slim::getInstance();
 		if (!$app) {
 			try {
-				$config = Config::get('slim');
+				$config = Config::getApp('slim');
 			} catch (Exception $e) {
 				$config = array();
 			}
@@ -96,16 +96,22 @@ class FW {
 
 			$app = self::getApp();
 
-			// Set up routes.
-			foreach ((array) Config::getSpec('routes') as $name => $route) {
-				try {
-					$_route = $app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
-					if (is_string($name) && trim($name)) {
-						$_route->name($name);
+			try {
+
+				// Set up routes.
+				foreach ((array) Config::get('routes') as $name => $route) {
+					try {
+						$_route = $app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
+						if (is_string($name) && trim($name)) {
+							$_route->name($name);
+						}
+					} catch (\Exception $e) {
+						#var_dump($e->getMessage());
 					}
-				} catch (\Exception $e) {
-					#var_dump($e->getMessage());
 				}
+
+			} catch (Exception $e) {
+				#var_dump($e->getMessage());
 			}
 
 			// Catch-all.

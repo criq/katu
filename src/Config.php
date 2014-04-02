@@ -5,6 +5,19 @@ namespace Jabli;
 class Config {
 
 	static function get() {
+		$filename = BASE_DIR . '/app/Config/' . func_get_arg(0) . '.php';
+		if (!is_readable($filename)) {
+			throw new Exception("Unable to read config file at " . $filename . ".");
+		}
+
+		$config = include $filename;
+
+		$array = new \Jabli\Types\FWArray($config);
+
+		return call_user_func_array(array($array, 'getValueByArgs'), array_slice(func_get_args(), 1));
+	}
+
+	static function getApp() {
 		if (!defined('BASE_DIR')) {
 			throw new Exception("Undefined BASE_DIR.");
 		}
@@ -12,8 +25,8 @@ class Config {
 		// Try files at different locations.
 		$locations = array(
 			rtrim(BASE_DIR) . '/config.php',
-			rtrim(BASE_DIR) . '/config/init.php',
-			rtrim(BASE_DIR) . '/app/Config/init.php',
+			rtrim(BASE_DIR) . '/config/app.php',
+			rtrim(BASE_DIR) . '/app/Config/app.php',
 		);
 
 		foreach ($locations as $location) {
@@ -36,31 +49,9 @@ class Config {
 			throw new Exception("Invalid config array for env hash " . Env::getHash() . ".");
 		}
 
-		foreach (func_get_args() as $key) {
-			if (isset($config[$key])) {
-				$config = $config[$key];
-			} else {
-				throw new Exception("Invalid config key " . $key . ".");
-			}
-		}
+		$array = new \Jabli\Types\FWArray($config);
 
-		return $config;
-	}
-
-	static function getSpec() {
-		$specific = BASE_DIR . '/app/Config/' . func_get_arg(0) . '.php';
-		if (is_readable($specific)) {
-			$config = include $specific;
-			foreach (array_slice(func_get_args(), 1) as $key) {
-				if (isset($config[$key])) {
-					$config = $config[$key];
-				} else {
-					throw new Exception("Invalid config key " . $key . ".");
-				}
-			}
-
-			return $config;
-		}
+		return call_user_func_array(array($array, 'getValueByArgs'), func_get_args());
 	}
 
 }

@@ -13,6 +13,19 @@ class Env {
 		return substr($hash, 0, 4) . substr($hash, -4, 4);
 	}
 
+	static function getPlatform() {
+		$path = BASE_DIR . '/app/.platform';
+		if (!file_exists($path)) {
+			throw new Exception("Missing platform file.");
+		}
+
+		if (!is_readable($path)) {
+			throw new Exception("Unable to read platform.");
+		}
+
+		return trim(file_get_contents($path));
+	}
+
 	static function getWholeHash() {
 		return sha1(Utils\JSON::encodeStandard(self::getEnvProperties()));
 	}

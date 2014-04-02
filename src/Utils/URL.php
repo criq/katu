@@ -17,7 +17,7 @@ class URL {
 	}
 
 	static function getBase() {
-		return \Jabli\Config::get('base_url');
+		return \Jabli\Config::getApp('base_url');
 	}
 
 	static function getSite($uri) {
