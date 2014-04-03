@@ -53,32 +53,32 @@ class Model {
 	}
 
 	static function getColumns() {
-		return array_keys(self::getColumnDetails());
-	}
-
-	static function getColumnDetails() {
 		$columns = array();
 
 		foreach (self::getDB()->query(" SHOW COLUMNS FROM " . self::getTable())->fetch_all() as $row) {
-			$_row = array();
-
-			if (preg_match('#^(?<type>int|char)\((?<length>[0-9]+)\)#', $row['Type'], $match)) {
-				$_row['type']   = (string) $match['type'];
-				$_row['length'] = (int) $match['length'];
-			}
-
-			$_row['null'] = (bool) ($row['Null'] != 'NO');
-			$_row['key'] = (string) ($row['Key']);
-			$_row['default'] = ($row['Default']);
-
-			$columns[$row['Field']] = $_row;
+			$columns[$row['Field']] = new \Jabli\DB\Column($row);
 		}
 
 		return $columns;
 	}
 
+	static function getColumn($name) {
+		$columns = self::getColumns();
+		if (!isset($columns[$name])) {
+			throw new Exception("Invalid column " . $name . ".");
+		}
+
+		return $columns[$name];
+	}
+
+	static function getColumnNames() {
+		return array_values(array_map(function($i) {
+			return $i->name;
+		}, self::getColumns()));
+	}
+
 	static function insert($properties = array()) {
-		if (in_array('time_created', self::getColumns())) {
+		if (in_array('time_created', self::getColumnNames())) {
 			$properties['time_created'] = \Jabli\Utils\Datetime::get()->getDBDatetimeFormat();
 		}
 
@@ -104,7 +104,7 @@ class Model {
 		if ($this->__updated) {
 
 			$pk = self::getPKName();
-			$columns = self::getColumns();
+			$columns = self::getColumnNames();
 			$properties = array();
 
 			foreach (get_object_vars($this) as $property => $value) {
@@ -206,7 +206,7 @@ class Model {
 	static function getIDProperties() {
 		return array_values(array_filter(array_map(function($i) {
 			return preg_match('#^(?<property>[a-z_]+)_id$#', $i) ? $i : NULL;
-		}, self::getColumns())));
+		}, self::getColumnNames())));
 	}
 
 	public function getBoundObject($model) {
@@ -239,7 +239,7 @@ class Model {
 	}
 
 	static function getColumnUniqueID($column) {
-		$columns = self::getColumnDetails();
+		$columns = self::getColumns();
 		if (!isset($columns[$column]['length'])) {
 			throw new Exception("Unable to get column length.");
 		}
