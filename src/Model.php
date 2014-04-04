@@ -52,7 +52,7 @@ class Model {
 	static function getColumns() {
 		$columns = array();
 
-		foreach (self::getDB()->query(" SHOW COLUMNS FROM " . self::getTable())->fetch_all() as $row) {
+		foreach (static::getDB()->query(" SHOW COLUMNS FROM " . static::getTable())->fetch_all() as $row) {
 			$columns[$row['Field']] = new \Jabli\DB\Column($row);
 		}
 
@@ -60,7 +60,7 @@ class Model {
 	}
 
 	static function getColumn($name) {
-		$columns = self::getColumns();
+		$columns = static::getColumns();
 		if (!isset($columns[$name])) {
 			throw new Exception("Invalid column " . $name . ".");
 		}
@@ -71,17 +71,13 @@ class Model {
 	static function getColumnNames() {
 		return array_values(array_map(function($i) {
 			return $i->name;
-		}, self::getColumns()));
+		}, static::getColumns()));
 	}
 
 	static function insert($properties = array()) {
-		if (in_array('time_created', self::getColumnNames())) {
-			$properties['time_created'] = \Jabli\Utils\Datetime::get()->getDBDatetimeFormat();
-		}
+		static::getDB()->insert(static::getTable(), $properties, $id);
 
-		self::getDB()->insert(self::getTable(), $properties, $id);
-
-		return self::getByPK($id);
+		return static::getByPK($id);
 	}
 
 	public function update($property, $value) {
@@ -100,8 +96,8 @@ class Model {
 	public function save() {
 		if ($this->__updated) {
 
-			$pk = self::getPKName();
-			$columns = self::getColumnNames();
+			$pk = static::getPKName();
+			$columns = static::getColumnNames();
 			$properties = array();
 
 			foreach (get_object_vars($this) as $property => $value) {
@@ -111,8 +107,8 @@ class Model {
 			}
 
 			if ($properties) {
-				self::getDB()->update(self::getTable(), $properties, array(
-				self::getPKName() => $this->getPK(),
+				static::getDB()->update(static::getTable(), $properties, array(
+				static::getPKName() => $this->getPK(),
 				));
 			}
 
@@ -123,13 +119,13 @@ class Model {
 	}
 
 	public function delete() {
-		return self::getDB()->delete(self::getTable(), array(
+		return static::getDB()->delete(static::getTable(), array(
 			$this->getPKName() => $this->getPK(),
 		));
 	}
 
 	static function getPKName() {
-		foreach (self::getDB()->query(" SHOW COLUMNS FROM " . self::getTable())->fetch_all() as $row) {
+		foreach (static::getDB()->query(" SHOW COLUMNS FROM " . static::getTable())->fetch_all() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
 			}
@@ -139,11 +135,11 @@ class Model {
 	}
 
 	static function getAll($params = array()) {
-		return self::getByProperties(array(), $params);
+		return static::getByProperties(array(), $params);
 	}
 
 	static function getByProperties($properties = array(), $params = array()) {
-		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . self::getTable() . " WHERE ( 1 ) ";
+		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
 
 		foreach ($properties as $property => $value) {
 			$sql .= " AND ( " . $property . " = :" . $property . " ) ";
@@ -157,23 +153,23 @@ class Model {
 			$sql .= " LIMIT " . $params[\Jabli\DB\Result::PAGE]->getLimit();
 		}
 
-		return new DB\Result(self::getDB()->query($sql, $properties), get_called_class());
+		return new DB\Result(static::getDB()->query($sql, $properties), get_called_class());
 	}
 
 	static function getByProperty($property, $value, $params = array()) {
-		return self::getByProperties(array($property => $value), $params);
+		return static::getByProperties(array($property => $value), $params);
 	}
 
 	static function getByPK($pk) {
-		return self::getByProperty(self::getPKName(), $pk)->getOne();
+		return static::getByProperty(static::getPKName(), $pk)->getOne();
 	}
 
 	public function getPK() {
-		return $this->{self::getPKName()};
+		return $this->{static::getPKName()};
 	}
 
 	static function getOrCreate() {
-		$object = self::getByProperties(func_get_arg(0))->getOne();
+		$object = static::getByProperties(func_get_arg(0))->getOne();
 		if (!$object) {
 			$callable = array(get_called_class(), 'create');
 			$args = array_slice(func_get_args(), 1);
@@ -201,7 +197,7 @@ class Model {
 	static function getIDProperties() {
 		return array_values(array_filter(array_map(function($i) {
 			return preg_match('#^(?<property>[a-z_]+)_id$#', $i) ? $i : NULL;
-		}, self::getColumnNames())));
+		}, static::getColumnNames())));
 	}
 
 	public function getBoundObject($model) {
@@ -210,7 +206,7 @@ class Model {
 			return FALSE;
 		}
 
-		foreach (self::getIDProperties() as $property) {
+		foreach (static::getIDProperties() as $property) {
 			$_model = '\\App\\Models\\' . implode(array_map('ucfirst', explode('_', substr($property, 0, -3))));
 			if ($_model && $ns_model == $_model) {
 				$object = $_model::getByPK($this->{$property});
@@ -234,7 +230,7 @@ class Model {
 	}
 
 	static function getColumnUniqueID($column) {
-		$columns = self::getColumns();
+		$columns = static::getColumns();
 		if (!isset($columns[$column]['length'])) {
 			throw new Exception("Unable to get column length.");
 		}
@@ -243,7 +239,7 @@ class Model {
 
 			$string = \Jabli\Utils\Random::getIDString($columns[$column]['length']);
 
-		} while (self::getByProperty($column, $string)->getOne());
+		} while (static::getByProperty($column, $string)->getOne());
 
 		return $string;
 	}
