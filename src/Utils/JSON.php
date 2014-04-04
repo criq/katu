@@ -21,11 +21,11 @@ class JSON {
 	}
 
 	static function decodeAsObjects($var) {
-		return @json_decode($var, FALSE) ?: FALSE;
+		return @json_decode($var, FALSE);
 	}
 
 	static function decodeAsArray($var) {
-		return @json_decode($var, TRUE) ?: FALSE;
+		return @json_decode($var, TRUE);
 	}
 
 }
