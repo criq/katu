@@ -4,9 +4,6 @@ namespace Jabli;
 
 class Model {
 
-	public $id;
-	public $time_created;
-
 	protected $__updated = FALSE;
 	static $__definition = array();
 
@@ -191,13 +188,11 @@ class Model {
 			return FALSE;
 		}
 
-		$class = self::getClass();
+		$class = static::getClass();
 		$object = new $class;
 
 		foreach ($array as $key => $value) {
-			if (property_exists($object, $key)) {
-				$object->$key = $value;
-			}
+			$object->$key = $value;
 		}
 
 		return $object;
