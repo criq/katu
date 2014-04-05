@@ -164,6 +164,10 @@ class Model {
 		return static::getByProperty(static::getPKName(), $pk)->getOne();
 	}
 
+	static function getByQuery($sql) {
+		return \Jabli\DB\Result::get(static::getDB()->query($sql), static::getClass());
+	}
+
 	public function getPK() {
 		return $this->{static::getPKName()};
 	}
