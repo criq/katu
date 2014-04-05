@@ -57,4 +57,10 @@ class Result {
 		return (array) $this->res->fetch_all();
 	}
 
+	public function getProperty($property) {
+		return (array) array_map(function($i) use($property){
+			return $i[$property];
+		}, $this->getArray());
+	}
+
 }
