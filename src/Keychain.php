@@ -15,7 +15,7 @@ class Keychain {
 			throw new Exception("Undefined BASE_DIR.");
 		}
 
-		$path = BASE_DIR . '/app/.keychain';
+		$path = BASE_DIR . '/app/.keychain.yaml';
 		if (!file_exists($path)) {
 			throw new Exception("Missing keychain file.");
 		}
@@ -23,6 +23,10 @@ class Keychain {
 		if (!is_readable($path)) {
 			throw new Exception("Unable to read keychain file.");
 		}
+
+		var_dump(file_get_contents($path));
+		var_dump(\Jabli\Utils\YAML::decode(file_get_contents($path)));
+		die;
 
 		return \Jabli\Utils\INI::parse($path);
 	}

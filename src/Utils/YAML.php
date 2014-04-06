@@ -18,4 +18,8 @@ class YAML {
 		return \Spyc::YAMLDump($var);
 	}
 
+	static function decode($var) {
+		return \Spyc::YAMLLoad($var);
+	}
+
 }
