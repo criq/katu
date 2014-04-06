@@ -75,7 +75,15 @@ class Model {
 	}
 
 	static function insert($properties = array()) {
-		static::getDB()->insert(static::getTable(), $properties, $id);
+		$columns = self::getColumnNames();
+		$insert = array();
+		foreach ($properties as $key => $value) {
+			if (in_array($key, $columns)) {
+				$insert[$key] = $value;
+			}
+		}
+
+		static::getDB()->insert(static::getTable(), $insert, $id);
 
 		return static::getByPK($id);
 	}
