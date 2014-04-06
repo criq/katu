@@ -46,8 +46,7 @@ class API {
 		if (isset($array['error']['message'])) {
 			throw new Exception($array['error']['message']);
 		} else {
-			trigger_error($curl->response);
-			throw new Exception("An error occured.");
+			throw new Exception($curl->error_message, $curl->error_code);
 		}
 
 		return FALSE;
