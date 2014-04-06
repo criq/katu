@@ -34,4 +34,16 @@ class FWArray {
 		return $value;
 	}
 
+	public function getWithoutKeys() {
+		$res = array();
+
+		foreach ($this->value as $key => $value) {
+			if (!in_array($key, func_get_args())) {
+				$res[$key] = $value;
+			}
+		}
+
+		return new self($res);
+	}
+
 }
