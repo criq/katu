@@ -24,7 +24,7 @@ class Keychain {
 			throw new Exception("Unable to read keychain file.");
 		}
 
-		return \Jabli\Utils\INI::parse($path);
+		return \Jabli\Utils\YAML::decode($path);
 	}
 
 }
