@@ -7,11 +7,9 @@ class View {
 	static function render($template, $data = array()) {
 		$app = \Jabli\FW::getApp();
 
-		var_dump(Utils\Composer::getDir()); die;
-
 		$dirs = array_filter(array(
 			realpath(BASE_DIR . '/app/Views/'),
-			realpath(BASE_DIR . '/vendor/jabli/fw/src/Views'),
+			realpath(Utils\FS::joinPaths(Utils\Composer::getDir(), 'jabli/fw/src/Views')),
 		));
 		$loader = new \Twig_Loader_Filesystem($dirs);
 		$twig   = new \Twig_Environment($loader, array(
