@@ -7,6 +7,8 @@ class View {
 	static function render($template, $data = array()) {
 		$app = \Jabli\FW::getApp();
 
+		var_dump(Utils\Composer::getDir()); die;
+
 		$dirs = array_filter(array(
 			realpath(BASE_DIR . '/app/Views/'),
 			realpath(BASE_DIR . '/vendor/jabli/fw/src/Views'),
