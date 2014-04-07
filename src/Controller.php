@@ -24,6 +24,8 @@ class Controller {
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
+			self::$data['_site']['baseURL'] = Config::getApp('base_url');
+
 			echo View::render($template, static::$data);
 
 			return TRUE;
