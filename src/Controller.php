@@ -8,7 +8,7 @@ class Controller {
 
 	static $data = array();
 
-	static function redirect($url, $code = 301) {
+	static function redirect($url = NULL, $code = 301) {
 		try {
 			FW::getApp()->redirect($url, $code);
 		} catch (\Exception $e) {
