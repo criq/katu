@@ -5,7 +5,7 @@ namespace Jabli\Utils\Google;
 use \Jabli\Config,
     \Jabli\Utils\JSON,
     \Jabli\Utils\Cache,
-    \Jabli\Utils\URL;
+    \Jabli\Types\URL;
 
 class Geocode {
 
