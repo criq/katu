@@ -47,6 +47,10 @@ class View {
 			return call_user_func_array(array('\Jabli\Cookie', 'get'), func_get_args());
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('getSession', function() {
+			return call_user_func_array(array('\Jabli\Session', 'get'), func_get_args());
+		}));
+
 		$twig->addFunction(new \Twig_SimpleFunction('getFlash', function() {
 			return call_user_func_array(array('\Jabli\Flash', 'get'), func_get_args());
 		}));
