@@ -55,7 +55,7 @@ class URL {
 
 		$this->value = self::build($parts);
 
-		return TRUE;
+		return $this;
 	}
 
 	public function removeQueryParam($name) {
@@ -65,7 +65,7 @@ class URL {
 
 		$this->value = self::build($parts);
 
-		return TRUE;
+		return $this;
 	}
 
 	static function build($parts) {
