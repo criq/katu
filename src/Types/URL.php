@@ -16,28 +16,16 @@ class URL {
 		$this->value = (string) (trim($value));
 	}
 
-
+	public function __toString() {
+		return $this->value;
+	}
 
 	static function isValid($value) {
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== FALSE;
 	}
 
-	static function getCurrent() {
-		$app = \Jabli\FW::getApp();
-
-		return $app->request->getUrl() . $app->request->getPath();
-	}
-
-	static function getBase() {
-		return \Jabli\Config::getApp('base_url');
-	}
-
-	static function getSite($uri) {
-		return self::joinPaths(self::getBase(), $uri);
-	}
-
-	static function get2ndLevelDomain($url) {
-		$parsed = parse_url($url);
+	public function get2ndLevelDomain() {
+		$parsed = parse_url($this->value);
 		if (!isset($parsed['host'])) {
 			throw new \Jabli\Exception("Invalid URL host.");
 		}
@@ -45,22 +33,19 @@ class URL {
 		return implode('.', array_slice(explode('.', $parsed['host']), -2));
 	}
 
-
-
-	static function joinPaths() {
-		return implode('/', array_map(function($i){
-			return trim($i, '/');
-		}, func_get_args()));
-	}
-
-	static function make($url, $params = array()) {
-		return $url . ($params ? '?' . http_build_query($params) : NULL);
-	}
-
-
-
-	public function addParam($name, $value, $overwrite = TRUE) {
+	public function getParts() {
 		$parts = parse_url($this->value);
+
+		if (isset($parts['query'])) {
+			parse_str($parts['query'], $query_params);
+			$parts['query'] = $query_params;
+		}
+
+		return $parts;
+	}
+
+	public function addQueryParam($name, $value, $overwrite = TRUE) {
+		$parts = $this->getParts();
 
 		if (!$overwrite && isset($parts['query'][$name])) {
 			throw new Exception("Query param already exists.");
@@ -68,14 +53,22 @@ class URL {
 
 		$parts['query'][$name] = $value;
 
-		$this->value = self::buildURL($parts);
+		$this->value = self::build($parts);
 
 		return TRUE;
 	}
 
+	public function removeQueryParam($name) {
+		$parts = $this->getParts();
 
+		unset($parts['query'][$name]);
 
-	static function buildURL($parts) {
+		$this->value = self::build($parts);
+
+		return TRUE;
+	}
+
+	static function build($parts) {
 		$url = '';
 
 		if (!isset($parts['host'])) {
@@ -94,7 +87,7 @@ class URL {
 			$url .= $parts['path'];
 		}
 
-		if (isset($parts['query'])) {
+		if (isset($parts['query']) && $parts['query']) {
 			$url .= '?' . http_build_query($parts['query']);
 		}
 

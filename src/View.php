@@ -50,7 +50,7 @@ class View {
 			$page       = (int)    func_get_arg(1);
 			$page_ident = (string) func_get_arg(2);
 
-			$url->addParam($page_ident, $page);
+			$url->addQueryParam($page_ident, $page);
 
 			return $url->value;
 		}));
