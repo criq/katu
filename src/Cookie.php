@@ -5,10 +5,12 @@ namespace Jabli;
 class Cookie {
 
 	static function set($name, $value = NULL, $timeout = 0) {
-		return setcookie($name, $value, $timeout ? (time() + $timeout) : 0, '/', Types\URL::get2ndLevelDomain(Config::getApp('base_url')));
+		return setcookie(strtr($name, '.', '_'), $value, $timeout ? (time() + $timeout) : 0, '/', Types\URL::get2ndLevelDomain(Config::getApp('base_url')));
 	}
 
 	static function get($name) {
+		$name = strtr($name, '.', '_');
+
 		return isset($_COOKIE[$name]) ? $_COOKIE[$name] : NULL;
 	}
 
