@@ -59,15 +59,15 @@ class Facebook {
 	}
 
 	public function setAccessToken($access_token) {
-		return \Jabli\Cookie::setCookie($this->getVariableName('access_token'), $access_token);
+		return \Jabli\Cookie::set($this->getVariableName('access_token'), $access_token);
 	}
 
 	public function getAccessToken() {
-		return \Jabli\Cookie::getCookie($this->getVariableName('access_token'));
+		return \Jabli\Cookie::get($this->getVariableName('access_token'));
 	}
 
 	public function resetAccessToken() {
-		return \Jabli\Cookie::unsetCookie($this->getVariableName('access_token'));
+		return \Jabli\Cookie::remove($this->getVariableName('access_token'));
 	}
 
 	public function setUser($user_id) {

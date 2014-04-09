@@ -43,7 +43,7 @@ class FacebookLogin extends \Jabli\Controller {
 				$state = \Jabli\Utils\Random::getString();
 
 				// Save the login session ID into a cookie.
-				\Jabli\Cookie::setCookie($facebook->getVariableName('state'), $state);
+				\Jabli\Cookie::set($facebook->getVariableName('state'), $state);
 
 				return self::redirect($facebook->getLoginURL());
 
