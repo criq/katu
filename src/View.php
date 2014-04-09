@@ -4,13 +4,25 @@ namespace Jabli;
 
 class View {
 
-	static function render($template, $data = array()) {
+	static function render($template, $data = array(), $options = array()) {
 		$app = \Jabli\FW::getApp();
 
-		$dirs = array_filter(array(
-			realpath(BASE_DIR . '/app/Views/'),
-			realpath(Utils\FS::joinPaths(Utils\Composer::getDir(), 'jabli/fw/src/Views')),
-		));
+		$dirs = array();
+
+		if (isset($options['dirs']) && $options['dirs']) {
+			foreach ($options['dirs'] as $dir) {
+				$dirs[] = realpath($dir);
+			}
+			$dirs = array_filter($dirs);
+		}
+
+		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
+			$dirs = array_filter(array(
+				realpath(BASE_DIR . '/app/Views/'),
+				realpath(Utils\FS::joinPaths(Utils\Composer::getDir(), substr(__DIR__, strcmp(Utils\Composer::getDir(), __DIR__)), 'Views')),
+			));
+		}
+
 		$loader = new \Twig_Loader_Filesystem($dirs);
 		$twig   = new \Twig_Environment($loader, array(
 			'cache'       => Utils\FS::joinPaths(TMP_PATH, 'twig'),
@@ -80,6 +92,14 @@ class View {
 		}
 
 		return trim($twig->render($template . '.tpl', $data));
+	}
+
+	static function renderFromDir($dir, $template, $data = array()) {
+		return self::render($template, $data, array(
+			'dirs' => array(
+				$dir,
+			),
+		));
 	}
 
 	static function renderCondensed($template, $data = array()) {
