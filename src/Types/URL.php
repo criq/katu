@@ -20,6 +20,10 @@ class URL {
 		return $this->value;
 	}
 
+	static function make($url, $params = array()) {
+		return new self($url . ($params ? ('?' . http_build_query($params)) : NULL));
+	}
+
 	static function isValid($value) {
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== FALSE;
 	}
@@ -62,6 +66,31 @@ class URL {
 		$parts = $this->getParts();
 
 		unset($parts['query'][$name]);
+
+		$this->value = self::build($parts);
+
+		return $this;
+	}
+
+	public function getWithoutQuery() {
+		$parts = $this->getParts();
+
+		unset($parts['query']);
+
+		$this->value = self::build($parts);
+
+		return $this;
+	}
+
+	public function getWithoutTrailingIndex() {
+		$parts = $this->getParts();
+
+		if (isset($parts['path'])) {
+			$pathinfo = pathinfo($parts['path']);
+			if (preg_match('#^index\.(php|htm|html)$#', $pathinfo['basename'])) {
+				$parts['path'] = $pathinfo['dirname'];
+			}
+		}
 
 		$this->value = self::build($parts);
 

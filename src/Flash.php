@@ -5,6 +5,10 @@ namespace Jabli;
 class Flash {
 
 	static function init() {
+		if (!session_id()) {
+			session_start();
+		}
+
 		if (!isset($_SESSION['fw.flash'])) {
 			$_SESSION['fw.flash'] = array();
 		}
@@ -14,7 +18,7 @@ class Flash {
 		self::init();
 
 		$value = isset($_SESSION['fw.flash'][$key]) ? $_SESSION['fw.flash'][$key] : NULL;
-		if ($destroy) {
+		if ($destroy && isset($_SESSION['fw.flash'][$key])) {
 			unset($_SESSION['fw.flash'][$key]);
 		}
 
@@ -36,7 +40,7 @@ class Flash {
 	static function exists($key) {
 		self::init();
 
-		return isset($_SESSION['fw.flash'][$key]) && $_SESSION['fw.flash'][$key];
+		return isset($_SESSION['fw.flash'][$key]) && !is_null($_SESSION['fw.flash'][$key]);
 	}
 
 	static function reset() {
