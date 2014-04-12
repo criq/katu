@@ -83,7 +83,7 @@ class App {
 		self::initialize();
 
 		$catch_all = function() {
-			$app = self::getApp();
+			$app = self::get();
 
 			// Map URL to controller method.
 			$parts = array_filter(explode('/', $app->request->getResourceUri()));
@@ -102,7 +102,7 @@ class App {
 
 		try {
 
-			$app = self::getApp();
+			$app = self::get();
 
 			try {
 
