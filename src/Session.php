@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli;
+namespace Katu;
 
 class Session {
 
@@ -11,7 +11,7 @@ class Session {
 
 	static function setCookieParams() {
 		try {
-			$config = \Jabli\Config::getApp('session');
+			$config = \Katu\Config::getApp('session');
 		} catch (\Exception $e) {
 			$config = array();
 		}

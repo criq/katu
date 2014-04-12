@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Utils;
+namespace Katu\Utils;
 
 class Email extends \Swift_Message {
 
@@ -8,7 +8,7 @@ class Email extends \Swift_Message {
 	private $mailer;
 
 	public function __construct() {
-		$config = \Jabli\Config::get('mandrill');
+		$config = \Katu\Config::get('mandrill');
 
 		$this->transport = \Swift_SmtpTransport::newInstance($config['host'], $config['port'])
 			->setUsername($config['username'])

@@ -1,8 +1,8 @@
 <?php
 
-namespace Jabli;
+namespace Katu;
 
-use \Jabli\FW;
+use \Katu\FW;
 
 class Controller {
 

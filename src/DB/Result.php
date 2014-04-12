@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\DB;
+namespace Katu\DB;
 
 class Result {
 
@@ -24,7 +24,7 @@ class Result {
 	}
 
 	public function getPagination() {
-		return new \Jabli\Types\Pagination($this->res->found_rows, $this->res->limit, $this->res->page);
+		return new \Katu\Types\Pagination($this->res->found_rows, $this->res->limit, $this->res->page);
 	}
 
 	public function getOne($class = NULL) {

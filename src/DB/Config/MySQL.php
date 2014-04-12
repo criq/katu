@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\DB\Config;
+namespace Katu\DB\Config;
 
 class MySQL {
 
@@ -18,10 +18,10 @@ class MySQL {
 
 	static function getFromKeychain($name) {
 		return new self(
-			\Jabli\Keychain::get('db', $name, 'host'),
-			\Jabli\Keychain::get('db', $name, 'user'),
-			\Jabli\Keychain::get('db', $name, 'password'),
-			\Jabli\Keychain::get('db', $name, 'database')
+			\Katu\Keychain::get('db', $name, 'host'),
+			\Katu\Keychain::get('db', $name, 'user'),
+			\Katu\Keychain::get('db', $name, 'password'),
+			\Katu\Keychain::get('db', $name, 'database')
 		);
 	}
 

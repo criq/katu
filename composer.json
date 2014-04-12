@@ -1,6 +1,6 @@
 {
-	"name": "jabli/fw",
-	"description": "jabli fw",
+	"name": "jabli/katu",
+	"description": "katu framework",
 	"type": "library",
 	"require" : {
 		"php": ">=5.3.0",
@@ -24,7 +24,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Jabli\\": "src/"
+			"Katu\\": "src/"
 		}
 	}
 }

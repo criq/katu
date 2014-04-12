@@ -1,11 +1,11 @@
 <?php
 
-namespace Jabli;
+namespace Katu;
 
 class View {
 
 	static function render($template, $data = array(), $options = array()) {
-		$app = \Jabli\FW::getApp();
+		$app = \Katu\FW::getApp();
 
 		$dirs = array();
 
@@ -40,19 +40,19 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {
-			return call_user_func_array(array('\Jabli\Config', 'get'), func_get_args());
+			return call_user_func_array(array('\Katu\Config', 'get'), func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCookie', function() {
-			return call_user_func_array(array('\Jabli\Cookie', 'get'), func_get_args());
+			return call_user_func_array(array('\Katu\Cookie', 'get'), func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getSession', function() {
-			return call_user_func_array(array('\Jabli\Session', 'get'), func_get_args());
+			return call_user_func_array(array('\Katu\Session', 'get'), func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFlash', function() {
-			return call_user_func_array(array('\Jabli\Flash', 'get'), func_get_args());
+			return call_user_func_array(array('\Katu\Flash', 'get'), func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getPages', function() {
@@ -62,7 +62,7 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getPaginationURL', function() {
-			$url        =          new \Jabli\Types\URL(func_get_arg(0));
+			$url        =          new \Katu\Types\URL(func_get_arg(0));
 			$page       = (int)    func_get_arg(1);
 			$page_ident = (string) func_get_arg(2);
 
@@ -89,7 +89,7 @@ class View {
 
 		try {
 			if (Config::getApp('css', 'implode')) {
-				\Jabli\Utils\CSS::implode();
+				\Katu\Utils\CSS::implode();
 			}
 		} catch (\Exception $e) {
 

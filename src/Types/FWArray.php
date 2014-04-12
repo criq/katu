@@ -1,8 +1,8 @@
 <?php
 
-namespace Jabli\Types;
+namespace Katu\Types;
 
-use \Jabli\Exception;
+use \Katu\Exception;
 
 class FWArray {
 

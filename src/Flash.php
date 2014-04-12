@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli;
+namespace Katu;
 
 class Flash {
 

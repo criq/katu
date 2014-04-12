@@ -1,8 +1,8 @@
 <?php
 
-namespace Jabli\Utils;
+namespace Katu\Utils;
 
-use \Jabli\Exception;
+use \Katu\Exception;
 
 class CSS {
 
@@ -10,7 +10,7 @@ class CSS {
 		try {
 			$css_files = array();
 
-			$path = FS::joinPaths(BASE_DIR, \Jabli\Config::getApp('css', 'path'));
+			$path = FS::joinPaths(BASE_DIR, \Katu\Config::getApp('css', 'path'));
 			if (!file_exists($path)) {
 				throw new Exception("Invalid CSS path.");
 			}
@@ -36,7 +36,7 @@ class CSS {
 				$css .= file_get_contents($css_file);
 			}
 
-			$imploded_path = FS::joinPaths(BASE_DIR, \Jabli\Config::getApp('css', 'path'), \Jabli\Config::getApp('css', 'filename'));
+			$imploded_path = FS::joinPaths(BASE_DIR, \Katu\Config::getApp('css', 'path'), \Katu\Config::getApp('css', 'filename'));
 			file_put_contents($imploded_path, "\n" . $css . "\n");
 
 		} catch (\Exception $e) {

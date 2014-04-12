@@ -1,10 +1,10 @@
 <?php
 
-namespace Jabli\Models;
+namespace Katu\Models;
 
-use \Jabli\Exception;
+use \Katu\Exception;
 
-class UserAC extends \Jabli\Model {
+class UserAC extends \Katu\Model {
 
 	const TABLE = 'user_ac';
 

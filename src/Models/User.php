@@ -1,10 +1,10 @@
 <?php
 
-namespace Jabli\Models;
+namespace Katu\Models;
 
-use \Jabli\Exception;
+use \Katu\Exception;
 
-class User extends \Jabli\Model {
+class User extends \Katu\Model {
 
 	const TABLE = 'users';
 
@@ -13,7 +13,7 @@ class User extends \Jabli\Model {
 	}
 
 	static function getLoggedIn() {
-		return self::getByPK(\Jabli\Session::get('fw.user.id'));
+		return self::getByPK(\Katu\Session::get('fw.user.id'));
 	}
 
 	public function addUserService($service_name, $service_user_id) {
@@ -21,7 +21,7 @@ class User extends \Jabli\Model {
 	}
 
 	public function login() {
-		return \Jabli\Session::set('fw.user.id', (int) $this->id);
+		return \Katu\Session::set('fw.user.id', (int) $this->id);
 	}
 
 	public function hasAC($ac) {

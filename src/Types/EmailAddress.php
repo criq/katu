@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Types;
+namespace Katu\Types;
 
 class EmailAddress {
 

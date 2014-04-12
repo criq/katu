@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Utils;
+namespace Katu\Utils;
 
 class CSRF {
 
@@ -16,7 +16,7 @@ class CSRF {
 		$tokens = self::getValidTokens();
 		$tokens[] = $token;
 
-		\Jabli\Session::set('fw.csrf_tokens', $tokens);
+		\Katu\Session::set('fw.csrf_tokens', $tokens);
 
 		return $token[0];
 	}
@@ -28,7 +28,7 @@ class CSRF {
 	}
 
 	static function getTokens() {
-		return (array) \Jabli\Session::get('fw.csrf_tokens');
+		return (array) \Katu\Session::get('fw.csrf_tokens');
 	}
 
 	static function isValidToken($token) {

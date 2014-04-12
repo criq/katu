@@ -1,8 +1,8 @@
 <?php
 
-namespace Jabli;
+namespace Katu;
 
-use Jabli\Exception;
+use Katu\Exception;
 
 class FW {
 
@@ -42,7 +42,7 @@ class FW {
 		header('Content-Type: text/html; charset=UTF-8');
 
 		// Session.
-		\Jabli\Session::setCookieParams();
+		\Katu\Session::setCookieParams();
 
 		return TRUE;
 	}

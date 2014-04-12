@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\DB\Types;
+namespace Katu\DB\Types;
 
 class Page {
 

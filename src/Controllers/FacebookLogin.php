@@ -1,12 +1,12 @@
 <?php
 
-namespace Jabli\Controllers;
+namespace Katu\Controllers;
 
-class FacebookLogin extends \Jabli\Controller {
+class FacebookLogin extends \Katu\Controller {
 
 	static function index() {
-		$app = \Jabli\FW::getApp();
-		$facebook = new \Jabli\Utils\Facebook();
+		$app = \Katu\FW::getApp();
+		$facebook = new \Katu\Utils\Facebook();
 
 		$access_token = $facebook->getAccessToken();
 
@@ -16,7 +16,7 @@ class FacebookLogin extends \Jabli\Controller {
 			// We have some errors.
 			if ($app->request->params('error')) {
 
-				return self::redirect(\Jabli\Utils\URL::getSite($app->urlFor('login')));
+				return self::redirect(\Katu\Utils\URL::getSite($app->urlFor('login')));
 
 			// We have callback params.
 			} elseif ($app->request->params('state') && $app->request->params('code')) {
@@ -28,22 +28,22 @@ class FacebookLogin extends \Jabli\Controller {
 				if (!$access_token) {
 
 					$facebook->resetAccessToken();
-					return self::redirect(\Jabli\Utils\URL::getSite($app->urlFor('login')));
+					return self::redirect(\Katu\Utils\URL::getSite($app->urlFor('login')));
 				}
 
 				// Save the access token.
 				$facebook->setAccessToken($access_token);
 
-				return self::redirect(\Jabli\Utils\URL::getSite($app->urlFor('login')));
+				return self::redirect(\Katu\Utils\URL::getSite($app->urlFor('login')));
 
 			// No callback params - this is the initial call.
 			} else {
 
 				// Get the login session ID.
-				$state = \Jabli\Utils\Random::getString();
+				$state = \Katu\Utils\Random::getString();
 
 				// Save the login session ID into a cookie.
-				\Jabli\Cookie::set($facebook->getVariableName('state'), $state);
+				\Katu\Cookie::set($facebook->getVariableName('state'), $state);
 
 				return self::redirect($facebook->getLoginURL());
 
@@ -71,7 +71,7 @@ class FacebookLogin extends \Jabli\Controller {
 
 			$user->login();
 
-			return self::redirect($user->hasAC('bo') ? \Jabli\Utils\URL::getSite('bo') : \Jabli\Types\URL::getBase());
+			return self::redirect($user->hasAC('bo') ? \Katu\Utils\URL::getSite('bo') : \Katu\Types\URL::getBase());
 
 		}
 	}

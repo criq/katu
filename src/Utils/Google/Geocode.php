@@ -1,11 +1,11 @@
 <?php
 
-namespace Jabli\Utils\Google;
+namespace Katu\Utils\Google;
 
-use \Jabli\Config,
-    \Jabli\Utils\JSON,
-    \Jabli\Utils\Cache,
-    \Jabli\Types\URL;
+use \Katu\Config,
+    \Katu\Utils\JSON,
+    \Katu\Utils\Cache,
+    \Katu\Types\URL;
 
 class Geocode {
 

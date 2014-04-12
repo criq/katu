@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Types;
+namespace Katu\Types;
 
 class Pagination {
 
@@ -29,7 +29,7 @@ class Pagination {
 	}
 
 	static function getPageIdent() {
-		return \Jabli\Config::getApp('pagination', 'page_ident');
+		return \Katu\Config::getApp('pagination', 'page_ident');
 	}
 
 	static function getPageFromRequest($params) {

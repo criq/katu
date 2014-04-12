@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Utils;
+namespace Katu\Utils;
 
 class Facebook {
 
@@ -8,8 +8,8 @@ class Facebook {
 
 	public function __construct() {
 		$this->facebook = new \Facebook(array(
-			'appId'  => \Jabli\Config::get('facebook', 'app_id'),
-			'secret' => \Jabli\Config::get('facebook', 'secret'),
+			'appId'  => \Katu\Config::get('facebook', 'app_id'),
+			'secret' => \Katu\Config::get('facebook', 'secret'),
 		));
 
 		$this->facebook->setAccessToken($this->getAccessToken());
@@ -18,8 +18,8 @@ class Facebook {
 	}
 
 	public function getLoginURL() {
-		return \Jabli\Types\URL::make($this->facebook->getLoginUrl(array(
-			'redirect_uri' => (string) \Jabli\Utils\URL::getCurrent()->getWithoutQuery(),
+		return \Katu\Types\URL::make($this->facebook->getLoginUrl(array(
+			'redirect_uri' => (string) \Katu\Utils\URL::getCurrent()->getWithoutQuery(),
 		)));
 	}
 
@@ -32,11 +32,11 @@ class Facebook {
 	}
 
 	public function getTokenURL($code) {
-		return \Jabli\Types\URL::make('https://graph.facebook.com/oauth/access_token', array(
+		return \Katu\Types\URL::make('https://graph.facebook.com/oauth/access_token', array(
 			'code'          => $code,
 			'client_id'     => $this->getAppID(),
 			'client_secret' => $this->getAppSecret(),
-			'redirect_uri'  => (string) \Jabli\Utils\URL::getCurrent()->getWithoutQuery(),
+			'redirect_uri'  => (string) \Katu\Utils\URL::getCurrent()->getWithoutQuery(),
 		));
 	}
 
@@ -59,23 +59,23 @@ class Facebook {
 	}
 
 	public function setAccessToken($access_token) {
-		return \Jabli\Cookie::set($this->getVariableName('access_token'), $access_token);
+		return \Katu\Cookie::set($this->getVariableName('access_token'), $access_token);
 	}
 
 	public function getAccessToken() {
-		return \Jabli\Cookie::get($this->getVariableName('access_token'));
+		return \Katu\Cookie::get($this->getVariableName('access_token'));
 	}
 
 	public function resetAccessToken() {
-		return \Jabli\Cookie::remove($this->getVariableName('access_token'));
+		return \Katu\Cookie::remove($this->getVariableName('access_token'));
 	}
 
 	public function setUser($user_id) {
-		return \Jabli\Session::set($this->getVariableName('user_id'), $user_id);
+		return \Katu\Session::set($this->getVariableName('user_id'), $user_id);
 	}
 
 	public function getUser($user_id) {
-		return \Jabli\Session::get($this->getVariableName('user_id'));
+		return \Katu\Session::get($this->getVariableName('user_id'));
 	}
 
 }

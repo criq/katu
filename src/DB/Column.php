@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\DB;
+namespace Katu\DB;
 
 class Column {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Types\Geo;
+namespace Katu\Types\Geo;
 
 class Lat extends Coordinate {
 

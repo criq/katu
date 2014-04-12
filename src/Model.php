@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli;
+namespace Katu;
 
 class Model {
 
@@ -53,7 +53,7 @@ class Model {
 		$columns = array();
 
 		foreach (static::getDB()->query(" SHOW COLUMNS FROM " . static::getTable())->fetch_all() as $row) {
-			$columns[$row['Field']] = new \Jabli\DB\Column($row);
+			$columns[$row['Field']] = new \Katu\DB\Column($row);
 		}
 
 		return $columns;
@@ -145,12 +145,12 @@ class Model {
 			$sql .= " AND ( " . $property . " = :" . $property . " ) ";
 		}
 
-		if (isset($params[\Jabli\DB\Result::ORDERBY])) {
-			$sql .= " ORDER BY " . $params[\Jabli\DB\Result::ORDERBY];
+		if (isset($params[\Katu\DB\Result::ORDERBY])) {
+			$sql .= " ORDER BY " . $params[\Katu\DB\Result::ORDERBY];
 		}
 
-		if (isset($params[\Jabli\DB\Result::PAGE])) {
-			$sql .= " LIMIT " . $params[\Jabli\DB\Result::PAGE]->getLimit();
+		if (isset($params[\Katu\DB\Result::PAGE])) {
+			$sql .= " LIMIT " . $params[\Katu\DB\Result::PAGE]->getLimit();
 		}
 
 		return new DB\Result(static::getDB()->query($sql, $properties), static::getClass());
@@ -165,7 +165,7 @@ class Model {
 	}
 
 	static function getByQuery($sql) {
-		return \Jabli\DB\Result::get(static::getDB()->query($sql), static::getClass());
+		return \Katu\DB\Result::get(static::getDB()->query($sql), static::getClass());
 	}
 
 	public function getPK() {
@@ -243,7 +243,7 @@ class Model {
 
 		do {
 
-			$string = \Jabli\Utils\Random::getIDString($columns[$column]['length']);
+			$string = \Katu\Utils\Random::getIDString($columns[$column]['length']);
 
 		} while (static::getByProperty($column, $string)->getOne());
 

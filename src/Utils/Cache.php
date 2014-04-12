@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Utils;
+namespace Katu\Utils;
 
 class Cache {
 
@@ -30,11 +30,11 @@ class Cache {
 	}
 
 	static function getURL($url, $timeout = NULL) {
-		return \Jabli\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
+		return \Katu\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
 
 			$curl = new \Curl;
 			if ($curl->get($url)) {
-				throw new \Jabli\Exception("Error getting URL.");
+				throw new \Katu\Exception("Error getting URL.");
 			}
 
 			return $curl->response;

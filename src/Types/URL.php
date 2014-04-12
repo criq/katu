@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli\Types;
+namespace Katu\Types;
 
 class URL {
 
@@ -31,7 +31,7 @@ class URL {
 	public function get2ndLevelDomain() {
 		$parsed = parse_url($this->value);
 		if (!isset($parsed['host'])) {
-			throw new \Jabli\Exception("Invalid URL host.");
+			throw new \Katu\Exception("Invalid URL host.");
 		}
 
 		return implode('.', array_slice(explode('.', $parsed['host']), -2));

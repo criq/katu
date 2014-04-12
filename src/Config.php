@@ -1,6 +1,6 @@
 <?php
 
-namespace Jabli;
+namespace Katu;
 
 class Config {
 
@@ -12,7 +12,7 @@ class Config {
 
 		$config = include $filename;
 
-		$array = new \Jabli\Types\FWArray($config);
+		$array = new \Katu\Types\FWArray($config);
 
 		return call_user_func_array(array($array, 'getValueByArgs'), array_slice(func_get_args(), 1));
 	}

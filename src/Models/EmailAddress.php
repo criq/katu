@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use \Jabli\Exception;
+use \Katu\Exception;
 
-class EmailAddress extends \Jabli\Model {
+class EmailAddress extends \Katu\Model {
 
 	const TABLE = 'email_addresses';
 
@@ -47,7 +47,7 @@ class EmailAddress extends \Jabli\Model {
 	}
 
 	static function isValid($email_address) {
-		return \Jabli\Types\EmailAddress::isValid($email_address);
+		return \Katu\Types\EmailAddress::isValid($email_address);
 	}
 
 }
