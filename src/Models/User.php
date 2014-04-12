@@ -17,7 +17,7 @@ class User extends \Katu\Model {
 	}
 
 	public function addUserService($service_name, $service_user_id) {
-		return UserService::create($this, $service_name, $service_user_id);
+		return \App\Models\UserService::create($this, $service_name, $service_user_id);
 	}
 
 	public function login() {
@@ -25,14 +25,14 @@ class User extends \Katu\Model {
 	}
 
 	public function hasAC($ac) {
-		return (bool) UserAC::getByProperties(array(
+		return (bool) \App\Models\UserAC::getByProperties(array(
 			'user_id' => (int)    ($this->id),
 			'ac'      => (string) (trim($ac)),
 		))->getOne();
 	}
 
 	public function addAC($ac) {
-		return UserAC::make($this, $ac);
+		return \App\Models\UserAC::make($this, $ac);
 	}
 
 }

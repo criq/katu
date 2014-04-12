@@ -30,7 +30,7 @@ class View {
 		));
 
 		$twig->addFilter(new \Twig_SimpleFilter('url', function($string) {
-			return Types\URL::getSite($string);
+			return Utils\URL::getSite($string);
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
