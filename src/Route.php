@@ -6,6 +6,7 @@ use \Jabli\FW;
 
 class Route {
 
+	public $name;
 	public $pattern;
 	public $controller;
 	public $method;
@@ -36,6 +37,12 @@ class Route {
 
 	public function setConditions($conditions = array()) {
 		$this->conditions = $conditions;
+
+		return $this;
+	}
+
+	public function setName($name) {
+		$this->name = $name;
 
 		return $this;
 	}

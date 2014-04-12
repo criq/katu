@@ -8,8 +8,6 @@ class EmailAddress extends \Jabli\Model {
 
 	const TABLE = 'email_addresses';
 
-	public $email_address;
-
 	static function create($email_address) {
 		if (!self::checkCRUDParams($email_address)) {
 			throw new Exception("Invalid params.");

@@ -16,7 +16,7 @@ class FacebookLogin extends \Jabli\Controller {
 			// We have some errors.
 			if ($app->request->params('error')) {
 
-				return self::redirect(\Jabli\Types\URL::getSite($app->urlFor('login')));
+				return self::redirect(\Jabli\Utils\URL::getSite($app->urlFor('login')));
 
 			// We have callback params.
 			} elseif ($app->request->params('state') && $app->request->params('code')) {
@@ -28,13 +28,13 @@ class FacebookLogin extends \Jabli\Controller {
 				if (!$access_token) {
 
 					$facebook->resetAccessToken();
-					return self::redirect(\Jabli\Types\URL::getSite($app->urlFor('login')));
+					return self::redirect(\Jabli\Utils\URL::getSite($app->urlFor('login')));
 				}
 
 				// Save the access token.
 				$facebook->setAccessToken($access_token);
 
-				return self::redirect(\Jabli\Types\URL::getSite($app->urlFor('login')));
+				return self::redirect(\Jabli\Utils\URL::getSite($app->urlFor('login')));
 
 			// No callback params - this is the initial call.
 			} else {
@@ -71,7 +71,7 @@ class FacebookLogin extends \Jabli\Controller {
 
 			$user->login();
 
-			return self::redirect($user->hasAC('bo') ? \Jabli\Types\URL::getSite('bo') : \Jabli\Types\URL::getBase());
+			return self::redirect($user->hasAC('bo') ? \Jabli\Utils\URL::getSite('bo') : \Jabli\Types\URL::getBase());
 
 		}
 	}

@@ -113,6 +113,8 @@ class FW {
 						$_route = $app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
 						if (is_string($name) && trim($name)) {
 							$_route->name($name);
+						} elseif ($route->name) {
+							$_route->name($route->name);
 						}
 
 					} catch (\Exception $e) {

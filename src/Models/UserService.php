@@ -8,10 +8,6 @@ class UserService extends \Jabli\Model {
 
 	const TABLE = 'user_services';
 
-	public $user_id;
-	public $service_name;
-	public $service_user_id;
-
 	static function create($user, $service_name, $service_user_id) {
 		return self::insert(array(
 			'user_id'         => (int)    ($user->id),

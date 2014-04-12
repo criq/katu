@@ -8,8 +8,6 @@ class User extends \Jabli\Model {
 
 	const TABLE = 'users';
 
-	public $name;
-
 	static function create() {
 		return self::insert();
 	}

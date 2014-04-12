@@ -153,7 +153,7 @@ class Model {
 			$sql .= " LIMIT " . $params[\Jabli\DB\Result::PAGE]->getLimit();
 		}
 
-		return new DB\Result(static::getDB()->query($sql, $properties), get_called_class());
+		return new DB\Result(static::getDB()->query($sql, $properties), static::getClass());
 	}
 
 	static function getByProperty($property, $value, $params = array()) {
@@ -224,9 +224,11 @@ class Model {
 	}
 
 	static function getPropertyName($property) {
-		foreach (get_class_vars(get_called_class()) as $var => $value) {
-			if (strtolower($property) === strtolower($var)) {
-				return $var;
+		$properties = array_merge(array_keys(get_class_vars(get_called_class())), static::getColumnNames());
+
+		foreach ($properties as $_property) {
+			if (strtolower($_property) === strtolower($property)) {
+				return $_property;
 			}
 		}
 

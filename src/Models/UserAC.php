@@ -8,9 +8,6 @@ class UserAC extends \Jabli\Model {
 
 	const TABLE = 'user_ac';
 
-	public $user_id;
-	public $ac;
-
 	static function create($user, $ac) {
 		if (!self::checkCRUDParams($user, $ac)) {
 			throw new Exception("Invalid params.");

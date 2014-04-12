@@ -18,9 +18,9 @@ class Facebook {
 	}
 
 	public function getLoginURL() {
-		return $this->facebook->getLoginUrl(array(
-			'redirect_uri' => URL::getCurrent(),
-		));
+		return \Jabli\Types\URL::make($this->facebook->getLoginUrl(array(
+			'redirect_uri' => (string) \Jabli\Utils\URL::getCurrent()->getWithoutQuery(),
+		)));
 	}
 
 	public function getAppID() {
@@ -32,19 +32,19 @@ class Facebook {
 	}
 
 	public function getTokenURL($code) {
-		$params = array(
+		return \Jabli\Types\URL::make('https://graph.facebook.com/oauth/access_token', array(
 			'code'          => $code,
 			'client_id'     => $this->getAppID(),
 			'client_secret' => $this->getAppSecret(),
-			'redirect_uri'  => URL::getCurrent(),
-		);
-
-		return 'https://graph.facebook.com/oauth/access_token?' . http_build_query($params);
+			'redirect_uri'  => (string) \Jabli\Utils\URL::getCurrent()->getWithoutQuery(),
+		));
 	}
 
 	public function getToken($code) {
 		$curl = new \Curl();
-		if ($curl->get($this->getTokenURL($code)) === 0) {
+		$token_url = $this->getTokenURL($code);
+
+		if ($curl->get((string) $token_url) === 0) {
 			parse_str($curl->response, $params);
 			if (isset($params['access_token'])) {
 				return $params['access_token'];
