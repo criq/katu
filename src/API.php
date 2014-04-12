@@ -5,7 +5,7 @@ namespace Katu;
 class API {
 
 	static function success($res = NULL) {
-		$app = FW::getApp();
+		$app = App::get();
 
 		$app->response->setStatus(200);
 		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
@@ -16,7 +16,7 @@ class API {
 	}
 
 	static function error($error = NULL) {
-		$app = FW::getApp();
+		$app = App::get();
 
 		$app->response->setStatus(400);
 		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');

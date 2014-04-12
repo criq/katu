@@ -5,7 +5,7 @@ namespace Katu;
 class View {
 
 	static function render($template, $data = array(), $options = array()) {
-		$app = \Katu\FW::getApp();
+		$app = \Katu\App::get();
 
 		$dirs = array();
 

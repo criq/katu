@@ -2,7 +2,7 @@
 
 namespace Katu;
 
-use \Katu\FW;
+use \Katu\App;
 
 class Route {
 

@@ -7,7 +7,7 @@ class YAML {
 	static function respond($var) {
 		header('Content-Type: text/plain; charset=UTF-8');
 
-		$app = \Katu\FW::getApp();
+		$app = \Katu\App::get();
 		$app->response->setStatus(200);
 		$app->response->headers->set('Content-Type', 'text/plain; charset=UTF-8');
 

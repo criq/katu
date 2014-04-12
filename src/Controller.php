@@ -2,7 +2,7 @@
 
 namespace Katu;
 
-use \Katu\FW;
+use \Katu\App;
 
 class Controller {
 
@@ -10,14 +10,14 @@ class Controller {
 
 	static function redirect($url = NULL, $code = 301) {
 		try {
-			FW::getApp()->redirect($url, $code);
+			App::get()->redirect($url, $code);
 		} catch (\Exception $e) {
 
 		}
 	}
 
 	static function render($template, $code = 200) {
-		$app = FW::getApp();
+		$app = App::get();
 
 		try {
 
@@ -62,7 +62,7 @@ class Controller {
 	}
 
 	static function isSubmittedWithToken($name = NULL) {
-		$app = FW::getApp();
+		$app = App::get();
 
 		return $app->request->params('form_submitted')
 			&& $app->request->params('form_name') == $name

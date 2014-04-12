@@ -5,7 +5,7 @@ namespace Katu\Controllers;
 class FacebookLogin extends \Katu\Controller {
 
 	static function index() {
-		$app = \Katu\FW::getApp();
+		$app = \Katu\App::get();
 		$facebook = new \Katu\Utils\Facebook();
 
 		$access_token = $facebook->getAccessToken();

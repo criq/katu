@@ -4,7 +4,7 @@ namespace Katu;
 
 use Katu\Exception;
 
-class FW {
+class App {
 
 	static function initialize() {
 		// Constants.
@@ -47,7 +47,7 @@ class FW {
 		return TRUE;
 	}
 
-	static function getApp() {
+	static function get() {
 		$app = \Slim\Slim::getInstance();
 		if (!$app) {
 			try {
