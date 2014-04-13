@@ -71,7 +71,7 @@ class FacebookLogin extends \Katu\Controller {
 
 			$user->login();
 
-			return self::redirect($user->hasAC('bo') ? \Katu\Utils\URL::getSite('bo') : \Katu\Types\URL::getBase());
+			return self::redirect(\Katu\Utils\URL::getBase());
 
 		}
 	}

@@ -75,6 +75,12 @@ class View {
 			return Utils\CSRF::getFreshToken();
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('urlFor', function() {
+			$app = \Katu\App::get();
+
+			return call_user_func_array(array($app, 'urlFor'), func_get_args());
+		}));
+
 		$data['_site']['baseURL'] = Config::getApp('base_url');
 		$data['_site']['APIURL']  = Config::getApp('api_url');
 		try {

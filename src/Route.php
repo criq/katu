@@ -24,7 +24,7 @@ class Route {
 	}
 
 	public function getPattern() {
-		return rtrim($this->pattern, '/') . '/?';
+		return rtrim($this->pattern, '/');
 	}
 
 	public function getCallable() {
