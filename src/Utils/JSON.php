@@ -4,6 +4,15 @@ namespace Katu\Utils;
 
 class JSON {
 
+	static function respond($var) {
+		$app = \Katu\App::get();
+
+		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
+		$app->response->setBody(self::encode($var));
+
+		return TRUE;
+	}
+
 	static function getEncodeBitmask() {
 		return
 			  (defined('JSON_PRETTY_PRINT')      ? JSON_PRETTY_PRINT      : NULL)
