@@ -8,24 +8,20 @@ class API {
 		$app = App::get();
 
 		$app->response->setStatus(200);
-		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
-		$app->response->setBody(Utils\JSON::encode($res));
 
-		return TRUE;
+		return Utils\JSON::respond($res);
 	}
 
 	static function error($error = NULL) {
 		$app = App::get();
 
 		$app->response->setStatus(400);
-		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
-		$app->response->setBody(Utils\JSON::encode(array(
+
+		return Utils\JSON::respond(array(
 			'error' => array(
 				'message' => $error,
 			),
-		)));
-
-		return TRUE;
+		));
 	}
 
 	static function getURL($endpoint, $params) {
