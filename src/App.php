@@ -38,9 +38,6 @@ class App {
 		$handler->registerErrorHandler(array(), FALSE);
 		$handler->registerFatalHandler();
 
-		// Header can and probably will be overwritten by app.
-		header('Content-Type: text/html; charset=UTF-8');
-
 		// Session.
 		\Katu\Session::setCookieParams();
 
@@ -56,6 +53,7 @@ class App {
 				$config = array();
 			}
 			$app = new \Slim\Slim($config);
+			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 		}
 
 		return $app;
