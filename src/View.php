@@ -75,10 +75,10 @@ class View {
 			return Utils\CSRF::getFreshToken();
 		}));
 
-		$data['_server']['base_url'] = Config::getApp('base_url');
-		$data['_server']['api_url']  = Config::getApp('api_url');
+		$data['_site']['baseURL'] = Config::getApp('base_url');
+		$data['_site']['APIURL']  = Config::getApp('api_url');
 		try {
-			$data['_server']['timezone'] = Config::getApp('timezone');
+			$data['_site']['timezone'] = Config::getApp('timezone');
 		} catch (\Exception $e) {
 
 		}
