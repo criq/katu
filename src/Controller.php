@@ -16,17 +16,14 @@ class Controller {
 		}
 	}
 
-	static function render($template, $code = 200) {
+	static function render($template, $code = 200, $headers = array()) {
 		$app = App::get();
 
 		try {
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
-
-			self::$data['_site']['baseURL'] = Config::getApp('base_url');
-
-			echo View::render($template, static::$data);
+			$app->response->setBody(View::render($template, static::$data));
 
 			return TRUE;
 
