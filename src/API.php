@@ -9,8 +9,7 @@ class API {
 
 		$app->response->setStatus(200);
 		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
-
-		echo Utils\JSON::encode($res);
+		$app->response->setBody(Utils\JSON::encode($res));
 
 		return TRUE;
 	}
@@ -20,12 +19,11 @@ class API {
 
 		$app->response->setStatus(400);
 		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
-
-		echo Utils\JSON::encode(array(
+		$app->response->setBody(Utils\JSON::encode(array(
 			'error' => array(
 				'message' => $error,
 			),
-		));
+		)));
 
 		return TRUE;
 	}
