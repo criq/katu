@@ -237,13 +237,13 @@ class Model {
 
 	static function getColumnUniqueID($column) {
 		$columns = static::getColumns();
-		if (!isset($columns[$column]['length'])) {
+		if (!$columns[$column]->length) {
 			throw new Exception("Unable to get column length.");
 		}
 
 		do {
 
-			$string = \Katu\Utils\Random::getIDString($columns[$column]['length']);
+			$string = \Katu\Utils\Random::getIDString($columns[$column]->length);
 
 		} while (static::getByProperty($column, $string)->getOne());
 
