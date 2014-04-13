@@ -15,7 +15,7 @@ class Keychain {
 			throw new Exception("Undefined BASE_DIR.");
 		}
 
-		$path = BASE_DIR . '/app/Keychain/' . Env::getPlatform() . '.yaml';
+		$path = BASE_DIR . '/app/Keychains/' . Env::getPlatform() . '.yaml';
 		if (!file_exists($path)) {
 			throw new Exception("Missing keychain file.");
 		}
