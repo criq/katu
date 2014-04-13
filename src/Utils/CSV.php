@@ -38,10 +38,12 @@ class CSV {
 		return $this->writer->writeRow(func_get_args());
 	}
 
-	public function dump($save_as) {
-		header('Content-Type: text/csv; charset=UTF-8');
+	public function respond($save_as) {
+		$app = \Katu\App::get();
 
-		return Download::dump($this->path, $save_as, 'inline');
+		$app->response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
+
+		return Download::respond($this->path, $save_as, 'inline');
 	}
 
 	public function delete() {

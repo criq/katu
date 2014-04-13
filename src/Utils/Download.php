@@ -4,22 +4,23 @@ namespace Katu\Utils;
 
 class Download {
 
-	static function dump($filename, $save_as = NULL, $disposition = 'attachment') {
+	static function respond($filename, $save_as = NULL, $disposition = 'attachment') {
+		$app = \Katu\App::get();
+
 		if (!$save_as) {
 			$save_as = $filename;
 		}
 
-		header('Content-Length: ' . filesize($filename));
-		header('Content-Transfer-Encoding: Binary');
-		header('Content-Disposition: ' . $disposition . '; filename=' . basename($save_as));
-		header('Expires: 0');
-		header('Cache-Control: must-revalidate');
-		header('Pragma: public');
+		$app->response->headers->set('Content-Length', filesize($filename));
+		$app->response->headers->set('Content-Transfer-Encoding', 'Binary');
+		$app->response->headers->set('Content-Disposition', $disposition . '; filename=' . basename($save_as));
+		$app->response->headers->set('Expires', '0');
+		$app->response->headers->set('Cache-Control', 'must-revalidate');
+		$app->response->headers->set('Pragma', 'public');
 
-		@ob_clean();
-		@flush();
+		$app->response->setBody(readfile($filename));
 
-		return readfile($filename);
+		return TRUE;
 	}
 
 }
