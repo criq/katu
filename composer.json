@@ -20,10 +20,7 @@
 		"facebook/php-sdk": "@stable",
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
-		"michelf/php-markdown": "1.*@dev",
-		"tecnick.com/tcpdf": "dev-master",
-		"setasign/fpdi": "*",
-		"gchartphp/gchartphp": "dev-master"
+		"michelf/php-markdown": "1.*@dev"
 	},
 	"autoload": {
 		"psr-4": {
