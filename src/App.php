@@ -86,9 +86,9 @@ class App {
 			// Map URL to controller method.
 			$parts = array_filter(explode('/', $app->request->getResourceUri()));
 			if ($parts) {
-				$ns       = '\App\Controllers\\' . implode('\\', array_map('ucfirst', array_slice($parts, 0, -1)));
-				$method   = array_slice($parts, -1);
-				$callable = $ns . '::' . $method[0];
+				$ns       = '\App\Controllers\\' . ucfirst($parts[1]);
+				$method   = isset($parts[2]) ? $parts[2] : 'index';
+				$callable = $ns . '::' . $method;
 
 				if (is_callable($callable)) {
 					return call_user_func_array($callable, array());
