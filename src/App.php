@@ -87,7 +87,11 @@ class App {
 			$parts = array_filter(explode('/', $app->request->getResourceUri()));
 			if ($parts) {
 				$ns       = '\App\Controllers\\' . implode('\\', array_map('ucfirst', array_slice($parts, 0, -1)));
+<<<<<<< HEAD
 				$method   = array_slice($parts, -1);
+=======
+				$method   = count($parts) > 1 ? array_slice($parts, -1) : 'index';
+>>>>>>> e3c410fae8a8bbb710ce65e262efaa7300a05174
 				$callable = $ns . '::' . $method[0];
 
 				if (is_callable($callable)) {
