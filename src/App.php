@@ -90,8 +90,6 @@ class App {
 				$method   = count($parts) > 1 ? array_slice($parts, -1) : 'index';
 				$callable = $ns . '::' . (is_array($method) ? $method[0] : $method);
 
-				var_dump($callable); die;
-
 				if (is_callable($callable)) {
 					return call_user_func_array($callable, array());
 				} else {
