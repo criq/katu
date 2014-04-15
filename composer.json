@@ -16,12 +16,12 @@
 		"gregwar/cache": "*",
 		"jwage/easy-csv": "*",
 		"mustangostang/spyc": "*",
-		"ircmaxell/random-lib": "1.*@dev",
+		"ircmaxell/random-lib": "1.*",
 		"facebook/php-sdk": "@stable",
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
-		"michelf/php-markdown": "1.*@dev",
-		"intervention/image": "dev-master"
+		"michelf/php-markdown": "1.*",
+		"intervention/image": "1.*"
 	},
 	"autoload": {
 		"psr-4": {
