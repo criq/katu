@@ -8,7 +8,7 @@ class CSV {
 	public $writer;
 	public $reader;
 
-	public function __construct($path = NULL) {
+	public function __construct($path = NULL, $options = array()) {
 		if ($path) {
 			@touch($path);
 			if (!is_writable($path)) {
@@ -32,6 +32,22 @@ class CSV {
 
 		$this->writer = new \EasyCSV\Writer($this->path);
 		$this->reader = new \EasyCSV\Reader($this->path);
+
+		if (isset($options['delimiter'])) {
+			$this->writer->setDelimiter($options['delimiter']);
+			$this->reader->setDelimiter($options['delimiter']);
+		}
+	}
+
+	static function readToArray($path, $options = array()) {
+		$csv = new self($path, $options);
+		$rows = array();
+
+		while ($row = $csv->reader->getRow()) {
+			$rows[] = $row;
+		}
+
+		return $rows;
 	}
 
 	public function add() {
