@@ -60,11 +60,17 @@ class Session {
 		return TRUE;
 	}
 
-	static function reset() {
+	static function reset($key = NULL) {
 		static::init();
 
-		$reference =& static::getReference();
-		$reference = NULL;
+		if (!$key) {
+			$reference =& static::getReference();
+			$reference = NULL;
+
+			return TRUE;
+		}
+
+		static::set($key, NULL);
 
 		return TRUE;
 	}
