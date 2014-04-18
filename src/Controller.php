@@ -61,4 +61,12 @@ class Controller {
 			&& Utils\CSRF::isValidToken($app->request->params('form_token'));
 	}
 
+	static function addError($error) {
+		if ($error instanceof \Exception) {
+			return self::$errors[] = $error->getMessage();
+		}
+
+		return self::$errors[] = $error;
+	}
+
 }
