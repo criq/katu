@@ -15,7 +15,7 @@ class Session {
 
 	static function setCookieParams() {
 		try {
-			$config = \Katu\Config::getApp('session');
+			$config = \Katu\Config::getApp('cookie');
 		} catch (\Exception $e) {
 			$config = array();
 		}
