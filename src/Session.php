@@ -21,7 +21,7 @@ class Session {
 	}
 
 	static function &getReference() {
-		self::init();
+		static::init();
 
 		return $_SESSION[static::REFERENCE_KEY];
 	}
