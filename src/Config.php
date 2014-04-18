@@ -5,16 +5,33 @@ namespace Katu;
 class Config {
 
 	static function get() {
-		$filename = BASE_DIR . '/app/Config/' . func_get_arg(0) . '.php';
-		if (!is_readable($filename)) {
-			throw new Exception("Unable to read config file at " . $filename . ".");
+		$config = new \Katu\Types\TArray(self::getAll());
+
+		return call_user_func_array(array($config, 'getValueByArgs'), func_get_args());
+	}
+
+	static function getAll() {
+		$config = array();
+
+		foreach (self::getFiles() as $file) {
+			$pathinfo = pathinfo($file);
+			$config[$pathinfo['filename']] = include $file;
 		}
 
-		$config = include $filename;
+		return $config;
+	}
 
-		$array = new \Katu\Types\TArray($config);
+	static function getFiles() {
+		$dir = BASE_DIR . '/app/Config';
+		$files = array();
 
-		return call_user_func_array(array($array, 'getValueByArgs'), array_slice(func_get_args(), 1));
+		foreach (scandir($dir) as $file) {
+			if (preg_match('#^[a-z]+\.php$#', $file)) {
+				$files[] = Utils\FS::joinPaths($dir, $file);
+			}
+		}
+
+		return $files;
 	}
 
 	static function getApp() {

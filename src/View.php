@@ -93,6 +93,8 @@ class View {
 			$data['_user'] = \App\Models\User::getLoggedIn();
 		}
 
+		$data['_config'] = Config::getAll();
+
 		try {
 			if (Config::getApp('css', 'implode')) {
 				\Katu\Utils\CSS::implode();
