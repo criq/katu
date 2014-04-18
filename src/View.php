@@ -33,6 +33,12 @@ class View {
 			return Utils\URL::getSite($string);
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('urlFor', function() {
+			$app = \Katu\App::get();
+
+			return call_user_func_array(array($app, 'urlFor'), func_get_args());
+		}));
+
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
 			foreach ((array) func_get_args() as $arg) {
 				var_dump($arg);
@@ -73,12 +79,6 @@ class View {
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCSRFToken', function() {
 			return Utils\CSRF::getFreshToken();
-		}));
-
-		$twig->addFunction(new \Twig_SimpleFunction('urlFor', function() {
-			$app = \Katu\App::get();
-
-			return call_user_func_array(array($app, 'urlFor'), func_get_args());
 		}));
 
 		$data['_site']['baseURL'] = Config::getApp('base_url');

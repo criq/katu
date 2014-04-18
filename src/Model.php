@@ -134,11 +134,44 @@ class Model {
 		return FALSE;
 	}
 
+	static function get() {
+		$args = func_get_args();
+
+		// No arguments, get all.
+		if (!$args) {
+			return static::getByProperties();
+		}
+
+		// One argument, primary key.
+		if (count($args) == 1 && isset($args[0]) && !is_array($args[0])) {
+			return static::getByPK($args[0]);
+		}
+
+		// One argument, properties.
+		if (count($args) == 1 && isset($args[0]) && is_array($args[0])) {
+			return static::getByProperties($args[0]);
+		}
+
+		// Two arguments, key - value.
+		if (count($args) == 2 && isset($args[0], $args[1]) && !is_array($args[0]) && !is_array($args[1])) {
+			return static::getByProperty($args[0], $args[1]);
+		}
+
+		// Two arguments, properties, options.
+		if (count($args) == 2) {
+			return static::getByProperties($args[0], $args[1]);
+		}
+
+		return FALSE;
+	}
+
 	static function getAll($params = array()) {
 		return static::getByProperties(array(), $params);
 	}
 
 	static function getByProperties($properties = array(), $params = array()) {
+		$properties = array_filter((array) $properties);
+
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
 
 		foreach ($properties as $property => $value) {
