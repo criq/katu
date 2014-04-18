@@ -135,9 +135,6 @@ class App {
 			// Run the app.
 			$app->run();
 
-			// Remove flash memory.
-			Flash::reset();
-
 		} catch (\Exception $e) {
 
 			user_error($e);

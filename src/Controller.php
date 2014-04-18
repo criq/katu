@@ -28,6 +28,9 @@ class Controller {
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 			$app->response->setBody(View::render($template, static::$data));
 
+			// Remove flash memory.
+			Flash::reset();
+
 			return TRUE;
 
 		} catch (\Exception $e) {
