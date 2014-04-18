@@ -2,15 +2,13 @@
 
 namespace Katu\Types;
 
-use \Katu\Exception;
-
-class FWArray {
+class TArray {
 
 	public $value;
 
 	public function __construct($value) {
 		if (!self::isValid($value)) {
-			throw new Exception("Invalid e-mail address.");
+			throw new \Exception("Invalid e-mail address.");
 		}
 
 		$this->value = $value;
@@ -27,7 +25,7 @@ class FWArray {
 			if (isset($value[$key])) {
 				$value = $value[$key];
 			} else {
-				throw new Exception("Invalid key " . $key . ".");
+				throw new \Exception("Invalid key " . $key . ".");
 			}
 		}
 

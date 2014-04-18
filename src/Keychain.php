@@ -5,7 +5,7 @@ namespace Katu;
 class Keychain {
 
 	static function get() {
-		$array = new \Katu\Types\FWArray(self::getAll());
+		$array = new \Katu\Types\TArray(self::getAll());
 
 		return call_user_func_array(array($array, 'getValueByArgs'), func_get_args());
 	}

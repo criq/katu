@@ -9,15 +9,15 @@ class URL {
 	}
 
 	static function getCurrent() {
-		return new \Katu\Types\URL('http' . (self::isHTTPS() ? 's' : NULL) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+		return new \Katu\Types\TURL('http' . (self::isHTTPS() ? 's' : NULL) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 	}
 
 	static function getBase() {
-		return new \Katu\Types\URL(\Katu\Config::getApp('base_url'));
+		return new \Katu\Types\TURL(\Katu\Config::getApp('base_url'));
 	}
 
 	static function getSite($uri) {
-		return new \Katu\Types\URL(self::joinPaths(self::getBase(), $uri));
+		return new \Katu\Types\TURL(self::joinPaths(self::getBase(), $uri));
 	}
 
 	static function joinPaths() {

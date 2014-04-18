@@ -2,7 +2,7 @@
 
 namespace Katu\Types;
 
-class URL {
+class TURL {
 
 	const DEFAULT_SCHEME = 'http';
 
@@ -10,7 +10,7 @@ class URL {
 
 	public function __construct($value) {
 		if (!self::isValid($value)) {
-			throw new Exception("Invalid URL.");
+			throw new \Exception("Invalid URL.");
 		}
 
 		$this->value = (string) (trim($value));
@@ -52,7 +52,7 @@ class URL {
 		$parts = $this->getParts();
 
 		if (!$overwrite && isset($parts['query'][$name])) {
-			throw new Exception("Query param already exists.");
+			throw new \Exception("Query param already exists.");
 		}
 
 		$parts['query'][$name] = $value;

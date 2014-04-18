@@ -2,10 +2,10 @@
 
 namespace Katu\Types\Geo;
 
-class Lng extends Coordinate {
+class TLat extends Coordinate {
 
 	static function isValid($value) {
-		return $value >= -180 && $value <= 180;
+		return $value >= -90 && $value <= 90;
 	}
 
 }

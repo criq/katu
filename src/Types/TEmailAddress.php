@@ -2,13 +2,13 @@
 
 namespace Katu\Types;
 
-class EmailAddress {
+class TEmailAddress {
 
 	public $value;
 
 	public function __construct($value) {
 		if (!self::isValid($value)) {
-			throw new Exception("Invalid e-mail address.");
+			throw new \Exception("Invalid e-mail address.");
 		}
 
 		$this->value = (string) (trim($value));

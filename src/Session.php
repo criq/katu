@@ -9,6 +9,10 @@ class Session {
 	const DEFAULT_SECURE   = FALSE;
 	const DEFAULT_HTTPONLY = FALSE;
 
+	static function getAll($destroy = TRUE) {
+		return isset($_SESSION) ? $_SESSION : NULL;
+	}
+
 	static function setCookieParams() {
 		try {
 			$config = \Katu\Config::getApp('session');

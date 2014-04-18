@@ -5,12 +5,12 @@ namespace Katu\Utils\Google;
 use \Katu\Config,
     \Katu\Utils\JSON,
     \Katu\Utils\Cache,
-    \Katu\Types\URL;
+    \Katu\Types\TURL;
 
 class Geocode {
 
 	static function geocode($address) {
-		$arr = JSON::decodeAsArray(Cache::getURL(URL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
+		$arr = JSON::decodeAsArray(Cache::getURL(TURL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
 			'address'  => $address,
 			'sensor'   => 'false',
 			'language' => 'cs',

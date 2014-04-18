@@ -18,7 +18,7 @@ class Facebook {
 	}
 
 	public function getLoginURL() {
-		return \Katu\Types\URL::make($this->facebook->getLoginUrl(array(
+		return \Katu\Types\TURL::make($this->facebook->getLoginUrl(array(
 			'redirect_uri' => (string) \Katu\Utils\URL::getCurrent()->getWithoutQuery(),
 		)));
 	}
@@ -32,7 +32,7 @@ class Facebook {
 	}
 
 	public function getTokenURL($code) {
-		return \Katu\Types\URL::make('https://graph.facebook.com/oauth/access_token', array(
+		return \Katu\Types\TURL::make('https://graph.facebook.com/oauth/access_token', array(
 			'code'          => $code,
 			'client_id'     => $this->getAppID(),
 			'client_secret' => $this->getAppSecret(),

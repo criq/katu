@@ -2,7 +2,7 @@
 
 namespace Katu\Types\Geo;
 
-class Coordinate {
+class TCoordinate {
 
 	public $value;
 

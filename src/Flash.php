@@ -25,6 +25,17 @@ class Flash {
 		return $value;
 	}
 
+	static function getAll($destroy = TRUE) {
+		self::init();
+
+		$value = isset($_SESSION['fw.flash']) ? $_SESSION['fw.flash'] : NULL;
+		if ($destroy && isset($_SESSION['fw.flash'])) {
+			unset($_SESSION['fw.flash']);
+		}
+
+		return $value;
+	}
+
 	static function set($key, $value) {
 		self::init();
 

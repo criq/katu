@@ -6,7 +6,8 @@ use \Katu\App;
 
 class Controller {
 
-	static $data = array();
+	static $errors = array();
+	static $data   = array();
 
 	static function redirect($url = NULL, $code = 301) {
 		try {
@@ -20,6 +21,10 @@ class Controller {
 		$app = App::get();
 
 		try {
+
+			self::$data['_errors']  = self::$errors;
+			self::$data['_flash']   = Flash::getAll();
+			self::$data['_session'] = Session::getAll();
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
@@ -45,17 +50,6 @@ class Controller {
 
 	static function renderUnauthorized($code = 401) {
 		return self::renderError($code);
-	}
-
-	static function addError($error) {
-		if (!isset(self::$data['_errors'])) {
-			self::$data['_errors'] = array();
-		}
-
-		self::$data['_errors'][] = trim($error);
-		self::$data['_errors'] = array_filter(self::$data['_errors']);
-
-		return TRUE;
 	}
 
 	static function isSubmittedWithToken($name = NULL) {

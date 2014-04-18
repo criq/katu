@@ -2,7 +2,7 @@
 
 namespace Katu\Types;
 
-class Pagination {
+class TPagination {
 
 	const PAGINATION_ALL_PAGES_LIMIT = 10;
 	const PAGINATION_ENDS_OFFSET     = 0;
@@ -14,13 +14,13 @@ class Pagination {
 
 	public function __construct($total, $perpage, $page) {
 		if ((int) $total < 0) {
-			throw new Exception("Invalid total.");
+			throw new \Exception("Invalid total.");
 		}
 		if ((int) $perpage < 1) {
-			throw new Exception("Invalid per page.");
+			throw new \Exception("Invalid per page.");
 		}
 		if ((int) $page < 1) {
-			throw new Exception("Invalid page.");
+			throw new \Exception("Invalid page.");
 		}
 
 		$this->total   = (int) $total;

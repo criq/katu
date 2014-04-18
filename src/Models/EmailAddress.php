@@ -47,7 +47,7 @@ class EmailAddress extends \Katu\Model {
 	}
 
 	static function isValid($email_address) {
-		return \Katu\Types\EmailAddress::isValid($email_address);
+		return \Katu\Types\TEmailAddress::isValid($email_address);
 	}
 
 }

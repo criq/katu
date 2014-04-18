@@ -2,14 +2,14 @@
 
 namespace Katu\Types\Geo;
 
-class LatLng {
+class TLatLng {
 
 	public $lat;
 	public $lng;
 
 	public function __construct($lat, $lng) {
-		$this->lat = new Lat($lat);
-		$this->lng = new Lng($lng);
+		$this->lat = new TLat($lat);
+		$this->lng = new TLng($lng);
 	}
 
 }
