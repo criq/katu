@@ -93,7 +93,9 @@ class View {
 			$data['_user'] = \App\Models\User::getLoggedIn();
 		}
 
-		$data['_config'] = Config::getAll();
+		$data['_config']  = Config::get();
+		$data['_session'] = Session::get();
+		$data['_flash']   = Flash::get();
 
 		try {
 			if (Config::getApp('css', 'implode')) {

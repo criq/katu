@@ -23,8 +23,6 @@ class Controller {
 		try {
 
 			self::$data['_errors']  = self::$errors;
-			self::$data['_flash']   = Flash::getAll();
-			self::$data['_session'] = Session::getAll();
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');

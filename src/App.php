@@ -6,7 +6,7 @@ use Katu\Exception;
 
 class App {
 
-	static function initialize() {
+	static function init() {
 		// Constants.
 		if (!defined('BASE_DIR')) {
 			define('BASE_DIR', realpath(__DIR__ . '/../../../../'));
@@ -78,7 +78,7 @@ class App {
 	}
 
 	static function run() {
-		self::initialize();
+		self::init();
 
 		$catch_all = function() {
 			$app = self::get();
@@ -135,12 +135,16 @@ class App {
 			// Run the app.
 			$app->run();
 
+			// Remove flash memory.
+			Flash::reset();
+
 		} catch (\Exception $e) {
 
 			user_error($e);
 			die(View::render('FW/Errors/default', array('error' => 'Error running application.')));
 
 		}
+
 	}
 
 }

@@ -2,21 +2,20 @@
 
 namespace Katu\Utils;
 
+use \Katu\Session;
+
 class CSRF {
 
 	const TOKEN_TIMEOUT = 3600;
-
-	static function initialize() {
-
-	}
+	const TOKEN_LENGTH  = 10;
 
 	static function getFreshToken() {
-		$token = array(Random::getString(), time());
+		$token = array(Random::getString(self::TOKEN_LENGTH), time());
 
 		$tokens = self::getValidTokens();
 		$tokens[] = $token;
 
-		\Katu\Session::set('fw.csrf_tokens', $tokens);
+		Session::set('csrfTokens', $tokens);
 
 		return $token[0];
 	}
@@ -28,7 +27,7 @@ class CSRF {
 	}
 
 	static function getTokens() {
-		return (array) \Katu\Session::get('fw.csrf_tokens');
+		return (array) Session::get('csrfTokens');
 	}
 
 	static function isValidToken($token) {
