@@ -63,6 +63,8 @@ class Session {
 	static function reset() {
 		static::init();
 
+		var_dump($_SESSION); die;
+
 		$reference =& static::getReference();
 		$reference = NULL;
 
