@@ -2,23 +2,42 @@
 
 namespace Katu;
 
+use \Katu\Utils\Cache;
+
 class Config {
 
 	static function get() {
-		$config = new \Katu\Types\TArray(self::getAll());
+		$cacheName = 'config.' . implode('.', func_get_args());
+		$cached = Cache::getRuntime($cacheName);
 
-		return call_user_func_array(array($config, 'getValueByArgs'), func_get_args());
+		if (is_null($cached)) {
+
+			$config = new \Katu\Types\TArray(self::getAll());
+
+			$cached = call_user_func_array(array($config, 'getValueByArgs'), func_get_args());
+
+		}
+
+		return $cached;
 	}
 
 	static function getAll() {
-		$config = array();
+		$cached = Cache::getRuntime('config');
 
-		foreach (self::getFiles() as $file) {
-			$pathinfo = pathinfo($file);
-			$config[$pathinfo['filename']] = include $file;
+		if (is_null($cached)) {
+
+			$config = array();
+
+			foreach (self::getFiles() as $file) {
+				$pathinfo = pathinfo($file);
+				$config[$pathinfo['filename']] = include $file;
+			}
+
+			$cached = Cache::setRuntime('config', $config);
+
 		}
 
-		return $config;
+		return $cached;
 	}
 
 	static function getFiles() {

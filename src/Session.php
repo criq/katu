@@ -4,7 +4,7 @@ namespace Katu;
 
 class Session {
 
-	const REFERENCE_KEY = 'fw.session';
+	const REFERENCE_KEY = 'katu.session';
 
 	static function init() {
 		if (!session_id()) {

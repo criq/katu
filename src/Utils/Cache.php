@@ -42,4 +42,30 @@ class Cache {
 		}, $timeout);
 	}
 
+	static function initRuntime() {
+		if (!isset($GLOBALS['katu.cache.runtime'])) {
+			$GLOBALS['katu.cache.runtime'] = array();
+		}
+
+		return TRUE;
+	}
+
+	static function setRuntime($name, $value) {
+		self::initRuntime();
+
+		$GLOBALS['katu.cache.runtime'][$name] = $value;
+
+		return $value;
+	}
+
+	static function getRuntime($name) {
+		self::initRuntime();
+
+		if (!isset($GLOBALS['katu.cache.runtime'][$name])) {
+			return NULL;
+		}
+
+		return $GLOBALS['katu.cache.runtime'][$name];
+	}
+
 }

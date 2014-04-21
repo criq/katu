@@ -2,16 +2,29 @@
 
 namespace Katu;
 
+use \Katu\Utils\Cache;
+
 class Keychain {
 
 	static function get() {
-		$array = new \Katu\Types\TArray(self::getAll());
+		$cacheName = 'keychain.' . implode('.', func_get_args());
+		$cached = Cache::getRuntime($cacheName);
 
-		return call_user_func_array(array($array, 'getValueByArgs'), func_get_args());
+		if (is_null($cached)) {
+
+			$array = new \Katu\Types\TArray(self::getAll());
+
+			$cached = Cache::setRuntime($cacheName, call_user_func_array(array($array, 'getValueByArgs'), func_get_args()));
+
+		}
+
+		return $cached;
 	}
 
 	static function getAll() {
-		if (!isset($GLOBALS['app.keychain'])) {
+		$cached = Cache::getRuntime('keychain');
+
+		if (is_null($cached)) {
 
 			if (!defined('BASE_DIR')) {
 				throw new Exception("Undefined BASE_DIR.");
@@ -26,11 +39,11 @@ class Keychain {
 				throw new Exception("Unable to read keychain file.");
 			}
 
-			$GLOBALS['app.keychain'] = \Katu\Utils\YAML::decode($path);
+			$cached = Cache::setRuntime('keychain', Utils\YAML::decode($path));
 
 		}
 
-		return $GLOBALS['app.keychain'];
+		return $cached;
 	}
 
 }

@@ -13,7 +13,7 @@ class User extends \Katu\Model {
 	}
 
 	static function getLoggedIn() {
-		return self::getByPK(\Katu\Session::get('fw.user.id'));
+		return self::getByPK(\Katu\Session::get('katu.user.id'));
 	}
 
 	public function addUserService($service_name, $service_user_id) {
@@ -21,7 +21,7 @@ class User extends \Katu\Model {
 	}
 
 	public function login() {
-		return \Katu\Session::set('fw.user.id', (int) $this->id);
+		return \Katu\Session::set('katu.user.id', (int) $this->id);
 	}
 
 	public function hasAC($ac) {
