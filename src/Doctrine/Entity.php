@@ -8,11 +8,31 @@ class Entity {
 		return array_keys(get_class_vars(get_called_class()));
 	}
 
+	static function getPropertyName($name) {
+		foreach (static::getPropertyNames() as $property) {
+			if (strtolower($name) == strtolower($property)) {
+				return $property;
+			}
+		}
+
+		return FALSE;
+	}
+
 	public function __call($name, $args) {
 		// Property getter.
-		if (in_array($name, self::getPropertyNames()) && !$args) {
+		if (in_array($name, static::getPropertyNames()) && !$args) {
 			return $this->$name;
 		}
+
+		// Property setter
+		if (preg_match('#^set(?<property>.+)$#', $name, $match) && count($args == 1)) {
+			$property = self::getPropertyName($match['property']);
+			if ($property) {
+				return $this->$property = $args[0];
+			}
+		}
+
+		throw new \Exception("Invalid method " . $name . ".");
 	}
 
 	static function getDB($name = NULL) {
@@ -28,13 +48,37 @@ class Entity {
 	}
 
 	static function select($alias) {
-		$query = new QueryBuilder(self::getDB()->createQueryBuilder(), $alias);
+		$query = new QueryBuilder(static::getDB()->createQueryBuilder(), get_called_class(), $alias);
 
 		return $query;
 	}
 
 	static function getTable() {
-		return self::getDB()->getRepository(get_called_class());
+		return static::getDB()->getRepository(get_called_class());
+	}
+
+	static function create($properties) {
+		$object = new static;
+		foreach ($properties as $property => $value) {
+			$f = 'set' . $property;
+			$object->$f($value);
+		}
+
+		$em = static::getDB();
+
+		$em->persist($object);
+		$em->flush();
+
+		return $object;
+	}
+
+	public function save() {
+		$em = static::getDB();
+
+		$em->merge($this);
+		$em->flush();
+
+		return TRUE;
 	}
 
 	static function find() {

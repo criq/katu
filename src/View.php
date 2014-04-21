@@ -29,18 +29,26 @@ class View {
 			'auto_reload' => TRUE,
 		));
 
+		// Filters.
+
 		$twig->addFilter(new \Twig_SimpleFilter('url', function($string) {
 			return Utils\URL::getSite($string);
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('urlFor', function() {
-			return call_user_func_array(array('\Katu\Utils\URL', 'getFor'), func_get_args());
-		}));
+		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
 			foreach ((array) func_get_args() as $arg) {
 				var_dump($arg);
 			}
+		}));
+
+		$twig->addFunction(new \Twig_SimpleFunction('getURLFor', function() {
+			return call_user_func_array(array('\Katu\Utils\URL', 'getFor'), func_get_args());
+		}));
+
+		$twig->addFunction(new \Twig_SimpleFunction('getCurrentURL', function() {
+			return call_user_func_array(array('\Katu\Utils\URL', 'getCurrent'), func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {

@@ -55,7 +55,9 @@ class Session {
 		static::init();
 
 		$reference =& static::getReference();
-		$reference[$key][] = $value;
+		if (trim($value)) {
+			$reference[$key][] = $value;
+		}
 
 		return TRUE;
 	}

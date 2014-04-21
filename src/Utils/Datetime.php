@@ -2,7 +2,7 @@
 
 namespace Katu\Utils;
 
-class Datetime extends \DateTime {
+class DateTime extends \DateTime {
 
 	static function get($string = NULL) {
 		if (is_int($string)) {

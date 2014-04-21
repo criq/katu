@@ -6,11 +6,18 @@ class QueryBuilder {
 
 	private $queryBuilder;
 	private $page    = NULL;
-	private $perpage = NULL;
+	private $perPage = NULL;
 
-	public function __construct($queryBuilder, $alias) {
+	public function __construct($queryBuilder, $class = NULL, $alias = NULL) {
 		$this->queryBuilder = $queryBuilder;
-		$this->queryBuilder->select($alias);
+
+		if (!is_null($class)) {
+			$this->queryBuilder->select($alias);
+		}
+
+		if (!is_null($class) && !is_null($alias)) {
+			$this->queryBuilder->from($class, $alias);
+		}
 
 		return $this;
 	}
@@ -21,16 +28,16 @@ class QueryBuilder {
 		return $this;
 	}
 
-	public function setPaging($page, $perpage) {
-		$this->queryBuilder->setFirstResult(($page * $perpage) - $perpage)->setMaxResults($perpage);
+	public function setPaging($page, $perPage) {
+		$this->queryBuilder->setFirstResult(($page * $perPage) - $perPage)->setMaxResults($perPage);
 		$this->page = $page;
-		$this->perpage = $perpage;
+		$this->perPage = $perPage;
 
 		return $this;
 	}
 
 	public function getResult() {
-		return new QueryResult($this->queryBuilder->getQuery(), $this->page, $this->perpage);
+		return new QueryResult($this->queryBuilder->getQuery(), $this->page, $this->perPage);
 	}
 
 }
