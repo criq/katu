@@ -9,7 +9,7 @@ class Controller {
 	static $errors = array();
 	static $data   = array();
 
-	static function redirect($url = NULL, $code = 301) {
+	static function redirect($url = NULL, $code = 302) {
 		try {
 			App::get()->redirect($url, $code);
 		} catch (\Exception $e) {
