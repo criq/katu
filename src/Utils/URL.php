@@ -20,10 +20,10 @@ class URL {
 		return new \Katu\Types\TURL(self::joinPaths(self::getBase(), $uri));
 	}
 
-	static function getFor($handle) {
+	static function getFor($handle, $args = array()) {
 		$app = \Katu\App::get();
 
-		return new \Katu\Types\TURL(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle)));
+		return new \Katu\Types\TURL(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle, $args)));
 	}
 
 	static function joinPaths() {
