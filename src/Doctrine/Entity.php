@@ -43,15 +43,10 @@ class Entity {
 		if (!isset($GLOBALS['doctrine.em'][$name])) {
 			$config = new \Doctrine\ORM\Configuration;
 
-			$cache = new \Doctrine\Common\Cache\ApcCache;
-
 			$driverImpl = $config->newDefaultAnnotationDriver(BASE_DIR);
 			$config->setMetadataDriverImpl($driverImpl);
-			$config->setMetadataCacheImpl($cache);
-			$config->setQueryCacheImpl($cache);
 			$config->setProxyDir(TMP_PATH);
 			$config->setProxyNamespace('DoctrineProxy');
-
 			$config->setAutoGenerateProxyClasses(FALSE);
 
 			$GLOBALS['doctrine.em'][$name] = \Doctrine\ORM\EntityManager::create(\Katu\Config::getDB($name)->getPDOArray(), $config);
