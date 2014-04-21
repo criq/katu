@@ -44,6 +44,10 @@ class App {
 		return TRUE;
 	}
 
+	static function isDev() {
+		return Config::get('app', 'slim', 'mode') == 'development';
+	}
+
 	static function get() {
 		$app = \Slim\Slim::getInstance();
 		if (!$app) {

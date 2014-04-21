@@ -7,9 +7,8 @@ class Session {
 	const REFERENCE_KEY = 'fw.session';
 
 	static function init() {
-		static::setCookieParams();
-
 		if (!session_id()) {
+			static::setCookieParams();
 			session_start();
 		}
 

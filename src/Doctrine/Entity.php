@@ -40,11 +40,24 @@ class Entity {
 			$name = static::DATABASE;
 		}
 
-		$pdo    = \Katu\Config::getDB($name)->getPDOArray();
-		$config = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(array(), TRUE);
-		$em     = \Doctrine\ORM\EntityManager::create($pdo, $config);
+		if (!isset($GLOBALS['doctrine.em'][$name])) {
+			$config = new \Doctrine\ORM\Configuration;
 
-		return $em;
+			$cache = new \Doctrine\Common\Cache\ApcCache;
+
+			$driverImpl = $config->newDefaultAnnotationDriver(BASE_DIR);
+			$config->setMetadataDriverImpl($driverImpl);
+			$config->setMetadataCacheImpl($cache);
+			$config->setQueryCacheImpl($cache);
+			$config->setProxyDir(TMP_PATH);
+			$config->setProxyNamespace('DoctrineProxy');
+
+			$config->setAutoGenerateProxyClasses(FALSE);
+
+			$GLOBALS['doctrine.em'][$name] = \Doctrine\ORM\EntityManager::create(\Katu\Config::getDB($name)->getPDOArray(), $config);
+		}
+
+		return $GLOBALS['doctrine.em'][$name];
 	}
 
 	static function select($alias) {
