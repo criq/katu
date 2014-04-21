@@ -34,8 +34,6 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('urlFor', function() {
-			$app = \Katu\App::get();
-
 			return call_user_func_array(array('\Katu\Utils\URL', 'getFor'), func_get_args());
 		}));
 
