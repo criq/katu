@@ -47,13 +47,18 @@ class App {
 	static function get() {
 		$app = \Slim\Slim::getInstance();
 		if (!$app) {
+
+			self::init();
+
 			try {
 				$config = Config::getApp('slim');
 			} catch (\Exception $e) {
 				$config = array();
 			}
+
 			$app = new \Slim\Slim($config);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
+
 		}
 
 		return $app;

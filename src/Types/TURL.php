@@ -28,6 +28,12 @@ class TURL {
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== FALSE;
 	}
 
+	public function getHostWithProtocol() {
+		$parts = $this->getParts();
+
+		return $parts['scheme'] . '://' . $parts['host'];
+	}
+
 	public function get2ndLevelDomain() {
 		$parsed = parse_url($this->value);
 		if (!isset($parsed['host'])) {

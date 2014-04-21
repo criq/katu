@@ -13,11 +13,17 @@ class URL {
 	}
 
 	static function getBase() {
-		return new \Katu\Types\TURL(\Katu\Config::getApp('base_url'));
+		return new \Katu\Types\TURL(\Katu\Config::getApp('baseURL'));
 	}
 
 	static function getSite($uri) {
 		return new \Katu\Types\TURL(self::joinPaths(self::getBase(), $uri));
+	}
+
+	static function getFor($handle) {
+		$app = \Katu\App::get();
+
+		return new \Katu\Types\TURL(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle)));
 	}
 
 	static function joinPaths() {

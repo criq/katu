@@ -25,12 +25,12 @@ class API {
 	}
 
 	static function getURL($endpoint, $params) {
-		return Utils\URL::joinPaths(Config::getApp('api_url'), $endpoint) . '?' . http_build_query($params);
+		return Utils\URL::joinPaths(Config::getApp('apiURL'), $endpoint) . '?' . http_build_query($params);
 	}
 
 	static function useMethod($method, $endpoint, $params = array(), &$curl = NULL) {
 		$curl = new \Curl();
-		$curl->$method(Utils\URL::joinPaths(Config::getApp('api_url'), $endpoint), $params);
+		$curl->$method(Utils\URL::joinPaths(Config::getApp('apiURL'), $endpoint), $params);
 
 		if ($curl->http_status_code == 200) {
 			return Utils\JSON::decodeAsArray($curl->response);

@@ -29,7 +29,7 @@ class TPagination {
 	}
 
 	static function getPageIdent() {
-		return \Katu\Config::getApp('pagination', 'page_ident');
+		return \Katu\Config::get('app', 'pagination', 'pageIdent');
 	}
 
 	static function getPageFromRequest($params) {

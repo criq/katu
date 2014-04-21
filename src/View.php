@@ -36,7 +36,7 @@ class View {
 		$twig->addFunction(new \Twig_SimpleFunction('urlFor', function() {
 			$app = \Katu\App::get();
 
-			return call_user_func_array(array($app, 'urlFor'), func_get_args());
+			return call_user_func_array(array('\Katu\Utils\URL', 'getFor'), func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
@@ -72,7 +72,9 @@ class View {
 			$page       = (int)    func_get_arg(1);
 			$page_ident = (string) func_get_arg(2);
 
-			$url->addQueryParam($page_ident, $page);
+			if ($page > 1) {
+				$url->addQueryParam($page_ident, $page);
+			}
 
 			return $url->value;
 		}));
@@ -81,8 +83,8 @@ class View {
 			return Utils\CSRF::getFreshToken();
 		}));
 
-		$data['_site']['baseURL'] = Config::getApp('base_url');
-		$data['_site']['APIURL']  = Config::getApp('api_url');
+		$data['_site']['baseURL'] = Config::getApp('baseURL');
+		$data['_site']['APIURL']  = Config::getApp('apiURL');
 		try {
 			$data['_site']['timezone'] = Config::getApp('timezone');
 		} catch (\Exception $e) {
