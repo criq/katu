@@ -28,8 +28,6 @@ class Cookie {
 		return self::set($name, NULL, -86400);
 	}
 
-
-
 	static function getDefaultConfig() {
 		return array(
 			'lifetime' => self::DEFAULT_LIFETIME,
