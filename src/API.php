@@ -32,11 +32,18 @@ class API {
 		$curl = new \Curl();
 		$curl->$method(Utils\URL::joinPaths(Config::getApp('apiURL'), $endpoint), $params);
 
-		if ($curl->http_status_code == 200) {
-			return Utils\JSON::decodeAsArray($curl->response);
+		$response = $curl->response;
+		if (is_array($response)) {
+			$response = Utils\JSON::encode($response);
 		}
 
-		$array = Utils\JSON::decodeAsArray($curl->response);
+		// Success.
+		if ($curl->http_status_code == 200) {
+			return Utils\JSON::decodeAsArray($response);
+		}
+
+		// Error.
+		$array = Utils\JSON::decodeAsArray($response);
 		if (isset($array['error']['message'])) {
 			throw new Exception($array['error']['message']);
 		} else {
