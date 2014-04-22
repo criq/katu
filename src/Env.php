@@ -14,16 +14,18 @@ class Env {
 	}
 
 	static function getPlatform() {
-		$path = BASE_DIR . '/app/.platform';
-		if (!file_exists($path)) {
-			throw new Exception("Missing platform file.");
+		$paths = array(
+			BASE_DIR . '/.platform',
+			BASE_DIR . '/app/.platform',
+		);
+
+		foreach ($paths as $path) {
+			if (file_exists($path) && is_readable($path)) {
+				return trim(file_get_contents($path));
+			}
 		}
 
-		if (!is_readable($path)) {
-			throw new Exception("Unable to read platform.");
-		}
-
-		return trim(file_get_contents($path));
+		return FALSE;
 	}
 
 	static function getWholeHash() {
