@@ -59,6 +59,10 @@ class TPagination {
 			'currentOffset' => self::PAGINATION_CURRENT_OFFSET,
 		), $options);
 
+		if (!$this->total) {
+			return array();
+		}
+
 		if ($this->getMaxPage() <= $options['allPagesLimit']) {
 			return range($this->getMinPage(), $this->getMaxPage());
 		}
