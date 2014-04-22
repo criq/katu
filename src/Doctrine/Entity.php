@@ -31,12 +31,20 @@ class Entity {
 	}
 
 	public function __call($name, $args) {
-		// Property getter.
+		// Property getter by name.
 		if (in_array($name, static::getPropertyNames()) && !$args) {
 			return $this->$name;
 		}
 
-		// Property setter
+		// Property getter.
+		if (preg_match('#^get(?<property>.+)$#', $name, $match) && count($args == 1)) {
+			$property = self::getPropertyName($match['property']);
+			if ($property) {
+				return $this->$property;
+			}
+		}
+
+		// Property setter.
 		if (preg_match('#^set(?<property>.+)$#', $name, $match) && count($args == 1)) {
 			$property = self::getPropertyName($match['property']);
 			if ($property) {
