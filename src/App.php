@@ -41,6 +41,9 @@ class App {
 		// Session.
 		\Katu\Session::setCookieParams();
 
+		// Default content-type header for debugging, will be probably overwritten by app.
+		header('Content-Type: text/html; charset=UTF-8');
+
 		return TRUE;
 	}
 
@@ -61,7 +64,6 @@ class App {
 			}
 
 			$app = new \Slim\Slim($config);
-			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
 		}
 
