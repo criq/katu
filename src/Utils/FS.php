@@ -10,4 +10,28 @@ class FS {
 		}, func_get_args()));
 	}
 
+	static function getTree($dir) {
+		if (!function_exists('__scandirr')) {
+
+			function __scandirr($dir, &$files = array()) {
+				foreach (scandir($dir) as $file) {
+					$path = $dir . '/' . $file;
+					if ($file != '.' && $file != '..') {
+						if (is_dir($path)) {
+							$files[] = realpath($path);
+							$files[] = __scandirr($path, $files);
+						} else {
+							$files[] = realpath($path);
+						}
+					}
+				}
+			}
+
+		}
+
+		__scandirr($dir, $files);
+
+		return array_values(array_filter($files));
+	}
+
 }

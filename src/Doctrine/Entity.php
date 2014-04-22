@@ -4,6 +4,18 @@ namespace Katu\Doctrine;
 
 class Entity {
 
+	static function getRepositories() {
+		$dirs = array();
+
+		foreach (\Katu\Utils\FS::getTree(BASE_DIR) as $file) {
+			if (strrpos($file, '.entities')) {
+				$dirs[] = dirname($file);
+			}
+		}
+
+		return $dirs;
+	}
+
 	static function getPropertyNames() {
 		return array_keys(get_class_vars(get_called_class()));
 	}
