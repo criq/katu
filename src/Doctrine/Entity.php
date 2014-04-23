@@ -109,6 +109,15 @@ class Entity {
 		return TRUE;
 	}
 
+	public function delete() {
+		$em = static::getDB();
+
+		$em->remove($this);
+		$em->flush();
+
+		return TRUE;
+	}
+
 	static function find() {
 		$table = static::getTable();
 
