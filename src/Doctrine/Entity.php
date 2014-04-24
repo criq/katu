@@ -90,7 +90,7 @@ class Entity {
 			$object->$f($value);
 		}
 
-		$em = static::getDB();
+		$em = static::getEntityManager();
 
 		$em->persist($object);
 		$em->flush();
@@ -99,7 +99,7 @@ class Entity {
 	}
 
 	public function save() {
-		$em = static::getDB();
+		$em = static::getEntityManager();
 
 		$em->merge($this);
 		$em->flush();
@@ -108,7 +108,7 @@ class Entity {
 	}
 
 	public function delete() {
-		$em = static::getDB();
+		$em = static::getEntityManager();
 
 		$em->remove($this);
 		$em->flush();
@@ -117,25 +117,25 @@ class Entity {
 	}
 
 	static function find() {
-		$table = static::getTable();
+		$table = static::getRepository();
 
 		return call_user_func_array(array($table, 'find'), func_get_args());
 	}
 
 	static function findBy() {
-		$table = static::getTable();
+		$table = static::getRepository();
 
 		return call_user_func_array(array($table, 'findBy'), func_get_args());
 	}
 
 	static function findOneBy() {
-		$table = static::getTable();
+		$table = static::getRepository();
 
 		return call_user_func_array(array($table, 'findOneBy'), func_get_args());
 	}
 
 	static function findAll() {
-		$table = static::getTable();
+		$table = static::getRepository();
 
 		return call_user_func_array(array($table, 'findAll'), func_get_args());
 	}
