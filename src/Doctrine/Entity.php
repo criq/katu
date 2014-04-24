@@ -55,7 +55,7 @@ class Entity {
 		throw new \Exception("Invalid method " . $name . ".");
 	}
 
-	static function getDB($name = NULL) {
+	static function getEntityManager($name = NULL) {
 		if (is_null($name)) {
 			$name = static::DATABASE;
 		}
@@ -75,14 +75,12 @@ class Entity {
 		return $GLOBALS['doctrine.em'][$name];
 	}
 
-	static function select($alias) {
-		$query = new QueryBuilder(static::getDB()->createQueryBuilder(), get_called_class(), $alias);
-
-		return $query;
+	static function getRepository() {
+		return static::getEntityManager()->getRepository(get_called_class());
 	}
 
-	static function getTable() {
-		return static::getDB()->getRepository(get_called_class());
+	static function getQueryBuilder() {
+		return self::getEntityManager()->createQueryBuilder();
 	}
 
 	static function create($properties) {

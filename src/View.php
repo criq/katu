@@ -74,12 +74,14 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getPaginationURL', function() {
-			$url        =          new \Katu\Types\TURL(func_get_arg(0));
-			$page       = (int)    func_get_arg(1);
-			$page_ident = (string) func_get_arg(2);
+			$url       =          new \Katu\Types\TURL(func_get_arg(0));
+			$page      = (int)    func_get_arg(1);
+			$pageIdent = (string) func_get_arg(2);
+
+			$url->removeQueryParam($pageIdent);
 
 			if ($page > 1) {
-				$url->addQueryParam($page_ident, $page);
+				$url->addQueryParam($pageIdent, $page);
 			}
 
 			return $url->value;
