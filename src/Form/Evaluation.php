@@ -2,15 +2,28 @@
 
 namespace Katu\Form;
 
+use \Katu\App;
+use \Katu\Session;
 use \Katu\Flash;
 
 class Evaluation {
 
 	public $name = NULL;
+	public $params = array();
 	public $errors = array();
 
 	public function __construct($name = NULL) {
+		$app = App::get();
+
+		// Set form name.
 		$this->name = $name;
+
+		// Set form params.
+		$this->params = $app->request->params();
+	}
+
+	public function getParam($param) {
+		return isset($this->params[$param]) ? $this->params[$param] : NULL;
 	}
 
 	public function addError($error) {
@@ -49,10 +62,23 @@ class Evaluation {
 
 	public function setFlash() {
 		foreach ($this->errors as $error) {
-
 			// Set errors.
-			Flash::addFormError($this->name, $error->error);
+			Flash::add('forms.' . $this->name . '.errors', $error->error);
 
+			// Set field errors.
+			if ($error instanceof FieldError) {
+				foreach ($error->fields as $field) {
+					Flash::add('forms.' . $this->name . '.fieldsInError', $field);
+				}
+			}
+
+		}
+	}
+
+	public function setSession() {
+		// Set values.
+		foreach ($this->params as $key => $value) {
+			Session::set('forms.' . $this->name . '.values.' . $key, $value);
 		}
 	}
 

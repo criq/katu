@@ -8,7 +8,7 @@ class FieldError {
 	const INVALID = 'invalid';
 
 	public $type;
-	public $fields;
+	public $fields = array();
 	public $error;
 
 	public function __construct($type, $fields, $error) {

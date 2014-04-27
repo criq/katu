@@ -61,14 +61,6 @@ class Session {
 		return TRUE;
 	}
 
-	static function addError($error) {
-		return static::add('errors', $error);
-	}
-
-	static function addFormError($formName, $error) {
-		return static::add('errors.' . $formName, $error);
-	}
-
 	static function reset($key = NULL) {
 		static::init();
 
