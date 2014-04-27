@@ -51,8 +51,7 @@ class Evaluation {
 		foreach ($this->errors as $error) {
 
 			// Set errors.
-			#Flash::add('formErrors.' . $this->name . )
-			#var_dump($error);
+			Flash::addFormError($this->name, $error->error);
 
 		}
 	}

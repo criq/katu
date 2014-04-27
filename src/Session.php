@@ -65,8 +65,8 @@ class Session {
 		return static::add('errors', $error);
 	}
 
-	static function addSetError($set, $error) {
-		return static::add('errors.' . $set, $error);
+	static function addFormError($formName, $error) {
+		return static::add('errors.' . $formName, $error);
 	}
 
 	static function reset($key = NULL) {
