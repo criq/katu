@@ -42,4 +42,8 @@ class GeocodeAddress {
 		$this->latlng = new \Katu\Types\Geo\TLatLng($geo['geometry']['location']['lat'], $geo['geometry']['location']['lng']);
 	}
 
+	public function isStreetLevel() {
+		return !is_null($this->number) && !is_null($this->street);
+	}
+
 }

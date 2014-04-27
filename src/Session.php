@@ -61,6 +61,14 @@ class Session {
 		return TRUE;
 	}
 
+	static function addError($error) {
+		return static::add('errors', $error);
+	}
+
+	static function addSetError($set, $error) {
+		return static::add('errors.' . $set, $error);
+	}
+
 	static function reset($key = NULL) {
 		static::init();
 

@@ -1,4 +1,4 @@
-{% extends "FW/Templates/error.tpl" %}
+{% extends "Katu/Templates/error.tpl" %}
 
 {% block error %}
 
