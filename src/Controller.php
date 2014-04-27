@@ -61,6 +61,16 @@ class Controller {
 			&& Utils\CSRF::isValidToken($app->request->params('form_token'));
 	}
 
+	static function getSubmittedFormWithToken($name = NULL) {
+		$app = App::get();
+
+		if (static::isSubmittedWithToken($name)) {
+			return new Form\Evaluation($name);
+		}
+
+		return FALSE;
+	}
+
 	static function addError($error) {
 		if ($error instanceof \Exception) {
 			return self::$errors[] = $error->getMessage();
