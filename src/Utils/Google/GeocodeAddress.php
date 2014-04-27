@@ -39,7 +39,7 @@ class GeocodeAddress {
 
 		$this->formatted = $geo['formatted_address'];
 
-		$this->latlng = new \Katu\Types\Geo\LatLng($geo['geometry']['location']['lat'], $geo['geometry']['location']['lng']);
+		$this->latlng = new \Katu\Types\Geo\TLatLng($geo['geometry']['location']['lat'], $geo['geometry']['location']['lng']);
 	}
 
 }

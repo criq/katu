@@ -9,27 +9,19 @@ use \Katu\Config,
 
 class Geocode {
 
-	static function geocode($address) {
-		$arr = JSON::decodeAsArray(Cache::getURL(TURL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
+	static function geocode($address, $language = 'en') {
+		$arr = Cache::getURL(TURL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
 			'address'  => $address,
 			'sensor'   => 'false',
-			'language' => 'cs',
-			'key'      => Config::get('google', 'api_key'),
-		))));
+			'language' => $language,
+			'key'      => Config::get('google', 'apiKey'),
+		)));
 
 		if (!isset($arr['results'][0])) {
 			return FALSE;
 		}
 
 		return new GeocodeAddress($arr['results'][0]);
-	}
-
-	static function getByLatLng($lat, $lng) {
-		return self::geocode(implode(',', array($lat, $lng)));
-	}
-
-	static function getByAddress() {
-		return self::geocode(implode(',', func_get_args()));
 	}
 
 }
