@@ -115,7 +115,7 @@ class View {
 
 		}
 
-		return trim($twig->render($template . '.tpl', $data));
+		return trim($twig->render($template . '.twig', $data));
 	}
 
 	static function renderFromDir($dir, $template, $data = array()) {
