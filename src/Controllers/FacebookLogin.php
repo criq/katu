@@ -2,6 +2,8 @@
 
 namespace Katu\Controllers;
 
+use \Katu\Utils\URL;
+
 class FacebookLogin extends \Katu\Controller {
 
 	static function index() {
@@ -16,7 +18,7 @@ class FacebookLogin extends \Katu\Controller {
 			// We have some errors.
 			if ($app->request->params('error')) {
 
-				return self::redirect($app->urlFor('login'));
+				return self::redirect(URL::getFor('login'));
 
 			// We have callback params.
 			} elseif ($app->request->params('state') && $app->request->params('code')) {
@@ -28,13 +30,13 @@ class FacebookLogin extends \Katu\Controller {
 				if (!$access_token) {
 
 					$facebook->resetAccessToken();
-					return self::redirect($app->urlFor('login'));
+					return self::redirect(URL::getFor('login'));
 				}
 
 				// Save the access token.
 				$facebook->setAccessToken($access_token);
 
-				return self::redirect($app->urlFor('login'));
+				return self::redirect(URL::getFor('login'));
 
 			// No callback params - this is the initial call.
 			} else {
@@ -71,7 +73,7 @@ class FacebookLogin extends \Katu\Controller {
 
 			$user->login();
 
-			return self::redirect($app->urlFor('homepage'));
+			return self::redirect(URL::getFor('homepage'));
 
 		}
 	}

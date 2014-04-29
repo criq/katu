@@ -4,7 +4,9 @@ namespace Katu\Utils\Google;
 
 class GeocodeAddress {
 
+	public $language;
 	public $number;
+	public $premise;
 	public $street;
 	public $neighborhood;
 	public $part;
@@ -18,6 +20,7 @@ class GeocodeAddress {
 
 	static $mapping = array(
 		'street_number'               => 'number',
+		'premise'                     => 'premise',
 		'route'                       => 'street',
 		'neighborhood'                => 'neighborhood',
 		'sublocality'                 => 'part',
@@ -28,7 +31,9 @@ class GeocodeAddress {
 		'postal_code'                 => 'zip',
 	);
 
-	public function __construct($geo) {
+	public function __construct($language, $geo) {
+		$this->language = $language;
+
 		foreach ($geo['address_components'] as $component) {
 			foreach ($component['types'] as $type) {
 				if (isset(self::$mapping[$type])) {

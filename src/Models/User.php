@@ -9,15 +9,17 @@ class User extends \Katu\Model {
 	const TABLE = 'users';
 
 	static function create() {
-		return self::insert();
+		return self::insert(array(
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+		));
 	}
 
 	static function getLoggedIn() {
 		return self::getByPK(\Katu\Session::get('katu.user.id'));
 	}
 
-	public function addUserService($service_name, $service_user_id) {
-		return \App\Models\UserService::create($this, $service_name, $service_user_id);
+	public function addUserService($serviceName, $serviceUserId) {
+		return \App\Models\UserService::create($this, $serviceName, $serviceUserId);
 	}
 
 	public function login() {
@@ -26,8 +28,8 @@ class User extends \Katu\Model {
 
 	public function hasAC($ac) {
 		return (bool) \App\Models\UserAC::getByProperties(array(
-			'user_id' => (int)    ($this->id),
-			'ac'      => (string) (trim($ac)),
+			'userId' => (int)    ($this->id),
+			'ac'     => (string) (trim($ac)),
 		))->getOne();
 	}
 

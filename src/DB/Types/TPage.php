@@ -2,7 +2,7 @@
 
 namespace Katu\DB\Types;
 
-class Page {
+class TPage {
 
 	const DEFAULT_PAGE    = 1;
 	const DEFAULT_PERPAGE = 50;

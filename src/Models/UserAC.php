@@ -14,15 +14,16 @@ class UserAC extends \Katu\Model {
 		}
 
 		return self::insert(array(
-			'user_id' => (int)    ($user->id),
-			'ac'      => (string) (trim($ac)),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'userId'      => (int)    ($user->id),
+			'ac'          => (string) (trim($ac)),
 		));
 	}
 
 	static function make($user, $ac) {
 		return self::getOrCreate(array(
-			'user_id' => (int)    ($user->id),
-			'ac'      => (string) (trim($ac)),
+			'userId' => (int)    ($user->id),
+			'ac'     => (string) (trim($ac)),
 		), $user, $ac);
 	}
 

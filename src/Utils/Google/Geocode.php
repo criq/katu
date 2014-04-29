@@ -2,10 +2,9 @@
 
 namespace Katu\Utils\Google;
 
-use \Katu\Config,
-    \Katu\Utils\JSON,
-    \Katu\Utils\Cache,
-    \Katu\Types\TURL;
+use \Katu\Config;
+use \Katu\Utils\Cache;
+use \Katu\Types\TURL;
 
 class Geocode {
 
@@ -14,14 +13,14 @@ class Geocode {
 			'address'  => $address,
 			'sensor'   => 'false',
 			'language' => $language,
-			'key'      => Config::get('google', 'apiKey'),
+			'key'      => Config::get('google', 'geocode', 'apiKey'),
 		)));
 
 		if (!isset($arr['results'][0])) {
 			return FALSE;
 		}
 
-		return new GeocodeAddress($arr['results'][0]);
+		return new GeocodeAddress($language, $arr['results'][0]);
 	}
 
 }
