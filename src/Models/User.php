@@ -15,7 +15,7 @@ class User extends \Katu\Model {
 	}
 
 	static function getLoggedIn() {
-		return self::getByPK(\Katu\Session::get('katu.user.id'));
+		return self::get(\Katu\Session::get('katu.user.id'));
 	}
 
 	public function addUserService($serviceName, $serviceUserId) {

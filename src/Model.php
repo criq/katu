@@ -77,7 +77,7 @@ class Model {
 	static function insert($properties = array()) {
 		static::getDB()->insert(static::getTable(), $properties, $id);
 
-		return static::getByPK($id);
+		return static::get($id);
 	}
 
 	public function update($property, $value) {
@@ -96,7 +96,7 @@ class Model {
 	public function save() {
 		if ($this->__updated) {
 
-			$pk = static::getPKName();
+			$pk = static::getIDColumnName();
 			$columns = static::getColumnNames();
 			$properties = array();
 
@@ -108,7 +108,7 @@ class Model {
 
 			if ($properties) {
 				static::getDB()->update(static::getTable(), $properties, array(
-				static::getPKName() => $this->getPK(),
+				static::getIDColumnName() => $this->getID(),
 				));
 			}
 
@@ -120,11 +120,11 @@ class Model {
 
 	public function delete() {
 		return static::getDB()->delete(static::getTable(), array(
-			$this->getPKName() => $this->getPK(),
+			$this->getIDColumnName() => $this->getID(),
 		));
 	}
 
-	static function getPKName() {
+	static function getIDColumnName() {
 		foreach (static::getDB()->query(" SHOW COLUMNS FROM " . static::getTable())->fetch_all() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
@@ -134,48 +134,18 @@ class Model {
 		return FALSE;
 	}
 
-	static function get() {
-		$args = func_get_args();
-
-		// No arguments, get all.
-		if (!$args) {
-			return static::getByProperties();
-		}
-
-		// One argument, primary key.
-		if (count($args) == 1 && isset($args[0]) && !is_array($args[0])) {
-			return static::getByPK($args[0]);
-		}
-
-		// One argument, properties.
-		if (count($args) == 1 && isset($args[0]) && is_array($args[0])) {
-			return static::getByProperties($args[0]);
-		}
-
-		// Two arguments, key - value.
-		if (count($args) == 2 && isset($args[0], $args[1]) && !is_array($args[0]) && !is_array($args[1])) {
-			return static::getByProperty($args[0], $args[1]);
-		}
-
-		// Two arguments, properties, options.
-		if (count($args) == 2) {
-			return static::getByProperties($args[0], $args[1]);
-		}
-
-		return FALSE;
-	}
-
-	static function getAll($params = array()) {
-		return static::getByProperties(array(), $params);
-	}
-
-	static function getByProperties($properties = array(), $params = array()) {
+	static function getBy($properties = array(), $params = array()) {
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
 
 		foreach ($properties as $property => $value) {
 			$sql .= " AND ( " . $property . " = :" . $property . " ) ";
 		}
 
+		foreach ($params as $param) {
+			var_dump($param);
+		}
+
+		/*
 		if (isset($params[\Katu\DB\Result::ORDERBY])) {
 			$sql .= " ORDER BY " . $params[\Katu\DB\Result::ORDERBY];
 		}
@@ -183,24 +153,29 @@ class Model {
 		if (isset($params[\Katu\DB\Result::PAGE])) {
 			$sql .= " LIMIT " . $params[\Katu\DB\Result::PAGE]->getLimit();
 		}
+		*/
 
 		return new DB\Result(static::getDB()->query($sql, $properties), static::getClass());
 	}
 
-	static function getByProperty($property, $value, $params = array()) {
-		return static::getByProperties(array($property => $value), $params);
+	static function getOneBy() {
+		return call_user_func_array(array('static', 'getBy'), func_get_args())->getOne();
 	}
 
-	static function getByPK($pk) {
-		return static::getByProperty(static::getPKName(), $pk)->getOne();
+	static function getAll($params = array()) {
+		return call_user_func_array(array('static', 'getBy'), func_get_args());
+	}
+
+	static function get($primaryKey) {
+		return static::getOneBy(array(static::getIDColumnName() => $primaryKey));
 	}
 
 	static function getByQuery($sql) {
 		return \Katu\DB\Result::get(static::getDB()->query($sql), static::getClass());
 	}
 
-	public function getPK() {
-		return $this->{static::getPKName()};
+	public function getID() {
+		return $this->{static::getIDColumnName()};
 	}
 
 	static function getOrCreate() {
@@ -244,7 +219,7 @@ class Model {
 		foreach (static::getIDProperties() as $property) {
 			$_model = '\\App\\Models\\' . implode(array_map('ucfirst', explode('_', substr($property, 0, -3))));
 			if ($_model && $ns_model == $_model) {
-				$object = $_model::getByPK($this->{$property});
+				$object = $_model::get($this->{$property});
 				if ($object) {
 					return $object;
 				}
