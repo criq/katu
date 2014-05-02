@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\DB\Types;
+namespace Katu\DB\Params;
 
-class TPage {
+class Page {
 
 	const DEFAULT_PAGE    = 1;
 	const DEFAULT_PERPAGE = 50;

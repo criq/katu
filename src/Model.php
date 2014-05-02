@@ -142,18 +142,13 @@ class Model {
 		}
 
 		foreach ((array) $params as $param) {
-			var_dump($param);
+			if ($param instanceof DB\Params\OrderBy) {
+				$sql .= " ORDER BY " . $param->getOrderBy();
+			}
+			if ($param instanceof DB\Params\Page) {
+				$sql .= " LIMIT " . $param->getLimit();
+			}
 		}
-
-		/*
-		if (isset($params[\Katu\DB\Result::ORDERBY])) {
-			$sql .= " ORDER BY " . $params[\Katu\DB\Result::ORDERBY];
-		}
-
-		if (isset($params[\Katu\DB\Result::PAGE])) {
-			$sql .= " LIMIT " . $params[\Katu\DB\Result::PAGE]->getLimit();
-		}
-		*/
 
 		return new DB\Result(static::getDB()->query($sql, $properties), static::getClass());
 	}
