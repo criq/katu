@@ -9,18 +9,27 @@ use \Katu\Types\TURL;
 class Geocode {
 
 	static function geocode($address, $language = 'en') {
-		$arr = Cache::getURL(TURL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
-			'address'  => $address,
-			'sensor'   => 'false',
-			'language' => $language,
-			'key'      => Config::get('google', 'geocode', 'apiKey'),
-		)));
+		$res = Cache::get(array('geocode', $language, sha1($address)), function() use($address, $language) {
 
-		if (!isset($arr['results'][0])) {
+			$url = TURL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
+				'address'  => $address,
+				'sensor'   => 'false',
+				'language' => $language,
+				'key'      => Config::get('google', 'geocode', 'apiKey'),
+			));
+
+			$curl = new \Curl;
+			$curl->get((string) $url);
+
+			return $curl->response;
+
+		});
+
+		if (!isset($res->results[0])) {
 			return FALSE;
 		}
 
-		return new GeocodeAddress($language, $arr['results'][0]);
+		return new GeocodeAddress($language, $res->results[0]);
 	}
 
 }

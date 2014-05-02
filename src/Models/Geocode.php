@@ -15,7 +15,7 @@ class Geocode extends \Katu\Model {
 
 		$hash = self::getHashByGeocodeAddress($geocodeAddress);
 
-		$geocode = static::get('hash', $hash)->getOne();
+		$geocode = static::getOneBy(array('hash' => $hash));
 		if (!$geocode) {
 			$geocode = self::insert(array(
 				'timeCreated'  => (string) \Katu\Utils\DateTime::get()->getDBDatetimeFormat(),

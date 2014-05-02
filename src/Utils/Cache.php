@@ -19,10 +19,10 @@ class Cache {
 		}
 
 		$callback = function() use($callback) {
-			return gzcompress(JSON::encode(call_user_func($callback)), 9);
+			return gzcompress(serialize(call_user_func($callback)), 9);
 		};
 
-		return JSON::decodeAsArray(gzuncompress($cache->getOrCreate(self::getCacheName($name), $opts, $callback)));
+		return unserialize(gzuncompress($cache->getOrCreate(self::getCacheName($name), $opts, $callback)));
 	}
 
 	static function getCacheName($name) {
