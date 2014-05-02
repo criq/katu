@@ -261,7 +261,7 @@ class Model {
 
 			$string = \Katu\Utils\Random::getIDString($columns[$column]->length);
 
-		} while (static::getByProperty($column, $string)->getOne());
+		} while (static::getOneBy(array($column => $string)));
 
 		return $string;
 	}
