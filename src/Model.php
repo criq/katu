@@ -188,17 +188,6 @@ class Model {
 		return $this->{static::getIDColumnName()};
 	}
 
-	static function getOrCreate() {
-		$object = static::getByProperties(func_get_arg(0))->getOne();
-		if (!$object) {
-			$callable = array(get_called_class(), 'create');
-			$args = array_slice(func_get_args(), 1);
-			$object = call_user_func_array($callable, $args);
-		}
-
-		return $object;
-	}
-
 	static function getFromAssoc($array) {
 		if (!$array) {
 			return FALSE;

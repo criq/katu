@@ -27,10 +27,10 @@ class User extends \Katu\Model {
 	}
 
 	public function hasAC($ac) {
-		return (bool) \App\Models\UserAC::getByProperties(array(
+		return (bool) \App\Models\UserAC::getOneBy(array(
 			'userId' => (int)    ($this->id),
 			'ac'     => (string) (trim($ac)),
-		))->getOne();
+		));
 	}
 
 	public function addAC($ac) {

@@ -24,7 +24,7 @@ class EmailAddress extends \Katu\Model {
 			throw new Exception("Invalid params.");
 		}
 
-		return self::getOrCreate(array('emailAddress' => $emailAddress), $emailAddress);
+		return self::getOneOrCreate(array('emailAddress' => $emailAddress));
 	}
 
 	static function checkCRUDParams($emailAddress) {

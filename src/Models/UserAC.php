@@ -21,10 +21,10 @@ class UserAC extends \Katu\Model {
 	}
 
 	static function make($user, $ac) {
-		return self::getOrCreate(array(
+		return self::getOneOrCreate(array(
 			'userId' => (int)    ($user->id),
 			'ac'     => (string) (trim($ac)),
-		), $user, $ac);
+		));
 	}
 
 	static function checkCRUDParams($user, $ac) {
