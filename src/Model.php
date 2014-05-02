@@ -170,8 +170,6 @@ class Model {
 	}
 
 	static function getByProperties($properties = array(), $params = array()) {
-		$properties = array_filter((array) $properties);
-
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
 
 		foreach ($properties as $property => $value) {
