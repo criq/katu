@@ -158,6 +158,14 @@ class Model {
 		return new DB\Result(static::getDB()->query($sql, $properties), static::getClass());
 	}
 
+	static function get($primaryKey) {
+		return static::getOneBy(array(static::getIDColumnName() => $primaryKey));
+	}
+
+	public function getID() {
+		return $this->{static::getIDColumnName()};
+	}
+
 	static function getOneBy() {
 		return call_user_func_array(array('static', 'getBy'), func_get_args())->getOne();
 	}
@@ -166,27 +174,32 @@ class Model {
 		return static::getBy(array(), $params);
 	}
 
-	static function get($primaryKey) {
-		return static::getOneBy(array(static::getIDColumnName() => $primaryKey));
+	static function getByQuery($sql) {
+		return \Katu\DB\Result::get(static::getDB()->query($sql), static::getClass());
 	}
 
-	static function getOneOrCreate($getBy, $insert = array()) {
+
+
+	static function getOneOrCreateWithArray($getBy, $array = array()) {
 		$object = static::getOneBy($getBy);
 		if (!$object) {
-			$properties = array_merge($getBy, $insert);
-			$object = self::insert($properties);
+			$properties = array_merge($getBy, $array);
+			$object = static::create($properties);
 		}
 
 		return $object;
 	}
 
-	static function getByQuery($sql) {
-		return \Katu\DB\Result::get(static::getDB()->query($sql), static::getClass());
+	static function getOneOrCreateWithList($getBy) {
+		$object = static::getOneBy($getBy);
+		if (!$object) {
+			$object = call_user_func_array(array('static', 'create'), array_slice(func_get_args(), 1));
+		}
+
+		return $object;
 	}
 
-	public function getID() {
-		return $this->{static::getIDColumnName()};
-	}
+
 
 	static function getFromAssoc($array) {
 		if (!$array) {
