@@ -137,11 +137,11 @@ class Model {
 	static function getBy($properties = array(), $params = array()) {
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
 
-		foreach ($properties as $property => $value) {
+		foreach ((array) $properties as $property => $value) {
 			$sql .= " AND ( " . $property . " = :" . $property . " ) ";
 		}
 
-		foreach ($params as $param) {
+		foreach ((array) $params as $param) {
 			var_dump($param);
 		}
 
@@ -163,11 +163,21 @@ class Model {
 	}
 
 	static function getAll($params = array()) {
-		return call_user_func_array(array('static', 'getBy'), func_get_args());
+		return static::getBy(array(), $params);
 	}
 
 	static function get($primaryKey) {
 		return static::getOneBy(array(static::getIDColumnName() => $primaryKey));
+	}
+
+	static function getOneOrCreate($getBy, $insert = array()) {
+		$object = static::getOneBy($getBy);
+		if (!$object) {
+			$properties = array_merge($getBy, $insert);
+			$object = self::insert($properties);
+		}
+
+		return $object;
 	}
 
 	static function getByQuery($sql) {
