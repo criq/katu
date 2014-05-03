@@ -214,7 +214,10 @@ class Model {
 	}
 
 	static function getByQuery($sql, $params = array()) {
-		return static::getPDO()->createQuery($sql, $params)->getResult();
+		$query = static::getPDO()->createQuery($sql, $params);
+		$query->setClass(static::getClass());
+
+		return $query->getResult();
 	}
 
 
