@@ -9,7 +9,9 @@ class Query {
 	public $pdo;
 	public $sql;
 	public $params = array();
-	public $meta   = array();
+
+	public $page;
+	public $class;
 
 	public function __construct($pdo, $sql = "", $params = array()) {
 		$this->pdo = $pdo;
@@ -29,8 +31,12 @@ class Query {
 		$this->params = array_merge($this->params, $params);
 	}
 
-	public function setMeta($meta) {
-		$this->meta[] = $meta;
+	public function setPage($page) {
+		$this->page = $page;
+	}
+
+	public function setClass($class) {
+		$this->class = $class;
 	}
 
 	public function getStatement() {
@@ -48,14 +54,13 @@ class Query {
 	}
 
 	public function getResult() {
-		return new Result($this->pdo, $this->getStatement(), $this->params, $this->meta);
-	}
-
-	public function getClassResult($class) {
-		$result = $this->getResult();
-		$result->setClass($class);
-
-		return $result;
+		if ($this->class) {
+			return new Results\ClassResult    ($this->pdo, $this->getStatement(), $this->page, $this->class);
+		} elseif ($this->page) {
+			return new Results\PaginatedResult($this->pdo, $this->getStatement(), $this->page);
+		} else {
+			return new Results\Result         ($this->pdo, $this->getStatement());
+		}
 	}
 
 }

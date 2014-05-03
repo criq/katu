@@ -11,6 +11,7 @@ class TPagination {
 	public $total;
 	public $perPage;
 	public $page;
+	public $pages;
 
 	public function __construct($total, $perPage, $page) {
 		if ((int) $total < 0) {
@@ -26,6 +27,7 @@ class TPagination {
 		$this->total   = (int) $total;
 		$this->perPage = (int) $perPage;
 		$this->page    = (int) $page;
+		$this->pages   = (int) ceil($total / $perPage);
 	}
 
 	static function getPageIdent() {

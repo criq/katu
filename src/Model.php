@@ -2,6 +2,8 @@
 
 namespace Katu;
 
+use \Katu\PDO\Meta\Page;
+
 class Model {
 
 	protected $__updated = FALSE;
@@ -145,6 +147,10 @@ class Model {
 		return FALSE;
 	}
 
+	public function getID() {
+		return $this->{static::getIDColumnName()};
+	}
+
 	static function filterParams($params) {
 		$_params = array();
 
@@ -159,6 +165,7 @@ class Model {
 
 	static function getBy($params = array(), $meta = array()) {
 		$query = static::getPDO()->createQuery();
+		$query->setClass(static::getClass());
 
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
 
@@ -169,38 +176,34 @@ class Model {
 		}
 
 		foreach ((array) $meta as $_meta) {
-			if ($_meta instanceof PDO\Meta\Page) {
+			if ($_meta instanceof Page) {
 				$sql .= " LIMIT :offset, :limit ";
 
 				$query->setParam('offset', $_meta->getOffset(), \PDO::PARAM_INT);
 				$query->setParam('limit', $_meta->getLimit(), \PDO::PARAM_INT);
-				$query->setMeta($_meta);
+				$query->setPage($_meta);
 			}
 		}
 
 		$query->setSQL($sql);
 
-		return $query->getClassResult(static::getClass());
+		return $query->getResult();
 	}
 
 	static function get($primaryKey) {
 		return static::getOneBy(array(static::getIDColumnName() => $primaryKey));
 	}
 
-	public function getID() {
-		return $this->{static::getIDColumnName()};
-	}
-
 	static function getOneBy() {
-		return call_user_func_array(array('static', 'getBy'), func_get_args())->getOne();
+		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Page(1, 1)))))->getOne();
 	}
 
-	static function getAll($meta = array()) {
-		return static::getBy(array(), $meta);
+	static function getAll() {
+		return static::getBy(array());
 	}
 
-	static function getByQuery($sql) {
-		return static::getPDO()->queryClass(static::getClass(), $sql);
+	static function getByQuery($sql, $params = array()) {
+		return static::getPDO()->createQuery($sql, $params)->getResult();
 	}
 
 

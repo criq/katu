@@ -12,10 +12,10 @@ class Page {
 
 	public function __construct($page = self::DEFAULT_PAGE, $perPage = self::DEFAULT_PERPAGE) {
 		if (!(int) $perPage) {
-			throw new Exception("Invalid per page.");
+			throw new \Exception("Invalid per page.");
 		}
 		if (!(int) $page) {
-			throw new Exception("Invalid page.");
+			throw new \Exception("Invalid page.");
 		}
 
 		$this->perPage = (int) $perPage;
