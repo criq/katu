@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\DB\Params;
+namespace Katu\PDO\Meta;
 
 class OrderBy {
 
@@ -8,10 +8,6 @@ class OrderBy {
 
 	public function __construct($orderBy) {
 		$this->orderBy = (string) $orderBy;
-	}
-
-	public function getOrderBy() {
-		return $this->orderBy;
 	}
 
 }

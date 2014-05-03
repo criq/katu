@@ -9,14 +9,14 @@ class TPagination {
 	const PAGINATION_CURRENT_OFFSET  = 3;
 
 	public $total;
-	public $perpage;
+	public $perPage;
 	public $page;
 
-	public function __construct($total, $perpage, $page) {
+	public function __construct($total, $perPage, $page) {
 		if ((int) $total < 0) {
 			throw new \Exception("Invalid total.");
 		}
-		if ((int) $perpage < 1) {
+		if ((int) $perPage < 1) {
 			throw new \Exception("Invalid per page.");
 		}
 		if ((int) $page < 1) {
@@ -24,7 +24,7 @@ class TPagination {
 		}
 
 		$this->total   = (int) $total;
-		$this->perpage = (int) $perpage;
+		$this->perPage = (int) $perPage;
 		$this->page    = (int) $page;
 	}
 
@@ -49,7 +49,7 @@ class TPagination {
 	}
 
 	public function getMaxPage() {
-		return (int) (ceil($this->total / $this->perpage));
+		return (int) (ceil($this->total / $this->perPage));
 	}
 
 	public function getPaginationPages($options = array()) {

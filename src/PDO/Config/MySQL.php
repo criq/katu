@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\DB\Config;
+namespace Katu\PDO\Config;
 
 class MySQL {
 
@@ -37,6 +37,10 @@ class MySQL {
 			'dbname'   => $this->database,
 			'charset'  => $this->charset,
 		);
+	}
+
+	public function getPDODSN() {
+		return 'mysql:dbname=' . $this->database . ';host=' . $this->host . ';charset=' . $this->charset;
 	}
 
 }

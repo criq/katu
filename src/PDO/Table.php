@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\DB;
+namespace Katu\PDO;
 
 class Table {
 

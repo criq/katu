@@ -29,12 +29,12 @@ class Model {
 		user_error('Undeclared class method ' . $name . '.');
 	}
 
-	static function getDB() {
+	static function getPDO() {
 		if (!defined('static::DATABASE')) {
 			throw new Exception("Undefined database.");
 		}
 
-		return DB\Connection::getInstance(static::DATABASE);
+		return PDO\Connection::getInstance(static::DATABASE);
 	}
 
 	static function getTable() {
@@ -52,8 +52,8 @@ class Model {
 	static function getColumns() {
 		$columns = array();
 
-		foreach (static::getDB()->query(" SHOW COLUMNS FROM " . static::getTable())->fetch_all() as $row) {
-			$columns[$row['Field']] = new \Katu\DB\Column($row);
+		foreach (static::getPDO()->query(" SHOW COLUMNS FROM " . static::getTable())->fetch_all() as $row) {
+			$columns[$row['Field']] = new \Katu\PDO\Column($row);
 		}
 
 		return $columns;
@@ -75,7 +75,7 @@ class Model {
 	}
 
 	static function insert($properties = array()) {
-		static::getDB()->insert(static::getTable(), $properties, $id);
+		static::getPDO()->insert(static::getTable(), $properties, $id);
 
 		return static::get($id);
 	}
@@ -107,7 +107,7 @@ class Model {
 			}
 
 			if ($properties) {
-				static::getDB()->update(static::getTable(), $properties, array(
+				static::getPDO()->update(static::getTable(), $properties, array(
 				static::getIDColumnName() => $this->getID(),
 				));
 			}
@@ -119,13 +119,13 @@ class Model {
 	}
 
 	public function delete() {
-		return static::getDB()->delete(static::getTable(), array(
+		return static::getPDO()->delete(static::getTable(), array(
 			$this->getIDColumnName() => $this->getID(),
 		));
 	}
 
 	static function getIDColumnName() {
-		foreach (static::getDB()->query(" SHOW COLUMNS FROM " . static::getTable())->fetch_all() as $row) {
+		foreach (static::getPDO()->createQuery(" SHOW COLUMNS FROM " . static::getTable())->getResult()->getAssoc() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
 			}
@@ -134,23 +134,42 @@ class Model {
 		return FALSE;
 	}
 
-	static function getBy($properties = array(), $params = array()) {
+	static function filterParams($params) {
+		$_params = array();
+
+		foreach ($params as $param => $value) {
+			if (is_string($param)) {
+				$_params[$param] = $value;
+			}
+		}
+
+		return $_params;
+	}
+
+	static function getBy($params = array(), $meta = array()) {
+		$query = static::getPDO()->createQuery();
+
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
 
-		foreach ((array) $properties as $property => $value) {
-			$sql .= " AND ( " . $property . " = :" . $property . " ) ";
+		foreach (static::filterParams($params) as $param => $value) {
+			$sql .= " AND ( " . $param . " = :" . $param . " ) ";
+
+			$query->setParam($param, $value);
 		}
 
-		foreach ((array) $params as $param) {
-			if ($param instanceof DB\Params\OrderBy) {
-				$sql .= " ORDER BY " . $param->getOrderBy();
-			}
-			if ($param instanceof DB\Params\Page) {
-				$sql .= " LIMIT " . $param->getLimit();
+		foreach ((array) $meta as $_meta) {
+			if ($_meta instanceof PDO\Meta\Page) {
+				$sql .= " LIMIT :offset, :limit ";
+
+				$query->setParam('offset', $_meta->getOffset(), \PDO::PARAM_INT);
+				$query->setParam('limit', $_meta->getLimit(), \PDO::PARAM_INT);
+				$query->setMeta($_meta);
 			}
 		}
 
-		return new DB\Result(static::getDB()->query($sql, $properties), static::getClass());
+		$query->setSQL($sql);
+
+		return $query->getClassResult(static::getClass());
 	}
 
 	static function get($primaryKey) {
@@ -165,12 +184,12 @@ class Model {
 		return call_user_func_array(array('static', 'getBy'), func_get_args())->getOne();
 	}
 
-	static function getAll($params = array()) {
-		return static::getBy(array(), $params);
+	static function getAll($meta = array()) {
+		return static::getBy(array(), $meta);
 	}
 
 	static function getByQuery($sql) {
-		return \Katu\DB\Result::get(static::getDB()->query($sql), static::getClass());
+		return static::getPDO()->queryClass(static::getClass(), $sql);
 	}
 
 
