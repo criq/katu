@@ -54,7 +54,7 @@ class Model {
 	static function getColumns() {
 		$columns = array();
 
-		foreach (static::getPDO()->query(" SHOW COLUMNS FROM " . static::getTable())->fetch_all() as $row) {
+		foreach (static::getPDO()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
 			$columns[$row['Field']] = new \Katu\PDO\Column($row);
 		}
 
@@ -109,20 +109,31 @@ class Model {
 	public function save() {
 		if ($this->__updated) {
 
-			$pk = static::getIDColumnName();
 			$columns = static::getColumnNames();
-			$properties = array();
 
-			foreach (get_object_vars($this) as $property => $value) {
-				if (in_array($property, $columns) && $property != $pk) {
-					$properties[$property] = $value;
+			$params = array();
+			foreach (get_object_vars($this) as $param => $value) {
+				if (in_array($param, $columns) && $param != static::getIDColumnName()) {
+					$params[$param] = $value;
 				}
 			}
 
-			if ($properties) {
-				static::getPDO()->update(static::getTable(), $properties, array(
-				static::getIDColumnName() => $this->getID(),
-				));
+			$set = array();
+			foreach ($params as $param => $value) {
+				$set[] = $param . " = :" . $param;
+			}
+
+			if ($set) {
+
+				$query = static::getPDO()->createQuery();
+
+				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIDColumnName() . " = :" . $this->getIDColumnName() . " ) ";
+
+				$query->setSQL($sql);
+				$query->setParams($params);
+				$query->setParam(static::getIDColumnName(), $this->getID());
+				$query->getResult();
+
 			}
 
 			$this->__updated = FALSE;

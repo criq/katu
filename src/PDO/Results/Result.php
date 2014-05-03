@@ -25,11 +25,21 @@ class Result implements \Iterator {
 	}
 
 	public function getCount() {
-		return count($this->statement);
+		return iterator_count($this->statement);
 	}
 
 	public function getArray() {
 		return $this->statement->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	public function getColumnValues($column) {
+		$values = array();
+
+		foreach ($this as $row) {
+			$values[] = $row[$column];
+		}
+
+		return $values;
 	}
 
 	public function setIteratorArray() {
