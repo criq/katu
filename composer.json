@@ -10,6 +10,7 @@
 		"slim/extras": "@stable",
 		"doctrine/orm": "@stable",
 		"dabble/dabble": "@stable",
+		"vrana/notorm": "dev-master",
 		"monolog/monolog": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"twig/twig": "@stable",
