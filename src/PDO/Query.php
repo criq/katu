@@ -25,6 +25,10 @@ class Query {
 		$this->params[$param] = $value;
 	}
 
+	public function setParams($params) {
+		$this->params = array_merge($this->params, $params);
+	}
+
 	public function setMeta($meta) {
 		$this->meta[] = $meta;
 	}
@@ -36,7 +40,7 @@ class Query {
 			if (is_int($value)) {
 				$statement->bindValue($param, $value, PDO::PARAM_INT);
 			} else {
-				$statement->bindValue($param, $value);
+				$statement->bindValue($param, $value, PDO::PARAM_STR);
 			}
 		}
 

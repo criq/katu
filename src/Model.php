@@ -74,10 +74,21 @@ class Model {
 		}, static::getColumns()));
 	}
 
-	static function insert($properties = array()) {
-		static::getPDO()->insert(static::getTable(), $properties, $id);
+	static function insert($params = array()) {
+		$query = static::getPDO()->createQuery();
 
-		return static::get($id);
+		$columns = array_keys($params);
+		$values  = array_map(function($i) {
+			return ':' . $i;
+		}, array_keys($params));
+
+		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ( " . implode(", ", $values) . " ) ";
+
+		$query->setSQL($sql);
+		$query->setParams($params);
+		$query->getResult();
+
+		return static::get(static::getPDO()->getLastInsertId());
 	}
 
 	public function update($property, $value) {
@@ -125,7 +136,7 @@ class Model {
 	}
 
 	static function getIDColumnName() {
-		foreach (static::getPDO()->createQuery(" SHOW COLUMNS FROM " . static::getTable())->getResult()->getAssoc() as $row) {
+		foreach (static::getPDO()->createQuery(" DESCRIBE " . static::getTable())->getResult()->getAssoc() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
 			}

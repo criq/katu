@@ -11,6 +11,7 @@ class Result {
 	public $params = array();
 	public $meta   = array();
 	public $class;
+	public $pagination;
 
 	public function __construct($pdo, $statement, $params = array(), $meta = array()) {
 		$this->pdo       = $pdo;
@@ -20,17 +21,22 @@ class Result {
 
 		$this->statement->execute();
 
+		if ((int) $this->statement->errorCode()) {
+			$error = $this->statement->errorInfo();
+			throw new \Exception($error[2], $error[1]);
+		}
+
 		$page = $this->getPageFromMeta();
 
 		if ($page && strpos($this->statement->queryString, 'SQL_CALC_FOUND_ROWS')) {
 			$total = $this->pdo->createQuery("SELECT FOUND_ROWS() AS total")->getResult()->statement->fetchColumn();
 		} else {
-			$total = count(iterator_to_array($this->statement));
+			$total = count($this->statement);
 		}
 
 		if ($page) {
 			$this->pagination = new \Katu\Types\TPagination($total, $page->perPage, $page->page);
-		} else {
+		} elseif ($total) {
 			$this->pagination = new \Katu\Types\TPagination($total, $total, 1);
 		}
 	}
@@ -65,12 +71,16 @@ class Result {
 	}
 
 	public function getCount() {
-		return count(iterator_to_array($this->statement));
+		return count($this->statement);
 	}
 
 
 
 	// Arrays.
+	public function getArray() {
+		return $this->statement->fetchAll(PDO::FETCH_NUM);
+	}
+
 	public function getAssoc() {
 		return $this->statement->fetchAll(PDO::FETCH_ASSOC);
 	}

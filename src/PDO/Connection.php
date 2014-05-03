@@ -30,6 +30,10 @@ class Connection {
 		return static::$connections[$name];
 	}
 
+	public function getLastInsertId() {
+		return $this->connection->lastInsertId();
+	}
+
 
 
 	public function createQuery($sql = NULL, $params = array()) {
