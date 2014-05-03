@@ -36,9 +36,6 @@ class PaginatedResult extends Result {
 		return FALSE;
 	}
 
-
-
-	// Pagination.
 	public function getPagination() {
 		return new \Katu\Types\TPagination($this->statement->found_rows, $this->statement->limit, $this->statement->page);
 	}

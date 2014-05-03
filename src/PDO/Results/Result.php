@@ -4,10 +4,13 @@ namespace Katu\PDO\Results;
 
 use \PDO;
 
-class Result {
+class Result implements \Iterator {
 
 	public $pdo;
 	public $statement;
+
+	protected $position = 0;
+	protected $iteratorArray;
 
 	public function __construct($pdo, $statement) {
 		$this->pdo       = $pdo;
@@ -21,18 +24,42 @@ class Result {
 		}
 	}
 
-	// Pagination.
 	public function getCount() {
 		return count($this->statement);
 	}
 
-	// Arrays.
 	public function getArray() {
-		return $this->statement->fetchAll(PDO::FETCH_NUM);
+		return $this->statement->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	public function getAssoc() {
-		return $this->statement->fetchAll(PDO::FETCH_ASSOC);
+	public function setIteratorArray() {
+		if (is_null($this->iteratorArray)) {
+			$this->iteratorArray = $this->getArray();
+		}
+	}
+
+	public function rewind() {
+		$this->position = 0;
+	}
+
+	public function current() {
+		$this->setIteratorArray();
+
+		return $this->iteratorArray[$this->position];
+	}
+
+	public function key() {
+		return $this->position;
+	}
+
+	public function next() {
+		++$this->position;
+	}
+
+	public function valid() {
+		$this->setIteratorArray();
+
+		return isset($this->iteratorArray[$this->position]);
 	}
 
 }

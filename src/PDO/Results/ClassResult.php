@@ -12,18 +12,10 @@ class ClassResult extends PaginatedResult {
 		$this->class = $class;
 	}
 
-	// Objects.
-	public function getOne($class = NULL) {
-		if (!$class && $this->class) {
-			$class = $this->class;
+	public function setIteratorArray() {
+		if (is_null($this->iteratorArray)) {
+			$this->iteratorArray = $this->getObjects();
 		}
-
-		$object = $class::getFromAssoc($this->statement->fetchObject($class));
-		if ($object) {
-			$object->save();
-		}
-
-		return $object;
 	}
 
 	public function getObjects($class = NULL) {
@@ -32,6 +24,24 @@ class ClassResult extends PaginatedResult {
 		}
 
 		return $this->statement->fetchAll(PDO::FETCH_CLASS, $class);
+	}
+
+	public function getOne($class = NULL) {
+		if (!$class && $this->class) {
+			$class = $this->class;
+		}
+
+		$objects = $this->getObjects();
+		if (!isset($objects[0])) {
+			return FALSE;
+		}
+
+		$object = $objects[0];
+		if ($object) {
+			$object->save();
+		}
+
+		return $object;
 	}
 
 }

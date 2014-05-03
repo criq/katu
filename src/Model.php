@@ -138,7 +138,7 @@ class Model {
 	}
 
 	static function getIDColumnName() {
-		foreach (static::getPDO()->createQuery(" DESCRIBE " . static::getTable())->getResult()->getAssoc() as $row) {
+		foreach (static::getPDO()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
 			}
