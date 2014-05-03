@@ -45,10 +45,6 @@ class Result {
 		return FALSE;
 	}
 
-	public function setClass($class) {
-		$this->class = $class;
-	}
-
 
 
 	// Pagination.
@@ -77,6 +73,13 @@ class Result {
 	// Arrays.
 	public function getAssoc() {
 		return $this->statement->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+
+
+	// Class.
+	public function setClass($class) {
+		$this->class = $class;
 	}
 
 
