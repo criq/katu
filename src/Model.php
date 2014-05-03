@@ -198,8 +198,8 @@ class Model {
 		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Page(1, 1)))))->getOne();
 	}
 
-	static function getAll() {
-		return static::getBy(array());
+	static function getAll($meta = array()) {
+		return static::getBy(array(), $meta);
 	}
 
 	static function getByQuery($sql, $params = array()) {

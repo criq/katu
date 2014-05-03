@@ -3,25 +3,27 @@
 namespace Katu\PDO\Results;
 
 use \PDO;
+use \Katu\PDO\Meta\Page;
 
 class PaginatedResult extends Result {
 
 	public function __construct($pdo, $statement, $page) {
 		parent::__construct($pdo, $statement);
 
-		$this->page = $page;
-
-		if ($page && strpos($this->statement->queryString, 'SQL_CALC_FOUND_ROWS')) {
+		if (strpos($this->statement->queryString, 'SQL_CALC_FOUND_ROWS')) {
 			$total = $this->pdo->createQuery("SELECT FOUND_ROWS() AS total")->getResult()->statement->fetchColumn();
 		} else {
 			$total = count($this->statement);
 		}
 
+		// Set default page if empty.
 		if ($page) {
-			$this->pagination = new \Katu\Types\TPagination($total, $page->perPage, $page->page);
-		} elseif ($total) {
-			$this->pagination = new \Katu\Types\TPagination($total, $total, 1);
+			$this->page = $page;
+		} else {
+			$page = new Page(1, $total);
 		}
+
+		$this->pagination = new \Katu\Types\TPagination($total, $page->perPage, $page->page);
 	}
 
 	public function getPageFromMeta() {

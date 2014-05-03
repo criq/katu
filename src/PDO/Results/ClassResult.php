@@ -3,19 +3,10 @@
 namespace Katu\PDO\Results;
 
 use \PDO;
-use \Katu\PDO\Meta\Page;
 
 class ClassResult extends PaginatedResult {
 
-	const DEFAULT_PAGE    = 1;
-	const DEFAULT_PERPAGE = 100;
-
 	public function __construct($pdo, $statement, $page, $class) {
-		// Set default page if empty.
-		if (!$page) {
-			$page = new Page(static::DEFAULT_PAGE, static::DEFAULT_PERPAGE);
-		}
-
 		parent::__construct($pdo, $statement, $page);
 
 		$this->class = $class;
