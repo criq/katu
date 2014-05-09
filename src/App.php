@@ -14,8 +14,11 @@ class App {
 		if (!defined('LOG_PATH')) {
 			define('LOG_PATH', rtrim(BASE_DIR) . '/logs/');
 		}
+		if (!defined('TMP_DIR')) {
+			define('TMP_DIR', 'tmp');
+		}
 		if (!defined('TMP_PATH')) {
-			define('TMP_PATH', rtrim(BASE_DIR) . '/tmp/');
+			define('TMP_PATH', rtrim(BASE_DIR) . '/' . TMP_DIR . '/');
 		}
 		if (!defined('ERROR_LOG')) {
 			define('ERROR_LOG', LOG_PATH . 'error.log');
