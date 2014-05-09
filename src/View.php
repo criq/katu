@@ -35,6 +35,10 @@ class View {
 			return Utils\URL::getSite($string);
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('thumbnail', function($uri, $size = 640, $quality = 100) {
+			return \Katu\Utils\Image::getThumbnailURL($uri, $size, $quality);
+		}));
+
 		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
