@@ -56,9 +56,9 @@ class Controller {
 	static function isSubmittedWithToken($name = NULL) {
 		$app = App::get();
 
-		return $app->request->params('form_submitted')
-			&& $app->request->params('form_name') == $name
-			&& Utils\CSRF::isValidToken($app->request->params('form_token'));
+		return $app->request->params('formSubmitted')
+			&& $app->request->params('formName') == $name
+			&& Utils\CSRF::isValidToken($app->request->params('formToken'));
 	}
 
 	static function getSubmittedFormWithToken($name = NULL) {
