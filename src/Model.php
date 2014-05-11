@@ -181,9 +181,19 @@ class Model {
 		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
 
 		foreach (static::filterParams($params) as $param => $value) {
-			$sql .= " AND ( " . $param . " = :" . $param . " ) ";
 
-			$query->setParam($param, $value);
+			if ($value instanceof PDO\Expressions\Expression) {
+
+				$sql .= " AND " . $value->getWhereConditionSQL($param);
+				$query->setParam($param, $value->getValue());
+
+			} else {
+
+				$sql .= " AND ( " . $param . " = :" . $param . " ) ";
+				$query->setParam($param, $value);
+
+			}
+
 		}
 
 		foreach ((array) $meta as $_meta) {
