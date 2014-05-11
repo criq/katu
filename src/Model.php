@@ -184,7 +184,7 @@ class Model {
 
 			if ($value instanceof PDO\Expressions\Expression) {
 
-				$sql .= " AND " . $value->getWhereConditionSQL($param);
+				$sql .= " AND ( " . $value->getWhereConditionSQL($param) . " ) ";
 				$query->setParam($param, $value->getValue());
 
 			} else {
