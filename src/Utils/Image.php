@@ -26,4 +26,31 @@ class Image {
 		return \Katu\Utils\FS::joinPaths(TMP_PATH, 'image/thumbnails', self::getThumbnailFilename($uri, $size, $quality));
 	}
 
+	static function getSize($path) {
+		$size = @getimagesize($path);
+		if (!$size) {
+			return FALSE;
+		}
+
+		return new \Katu\Types\TImageSize($size[0], $size[1]);
+	}
+
+	static function getWidth($path) {
+		$size = self::getSize($path);
+		if ($size) {
+			return $size->x;
+		}
+
+		return FALSE;
+	}
+
+	static function getHeight($path) {
+		$size = self::getSize($path);
+		if ($size) {
+			return $size->y;
+		}
+
+		return FALSE;
+	}
+
 }

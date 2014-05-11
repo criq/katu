@@ -39,6 +39,27 @@ class View {
 			return \Katu\Utils\Image::getThumbnailURL($uri, $size, $quality);
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('thumbnailPath', function($uri, $size = 640, $quality = 100) {
+			return \Katu\Utils\Image::getThumbnailPath($uri, $size, $quality);
+		}));
+
+		$twig->addFilter(new \Twig_SimpleFilter('imageWidthAndHeightAttributes', function($path) {
+			$size = \Katu\Utils\Image::getSize($path);
+			if ($size) {
+				return 'width="' . $size->x . '" height="' . $size->y . '"';
+			}
+
+			return FALSE;
+		}));
+
+		$twig->addFilter(new \Twig_SimpleFilter('imageWidth', function($path) {
+			return \Katu\Utils\Image::getWidth($path);
+		}));
+
+		$twig->addFilter(new \Twig_SimpleFilter('imageHeight', function($path) {
+			return \Katu\Utils\Image::getHeight($path);
+		}));
+
 		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
