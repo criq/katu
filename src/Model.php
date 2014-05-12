@@ -143,9 +143,14 @@ class Model {
 	}
 
 	public function delete() {
-		return static::getPDO()->delete(static::getTable(), array(
-			$this->getIDColumnName() => $this->getID(),
-		));
+		$query = static::getPDO()->createQuery();
+
+		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIDColumnName() . " = :" . static::getIDColumnName();
+
+		$query->setSQL($sql);
+		$query->setParam(static::getIDColumnName(), $this->getID());
+
+		return $query->getResult();
 	}
 
 	static function getIDColumnName() {
