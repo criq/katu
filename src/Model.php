@@ -76,6 +76,10 @@ class Model {
 		}, static::getColumns()));
 	}
 
+	static function query($sql = NULL, $params = array()) {
+		return static::getPDO()->createQuery($sql, $params);
+	}
+
 	static function insert($params = array()) {
 		$query = static::getPDO()->createQuery();
 
