@@ -37,7 +37,7 @@ class PaginatedResult extends Result {
 	}
 
 	public function getPagination() {
-		return new \Katu\Types\TPagination($this->statement->found_rows, $this->statement->limit, $this->statement->page);
+		return new \Katu\Types\TPagination($this->getTotal(), $this->getPerPage(), $this->getPage());
 	}
 
 	public function getTotal() {

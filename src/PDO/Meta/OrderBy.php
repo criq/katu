@@ -10,4 +10,8 @@ class OrderBy {
 		$this->orderBy = (string) $orderBy;
 	}
 
+	public function getOrderBy() {
+		return $this->orderBy;
+	}
+
 }

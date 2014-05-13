@@ -2,6 +2,7 @@
 
 namespace Katu;
 
+use \Katu\PDO\Meta\OrderBy;
 use \Katu\PDO\Meta\Page;
 
 class Model {
@@ -206,6 +207,11 @@ class Model {
 		}
 
 		foreach ((array) $meta as $_meta) {
+
+			if ($_meta instanceof OrderBy) {
+				$sql .= " ORDER BY " . $_meta->getOrderBy();
+			}
+
 			if ($_meta instanceof Page) {
 				$sql .= " LIMIT :offset, :limit ";
 
@@ -213,6 +219,7 @@ class Model {
 				$query->setParam('limit', $_meta->getLimit(), \PDO::PARAM_INT);
 				$query->setPage($_meta);
 			}
+
 		}
 
 		$query->setSQL($sql);
