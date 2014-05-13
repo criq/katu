@@ -24,4 +24,8 @@ class UserService extends \Katu\Model {
 		));
 	}
 
+	public function getUser() {
+		return \App\Models\User::get($this->userID);
+	}
+
 }
