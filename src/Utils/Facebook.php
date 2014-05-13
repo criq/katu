@@ -8,7 +8,7 @@ class Facebook {
 
 	public function __construct() {
 		$this->facebook = new \Facebook(array(
-			'appId'  => \Katu\Config::get('facebook', 'appId'),
+			'appId'  => \Katu\Config::get('facebook', 'appID'),
 			'secret' => \Katu\Config::get('facebook', 'secret'),
 		));
 
