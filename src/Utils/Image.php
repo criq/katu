@@ -4,26 +4,45 @@ namespace Katu\Utils;
 
 class Image {
 
-	static function getThumbnailURL($uri, $size, $quality = 100) {
-		$thumbnailPath = self::getThumbnailPath($uri, $size, $quality);
-		if (!file_exists($thumbnailPath)) {
-
-			@mkdir(dirname($thumbnailPath), 0777, TRUE);
-			$image = \Intervention\Image\Image::make($uri);
-			$image->resize($size, $size, TRUE);
-			$image->save($thumbnailPath);
-
-		}
-
-		return \Katu\Utils\URL::joinPaths(\Katu\Utils\URL::getBase(), TMP_DIR, 'image/thumbnails', self::getThumbnailFilename($uri, $size, $quality));
-	}
+	const THUMBNAIL_DIR = 'image/thumbnails';
 
 	static function getThumbnailFilename($uri, $size, $quality = 100) {
 		return implode('_', array(sha1($uri), $size, $quality)) . '.jpg';
 	}
 
+	static function getThumbnailURL($uri, $size, $quality = 100) {
+		static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality), $size, $quality);
+
+		return \Katu\Utils\URL::joinPaths(\Katu\Utils\URL::getBase(), TMP_DIR, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality));
+	}
+
 	static function getThumbnailPath($uri, $size, $quality = 100) {
-		return \Katu\Utils\FS::joinPaths(TMP_PATH, 'image/thumbnails', self::getThumbnailFilename($uri, $size, $quality));
+		$thumbnailPath = \Katu\Utils\FS::joinPaths(TMP_PATH, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality));
+		static::makeThumbnail($uri, $thumbnailPath, $size, $quality);
+
+		return $thumbnailPath;
+	}
+
+	static function makeThumbnail($source, $destination, $size, $quality = 100) {
+		if (!file_exists($destination)) {
+
+			@mkdir(dirname($destination), 0777, TRUE);
+			$image = \Intervention\Image\Image::make($source);
+			$image->resize($size, $size, TRUE);
+			$image->save($destination);
+
+		}
+
+		return TRUE;
+	}
+
+	static function getMIME($path) {
+		$size = @getimagesize($path);
+		if (!isset($size['mime'])) {
+			return FALSE;
+		}
+
+		return $size['mime'];
 	}
 
 	static function getSize($path) {

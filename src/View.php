@@ -60,6 +60,17 @@ class View {
 			return \Katu\Utils\Image::getHeight($path);
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('embedImage', function($path) {
+			$mime = @\Katu\Utils\Image::getMIME($path);
+			$base64 = @base64_encode(@file_get_contents($path));
+
+			if ($mime && $base64) {
+				return 'data:' . $mime . ';base64,' . $base64;
+			}
+
+			return FALSE;
+		}));
+
 		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
