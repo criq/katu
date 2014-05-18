@@ -14,12 +14,12 @@ class User extends \Katu\Model {
 		));
 	}
 
-	static function getLoggedIn() {
+	static function getCurrent() {
 		return self::get(\Katu\Session::get('katu.user.id'));
 	}
 
-	public function addUserService($serviceName, $serviceUserId) {
-		return \App\Models\UserService::create($this, $serviceName, $serviceUserId);
+	public function addUserService($serviceName, $serviceUserID) {
+		return \App\Models\UserService::create($this, $serviceName, $serviceUserID);
 	}
 
 	public function login() {

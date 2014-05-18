@@ -18,6 +18,26 @@ class Random {
 		return $generator->generateString($length, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
 	}
 
+	static function getWord($length = 8, $seed = NULL) {
+		$factory = new \RandomLib\Factory;
+		$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::LOW));
+
+		$seed = is_null($seed) ? rand(0, 1) : $seed;
+		$consonants = 'bcdfghjklmnpqrstvwxz';
+		$vowels = 'aeiouy';
+		$word = '';
+
+		for ($i = $seed; $i < $length + $seed; $i++) {
+			if ($i % 2) {
+				$word .= $generator->generateString(1, $consonants);
+			} else {
+				$word .= $generator->generateString(1, $vowels);
+			}
+		}
+
+		return $word;
+	}
+
 	static function getIDString($length = 32) {
 		$factory = new \RandomLib\Factory;
 		$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::LOW));

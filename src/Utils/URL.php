@@ -2,6 +2,10 @@
 
 namespace Katu\Utils;
 
+use \Katu\App;
+use \Katu\Config;
+use \Katu\Types\TURL;
+
 class URL {
 
 	static function isHTTPS() {
@@ -9,21 +13,21 @@ class URL {
 	}
 
 	static function getCurrent() {
-		return new \Katu\Types\TURL('http' . (self::isHTTPS() ? 's' : NULL) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+		return new TURL('http' . (self::isHTTPS() ? 's' : NULL) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 	}
 
 	static function getBase() {
-		return new \Katu\Types\TURL(\Katu\Config::getApp('baseURL'));
+		return new TURL(Config::getApp('baseURL'));
 	}
 
 	static function getSite($uri) {
-		return new \Katu\Types\TURL(self::joinPaths(self::getBase(), $uri));
+		return new TURL(self::joinPaths(self::getBase(), $uri));
 	}
 
 	static function getFor($handle, $args = array()) {
-		$app = \Katu\App::get();
+		$app = App::get();
 
-		return new \Katu\Types\TURL(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle, $args)));
+		return new TURL(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle, $args)));
 	}
 
 	static function joinPaths() {

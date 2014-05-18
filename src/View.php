@@ -136,7 +136,7 @@ class View {
 		}
 
 		if (class_exists('\App\Models\User')) {
-			$data['_user'] = \App\Models\User::getLoggedIn();
+			$data['_user'] = \App\Models\User::getCurrent();
 		}
 
 		$data['_config']  = Config::get();
