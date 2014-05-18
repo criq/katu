@@ -23,15 +23,13 @@ class Random {
 		$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::LOW));
 
 		$seed = is_null($seed) ? rand(0, 1) : $seed;
-		$consonants = ;
-		$vowels = 'aeiouy';
 		$word = '';
 
 		for ($i = $seed; $i < $length + $seed; $i++) {
 			if ($i % 2) {
 				$word .= $generator->generateString(1, 'bcdfghjklmnpqrstvwxz');
 			} else {
-				$word .= $generator->generateString(1, $vowels);
+				$word .= $generator->generateString(1, 'aeiouy');
 			}
 		}
 
