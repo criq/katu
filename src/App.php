@@ -73,7 +73,7 @@ class App {
 		return $app;
 	}
 
-	static function getDB($name = NULL) {
+	static function getPDO($name = NULL) {
 		$names = array_keys(Config::getDB());
 
 		if ($name) {
@@ -81,14 +81,14 @@ class App {
 				throw new Exception("Invalid database connection name.");
 			}
 
-			return DB\Connection::getInstance($name);
+			return PDO\Connection::getInstance($name);
 		} else {
 			if (count($names) > 1) {
 				throw new Exception("Ambiguous database connection name.");
 			}
 		}
 
-		return DB\Connection::getInstance($names[0]);
+		return PDO\Connection::getInstance($names[0]);
 	}
 
 	static function run() {
