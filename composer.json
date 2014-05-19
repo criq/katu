@@ -4,7 +4,7 @@
 	"type": "library",
 	"repositories": [
 		{
-			"url": "https://github.com/criq/katu.git",
+			"url": "https://github.com/criq/amour.git",
 			"type": "git"
 		}
 	],
