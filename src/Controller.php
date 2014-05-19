@@ -22,7 +22,7 @@ class Controller {
 
 		try {
 
-			self::$data['_errors']  = self::$errors;
+			static::$data['_errors']  = static::$errors;
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
@@ -42,15 +42,15 @@ class Controller {
 	}
 
 	static function renderError($code = 500) {
-		return self::render('Errors/' . $code, $code);
+		return static::render('Errors/' . $code, $code);
 	}
 
 	static function renderNotFound($code = 404) {
-		return self::renderError($code);
+		return static::renderError($code);
 	}
 
 	static function renderUnauthorized($code = 401) {
-		return self::renderError($code);
+		return static::renderError($code);
 	}
 
 	static function isSubmittedWithToken($name = NULL) {
@@ -59,6 +59,33 @@ class Controller {
 		return $app->request->params('formSubmitted')
 			&& $app->request->params('formName') == $name
 			&& Utils\CSRF::isValidToken($app->request->params('formToken'));
+	}
+
+	static function isSubmittedByHuman($name = NULL) {
+		$app = App::get();
+
+		// Check basic form params.
+		if (!static::isSubmittedWithToken($name)) {
+			return FALSE;
+		}
+
+		// Get the token.
+		$token = Utils\CSRF::getValidTokenByToken($app->request->params('formToken'));
+		if (!$token) {
+			return FALSE;
+		}
+
+		// Check token age. Should be more than 1 second.
+		if ($token->getAge() < 1) {
+			return FALSE;
+		}
+
+		// Check captcha. Should be empty.
+		if ($app->request->params('cValue' . $token->secret) !== '') {
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	static function getSubmittedFormWithToken($name = NULL) {
@@ -73,10 +100,10 @@ class Controller {
 
 	static function addError($error) {
 		if ($error instanceof \Exception) {
-			return self::$errors[] = $error->getMessage();
+			return static::$errors[] = $error->getMessage();
 		}
 
-		return self::$errors[] = $error;
+		return static::$errors[] = $error;
 	}
 
 }

@@ -1,3 +1,8 @@
+{% set token = getCSRFToken() %}
+
 <input type="hidden" name="formSubmitted" value="1" />
 <input type="hidden" name="formName" value="{{ name }}" />
-<input type="hidden" name="formToken" value="{{ getCSRFToken() }}" />
+<input type="hidden" name="formToken" value="{{ token.token }}" />
+{% if captcha %}
+{% include "Blocks/formCaptcha.twig" with {token: token} %}
+{% endif %}

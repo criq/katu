@@ -3,37 +3,48 @@
 namespace Katu\Utils;
 
 use \Katu\Session;
+use \Katu\Utils\DateTime;
 
 class CSRF {
 
-	const TOKEN_TIMEOUT = 3600;
-	const TOKEN_LENGTH  = 10;
-
 	static function getFreshToken() {
-		$token = array(Random::getString(self::TOKEN_LENGTH), time());
+		$token = new \Katu\Form\Token();
 
 		$tokens = self::getValidTokens();
 		$tokens[] = $token;
 
-		Session::set('csrfTokens', $tokens);
+		Session::set('csrf.tokens', $tokens);
 
-		return $token[0];
+		return $token;
+	}
+
+	static function getAllTokens() {
+		return (array) Session::get('csrf.tokens');
 	}
 
 	static function getValidTokens() {
-		return array_values(array_filter(self::getTokens(), function($i) {
-			return Datetime::get($i[1])->isInTimeout(self::TOKEN_TIMEOUT);
+		return array_values(array_filter(self::getAllTokens(), function($token) {
+			return $token->isValid();
 		}));
 	}
 
-	static function getTokens() {
-		return (array) Session::get('csrfTokens');
+	static function getValidTokenByToken($tokenToken) {
+		foreach (static::getValidTokens() as $token) {
+			if ($token->token == $tokenToken && $token->isValid()) {
+				return $token;
+			}
+		}
+
+		return FALSE;
 	}
 
-	static function isValidToken($token) {
-		return in_array($token, array_map(function($i) {
-			return $i[0];
-		}, self::getValidTokens()));
+	static function isValidToken($tokenToken) {
+		$token = static::getValidTokenByToken($tokenToken);
+		if (!$token) {
+			return FALSE;
+		}
+
+		return $token->isValid();
 	}
 
 }

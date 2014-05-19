@@ -32,4 +32,8 @@ class DateTime extends \DateTime {
 		return $this->getTimestamp() < time();
 	}
 
+	public function getAge() {
+		return time() - $this->getTimestamp();
+	}
+
 }
