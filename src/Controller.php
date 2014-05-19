@@ -75,8 +75,8 @@ class Controller {
 			return FALSE;
 		}
 
-		// Check token age. Should be more than 1 second.
-		if ($token->getAge() < 1) {
+		// Check token age. Compare with tokens minDuration.
+		if ($token->getAge() < $token->minDuration) {
 			return FALSE;
 		}
 

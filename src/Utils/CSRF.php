@@ -7,8 +7,8 @@ use \Katu\Utils\DateTime;
 
 class CSRF {
 
-	static function getFreshToken() {
-		$token = new \Katu\Form\Token();
+	static function getFreshToken($params = array()) {
+		$token = new \Katu\Form\Token($params);
 
 		$tokens = self::getValidTokens();
 		$tokens[] = $token;

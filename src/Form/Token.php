@@ -14,10 +14,14 @@ class Token {
 	public $secret;
 	public $time;
 
-	public function __construct() {
+	public $minDuration;
+
+	public function __construct($params = array()) {
 		$this->token  = \Katu\Utils\Random::getString(self::TOKEN_LENGTH);
 		$this->secret = \Katu\Utils\Random::getNumber(self::SECRET_LENGTH);
 		$this->time   = time();
+
+		$this->minDuration = isset($params['minDuration']) ? (int) $params['minDuration'] : 0;
 	}
 
 	public function isValid() {

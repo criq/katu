@@ -124,7 +124,9 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCSRFToken', function() {
-			return Utils\CSRF::getFreshToken();
+			$params = (array) func_get_arg(0);
+
+			return Utils\CSRF::getFreshToken($params);
 		}));
 
 		$data['_site']['baseURL'] = Config::getApp('baseURL');
