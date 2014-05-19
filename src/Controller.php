@@ -81,7 +81,7 @@ class Controller {
 		}
 
 		// Check captcha. Should be empty.
-		if ($app->request->params('cValue' . $token->secret) !== '') {
+		if ($app->request->params('yourName_' . $token->secret) !== '') {
 			return FALSE;
 		}
 
