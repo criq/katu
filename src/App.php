@@ -65,6 +65,9 @@ class App {
 			}
 
 			$app = new \Slim\Slim($config);
+			$app->error(function (\Exception $e) use ($app) {
+				var_dump("A"); die;
+			});
 
 		}
 
