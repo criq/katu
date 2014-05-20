@@ -25,7 +25,7 @@ class ErrorHandler {
 		$errorHandler = function($message, $level, $file, $line) {
 			if ($message) {
 				file_put_contents(static::ERROR_LOG, implode(array(
-					'[' . \Katu\Utils\DateTime::get()->getDBDatetimeFormat() . ']',
+					'[' . Utils\DateTime::get()->getDBDatetimeFormat() . ']',
 					' Severity: ' . $level,
 					'; Message: ' . $message,
 					'; File: ' . $file,
