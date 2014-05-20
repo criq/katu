@@ -24,7 +24,7 @@
 		"intervention/image": "1.*"
 	},
 	"require-dev": {
-		"jabli/amiko": "dev-master",
+		"jabli/amiko": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {
