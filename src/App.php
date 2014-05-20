@@ -32,13 +32,6 @@ class App {
 			// Just use default timezone.
 		}
 
-		// Logger.
-		$logger = new \Monolog\Logger(LOGGER_CONTEXT);
-		$logger->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
-		$handler = new \Monolog\ErrorHandler($logger);
-		$handler->registerErrorHandler(array(), FALSE);
-		$handler->registerFatalHandler();
-
 		// Session.
 		\Katu\Session::setCookieParams();
 
@@ -64,9 +57,10 @@ class App {
 				$config = array();
 			}
 
+			// Logger.
 			$config['log.writer'] = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
 				'handlers' => array(
-					new \Monolog\Handler\StreamHandler('./logs/'.date('Y-m-d').'.log'),
+					new \Monolog\Handler\StreamHandler(ERROR_LOG),
 				),
 			));
 
