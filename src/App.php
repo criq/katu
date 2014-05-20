@@ -64,10 +64,13 @@ class App {
 				$config = array();
 			}
 
+			$config['log.writer'] = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
+				'handlers' => array(
+					new \Monolog\Handler\StreamHandler('./logs/'.date('Y-m-d').'.log'),
+				),
+			));
+
 			$app = new \Slim\Slim($config);
-			$app->error(function (\Exception $e) use ($app) {
-				var_dump("A"); die;
-			});
 
 		}
 
