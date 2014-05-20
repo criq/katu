@@ -8,7 +8,6 @@
 		"ext-json": "*",
 		"slim/slim": "@stable",
 		"slim/extras": "@stable",
-		"jabli/amiko": "dev-master@dev",
 		"doctrine/orm": "@stable",
 		"monolog/monolog": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
@@ -23,6 +22,9 @@
 		"swiftmailer/swiftmailer": "5.*",
 		"michelf/php-markdown": "1.*",
 		"intervention/image": "1.*"
+	},
+	"require-dev": {
+		"jabli/amiko": "dev-master",
 	},
 	"autoload": {
 		"psr-4": {
