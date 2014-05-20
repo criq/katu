@@ -22,7 +22,7 @@
 		"swiftmailer/swiftmailer": "5.*",
 		"michelf/php-markdown": "1.*",
 		"intervention/image": "1.*",
-		"jabli/amiko": "0.1@dev"
+		"jabli/amiko": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {
