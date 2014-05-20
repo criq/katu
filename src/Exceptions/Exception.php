@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Exceptions;
 
 class Exception extends \Exception {
 

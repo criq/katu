@@ -6,7 +6,7 @@ class Cache {
 
 	static function get($name, $callback, $timeout = NULL) {
 		if (!defined('TMP_PATH')) {
-			throw new Exception("Undefined TMP_PATH.");
+			throw new \Exception("Undefined TMP_PATH.");
 		}
 
 		$cache = new \Gregwar\Cache\Cache;

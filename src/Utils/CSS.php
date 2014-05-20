@@ -12,7 +12,7 @@ class CSS {
 
 			$path = FS::joinPaths(BASE_DIR, \Katu\Config::getApp('css', 'path'));
 			if (!file_exists($path)) {
-				throw new Exception("Invalid CSS path.");
+				throw new \Exception("Invalid CSS path.");
 			}
 
 			// Get directories.

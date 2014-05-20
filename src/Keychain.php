@@ -27,16 +27,16 @@ class Keychain {
 		if (is_null($cached)) {
 
 			if (!defined('BASE_DIR')) {
-				throw new Exception("Undefined BASE_DIR.");
+				throw new \Exception("Undefined BASE_DIR.");
 			}
 
 			$path = BASE_DIR . '/app/Keychains/' . Env::getPlatform() . '.yaml';
 			if (!file_exists($path)) {
-				throw new Exception("Missing keychain file.");
+				throw new \Exception("Missing keychain file.");
 			}
 
 			if (!is_readable($path)) {
-				throw new Exception("Unable to read keychain file.");
+				throw new \Exception("Unable to read keychain file.");
 			}
 
 			$cached = Cache::setRuntime('keychain', Utils\YAML::decode($path));

@@ -12,19 +12,19 @@ class CSV {
 		if ($path) {
 			@touch($path);
 			if (!is_writable($path)) {
-				throw new Exception("Unable to write into specified file.");
+				throw new \Exception("Unable to write into specified file.");
 			}
 
 			$this->path = $path;
 		} else {
 			if (!defined('TMP_PATH')) {
-				throw new Exception("Undefined TMP_PATH.");
+				throw new \Exception("Undefined TMP_PATH.");
 			}
 
 			$path = TMP_PATH . 'csv_' . Random::getFileName() . '.csv';
 			@touch($path);
 			if (!is_writable($path)) {
-				throw new Exception("Unable to write into a temporary file.");
+				throw new \Exception("Unable to write into a temporary file.");
 			}
 
 			$this->path = $path;

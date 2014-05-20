@@ -2,8 +2,6 @@
 
 namespace Katu;
 
-use Katu\Exception;
-
 class App {
 
 	static function init() {
@@ -78,13 +76,13 @@ class App {
 
 		if ($name) {
 			if (!in_array($name, $names)) {
-				throw new Exception("Invalid database connection name.");
+				throw new Exceptions\DatabaseConnectionException("Invalid database connection name.");
 			}
 
 			return PDO\Connection::getInstance($name);
 		} else {
 			if (count($names) > 1) {
-				throw new Exception("Ambiguous database connection name.");
+				throw new Exceptions\DatabaseConnectionException("Ambiguous database connection name.");
 			}
 		}
 
@@ -107,7 +105,7 @@ class App {
 				if (is_callable($callable)) {
 					return call_user_func_array($callable, array());
 				} else {
-					throw new Exception("Invalid method.");
+					throw new Exceptions\ControllerMethodNotFoundException("Invalid controller method.");
 				}
 			}
 		};
@@ -132,7 +130,7 @@ class App {
 					} catch (\Exception $e) {
 
 						user_error($e);
-						die(View::render('FW/Errors/default', array('error' => 'A route error occured.')));
+						die(View::render('Katu/Errors/default', array('error' => 'A route error occured.')));
 
 					}
 				}
@@ -152,7 +150,7 @@ class App {
 		} catch (\Exception $e) {
 
 			user_error($e);
-			die(View::render('FW/Errors/default', array('error' => 'Error running application.')));
+			die(View::render('Katu/Errors/default', array('error' => 'Error running application.')));
 
 		}
 

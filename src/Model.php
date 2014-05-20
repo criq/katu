@@ -34,7 +34,7 @@ class Model {
 
 	static function getPDO() {
 		if (!defined('static::DATABASE')) {
-			throw new Exception("Undefined database.");
+			throw new \Exception("Undefined database.");
 		}
 
 		return PDO\Connection::getInstance(static::DATABASE);
@@ -42,7 +42,7 @@ class Model {
 
 	static function getTable() {
 		if (!defined('static::TABLE')) {
-			throw new Exception("Undefined table.");
+			throw new \Exception("Undefined table.");
 		}
 
 		return static::TABLE;
@@ -65,7 +65,7 @@ class Model {
 	static function getColumn($name) {
 		$columns = static::getColumns();
 		if (!isset($columns[$name])) {
-			throw new Exception("Invalid column " . $name . ".");
+			throw new \Exception("Invalid column " . $name . ".");
 		}
 
 		return $columns[$name];
@@ -329,7 +329,7 @@ class Model {
 	static function getColumnUniqueID($column) {
 		$columns = static::getColumns();
 		if (!$columns[$column]->length) {
-			throw new Exception("Unable to get column length.");
+			throw new \Exception("Unable to get column length.");
 		}
 
 		do {

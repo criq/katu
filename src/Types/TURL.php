@@ -107,7 +107,7 @@ class TURL {
 		$url = '';
 
 		if (!isset($parts['host'])) {
-			throw new Exception("Missing host");
+			throw new \Exception("Missing host");
 		}
 
 		if (!isset($parts['scheme'])) {
