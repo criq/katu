@@ -10,7 +10,10 @@ class App {
 			define('BASE_DIR', realpath(__DIR__ . '/../../../../'));
 		}
 		if (!defined('LOG_PATH')) {
-			define('LOG_PATH', rtrim(BASE_DIR) . '/logs/');
+			define('LOG_PATH', Utils\FS::joinPaths(BASE_DIR, ErrorHandler::LOG_DIR));
+		}
+		if (!defined('ERROR_LOG')) {
+			define('ERROR_LOG', Utils\FS::joinPaths(LOG_PATH, ErrorHandler::ERROR_LOG));
 		}
 		if (!defined('TMP_DIR')) {
 			define('TMP_DIR', 'tmp');
@@ -18,12 +21,8 @@ class App {
 		if (!defined('TMP_PATH')) {
 			define('TMP_PATH', rtrim(BASE_DIR) . '/' . TMP_DIR . '/');
 		}
-		if (!defined('ERROR_LOG')) {
-			define('ERROR_LOG', LOG_PATH . 'error.log');
-		}
-		if (!defined('LOGGER_CONTEXT')) {
-			define('LOGGER_CONTEXT', 'app');
-		}
+
+
 
 		// Timezone.
 		try {
@@ -32,8 +31,12 @@ class App {
 			// Just use default timezone.
 		}
 
+
+
 		// Session.
 		\Katu\Session::setCookieParams();
+
+
 
 		// Default content-type header for debugging, will be probably overwritten by app.
 		header('Content-Type: text/html; charset=UTF-8');
