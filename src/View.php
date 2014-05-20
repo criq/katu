@@ -130,7 +130,7 @@ class View {
 		}));
 
 		$data['_site']['baseURL'] = Config::getApp('baseURL');
-		$data['_site']['APIURL']  = Config::getApp('apiURL');
+		$data['_site']['apiURL']  = Config::getApp('apiURL');
 		try {
 			$data['_site']['timezone'] = Config::getApp('timezone');
 		} catch (\Exception $e) {
