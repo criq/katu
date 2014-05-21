@@ -20,6 +20,7 @@ class ErrorHandler {
 		}
 
 		set_error_handler(array('static', 'errorHandler'));
+		set_exception_handler(array('static', 'exceptionHandler'));
 
 		register_shutdown_function(function() {
 			$error = error_get_last();
@@ -31,22 +32,25 @@ class ErrorHandler {
 	}
 
 	static function errorHandler($message, $level, $file, $line) {
-		if ($message) {
-			file_put_contents(ERROR_LOG, implode(array(
-				'[' . Utils\DateTime::get()->getDBDatetimeFormat() . ']',
-				' Severity: ' . $level,
-				'; Message: ' . $message,
-				'; File: ' . $file,
-				'; Line: ' . $line,
-				"\r\n",
-			)), FILE_APPEND);
-		}
-
-		return TRUE;
+		throw new \ErrorException($message, 0, $level, $file, $line);
 	}
 
-	static function errorLog($message, $level = 0, $file = NULL, $line = NULL) {
-		return static::errorHandler($message, $level, $file, $line);
+	static function exceptionHandler($exception) {
+		var_dump($exception); die;
+
+		return static::log($exception->getMessage());
+	}
+
+	static function log($message, $level = 0, $file = NULL, $line = NULL) {
+		$log = new \Monolog\Logger('app');
+		$log->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
+		$log->addError($message, array(
+			'level' => $level,
+			'file'  => $file,
+			'line'  => $line,
+		));
+
+		return TRUE;
 	}
 
 }
