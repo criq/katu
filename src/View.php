@@ -156,18 +156,6 @@ class View {
 		return trim($twig->render($template . '.twig', $data));
 	}
 
-	static function renderError() {
-		echo 'Error.';
-	}
-
-	static function renderNotFound() {
-		echo 'Not found.';
-	}
-
-	static function renderUnauthorized() {
-		echo 'Unauth.';
-	}
-
 	static function renderFromDir($dir, $template, $data = array()) {
 		return self::render($template, $data, array(
 			'dirs' => array(
