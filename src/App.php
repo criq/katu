@@ -121,7 +121,7 @@ class App {
 				foreach ((array) Config::get('routes') as $name => $route) {
 					try {
 
-						throw new Exception("Error Processing Request", 1);
+						throw new \Exception("Error Processing Request", 1);
 
 
 						$_route = $app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
