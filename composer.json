@@ -8,7 +8,6 @@
 		"ext-json": "*",
 		"slim/slim": "@stable",
 		"slim/extras": "@stable",
-		"filp/whoops": "1.*",
 		"flynsarmy/slim-monolog": "@stable",
 		"doctrine/orm": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
