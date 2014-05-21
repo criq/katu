@@ -41,7 +41,7 @@ class ErrorHandler {
 	}
 
 	static function plainError($error) {
-		header('Content-Type: text/plain; charset=UTF-8');
+		header('Content-Type: text/plain; charset=UTF-8', TRUE, 500);
 
 		die($error);
 	}
