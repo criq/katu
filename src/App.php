@@ -1,4 +1,4 @@
-a<?php
+<?php
 
 namespace Katu;
 
@@ -66,6 +66,10 @@ class App {
 
 			// Add error middleware.
 			$app->add(new Middleware\ErrorMiddleware());
+
+			$app->error(function (\Exception $e) use ($app) {
+				var_dump($e); die;
+			});
 
 		}
 

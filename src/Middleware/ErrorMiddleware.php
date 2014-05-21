@@ -11,15 +11,21 @@ class ErrorMiddleware extends \Slim\Middleware {
 
 		} catch (\Katu\Exceptions\UnauthorizedException $e) {
 
+			throw $e;
+
 			return \Katu\View::renderUnauthorized($e);
 
 		} catch (\Katu\Exceptions\NotFoundException $e) {
+
+			throw $e;
 
 			return \Katu\View::renderNotFound($e);
 
 		} catch (\Exception $e) {
 
-			\Katu\ErrorHandler::errorLog($e->getMessage());
+			throw $e;
+
+			\Katu\ErrorHandler::log($e->getMessage());
 
 			return \Katu\View::renderError($e);
 

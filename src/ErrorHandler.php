@@ -31,13 +31,11 @@ class ErrorHandler {
 		return TRUE;
 	}
 
-	static function errorHandler($message, $level, $file, $line) {
+	static function errorHandler($message, $level = 0, $file = NULL, $line = NULL) {
 		throw new \ErrorException($message, 0, $level, $file, $line);
 	}
 
 	static function exceptionHandler($exception) {
-		var_dump($exception); die;
-
 		return static::log($exception->getMessage());
 	}
 
