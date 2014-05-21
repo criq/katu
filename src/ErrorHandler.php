@@ -20,17 +20,16 @@ class ErrorHandler {
 		}
 
 		set_exception_handler(function ($exception) {
-			static::log($exception->getMessage());
+			static::process($exception->getMessage());
 
 			return TRUE;
 		});
 
 		register_shutdown_function(function() {
 			$error = error_get_last();
-
-			static::log($error['message'], $error['type'], $error['file'], $error['line']);
-
-			return static::plainError('An error occured.');
+			if ($error) {
+				return static::process($error['message'], $error['type'], $error['file'], $error['line']);
+			}
 		});
 
 		set_error_handler(function ($message, $level = 0, $file = NULL, $line = NULL) {
@@ -40,26 +39,28 @@ class ErrorHandler {
 		return TRUE;
 	}
 
-	static function plainError($error) {
-		header('Content-Type: text/plain; charset=UTF-8', TRUE, 500);
+	static function process($exception) {
+		static::log($exception);
 
-		die($error);
+		return static::returnPlainError('An error occured.');
 	}
 
 	static function log($message, $level = 0, $file = NULL, $line = NULL) {
-		if ($message) {
-			$log = new \Monolog\Logger('app');
-			$log->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
-			$log->addError($message, array(
-				'level' => $level,
-				'file'  => $file,
-				'line'  => $line,
-			));
+		$log = new \Monolog\Logger('KatuLogger');
+		$log->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
+		$log->addError($message, array(
+			'level' => $level,
+			'file'  => $file,
+			'line'  => $line,
+		));
 
-			return TRUE;
-		}
+		return TRUE;
+	}
 
-		return FALSE;
+	static function returnPlainError($error) {
+		header('Content-Type: text/plain; charset=UTF-8', TRUE, 500);
+
+		die($error);
 	}
 
 }
