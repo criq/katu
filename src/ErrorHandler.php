@@ -30,7 +30,7 @@ class ErrorHandler {
 
 			static::log($error['message'], $error['type'], $error['file'], $error['line']);
 
-			die('An error occured.');
+			return static::plainError('An error occured.');
 		});
 
 		set_error_handler(function ($message, $level = 0, $file = NULL, $line = NULL) {
@@ -38,6 +38,12 @@ class ErrorHandler {
 		});
 
 		return TRUE;
+	}
+
+	static function plainError($error) {
+		header('Content-Type: text/plain; charset=UTF-8');
+
+		die($error);
 	}
 
 	static function log($message, $level = 0, $file = NULL, $line = NULL) {
