@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class ControllerMethodNotFoundException extends Exception {
+class ControllerMethodNotFoundException extends NotFoundException {
 
 }

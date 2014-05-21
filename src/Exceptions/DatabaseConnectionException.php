@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class DatabaseConnectionException extends Exception {
+class DatabaseConnectionException extends ErrorException {
 
 }

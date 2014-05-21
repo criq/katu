@@ -22,8 +22,6 @@ class App {
 			define('TMP_PATH', rtrim(BASE_DIR) . '/' . TMP_DIR . '/');
 		}
 
-
-
 		// Timezone.
 		try {
 			date_default_timezone_set(Config::getApp('timezone'));
@@ -31,12 +29,8 @@ class App {
 			// Just use default timezone.
 		}
 
-
-
 		// Session.
 		\Katu\Session::setCookieParams();
-
-
 
 		// Default content-type header for debugging, will be probably overwritten by app.
 		header('Content-Type: text/html; charset=UTF-8');
@@ -67,7 +61,11 @@ class App {
 				),
 			));
 
+			// Create app.
 			$app = new \Slim\Slim($config);
+
+			// Add error middleware.
+			$app->add(new Middleware\ErrorMiddleware());
 
 		}
 
@@ -95,7 +93,7 @@ class App {
 	static function run() {
 		self::init();
 
-		$catch_all = function() {
+		$catchAll = function() {
 			$app = self::get();
 
 			// Map URL to controller method.
@@ -132,8 +130,7 @@ class App {
 
 					} catch (\Exception $e) {
 
-						user_error($e);
-						die(View::render('Katu/Errors/default', array('error' => 'A route error occured.')));
+						throw new Exceptions\ErrorException('A route error occured.');
 
 					}
 				}
@@ -145,15 +142,14 @@ class App {
 			}
 
 			// Catch-all.
-			$app->map('.+', $catch_all)->via('GET', 'POST');
+			$app->map('.+', $catchAll)->via('GET', 'POST');
 
 			// Run the app.
 			$app->run();
 
 		} catch (\Exception $e) {
 
-			user_error($e);
-			die(View::render('Katu/Errors/default', array('error' => 'Error running application.')));
+			throw new Exceptions\ErrorException('Error running application.');
 
 		}
 

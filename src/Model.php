@@ -29,7 +29,7 @@ class Model {
 			}
 		}
 
-		user_error('Undeclared class method ' . $name . '.');
+		trigger_error('Undeclared class method ' . $name . '.');
 	}
 
 	static function getPDO() {
