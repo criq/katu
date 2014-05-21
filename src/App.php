@@ -159,6 +159,12 @@ class App {
 
 			echo $app->response->getBody();
 
+		} catch (Exceptions\UserErrorException $e) {
+
+			Controller::renderError($e->getMessage());
+
+			echo $app->response->getBody();
+
 		} catch (\Exception $e) {
 
 			throw $e;
