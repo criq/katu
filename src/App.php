@@ -67,10 +67,6 @@ class App {
 			// Add error middleware.
 			$app->add(new Middleware\ErrorMiddleware());
 
-			$app->error(function (\Exception $e) use ($app) {
-				var_dump($e); die;
-			});
-
 		}
 
 		return $app;
@@ -153,9 +149,7 @@ class App {
 
 		} catch (\Exception $e) {
 
-			var_dump($e); die;
-
-			throw new Exceptions\ErrorException('Error running application.');
+			throw $e;
 
 		}
 

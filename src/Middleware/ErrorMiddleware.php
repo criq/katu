@@ -5,29 +5,19 @@ namespace Katu\Middleware;
 class ErrorMiddleware extends \Slim\Middleware {
 
 	public function call() {
+		$app = $this->app;
+
+		$app->error(function (\Exception $e) {
+			throw $e;
+		});
+
 		try {
 
 			$this->next->call();
 
-		} catch (\Katu\Exceptions\UnauthorizedException $e) {
-
-			throw $e;
-
-			return \Katu\View::renderUnauthorized($e);
-
-		} catch (\Katu\Exceptions\NotFoundException $e) {
-
-			throw $e;
-
-			return \Katu\View::renderNotFound($e);
-
 		} catch (\Exception $e) {
 
 			throw $e;
-
-			\Katu\ErrorHandler::log($e->getMessage());
-
-			return \Katu\View::renderError($e);
 
 		}
 	}

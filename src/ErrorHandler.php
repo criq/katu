@@ -19,36 +19,41 @@ class ErrorHandler {
 			define('ERROR_LOG', Utils\FS::joinPaths(LOG_PATH, static::ERROR_LOG));
 		}
 
-		set_error_handler(array('static', 'errorHandler'));
-		set_exception_handler(array('static', 'exceptionHandler'));
+		set_exception_handler(function ($exception) {
+			static::log($exception->getMessage());
+
+			return TRUE;
+		});
 
 		register_shutdown_function(function() {
 			$error = error_get_last();
 
-			call_user_func_array(array('static', 'errorHandler'), array($error['message'], $error['type'], $error['file'], $error['line']));
+			static::log($error['message'], $error['type'], $error['file'], $error['line']);
+
+			die('An error occured.');
+		});
+
+		set_error_handler(function ($message, $level = 0, $file = NULL, $line = NULL) {
+			throw new \ErrorException($message, 0, $level, $file, $line);
 		});
 
 		return TRUE;
 	}
 
-	static function errorHandler($message, $level = 0, $file = NULL, $line = NULL) {
-		throw new \ErrorException($message, 0, $level, $file, $line);
-	}
-
-	static function exceptionHandler($exception) {
-		return static::log($exception->getMessage());
-	}
-
 	static function log($message, $level = 0, $file = NULL, $line = NULL) {
-		$log = new \Monolog\Logger('app');
-		$log->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
-		$log->addError($message, array(
-			'level' => $level,
-			'file'  => $file,
-			'line'  => $line,
-		));
+		if ($message) {
+			$log = new \Monolog\Logger('app');
+			$log->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
+			$log->addError($message, array(
+				'level' => $level,
+				'file'  => $file,
+				'line'  => $line,
+			));
 
-		return TRUE;
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 }
