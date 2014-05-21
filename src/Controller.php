@@ -22,7 +22,7 @@ class Controller {
 
 		try {
 
-			static::$data['_errors']  = static::$errors;
+			static::$data['_errors'] = static::$errors;
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
@@ -35,8 +35,7 @@ class Controller {
 
 		} catch (\Exception $e) {
 
-			trigger_error($e);
-			die('Error rendering the template.');
+			throw new Exceptions\TemplateException("Error rendering the template.");
 
 		}
 	}

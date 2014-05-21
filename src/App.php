@@ -121,6 +121,9 @@ class App {
 				foreach ((array) Config::get('routes') as $name => $route) {
 					try {
 
+						throw new Exception("Error Processing Request", 1);
+
+
 						$_route = $app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
 						if (is_string($name) && trim($name)) {
 							$_route->name($name);
@@ -130,7 +133,7 @@ class App {
 
 					} catch (\Exception $e) {
 
-						throw new Exceptions\ErrorException('A route error occured.');
+						throw new Exceptions\ErrorException("A route error occured.");
 
 					}
 				}
@@ -146,6 +149,18 @@ class App {
 
 			// Run the app.
 			$app->run();
+
+		} catch (Exceptions\NotFoundException $e) {
+
+			Controller::renderNotFound();
+
+			echo $app->response->getBody();
+
+		} catch (Exceptions\UnauthorizedException $e) {
+
+			Controller::renderUnauthorized();
+
+			echo $app->response->getBody();
 
 		} catch (\Exception $e) {
 
