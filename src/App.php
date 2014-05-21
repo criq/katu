@@ -149,6 +149,8 @@ class App {
 
 		} catch (\Exception $e) {
 
+			var_dump($e); die;
+
 			throw new Exceptions\ErrorException('Error running application.');
 
 		}
