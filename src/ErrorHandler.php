@@ -48,6 +48,14 @@ class ErrorHandler {
 	}
 
 	static function handle($e) {
+		if (class_exists('\App\Extensions\ErrorHandler') && method_exists('\App\Extensions\ErrorHandler', 'resolveException')) {
+			return \App\Extensions\ErrorHandler::resolveException($e);
+		}
+
+		return static::resolveException($e);
+	}
+
+	static function resolveException($e) {
 		try {
 
 			throw $e;
