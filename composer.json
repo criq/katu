@@ -17,7 +17,7 @@
 		"jwage/easy-csv": "*",
 		"mustangostang/spyc": "*",
 		"ircmaxell/random-lib": "1.*",
-		"facebook/php-sdk": "@stable",
+		"facebook/php-sdk": "4.*",
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
 		"michelf/php-markdown": "1.*",
