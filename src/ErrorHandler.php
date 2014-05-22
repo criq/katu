@@ -20,7 +20,7 @@ class ErrorHandler {
 		}
 
 		set_exception_handler(function ($exception) {
-			static::process($exception->getMessage());
+			static::handle($exception->getMessage());
 
 			return TRUE;
 		});
@@ -28,7 +28,7 @@ class ErrorHandler {
 		register_shutdown_function(function() {
 			$error = error_get_last();
 			if ($error) {
-				return static::process($error['message'], $error['type'], $error['file'], $error['line']);
+				return static::handle($error['message'], $error['type'], $error['file'], $error['line']);
 			}
 		});
 
@@ -39,7 +39,7 @@ class ErrorHandler {
 		return TRUE;
 	}
 
-	static function process($exception) {
+	static function handle($exception) {
 		static::log($exception);
 
 		return static::returnPlainError('An error occured.');
