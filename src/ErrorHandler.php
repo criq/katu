@@ -23,7 +23,7 @@ class ErrorHandler {
 		ini_set('error_log', ERROR_LOG);
 
 		set_exception_handler(function ($exception) {
-			static::handle($exception->getMessage());
+			static::handle($exception);
 
 			return TRUE;
 		});
@@ -47,12 +47,10 @@ class ErrorHandler {
 		return TRUE;
 	}
 
-	static function handle($exception) {
+	static function handle($e) {
 		try {
 
-			$app = App::get();
-
-			throw $exception;
+			throw $e;
 
 		} catch (Exceptions\NotFoundException $e) {
 
