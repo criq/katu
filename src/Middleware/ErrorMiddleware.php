@@ -17,7 +17,7 @@ class ErrorMiddleware extends \Slim\Middleware {
 
 		} catch (\Exception $e) {
 
-			throw $e;
+			\Katu\ErrorHandler::handle($e);
 
 		}
 	}

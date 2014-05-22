@@ -147,24 +147,6 @@ class App {
 			// Run the app.
 			$app->run();
 
-		} catch (Exceptions\NotFoundException $e) {
-
-			Controller::renderNotFound();
-
-			echo $app->response->getBody();
-
-		} catch (Exceptions\UnauthorizedException $e) {
-
-			Controller::renderUnauthorized();
-
-			echo $app->response->getBody();
-
-		} catch (Exceptions\UserErrorException $e) {
-
-			Controller::renderError($e->getMessage());
-
-			echo $app->response->getBody();
-
 		} catch (\Exception $e) {
 
 			throw $e;

@@ -19,17 +19,13 @@ class ErrorHandler {
 			define('ERROR_LOG', Utils\FS::joinPaths(LOG_PATH, static::ERROR_LOG));
 		}
 
+		ini_set('display_errors', FALSE);
+		ini_set('error_log', ERROR_LOG);
+
 		set_exception_handler(function ($exception) {
 			static::handle($exception->getMessage());
 
 			return TRUE;
-		});
-
-		register_shutdown_function(function() {
-			$error = error_get_last();
-			if ($error) {
-				return static::handle($error['message'], $error['type'], $error['file'], $error['line']);
-			}
 		});
 
 		set_error_handler(function ($message, $level = 0, $file = NULL, $line = NULL) {
@@ -37,12 +33,6 @@ class ErrorHandler {
 		});
 
 		return TRUE;
-	}
-
-	static function handle($exception) {
-		static::log($exception);
-
-		return static::returnPlainError('An error occured.');
 	}
 
 	static function log($message, $level = 0, $file = NULL, $line = NULL) {
@@ -57,10 +47,26 @@ class ErrorHandler {
 		return TRUE;
 	}
 
-	static function returnPlainError($error) {
-		header('Content-Type: text/plain; charset=UTF-8', TRUE, 500);
+	static function handle($exception) {
+		try {
 
-		die($error);
+			$app = App::get();
+
+			throw $exception;
+
+		} catch (Exceptions\NotFoundException $e) {
+
+			Controller::renderNotFound();
+
+		} catch (Exceptions\UnauthorizedException $e) {
+
+			Controller::renderUnauthorized();
+
+		} catch (Exceptions\UserErrorException $e) {
+
+			Controller::renderError($e->getMessage());
+
+		}
 	}
 
 }
