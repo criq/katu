@@ -22,6 +22,13 @@ class User extends \Katu\Model {
 		return \App\Models\UserService::create($this, $serviceName, $serviceUserID);
 	}
 
+	public function getDefaultUserServiceByName($serviceName) {
+		return \App\Models\UserService::getOneBy(array(
+			'userID'      => (int)    ($this->id),
+			'serviceName' => (string) ($serviceName),
+		));
+	}
+
 	public function login() {
 		return \Katu\Session::set('katu.user.id', (int) $this->id);
 	}

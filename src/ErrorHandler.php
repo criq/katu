@@ -22,14 +22,14 @@ class ErrorHandler {
 		ini_set('display_errors', FALSE);
 		ini_set('error_log', ERROR_LOG);
 
+		set_error_handler(function ($message, $level = 0, $file = NULL, $line = NULL) {
+			throw new \ErrorException($message, 0, $level, $file, $line);
+		});
+
 		set_exception_handler(function ($exception) {
 			static::handle($exception);
 
 			return TRUE;
-		});
-
-		set_error_handler(function ($message, $level = 0, $file = NULL, $line = NULL) {
-			throw new \ErrorException($message, 0, $level, $file, $line);
 		});
 
 		register_shutdown_function(function () {

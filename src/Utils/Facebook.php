@@ -43,6 +43,9 @@ class Facebook {
 
 			}
 
+			$userService->setServiceAccessToken($session->getToken());
+			$userService->save();
+
 			$user = $userService->getUser();
 			$user->setName($facebookUser->getName());
 			$user->save();
@@ -70,13 +73,11 @@ class Facebook {
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
-					// Show error?
-					return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
+					return $callbacks->call('error');
 
 				} catch (\Exception $e) {
 
-					// Show error?
-					return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
+					return $callbacks->call('error');
 
 				}
 
@@ -90,22 +91,21 @@ class Facebook {
 		// Other error.
 		} catch (\Exception $e) {
 
-			// Show error?
-			return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
+			return $callbacks->call('error');
 
 		}
 
 		return self::render("Login/facebook");
 	}
 
-	static function startSession() {
+	static function startAppSession() {
 		Session::start();
 
 		return FacebookSession::setDefaultApplication(Config::get('facebook', 'appID'), Config::get('facebook', 'secret'));
 	}
 
 	static function getSession() {
-		static::startSession();
+		static::startAppSession();
 
 		return new \Facebook\FacebookSession(static::getToken());
 	}
