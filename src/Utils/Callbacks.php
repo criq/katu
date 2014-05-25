@@ -19,11 +19,8 @@ class Callbacks {
 		if ($this->exists($name)) {
 			throw new \Exception("Callback exists.");
 		}
-		if (!is_callable($callable)) {
-			throw new \Exception("Callback is not callable.");
-		}
 
-		$this->callbacks[$name] = $callable;
+		$this->callbacks[$name] = new Callback($callable);
 	}
 
 	public function exists($name) {
@@ -35,7 +32,7 @@ class Callbacks {
 			throw new \Exception("Callback doesn't exist.");
 		}
 
-		return call_user_func_array($this->callbacks[$name], $args);
+		return $this->callbacks[$name]->call($args);
 	}
 
 }
