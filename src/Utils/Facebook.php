@@ -7,27 +7,31 @@ use \Katu\Config;
 use \Katu\Session;
 use \Katu\Utils\Facebook;
 use \Katu\Utils\URL;
+use \Katu\Types\TURL;
 use \Facebook\FacebookSession;
 use \Facebook\FacebookRedirectLoginHelper;
 
 class Facebook {
 
-	static function login($callbacks) {
+	static function login(TURL $redirectURL, Callbacks $callbacks, $scopes = array()) {
 		try {
 
 			$app = App::get();
 
-			Session::start();
+			$session = static::getSession();
 
-			FacebookSession::setDefaultApplication(Config::get('facebook', 'appID'), Config::get('facebook', 'secret'));
-			$helper = new FacebookRedirectLoginHelper((string) URL::getFor('login.facebook'));
+			$helper = new FacebookRedirectLoginHelper((string) $redirectURL);
 
-			$session = Facebook::getSession();
-			#var_dump($session->getSessionInfo()); die;
+			// Check the Facebook user.
+			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
 
-			$request = new \Facebook\FacebookRequest($session, 'GET', '/me');
-
-			$facebookUser = $request->execute()->getGraphObject(\Facebook\GraphUser::className());
+			// Check scopes.
+			$sessionInfo = $session->getSessionInfo();
+			foreach ($scopes as $scope) {
+				if (!in_array($scope, $sessionInfo->getScopes())) {
+					throw new \Facebook\FacebookSDKException("Missing " . $scope . " scope.");
+				}
+			}
 
 			// Login the user.
 			$userService = \App\Models\UserService::getByServiceAndID('facebook', $facebookUser->getId())->getOne();
@@ -62,24 +66,24 @@ class Facebook {
 						throw new \Exception();
 					}
 
-					return \Katu\Controller::redirect(URL::getFor('login.facebook'));
+					return \Katu\Controller::redirect($redirectURL);
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
 					// Show error?
-					return \Katu\Controller::redirect($helper->getLoginUrl());
+					return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
 
 				} catch (\Exception $e) {
 
 					// Show error?
-					return \Katu\Controller::redirect($helper->getLoginUrl());
+					return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
 
 				}
 
 			// Redirect to login.
 			} else {
 
-				return \Katu\Controller::redirect($helper->getLoginUrl());
+				return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
 
 			}
 
@@ -87,14 +91,22 @@ class Facebook {
 		} catch (\Exception $e) {
 
 			// Show error?
-			return \Katu\Controller::redirect($helper->getLoginUrl());
+			return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
 
 		}
 
 		return self::render("Login/facebook");
 	}
 
+	static function startSession() {
+		Session::start();
+
+		return FacebookSession::setDefaultApplication(Config::get('facebook', 'appID'), Config::get('facebook', 'secret'));
+	}
+
 	static function getSession() {
+		static::startSession();
+
 		return new \Facebook\FacebookSession(static::getToken());
 	}
 

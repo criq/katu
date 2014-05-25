@@ -6,9 +6,20 @@ class Callbacks {
 
 	public $callbacks;
 
-	public function __construct($name = NULL, $callable = NULL) {
-		if ($name || $callable) {
-			$this->add($name, $callable);
+	public function __construct() {
+		// One arg, an array of callbacks.
+		if (count(func_get_args()) == 1 && is_array(func_get_arg(0))) {
+			foreach (func_get_arg(0) as $name => $callable) {
+				$this->add($name, $callable);
+			}
+
+		// Two args, name and callable.
+		} elseif (count(func_get_args()) == 2) {
+			$this->add(func_get_arg(0), func_get_arg(1));
+
+		// Unable to process.
+		} elseif (count(func_get_args())) {
+			throw new \Exception("Invalid callback arguments.");
 		}
 	}
 
@@ -20,7 +31,11 @@ class Callbacks {
 			throw new \Exception("Callback exists.");
 		}
 
-		$this->callbacks[$name] = new Callback($callable);
+		if ($callable instanceof Callback) {
+			$this->callbacks[$name] = $callable;
+		} else {
+			$this->callbacks[$name] = new Callback($callable);
+		}
 	}
 
 	public function exists($name) {

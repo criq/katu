@@ -9,9 +9,13 @@ class Controller {
 	static $errors = array();
 	static $data   = array();
 
-	static function redirect($url = NULL, $code = 302) {
+	static function redirect($url, $code = 302) {
 		try {
-			App::get()->redirect($url, $code);
+
+			$app = App::get();
+
+			return $app->redirect((string) $url, $code);
+
 		} catch (\Exception $e) {
 
 		}
@@ -35,7 +39,7 @@ class Controller {
 
 		} catch (\Exception $e) {
 
-			throw new Exceptions\TemplateException("Error rendering the template.");
+			throw new Exceptions\TemplateException($e->getMessage());
 
 		}
 	}
