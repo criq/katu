@@ -29,11 +29,11 @@ class API {
 	}
 
 	static function get($endpoint, $params = array(), &$curl = NULL) {
-		return \Amour\Amour::get(static::getURL($endpoint), $params, $curl);
+		return \Amiko\Amiko::get(static::getURL($endpoint), $params, $curl);
 	}
 
 	static function post($endpoint, $params = array(), &$curl = NULL) {
-		return \Amour\Amour::post(static::getURL($endpoint), $params, $curl);
+		return \Amiko\Amiko::post(static::getURL($endpoint), $params, $curl);
 	}
 
 }
