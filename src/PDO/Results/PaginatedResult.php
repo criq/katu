@@ -52,6 +52,10 @@ class PaginatedResult extends Result {
 		return $this->pagination->perPage;
 	}
 
+	public function getPages() {
+		return $this->pagination->pages;
+	}
+
 	public function getCount() {
 		return count($this->statement);
 	}
