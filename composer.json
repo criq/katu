@@ -9,7 +9,6 @@
 		"slim/slim": "@stable",
 		"slim/extras": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
-		"doctrine/orm": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"twig/twig": "@stable",
 		"twig/extensions": "@stable",
