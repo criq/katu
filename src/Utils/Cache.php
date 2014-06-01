@@ -4,17 +4,23 @@ namespace Katu\Utils;
 
 class Cache {
 
-	static function get($name, $callback, $timeout = NULL) {
-		if (!defined('TMP_PATH')) {
-			throw new \Exception("Undefined TMP_PATH.");
+	static function get($name, $callback, $timeout = NULL, $options = array()) {
+		if (isset($options['dir'])) {
+			@mkdir(dirname($dir), 0777, TRUE);
+			$dir = $options['dir'];
+		} else {
+			if (!defined('TMP_PATH')) {
+				throw new \Exception("Undefined TMP_PATH.");
+			}
+			$dir = TMP_PATH;
 		}
 
 		$cache = new \Gregwar\Cache\Cache;
-		$cache->setCacheDirectory(TMP_PATH);
+		$cache->setCacheDirectory($dir);
 		$cache->setPrefixSize(0);
 
 		$opts = array();
-		if (isset($timeout) && $timeout) {
+		if (isset($timeout) && !is_null($timeout)) {
 			$opts['max-age'] = $timeout;
 		}
 
@@ -29,7 +35,7 @@ class Cache {
 		return implode('__', (array) $name);
 	}
 
-	static function getURL($url, $timeout = NULL) {
+	static function getURL($url, $timeout = NULL, $options = array()) {
 		return \Katu\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
 
 			$curl = new \Curl;
@@ -39,7 +45,7 @@ class Cache {
 
 			return $curl->response;
 
-		}, $timeout);
+		}, $timeout, $options);
 	}
 
 	static function initRuntime() {
