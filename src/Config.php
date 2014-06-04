@@ -17,6 +17,7 @@ class Config {
 			$config = new \Katu\Types\TArray(self::getAll());
 
 			try {
+
 				$cached = call_user_func_array(array($config, 'getValueByArgs'), func_get_args());
 
 			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
