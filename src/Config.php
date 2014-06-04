@@ -7,14 +7,23 @@ use \Katu\Utils\Cache;
 class Config {
 
 	static function get() {
-		$cacheName = 'config.' . implode('.', func_get_args());
+		$configName = implode('.', func_get_args());
+		$cacheName  = 'config.' . $configName;
+
 		$cached = Cache::getRuntime($cacheName);
 
 		if (is_null($cached)) {
 
 			$config = new \Katu\Types\TArray(self::getAll());
 
-			$cached = call_user_func_array(array($config, 'getValueByArgs'), func_get_args());
+			try {
+				$cached = call_user_func_array(array($config, 'getValueByArgs'), func_get_args());
+
+			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
+
+				throw new \Katu\Exceptions\MissingConfigException("Missing config for " . $configName . ".");
+
+			}
 
 		}
 
