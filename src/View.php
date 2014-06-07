@@ -79,7 +79,7 @@ class View {
 			}
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getURLFor', function() {
+		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
 			return call_user_func_array(array('\Katu\Utils\URL', 'getFor'), func_get_args());
 		}));
 
@@ -130,7 +130,7 @@ class View {
 		}));
 
 		$data['_site']['baseURL'] = Config::getApp('baseURL');
-		$data['_site']['APIURL']  = Config::getApp('apiURL');
+		$data['_site']['apiURL']  = Config::getApp('apiURL');
 		try {
 			$data['_site']['timezone'] = Config::getApp('timezone');
 		} catch (\Exception $e) {

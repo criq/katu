@@ -8,7 +8,7 @@ class TCoordinate {
 
 	public function __construct($value) {
 		if (!static::isValid($value)) {
-			throw new Exception("Invalid coordinate.");
+			throw new \Exception("Invalid coordinate.");
 		}
 
 		$this->value = (float) $value;

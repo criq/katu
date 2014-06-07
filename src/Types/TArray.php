@@ -25,7 +25,7 @@ class TArray {
 			if (isset($value[$key])) {
 				$value = $value[$key];
 			} else {
-				throw new \Exception("Invalid key " . $key . ".");
+				throw new \Katu\Exceptions\MissingArrayKeyException("Invalid key " . $key . ".");
 			}
 		}
 

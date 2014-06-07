@@ -8,8 +8,7 @@
 		"ext-json": "*",
 		"slim/slim": "@stable",
 		"slim/extras": "@stable",
-		"doctrine/orm": "@stable",
-		"monolog/monolog": "@stable",
+		"flynsarmy/slim-monolog": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"twig/twig": "@stable",
 		"twig/extensions": "@stable",
@@ -17,11 +16,12 @@
 		"jwage/easy-csv": "*",
 		"mustangostang/spyc": "*",
 		"ircmaxell/random-lib": "1.*",
-		"facebook/php-sdk": "@stable",
+		"facebook/php-sdk-v4" : "4.0.*",
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
 		"michelf/php-markdown": "1.*",
-		"intervention/image": "1.*"
+		"intervention/image": "1.*",
+		"jabli/amiko": "*"
 	},
 	"autoload": {
 		"psr-4": {

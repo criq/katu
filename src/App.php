@@ -2,8 +2,6 @@
 
 namespace Katu;
 
-use Katu\Exception;
-
 class App {
 
 	static function init() {
@@ -12,19 +10,16 @@ class App {
 			define('BASE_DIR', realpath(__DIR__ . '/../../../../'));
 		}
 		if (!defined('LOG_PATH')) {
-			define('LOG_PATH', rtrim(BASE_DIR) . '/logs/');
+			define('LOG_PATH', Utils\FS::joinPaths(BASE_DIR, ErrorHandler::LOG_DIR));
+		}
+		if (!defined('ERROR_LOG')) {
+			define('ERROR_LOG', Utils\FS::joinPaths(LOG_PATH, ErrorHandler::ERROR_LOG));
 		}
 		if (!defined('TMP_DIR')) {
 			define('TMP_DIR', 'tmp');
 		}
 		if (!defined('TMP_PATH')) {
 			define('TMP_PATH', rtrim(BASE_DIR) . '/' . TMP_DIR . '/');
-		}
-		if (!defined('ERROR_LOG')) {
-			define('ERROR_LOG', LOG_PATH . 'error.log');
-		}
-		if (!defined('LOGGER_CONTEXT')) {
-			define('LOGGER_CONTEXT', 'app');
 		}
 
 		// Timezone.
@@ -33,13 +28,6 @@ class App {
 		} catch (\Exception $e) {
 			// Just use default timezone.
 		}
-
-		// Logger.
-		$logger = new \Monolog\Logger(LOGGER_CONTEXT);
-		$logger->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
-		$handler = new \Monolog\ErrorHandler($logger);
-		$handler->registerErrorHandler(array(), FALSE);
-		$handler->registerFatalHandler();
 
 		// Session.
 		\Katu\Session::setCookieParams();
@@ -66,7 +54,18 @@ class App {
 				$config = array();
 			}
 
+			// Logger.
+			$config['log.writer'] = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
+				'handlers' => array(
+					new \Monolog\Handler\StreamHandler(ERROR_LOG),
+				),
+			));
+
+			// Create app.
 			$app = new \Slim\Slim($config);
+
+			// Add error middleware.
+			$app->add(new Middleware\ErrorMiddleware());
 
 		}
 
@@ -78,13 +77,13 @@ class App {
 
 		if ($name) {
 			if (!in_array($name, $names)) {
-				throw new Exception("Invalid database connection name.");
+				throw new Exceptions\DatabaseConnectionException("Invalid database connection name.");
 			}
 
 			return PDO\Connection::getInstance($name);
 		} else {
 			if (count($names) > 1) {
-				throw new Exception("Ambiguous database connection name.");
+				throw new Exceptions\DatabaseConnectionException("Ambiguous database connection name.");
 			}
 		}
 
@@ -94,7 +93,7 @@ class App {
 	static function run() {
 		self::init();
 
-		$catch_all = function() {
+		$catchAll = function() {
 			$app = self::get();
 
 			// Map URL to controller method.
@@ -107,7 +106,7 @@ class App {
 				if (is_callable($callable)) {
 					return call_user_func_array($callable, array());
 				} else {
-					throw new Exception("Invalid method.");
+					throw new Exceptions\ControllerMethodNotFoundException("Invalid controller method.");
 				}
 			}
 		};
@@ -131,8 +130,7 @@ class App {
 
 					} catch (\Exception $e) {
 
-						user_error($e);
-						die(View::render('FW/Errors/default', array('error' => 'A route error occured.')));
+						throw new Exceptions\ErrorException("A route error occured.");
 
 					}
 				}
@@ -144,15 +142,14 @@ class App {
 			}
 
 			// Catch-all.
-			$app->map('.+', $catch_all)->via('GET', 'POST');
+			$app->map('.+', $catchAll)->via('GET', 'POST');
 
 			// Run the app.
 			$app->run();
 
 		} catch (\Exception $e) {
 
-			user_error($e);
-			die(View::render('FW/Errors/default', array('error' => 'Error running application.')));
+			throw $e;
 
 		}
 

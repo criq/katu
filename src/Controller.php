@@ -9,9 +9,13 @@ class Controller {
 	static $errors = array();
 	static $data   = array();
 
-	static function redirect($url = NULL, $code = 302) {
+	static function redirect($url, $code = 302) {
 		try {
-			App::get()->redirect($url, $code);
+
+			$app = App::get();
+
+			return $app->redirect((string) $url, $code);
+
 		} catch (\Exception $e) {
 
 		}
@@ -22,7 +26,7 @@ class Controller {
 
 		try {
 
-			static::$data['_errors']  = static::$errors;
+			static::$data['_errors'] = static::$errors;
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
@@ -35,8 +39,7 @@ class Controller {
 
 		} catch (\Exception $e) {
 
-			user_error($e);
-			die('Error rendering the template.');
+			throw new Exceptions\TemplateException($e->getMessage());
 
 		}
 	}

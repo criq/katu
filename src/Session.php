@@ -6,6 +6,12 @@ class Session {
 
 	const REFERENCE_KEY = 'katu.session';
 
+	static function start() {
+		if (!session_id()) {
+			session_start();
+		}
+	}
+
 	static function init() {
 		if (!session_id()) {
 			static::setCookieParams();

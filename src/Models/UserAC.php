@@ -10,7 +10,7 @@ class UserAC extends \Katu\Model {
 
 	static function create($user, $ac) {
 		if (!self::checkCRUDParams($user, $ac)) {
-			throw new Exception("Invalid params.");
+			throw new \Exception("Invalid params.");
 		}
 
 		return self::insert(array(
@@ -29,10 +29,10 @@ class UserAC extends \Katu\Model {
 
 	static function checkCRUDParams($user, $ac) {
 		if (!$user || !($user instanceof User)) {
-			throw new Exception("Invalid user.");
+			throw new \Exception("Invalid user.");
 		}
 		if (!trim($ac)) {
-			throw new Exception("Invalid AC.");
+			throw new \Exception("Invalid AC.");
 		}
 
 		return TRUE;

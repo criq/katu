@@ -12,19 +12,19 @@ class CSV {
 		if ($path) {
 			@touch($path);
 			if (!is_writable($path)) {
-				throw new Exception("Unable to write into specified file.");
+				throw new \Exception("Unable to write into specified file.");
 			}
 
 			$this->path = $path;
 		} else {
 			if (!defined('TMP_PATH')) {
-				throw new Exception("Undefined TMP_PATH.");
+				throw new \Exception("Undefined TMP_PATH.");
 			}
 
 			$path = TMP_PATH . 'csv_' . Random::getFileName() . '.csv';
 			@touch($path);
 			if (!is_writable($path)) {
-				throw new Exception("Unable to write into a temporary file.");
+				throw new \Exception("Unable to write into a temporary file.");
 			}
 
 			$this->path = $path;
@@ -51,15 +51,15 @@ class CSV {
 	}
 
 	public function add() {
-		return $this->writer->writeRow(func_get_args());
+		return $this->writer->writeRow(is_array(@func_get_arg(0)) ? func_get_arg(0) : func_get_args());
 	}
 
-	public function respond($save_as) {
+	public function respond($saveAs) {
 		$app = \Katu\App::get();
 
 		$app->response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
 
-		return Download::respond($this->path, $save_as, 'inline');
+		return Download::respond($this->path, $saveAs, 'inline');
 	}
 
 	public function delete() {

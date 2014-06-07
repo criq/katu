@@ -15,7 +15,7 @@ class Expression {
 			return $this->value->format('Y-m-d H:i:s');
 		}
 
-		return (string) $value;
+		return (string) $this->value;
 	}
 
 }

@@ -2,80 +2,132 @@
 
 namespace Katu\Utils;
 
+use \Katu\App;
+use \Katu\Config;
+use \Katu\Session;
+use \Katu\Utils\Facebook;
+use \Katu\Utils\URL;
+use \Katu\Types\TURL;
+use \Facebook\FacebookSession;
+use \Facebook\FacebookRedirectLoginHelper;
+
 class Facebook {
 
-	public $facebook;
+	static function login(TURL $redirectURL, Callbacks $callbacks, $scopes = array()) {
+		try {
 
-	public function __construct() {
-		$this->facebook = new \Facebook(array(
-			'appId'  => \Katu\Config::get('facebook', 'appID'),
-			'secret' => \Katu\Config::get('facebook', 'secret'),
-		));
+			$app = App::get();
 
-		$this->facebook->setAccessToken($this->getAccessToken());
+			$session = static::getSession();
 
-		return TRUE;
-	}
+			$helper = new FacebookRedirectLoginHelper((string) $redirectURL);
 
-	public function getLoginURL() {
-		return \Katu\Types\TURL::make($this->facebook->getLoginUrl(array(
-			'redirect_uri' => (string) \Katu\Utils\URL::getCurrent()->getWithoutQuery(),
-		)));
-	}
+			// Check the Facebook user.
+			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
 
-	public function getAppID() {
-		return $this->facebook->getAppID();
-	}
-
-	public function getAppSecret() {
-		return $this->facebook->getAppSecret();
-	}
-
-	public function getTokenURL($code) {
-		return \Katu\Types\TURL::make('https://graph.facebook.com/oauth/access_token', array(
-			'code'          => $code,
-			'client_id'     => $this->getAppID(),
-			'client_secret' => $this->getAppSecret(),
-			'redirect_uri'  => (string) \Katu\Utils\URL::getCurrent()->getWithoutQuery(),
-		));
-	}
-
-	public function getToken($code) {
-		$curl = new \Curl();
-		$token_url = $this->getTokenURL($code);
-
-		if ($curl->get((string) $token_url) === 0) {
-			parse_str($curl->response, $params);
-			if (isset($params['access_token'])) {
-				return $params['access_token'];
+			// Check scopes.
+			$sessionInfo = $session->getSessionInfo();
+			foreach ($scopes as $scope) {
+				if (!in_array($scope, $sessionInfo->getScopes())) {
+					throw new \Facebook\FacebookSDKException("Missing " . $scope . " scope.");
+				}
 			}
+
+			// Login the user.
+			$userService = \App\Models\UserService::getByServiceAndID('facebook', $facebookUser->getId())->getOne();
+			if (!$userService) {
+
+				// Create new user.
+				$user = \App\Models\User::create();
+				$userService = $user->addUserService('facebook', $facebookUser->getId());
+
+			}
+
+			$userService->setServiceAccessToken($session->getToken());
+			$userService->save();
+
+			$user = $userService->getUser();
+			$user->setName($facebookUser->getName());
+			$user->save();
+
+			$user->login();
+
+			return $callbacks->call('success');
+
+		// Invalid token, login.
+		} catch (\Facebook\FacebookSDKException $e) {
+
+			// Redirected back.
+			if ($app->request->params('code') && $app->request->params('state')) {
+
+				try {
+
+					$session = $helper->getSessionFromRedirect();
+					if ($session) {
+						\Katu\Utils\Facebook::setToken($session->getToken());
+					} else {
+						throw new \Exception();
+					}
+
+					return \Katu\Controller::redirect($redirectURL);
+
+				} catch (\Facebook\FacebookSDKException $e) {
+
+					return $callbacks->call('error');
+
+				} catch (\Exception $e) {
+
+					return $callbacks->call('error');
+
+				}
+
+			// Redirect to login.
+			} else {
+
+				return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
+
+			}
+
+		// Other error.
+		} catch (\Exception $e) {
+
+			return $callbacks->call('error');
+
 		}
 
-		return FALSE;
+		return self::render("Login/facebook");
 	}
 
-	public function getVariableName($suffix = NULL) {
-		return 'facebook_' . $this->getAppID() . ($suffix ? '_' . $suffix : NULL);
+	static function startAppSession() {
+		Session::start();
+
+		return FacebookSession::setDefaultApplication(Config::get('facebook', 'appID'), Config::get('facebook', 'secret'));
 	}
 
-	public function setAccessToken($access_token) {
-		return \Katu\Cookie::set($this->getVariableName('access_token'), $access_token);
+	static function getSession() {
+		static::startAppSession();
+
+		return new \Facebook\FacebookSession(static::getToken());
 	}
 
-	public function getAccessToken() {
-		return \Katu\Cookie::get($this->getVariableName('access_token'));
+	static function setToken($token) {
+		return Session::set('facebook.token', $token);
 	}
 
-	public function resetAccessToken() {
-		return \Katu\Cookie::remove($this->getVariableName('access_token'));
+	static function getToken() {
+		return Session::get('facebook.token');
 	}
 
-	public function setUser($user_id) {
-		return \Katu\Session::set($this->getVariableName('user_id'), $user_id);
+	static function resetToken() {
+		return Session::reset('facebook.token');
 	}
 
-	public function getUser($user_id) {
-		return \Katu\Session::get($this->getVariableName('user_id'));
+	static function setUser($userID) {
+		return Session::set('facebook.userID', $userID);
+	}
+
+	static function getUser($userID) {
+		return Session::get('facebook.userID');
 	}
 
 }

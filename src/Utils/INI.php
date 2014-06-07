@@ -7,7 +7,7 @@ class INI {
 	static function parse($path) {
 		$src = @parse_ini_file($path, TRUE);
 		if ($src === FALSE) {
-			throw new Exception("Invalid INI file.");
+			throw new \Exception("Invalid INI file.");
 		}
 
 		$ini = array();

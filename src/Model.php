@@ -2,6 +2,8 @@
 
 namespace Katu;
 
+use \Katu\PDO\Meta\Select;
+use \Katu\PDO\Meta\GroupBy;
 use \Katu\PDO\Meta\OrderBy;
 use \Katu\PDO\Meta\Page;
 
@@ -29,12 +31,12 @@ class Model {
 			}
 		}
 
-		user_error('Undeclared class method ' . $name . '.');
+		trigger_error('Undeclared class method ' . $name . '.');
 	}
 
 	static function getPDO() {
 		if (!defined('static::DATABASE')) {
-			throw new Exception("Undefined database.");
+			throw new \Exception("Undefined database.");
 		}
 
 		return PDO\Connection::getInstance(static::DATABASE);
@@ -42,7 +44,7 @@ class Model {
 
 	static function getTable() {
 		if (!defined('static::TABLE')) {
-			throw new Exception("Undefined table.");
+			throw new \Exception("Undefined table.");
 		}
 
 		return static::TABLE;
@@ -65,7 +67,7 @@ class Model {
 	static function getColumn($name) {
 		$columns = static::getColumns();
 		if (!isset($columns[$name])) {
-			throw new Exception("Invalid column " . $name . ".");
+			throw new \Exception("Invalid column " . $name . ".");
 		}
 
 		return $columns[$name];
@@ -193,7 +195,24 @@ class Model {
 		$query = static::getPDO()->createQuery();
 		$query->setClass(static::getClass());
 
-		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
+		$metaSelectUsed = FALSE;
+
+		$sql = " SELECT SQL_CALC_FOUND_ROWS ";
+
+		foreach ((array) $meta as $_meta) {
+
+			if ($_meta instanceof Select) {
+				$sql .= $_meta->getSelect();
+				$metaSelectUsed = TRUE;
+			}
+
+		}
+
+		if (!$metaSelectUsed) {
+			$sql .= " * ";
+		}
+
+		$sql .= " FROM " . static::getTable() . " WHERE ( 1 ) ";
 
 		foreach (static::filterParams($params) as $param => $value) {
 
@@ -212,6 +231,10 @@ class Model {
 		}
 
 		foreach ((array) $meta as $_meta) {
+
+			if ($_meta instanceof GroupBy) {
+				$sql .= " GROUP BY " . $_meta->getGroupBy();
+			}
 
 			if ($_meta instanceof OrderBy) {
 				$sql .= " ORDER BY " . $_meta->getOrderBy();
@@ -329,7 +352,7 @@ class Model {
 	static function getColumnUniqueID($column) {
 		$columns = static::getColumns();
 		if (!$columns[$column]->length) {
-			throw new Exception("Unable to get column length.");
+			throw new \Exception("Unable to get column length.");
 		}
 
 		do {

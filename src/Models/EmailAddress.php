@@ -10,7 +10,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function create($emailAddress) {
 		if (!self::checkCRUDParams($emailAddress)) {
-			throw new Exception("Invalid params.");
+			throw new \Exception("Invalid params.");
 		}
 
 		return self::insert(array(
@@ -21,7 +21,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function make($emailAddress) {
 		if (!self::checkCRUDParams($emailAddress)) {
-			throw new Exception("Invalid params.");
+			throw new \Exception("Invalid params.");
 		}
 
 		return self::getOneOrCreateWithList(array(
@@ -31,7 +31,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function checkCRUDParams($emailAddress) {
 		if (!self::checkEmailAddress($emailAddress)) {
-			throw new Exception("Invalid e-mail address.");
+			throw new \Exception("Invalid e-mail address.");
 		}
 
 		return TRUE;
@@ -39,11 +39,11 @@ class EmailAddress extends \Katu\Model {
 
 	static function checkEmailAddress($emailAddress) {
 		if (!trim($emailAddress)) {
-			throw new Exception("Missing e-mail address.");
+			throw new \Exception("Missing e-mail address.");
 		}
 
 		if (!self::isValid($emailAddress)) {
-			throw new Exception("Invalid e-mail address.");
+			throw new \Exception("Invalid e-mail address.");
 		}
 
 		return TRUE;

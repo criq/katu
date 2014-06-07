@@ -133,7 +133,7 @@ class Upload {
 	}
 
 	public function getException() {
-		return new Exception($this->getErrorMessage(), $this->getErrorID());
+		return new \Exception($this->getErrorMessage(), $this->getErrorID());
 	}
 
 }

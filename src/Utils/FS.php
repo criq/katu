@@ -34,4 +34,10 @@ class FS {
 		return array_values(array_filter($files));
 	}
 
+	static function getSize($path) {
+		clearstatcache();
+
+		return filesize($path);
+	}
+
 }
