@@ -79,11 +79,11 @@ class View {
 			}
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getURLFor', function() {
+		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
 			return call_user_func_array(array('\Katu\Utils\URL', 'getFor'), func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCurrentURL', function() {
+		$twig->addFunction(new \Twig_SimpleFunction('getCurrentUrl', function() {
 			return call_user_func_array(array('\Katu\Utils\URL', 'getCurrent'), func_get_args());
 		}));
 

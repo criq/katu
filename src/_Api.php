@@ -2,7 +2,7 @@
 
 namespace Katu;
 
-class API {
+class Api {
 
 	static function success($res = NULL) {
 		$app = App::get();

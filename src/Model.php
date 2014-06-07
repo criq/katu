@@ -291,20 +291,20 @@ class Model {
 
 	static function getIDProperties() {
 		return array_values(array_filter(array_map(function($i) {
-			return preg_match('#^(?<property>[a-z_]+)_id$#', $i) ? $i : NULL;
+			return preg_match('#^(?<property>[a-zA-Z_]+)_?[Ii][Dd]$#', $i) ? $i : NULL;
 		}, static::getColumnNames())));
 	}
 
 	public function getBoundObject($model) {
-		$ns_model = '\\App\\Models\\' . $model;
-		if (!class_exists($ns_model)) {
+		$nsModel = '\\App\\Models\\' . $model;
+		if (!class_exists($nsModel)) {
 			return FALSE;
 		}
 
 		foreach (static::getIDProperties() as $property) {
-			$_model = '\\App\\Models\\' . implode(array_map('ucfirst', explode('_', substr($property, 0, -3))));
-			if ($_model && $ns_model == $_model) {
-				$object = $_model::get($this->{$property});
+			$proposedModel = '\\App\\Models\\' . ucfirst(preg_replace('#^(.+)_?[Ii][Dd]$#', '\\1', $property));
+			if ($proposedModel && $nsModel == $proposedModel) {
+				$object = $proposedModel::get($this->{$property});
 				if ($object) {
 					return $object;
 				}
