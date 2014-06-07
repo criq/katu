@@ -9,7 +9,7 @@ class EmailAddress extends \Katu\Model {
 	const TABLE = 'email_addresses';
 
 	static function create($emailAddress) {
-		if (!self::checkCRUDParams($emailAddress)) {
+		if (!self::checkCrudParams($emailAddress)) {
 			throw new \Exception("Invalid params.");
 		}
 
@@ -20,7 +20,7 @@ class EmailAddress extends \Katu\Model {
 	}
 
 	static function make($emailAddress) {
-		if (!self::checkCRUDParams($emailAddress)) {
+		if (!self::checkCrudParams($emailAddress)) {
 			throw new \Exception("Invalid params.");
 		}
 
@@ -29,7 +29,7 @@ class EmailAddress extends \Katu\Model {
 		), $emailAddress);
 	}
 
-	static function checkCRUDParams($emailAddress) {
+	static function checkCrudParams($emailAddress) {
 		if (!self::checkEmailAddress($emailAddress)) {
 			throw new \Exception("Invalid e-mail address.");
 		}
