@@ -33,15 +33,15 @@ class User extends \Katu\Model {
 		return \Katu\Session::set('katu.user.id', (int) $this->id);
 	}
 
-	public function hasPermission($ac) {
+	public function hasPermission($permission) {
 		return (bool) \App\Models\UserPermission::getOneBy(array(
 			'userId'     => (int)    ($this->id),
-			'permission' => (string) (trim($ac)),
+			'permission' => (string) (trim($permission)),
 		));
 	}
 
-	public function addPermission($ac) {
-		return \App\Models\UserAC::make($this, $ac);
+	public function addPermission($permission) {
+		return \App\Models\UserPermission::make($this, $permission);
 	}
 
 }
