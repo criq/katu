@@ -573,6 +573,12 @@
 	},
 	"file_history":
 	[
+		"/Users/jan/Sites/duha/api/phd/app/Config/app.php",
+		"/Users/jan/Sites/zitbrno-data/app/Views/Templates/default.twig",
+		"/Users/jan/Sites/zitbrno-data/app/Config/app.php",
+		"/Users/jan/Sites/duha/api/phd/vendor/jabli/katu/src/Utils/URL.php",
+		"/Users/jan/Sites/zitbrno-data/vendor/jabli/katu/src/View.php",
+		"/Users/jan/Sites/zitbrno-data/vendor/jabli/katu/src/Utils/URL.php",
 		"/Users/jan/Sites/kruhzdravi/vendor/jabli/katu/src/View.php",
 		"/Users/jan/Sites/kruhzdravi/app/Views/Admin/index.twig",
 		"/Users/jan/Sites/kruhzdravi/app/Views/Users/admin.twig",
@@ -694,13 +700,7 @@
 		"/Users/jan/Sites/mampripominky/app/Views/Arguments/organizations.tpl",
 		"/Users/jan/Sites/mampripominky/vendor/jabli/fw/src/API.php",
 		"/Users/jan/Sites/mampripominky/vendor/jabli/fw/src/Utils/Email.php",
-		"/Users/jan/Sites/mampripominky/vendor/jabli/fw/src/Env.php",
-		"/Users/jan/Sites/mampripominky/app/Views/Homepage/brno.tpl",
-		"/Users/jan/Sites/mampripominky/vendor/jabli/fw/src/Controller.php",
-		"/Users/jan/Sites/mampripominky/app/Views/Arguments/edit.tpl",
-		"/Users/jan/Sites/mampripominky/public/resources/css/templates/bo.css",
-		"/Users/jan/Sites/mampripominky/vendor/swiftmailer/swiftmailer/lib/classes/Swift/Encoder/QpEncoder.php",
-		"/Users/jan/Sites/mampripominky/vendor/mustangostang/spyc/tests/quotes.yaml"
+		"/Users/jan/Sites/mampripominky/vendor/jabli/fw/src/Env.php"
 	],
 	"find":
 	{
@@ -711,6 +711,8 @@
 		"height": 95.0,
 		"where_history":
 		[
+			"/Users/jan/Sites/zitbrno-data,/Users/jan/Sites/chcizitbrno,/Users/jan/Sites/duha,/Users/jan/Sites/hospoda,/Users/jan/Sites/kruhzdravi,/Users/jan/Sites/nahlashernu,/Users/jan/Sites/noob,/Users/jan/Sites/translate",
+			"/Users/jan/Sites/zitbrno-data,/Users/jan/Sites/chcizitbrno,/Users/jan/Sites/duha,/Users/jan/Sites/hospoda,/Users/jan/Sites/kruhzdravi,/Users/jan/Sites/nahlashernu,/Users/jan/Sites/translate",
 			"/Users/jan/Sites/kruhzdravi",
 			"/Users/jan/Sites/kruhzdravi/app",
 			"/Users/jan/Sites/mampripominky/app",
@@ -814,6 +816,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"baseURL",
+			"apiURL",
 			"getCurrentURL",
 			"getURLFor",
 			"ns_model",
@@ -939,9 +943,7 @@
 			"\\App\\Models\\Argument",
 			"\\Jabli\\FW::getApp()",
 			"#DDD",
-			"\\App\\Models\\Recipient",
-			"\\App\\Models\\User",
-			"\\App\\Models\\Campaign"
+			"\\App\\Models\\Recipient"
 		],
 		"highlight": true,
 		"in_selection": false,
