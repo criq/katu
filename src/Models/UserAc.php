@@ -4,7 +4,7 @@ namespace Katu\Models;
 
 use \Katu\Exception;
 
-class UserAC extends \Katu\Model {
+class UserAc extends \Katu\Model {
 
 	const TABLE = 'user_ac';
 
