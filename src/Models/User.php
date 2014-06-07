@@ -34,9 +34,9 @@ class User extends \Katu\Model {
 	}
 
 	public function hasPermission($ac) {
-		return (bool) \App\Models\UserAC::getOneBy(array(
-			'userId' => (int)    ($this->id),
-			'ac'     => (string) (trim($ac)),
+		return (bool) \App\Models\UserPermission::getOneBy(array(
+			'userId'     => (int)    ($this->id),
+			'permission' => (string) (trim($ac)),
 		));
 	}
 
