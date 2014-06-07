@@ -129,7 +129,7 @@ class View {
 			return Utils\CSRF::getFreshToken($params);
 		}));
 
-		$data['_site']['baseURL'] = Config::getApp('baseURL');
+		$data['_site']['baseUrl'] = Config::getApp('baseUrl');
 		$data['_site']['apiUrl']  = Config::getApp('apiUrl');
 		try {
 			$data['_site']['timezone'] = Config::getApp('timezone');

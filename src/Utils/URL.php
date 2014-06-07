@@ -17,7 +17,7 @@ class URL {
 	}
 
 	static function getBase() {
-		return new TURL(Config::getApp('baseURL'));
+		return new TURL(Config::getApp('baseUrl'));
 	}
 
 	static function getSite($uri) {
