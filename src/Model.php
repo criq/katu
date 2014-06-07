@@ -2,6 +2,8 @@
 
 namespace Katu;
 
+use \Katu\PDO\Meta\Select;
+use \Katu\PDO\Meta\GroupBy;
 use \Katu\PDO\Meta\OrderBy;
 use \Katu\PDO\Meta\Page;
 
@@ -193,7 +195,24 @@ class Model {
 		$query = static::getPDO()->createQuery();
 		$query->setClass(static::getClass());
 
-		$sql = " SELECT SQL_CALC_FOUND_ROWS * FROM " . static::getTable() . " WHERE ( 1 ) ";
+		$metaSelectUsed = FALSE;
+
+		$sql = " SELECT SQL_CALC_FOUND_ROWS ";
+
+		foreach ((array) $meta as $_meta) {
+
+			if ($_meta instanceof Select) {
+				$sql .= $_meta->getSelect();
+				$metaSelectUsed = TRUE;
+			}
+
+		}
+
+		if (!$metaSelectUsed) {
+			$sql .= " * ";
+		}
+
+		$sql .= " FROM " . static::getTable() . " WHERE ( 1 ) ";
 
 		foreach (static::filterParams($params) as $param => $value) {
 
@@ -212,6 +231,10 @@ class Model {
 		}
 
 		foreach ((array) $meta as $_meta) {
+
+			if ($_meta instanceof GroupBy) {
+				$sql .= " GROUP BY " . $_meta->getGroupBy();
+			}
 
 			if ($_meta instanceof OrderBy) {
 				$sql .= " ORDER BY " . $_meta->getOrderBy();
