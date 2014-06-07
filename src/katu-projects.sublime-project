@@ -1,0 +1,33 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "/Users/jan/Sites/chcizitbrno"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Users/jan/Sites/duha"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Users/jan/Sites/hospoda"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Users/jan/Sites/kruhzdravi"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Users/jan/Sites/nahlashernu"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Users/jan/Sites/translate"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Users/jan/Sites/zitbrno-data"
+		}
+	]
+}
