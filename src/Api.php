@@ -24,16 +24,16 @@ class Api {
 		));
 	}
 
-	static function getURL($endpoint) {
+	static function getUrl($endpoint) {
 		return Utils\URL::joinPaths(Config::get('app', 'apiUrl'), $endpoint);
 	}
 
 	static function get($endpoint, $params = array(), &$curl = NULL) {
-		return \Amiko\Amiko::get(static::getURL($endpoint), $params, $curl);
+		return \Amiko\Amiko::get(static::getUrl($endpoint), $params, $curl);
 	}
 
 	static function post($endpoint, $params = array(), &$curl = NULL) {
-		return \Amiko\Amiko::post(static::getURL($endpoint), $params, $curl);
+		return \Amiko\Amiko::post(static::getUrl($endpoint), $params, $curl);
 	}
 
 }
