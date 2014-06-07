@@ -79,7 +79,7 @@ class View {
 			}
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getURLFor', function() {
+		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
 			return call_user_func_array(array('\Katu\Utils\URL', 'getFor'), func_get_args());
 		}));
 
