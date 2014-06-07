@@ -44,4 +44,13 @@ class User extends \Katu\Model {
 		return \App\Models\UserPermission::make($this, $permission);
 	}
 
+	static function currentHasPermission($permission) {
+		$user = static::getCurrent();
+		if (!$user) {
+			return FALSE;
+		}
+
+		return $user->hasPermission($permission);
+	}
+
 }
