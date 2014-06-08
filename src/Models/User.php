@@ -33,6 +33,10 @@ class User extends \Katu\Model {
 		return \Katu\Session::set('katu.user.id', (int) $this->id);
 	}
 
+	static function logout() {
+		return \Katu\Session::reset('katu.user.id');
+	}
+
 	public function hasPermission($permission) {
 		return (bool) \App\Models\UserPermission::getOneBy(array(
 			'userId'     => (int)    ($this->id),
