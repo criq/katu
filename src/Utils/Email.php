@@ -2,33 +2,78 @@
 
 namespace Katu\Utils;
 
-class Email extends \Swift_Message {
+class Email {
 
-	private $transport;
-	private $mailer;
+	public $subject;
+	public $text;
+	public $html;
 
-	public function __construct() {
-		$config = \Katu\Config::get('mandrill');
+	public $fromEmailAddress;
+	public $fromName;
 
-		$this->transport = \Swift_SmtpTransport::newInstance($config['host'], $config['port'])
-			->setUsername($config['username'])
-			->setPassword($config['password']);
+	public $to = array();
 
-		$this->mailer = \Swift_Mailer::newInstance($this->transport);
-
-		return parent::__construct();
+	public function __construct($subject = NULL) {
+		$this->setSubject($subject);
 	}
 
-	public function setPlainBody($body) {
-		return $this->addPart($body, 'text/plain');
+	public function setSubject($subject) {
+		$this->subject = $subject;
 	}
 
-	public function setHTMLBody($body) {
-		return $this->addPart($body, 'text/html');
+	public function setText($text) {
+		$this->text = $text;
 	}
 
-	public function send() {
-		return $this->mailer->send($this);
+	public function setHtml($html) {
+		$this->html = $html;
+	}
+
+	public function setBody($html, $text = NULL) {
+		$this->setHtml($html);
+
+		if ($text) {
+			$this->setText($text);
+		} else {
+			$this->setText(strip_tags($html));
+		}
+	}
+
+	public function setFromEmailAddress($fromEmailAddress) {
+		$this->fromEmailAddress = $fromEmailAddress;
+	}
+
+	public function setFromName($fromName) {
+		$this->fromName = $fromName;
+	}
+
+	public function setFrom($fromEmailAddress, $fromName = NULL) {
+		$this->setFromEmailAddress($fromEmailAddress);
+		$this->setFromName($fromName);
+	}
+
+	public function addTo($toEmailAddress, $toName = NULL) {
+		$this->to[$toEmailAddress] = $toName;
+	}
+
+	public function sendWithMandrillThroughApi($mandrillApi) {
+		$message = array(
+			'subject'    => $this->subject,
+			'html'       => $this->html,
+			'text'       => $this->text,
+			'from_email' => $this->fromEmailAddress,
+			'from_name'  => $this->fromName,
+		);
+
+		foreach ($this->to as $toEmailAddress => $toName) {
+			$message['to'][] = array(
+				'email' => $toEmailAddress,
+				'name'  => $toName,
+				'type'  => 'to',
+			);
+		}
+
+		return $mandrillApi->messages->send($message);
 	}
 
 }
