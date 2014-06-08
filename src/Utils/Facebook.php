@@ -101,7 +101,7 @@ class Facebook {
 	static function startAppSession() {
 		Session::start();
 
-		return FacebookSession::setDefaultApplication(Config::get('facebook', 'appID'), Config::get('facebook', 'secret'));
+		return FacebookSession::setDefaultApplication(Config::get('facebook', 'appId'), Config::get('facebook', 'secret'));
 	}
 
 	static function getSession() {
