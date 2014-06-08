@@ -20,6 +20,10 @@ class DateTime extends \DateTime {
 		return $this->format('Y-m-d H:i:s');
 	}
 
+	public function isValid() {
+		return $this->getTimestamp() >= 0;
+	}
+
 	public function isInTimeout($timeout) {
 		return ($this->getTimestamp() + $timeout) >= time();
 	}
