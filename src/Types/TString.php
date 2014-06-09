@@ -26,17 +26,13 @@ class TString {
 		return $this->getNumberOfWords() >= $n;
 	}
 
-	public function getAsSlug($options = array()) {
+	public function getForUrl($options = array()) {
 		$options = array_merge(array(
 			'delimiter' => '-',
 			'lowercase' => TRUE,
 		), $options);
 
-		$translationTable = \Katu\Utils\YAML::decode(file_get_contents(realpath(dirname(__FILE__) . '/../Config/asciiTranslationTable.yaml')));
-
-		var_dump($translationTable); die;
-
-		return strtr($this->value, $translationTable);
+		return \URLify::filter($this->value, isset($options['maxLength']) ? $options['maxLength'] : NULL, isset($options['language']) ? $options['language'] : NULL);
 	}
 
 }
