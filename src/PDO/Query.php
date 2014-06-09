@@ -55,11 +55,11 @@ class Query {
 
 	public function getResult() {
 		if ($this->class) {
-			return new Results\ClassResult    ($this->pdo, $this->getStatement(), $this->page, $this->class);
+			return new Results\ClassResult($this->pdo, $this->getStatement(), $this->page, $this->class);
 		} elseif ($this->page) {
 			return new Results\PaginatedResult($this->pdo, $this->getStatement(), $this->page);
 		} else {
-			return new Results\Result         ($this->pdo, $this->getStatement());
+			return new Results\Result($this->pdo, $this->getStatement());
 		}
 	}
 
