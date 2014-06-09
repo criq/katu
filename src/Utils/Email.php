@@ -13,6 +13,8 @@ class Email {
 
 	public $to = array();
 
+	public $headers = array();
+
 	public function __construct($subject = NULL) {
 		$this->setSubject($subject);
 	}
@@ -56,13 +58,22 @@ class Email {
 		$this->to[$toEmailAddress] = $toName;
 	}
 
-	public function sendWithMandrillThroughApi($mandrillApi) {
+	public function addHeader($name, $value) {
+		$this->headers[$name] = $value;
+	}
+
+	public function setReplyTo($emailAddress) {
+		$this->addHeader('Reply-To', $emailAddress);
+	}
+
+	public function sendWithMandrillThroughApi($mandrillApi, $options = array()) {
 		$message = array(
 			'subject'    => $this->subject,
 			'html'       => $this->html,
 			'text'       => $this->text,
 			'from_email' => $this->fromEmailAddress,
 			'from_name'  => $this->fromName,
+			'headers'    => $this->headers,
 		);
 
 		foreach ($this->to as $toEmailAddress => $toName) {
