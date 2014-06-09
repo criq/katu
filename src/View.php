@@ -123,7 +123,7 @@ class View {
 			return $url->value;
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCSRFToken', function() {
+		$twig->addFunction(new \Twig_SimpleFunction('getCsrfToken', function() {
 			$params = (array) @func_get_arg(0);
 
 			return Utils\CSRF::getFreshToken($params);
