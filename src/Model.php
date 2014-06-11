@@ -3,6 +3,7 @@
 namespace Katu;
 
 use \Katu\PDO\Meta\Select;
+use \Katu\PDO\Meta\Join;
 use \Katu\PDO\Meta\GroupBy;
 use \Katu\PDO\Meta\OrderBy;
 use \Katu\PDO\Meta\Page;
@@ -212,7 +213,9 @@ class Model {
 			$sql .= " * ";
 		}
 
-		$sql .= " FROM " . static::getTable() . " WHERE ( 1 ) ";
+		$sql .= " FROM " . static::getTable();
+
+		$sql .= " WHERE ( 1 ) ";
 
 		foreach (static::filterParams($params) as $param => $value) {
 
