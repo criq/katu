@@ -61,6 +61,10 @@ class Setting extends \Katu\Model {
 		return TRUE;
 	}
 
+	public function getValue() {
+		return \Katu\Utils\JSON::decodeAsArray($this->value);
+	}
+
 	static function getObject($name) {
 		return static::getOneBy(array(
 			'name' => trim($name),
@@ -73,7 +77,17 @@ class Setting extends \Katu\Model {
 			throw new \Katu\Exceptions\MissingSettingException("Missing setting " . $name . ".");
 		}
 
-		return \Katu\Utils\JSON::decodeAsArray($setting->value);
+		return $setting->getValue();
+	}
+
+	static function getAllAsAssoc() {
+		$settings = array();
+
+		foreach (static::getAll() as $setting) {
+			$settings[$setting->name] = $setting->getValue();
+		}
+
+		return $settings;
 	}
 
 	static function setupDefaults($creator) {

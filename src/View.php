@@ -141,9 +141,13 @@ class View {
 			$data['_user'] = \App\Models\User::getCurrent();
 		}
 
-		$data['_config']  = Config::get();
-		$data['_session'] = Session::get();
-		$data['_flash']   = Flash::get();
+		$data['_config']   = Config::get();
+		$data['_session']  = Session::get();
+		$data['_flash']    = Flash::get();
+
+		if (class_exists('\App\Models\Setting')) {
+			$data['_settings'] = \App\Models\Setting::getAllAsAssoc();
+		}
 
 		try {
 			if (Config::getApp('css', 'implode')) {
