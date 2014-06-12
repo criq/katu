@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class InvalidCrudParamsException extends ErrorException {
+class InvalidParamsException extends ErrorException {
 
 }
