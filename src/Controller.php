@@ -109,4 +109,8 @@ class Controller {
 		return static::$errors[] = $error;
 	}
 
+	static function hasErrors() {
+		return (bool) static::$errors;
+	}
+
 }
