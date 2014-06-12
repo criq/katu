@@ -51,9 +51,19 @@ class Setting extends \Katu\Model {
 		return TRUE;
 	}
 
+	public function setName($name) {
+		if (!static::checkName($name, $this)) {
+			throw new \Katu\Exceptions\InvalidCrudParamsException("Invalid setting name.");
+		}
+
+		$this->update('name', trim($name));
+
+		return TRUE;
+	}
+
 	static function getObject($name) {
 		return static::getOneBy(array(
-			'name' => $name,
+			'name' => trim($name),
 		));
 	}
 
