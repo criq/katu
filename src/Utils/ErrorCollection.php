@@ -14,15 +14,8 @@ class ErrorCollection {
 		if (!$name) {
 			throw new \Exception("Missing error name.");
 		}
-		if ($this->exists($name)) {
-			throw new \Exception("Callback exists.");
-		}
 
-		if ($callable instanceof Callback) {
-			$this->callbackCollection[$name] = $callable;
-		} else {
-			$this->callbackCollection[$name] = new Callback($callable);
-		}
+		$this->errorCollection[$name] = new Callback($callable);
 	}
 
 }
