@@ -36,7 +36,7 @@ class Image {
 		return TRUE;
 	}
 
-	static function getMIME($path) {
+	static function getMime($path) {
 		$size = @getimagesize($path);
 		if (!isset($size['mime'])) {
 			return FALSE;

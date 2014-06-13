@@ -61,7 +61,7 @@ class View {
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('embedImage', function($path) {
-			$mime = @\Katu\Utils\Image::getMIME($path);
+			$mime = @\Katu\Utils\Image::getMime($path);
 			$base64 = @base64_encode(@file_get_contents($path));
 
 			if ($mime && $base64) {
