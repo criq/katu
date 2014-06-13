@@ -45,6 +45,28 @@ class Image {
 		return $size['mime'];
 	}
 
+	static function getType($path) {
+		$mime = static::getMime($path);
+		if (strpos($mime, 'image/') !== 0) {
+			return FALSE;
+		}
+
+		list($image, $type) = explode('/', $mime);
+
+		return $type;
+	}
+
+	static function getImageCreateFunctionName($path) {
+		$type = static::getType($path);
+		switch ($type) {
+			case 'jpeg' : return 'imagecreatefromjpeg'; break;
+			case 'gif' :  return 'imagecreatefromgif';  break;
+			case 'png' :  return 'imagecreatefrompng';  break;
+		}
+
+		return FALSE;
+	}
+
 	static function getSize($path) {
 		$size = @getimagesize($path);
 		if (!$size) {
@@ -73,17 +95,19 @@ class Image {
 	}
 
 	static function getColorRgb($color) {
-		$rgb['r'] = ($color >> 16) & 0xFF;
-		$rgb['g'] = ($color >> 8) & 0xFF;
-		$rgb['b'] = $color & 0xFF;
-
-		return $rgb;
+		return \Katu\Types\TColorRgb::getFromImageColor($color);
 	}
 
-	static function getColorAtCoords($path, $coords) {
-		imagecreatefrom
+	static function getColorAtCoords($path, \Katu\Types\TCoordsRectangle $coordsRectangle) {
+		$createFunctionName = static::getImageCreateFunctionName($path);
+		if (!$createFunctionName) {
+			throw new \Exception("Invalid image type.");
+		}
+
+		$image = $createFunctionName($path);
 		$pixel = imagecreatetruecolor(1, 1);
-		imagecopyresampled($pixel, $image, 0, 0, $coords[0], $coords[1], 1, 1, $coords[2] - $coords[0], $coords[3] - $coords[1]);
+		imagecopyresampled($pixel, $image, 0, 0, $coordsRectangle->xa, $coordsRectangle->ya, 1, 1, $coordsRectangle->xb - $coordsRectangle->xa, $coordsRectangle->yb - $coordsRectangle->ya);
+
 		return static::getColorRgb(imagecolorat($pixel, 0, 0));
 	}
 
