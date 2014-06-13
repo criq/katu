@@ -10,7 +10,7 @@ class UserPermission extends \Katu\Model {
 
 	static function create($user, $permission) {
 		if (!self::checkCrudParams($user, $permission)) {
-			throw new \Exception("Invalid params.");
+			throw new \Exception("Invalid arguments.");
 		}
 
 		return self::insert(array(
@@ -22,7 +22,7 @@ class UserPermission extends \Katu\Model {
 
 	static function make($user, $permission) {
 		if (!self::checkCrudParams($user, $permission)) {
-			throw new \Exception("Invalid params.");
+			throw new \Exception("Invalid arguments.");
 		}
 
 		return self::getOneOrCreateWithList(array(

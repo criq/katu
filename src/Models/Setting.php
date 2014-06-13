@@ -10,7 +10,7 @@ class Setting extends \Katu\Model {
 
 	static function create($creator, $name, $value, $isSystem, $description = NULL) {
 		if (!self::checkCrudParams($creator, $name, $value, $isSystem)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid params.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
 		return self::insert(array(

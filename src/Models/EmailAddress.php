@@ -10,7 +10,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function create($emailAddress) {
 		if (!self::checkCrudParams($emailAddress)) {
-			throw new \Exception("Invalid params.");
+			throw new \Exception("Invalid arguments.");
 		}
 
 		return self::insert(array(
@@ -21,7 +21,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function make($emailAddress) {
 		if (!self::checkCrudParams($emailAddress)) {
-			throw new \Exception("Invalid params.");
+			throw new \Exception("Invalid arguments.");
 		}
 
 		return self::getOneOrCreateWithList(array(
