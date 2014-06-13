@@ -14,4 +14,8 @@ class ExceptionCollection {
 		$this->exceptionCollection[] = $exception;
 	}
 
+	public function hasExceptions() {
+		return (bool) (count($this->exceptionCollection));
+	}
+
 }
