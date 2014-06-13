@@ -72,4 +72,19 @@ class Image {
 		return FALSE;
 	}
 
+	static function getColorRgb($color) {
+		$rgb['r'] = ($color >> 16) & 0xFF;
+		$rgb['g'] = ($color >> 8) & 0xFF;
+		$rgb['b'] = $color & 0xFF;
+
+		return $rgb;
+	}
+
+	static function getColorAtCoords($path, $coords) {
+		imagecreatefrom
+		$pixel = imagecreatetruecolor(1, 1);
+		imagecopyresampled($pixel, $image, 0, 0, $coords[0], $coords[1], 1, 1, $coords[2] - $coords[0], $coords[3] - $coords[1]);
+		return static::getColorRgb(imagecolorat($pixel, 0, 0));
+	}
+
 }
