@@ -13,7 +13,7 @@ use \Facebook\FacebookRedirectLoginHelper;
 
 class Facebook {
 
-	static function login(TURL $redirectURL, Callbacks $callbacks, $scopes = array()) {
+	static function login(TURL $redirectURL, CallbackCollection $callbackCollection, $scopes = array()) {
 		try {
 
 			$app = App::get();
@@ -52,7 +52,7 @@ class Facebook {
 
 			$user->login();
 
-			return $callbacks->call('success');
+			return $callbackCollection->call('success');
 
 		// Invalid token, login.
 		} catch (\Facebook\FacebookSDKException $e) {
@@ -73,11 +73,11 @@ class Facebook {
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
-					return $callbacks->call('error');
+					return $callbackCollection->call('error');
 
 				} catch (\Exception $e) {
 
-					return $callbacks->call('error');
+					return $callbackCollection->call('error');
 
 				}
 
@@ -91,7 +91,7 @@ class Facebook {
 		// Other error.
 		} catch (\Exception $e) {
 
-			return $callbacks->call('error');
+			return $callbackCollection->call('error');
 
 		}
 

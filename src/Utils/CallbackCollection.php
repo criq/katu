@@ -2,9 +2,9 @@
 
 namespace Katu\Utils;
 
-class Callbacks {
+class CallbackCollection {
 
-	public $callbacks;
+	public $callbackCollection;
 
 	public function __construct() {
 		// One arg, an array of callbacks.
@@ -32,14 +32,14 @@ class Callbacks {
 		}
 
 		if ($callable instanceof Callback) {
-			$this->callbacks[$name] = $callable;
+			$this->callbackCollection[$name] = $callable;
 		} else {
-			$this->callbacks[$name] = new Callback($callable);
+			$this->callbackCollection[$name] = new Callback($callable);
 		}
 	}
 
 	public function exists($name) {
-		return isset($this->callbacks[$name]);
+		return isset($this->callbackCollection[$name]);
 	}
 
 	public function call($name, $args = array()) {
@@ -47,7 +47,7 @@ class Callbacks {
 			throw new \Exception("Callback doesn't exist.");
 		}
 
-		return $this->callbacks[$name]->call($args);
+		return $this->callbackCollection[$name]->call($args);
 	}
 
 }
