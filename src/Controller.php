@@ -37,11 +37,7 @@ class Controller {
 
 			return TRUE;
 
-		} catch (\Exception $e) {
-
-			throw new Exceptions\TemplateException($e->getMessage());
-
-		}
+		} catch (\Exception $e) { throw new Exceptions\TemplateException($e->getMessage()); }
 	}
 
 	static function renderError($code = 500) {
