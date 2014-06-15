@@ -12,6 +12,10 @@ class DateTime extends \DateTime {
 		return new DateTime($string);
 	}
 
+	public function toLocalTimezone() {
+		return $this->setTimezone(new \DateTimeZone(\Katu\Config::get('app', 'timezone')));
+	}
+
 	public function getDBDateFormat() {
 		return $this->format('Y-m-d');
 	}
