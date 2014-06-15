@@ -22,7 +22,7 @@
 		"michelf/php-markdown": "1.*",
 		"intervention/image": "1.*",
 		"jbroadway/urlify": "1.0.*@dev",
-		"jabli/amiko": "dev-master"
+		"jabli/amiko": "*"
 	},
 	"autoload": {
 		"psr-4": {
