@@ -21,8 +21,8 @@
 		"swiftmailer/swiftmailer": "5.*",
 		"michelf/php-markdown": "1.*",
 		"intervention/image": "1.*",
-		"jabli/amiko": "dev-master",
-		"jbroadway/urlify": "1.0.*@dev"
+		"jbroadway/urlify": "1.0.*@dev",
+		"jabli/amiko": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {
