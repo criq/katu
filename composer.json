@@ -14,7 +14,7 @@
 		"twig/extensions": "@stable",
 		"gregwar/cache": "1.0.*",
 		"jwage/easy-csv": "0.0.2",
-		"mustangostang/spyc": "dev-master",
+		"mustangostang/spyc": "0.5.*@dev",
 		"ircmaxell/random-lib": "1.*",
 		"facebook/php-sdk-v4" : "4.0.*",
 		"egulias/email-validator": "1.*",
