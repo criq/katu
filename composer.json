@@ -12,7 +12,7 @@
 		"php-curl-class/php-curl-class": "@stable",
 		"twig/twig": "@stable",
 		"twig/extensions": "@stable",
-		"gregwar/cache": "dev-master",
+		"gregwar/cache": "1.0.*",
 		"jwage/easy-csv": "1.0.*@dev",
 		"mustangostang/spyc": "dev-master",
 		"ircmaxell/random-lib": "1.*",
