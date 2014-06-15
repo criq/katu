@@ -12,9 +12,9 @@
 		"php-curl-class/php-curl-class": "@stable",
 		"twig/twig": "@stable",
 		"twig/extensions": "@stable",
-		"gregwar/cache": "*",
-		"jwage/easy-csv": "*",
-		"mustangostang/spyc": "*",
+		"gregwar/cache": "dev-master",
+		"jwage/easy-csv": "dev-master",
+		"mustangostang/spyc": "dev-master",
 		"ircmaxell/random-lib": "1.*",
 		"facebook/php-sdk-v4" : "4.0.*",
 		"egulias/email-validator": "1.*",
@@ -22,7 +22,7 @@
 		"michelf/php-markdown": "1.*",
 		"intervention/image": "1.*",
 		"jbroadway/urlify": "1.0.*@dev",
-		"jabli/amiko": "0.1.*"
+		"jabli/amiko": "dev-master"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
