@@ -4,7 +4,7 @@ namespace Katu\PDO\Expressions;
 
 class GreaterThan extends Expression {
 
-	public function getWhereConditionSQL($key) {
+	public function getWhereConditionSQL($pdo, $key) {
 		return " ( " . $key . " > :" . $key . " ) ";
 	}
 

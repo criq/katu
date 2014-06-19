@@ -193,7 +193,8 @@ class Model {
 	}
 
 	static function getBy($params = array(), $meta = array()) {
-		$query = static::getPDO()->createQuery();
+		$pdo = static::getPDO();
+		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
 		$metaSelectUsed = FALSE;
@@ -221,7 +222,7 @@ class Model {
 
 			if ($value instanceof PDO\Expressions\Expression) {
 
-				$sql .= " AND ( " . $value->getWhereConditionSQL($param) . " ) ";
+				$sql .= " AND ( " . $value->getWhereConditionSQL($pdo, $param) . " ) ";
 				$query->setParam($param, $value->getValue());
 
 			} else {
