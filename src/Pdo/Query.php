@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\PDO;
+namespace Katu\Pdo;
 
 use \PDO;
 

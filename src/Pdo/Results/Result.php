@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\PDO\Results;
+namespace Katu\Pdo\Results;
 
 use \PDO;
 

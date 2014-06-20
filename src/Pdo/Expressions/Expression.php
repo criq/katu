@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\PDO\Expressions;
+namespace Katu\Pdo\Expressions;
 
 class Expression {
 

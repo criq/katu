@@ -41,7 +41,7 @@ class Setting extends \Katu\Model {
 
 		$attr['name'] = trim($name);
 		if ($object) {
-			$attr['id'] = new \Katu\PDO\Expressions\NotEquals($object->id);
+			$attr['id'] = new \Katu\Pdo\Expressions\NotEquals($object->id);
 		}
 
 		if (static::getBy($attr)->getTotal()) {

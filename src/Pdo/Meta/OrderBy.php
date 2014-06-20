@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\PDO\Meta;
+namespace Katu\Pdo\Meta;
 
 class OrderBy {
 

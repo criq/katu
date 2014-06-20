@@ -2,11 +2,11 @@
 
 namespace Katu;
 
-use \Katu\PDO\Meta\Select;
-use \Katu\PDO\Meta\Join;
-use \Katu\PDO\Meta\GroupBy;
-use \Katu\PDO\Meta\OrderBy;
-use \Katu\PDO\Meta\Page;
+use \Katu\Pdo\Meta\Select;
+use \Katu\Pdo\Meta\Join;
+use \Katu\Pdo\Meta\GroupBy;
+use \Katu\Pdo\Meta\OrderBy;
+use \Katu\Pdo\Meta\Page;
 
 class Model {
 
@@ -35,12 +35,12 @@ class Model {
 		trigger_error('Undeclared class method ' . $name . '.');
 	}
 
-	static function getPDO() {
+	static function getPdo() {
 		if (!defined('static::DATABASE')) {
 			throw new \Exception("Undefined database.");
 		}
 
-		return PDO\Connection::getInstance(static::DATABASE);
+		return Pdo\Connection::getInstance(static::DATABASE);
 	}
 
 	static function getTable() {
@@ -58,8 +58,8 @@ class Model {
 	static function getColumns() {
 		$columns = array();
 
-		foreach (static::getPDO()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
-			$columns[$row['Field']] = new \Katu\PDO\Column($row);
+		foreach (static::getPdo()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
+			$columns[$row['Field']] = new \Katu\Pdo\Column($row);
 		}
 
 		return $columns;
@@ -81,7 +81,7 @@ class Model {
 	}
 
 	static function query($sql = NULL, $params = array(), $setStaticClass = TRUE) {
-		$query = static::getPDO()->createQuery($sql, $params);
+		$query = static::getPdo()->createQuery($sql, $params);
 		if ($setStaticClass) {
 			$query->setClass(static::getClass());
 		}
@@ -90,7 +90,7 @@ class Model {
 	}
 
 	static function insert($params = array()) {
-		$query = static::getPDO()->createQuery();
+		$query = static::getPdo()->createQuery();
 
 		$columns = array_keys($params);
 		$values  = array_map(function($i) {
@@ -103,7 +103,7 @@ class Model {
 		$query->setParams($params);
 		$query->getResult();
 
-		return static::get(static::getPDO()->getLastInsertId());
+		return static::get(static::getPdo()->getLastInsertId());
 	}
 
 	public function update($property, $value) {
@@ -138,7 +138,7 @@ class Model {
 
 			if ($set) {
 
-				$query = static::getPDO()->createQuery();
+				$query = static::getPdo()->createQuery();
 
 				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIDColumnName() . " = :" . $this->getIDColumnName() . " ) ";
 
@@ -156,7 +156,7 @@ class Model {
 	}
 
 	public function delete() {
-		$query = static::getPDO()->createQuery();
+		$query = static::getPdo()->createQuery();
 
 		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIDColumnName() . " = :" . static::getIDColumnName();
 
@@ -167,7 +167,7 @@ class Model {
 	}
 
 	static function getIDColumnName() {
-		foreach (static::getPDO()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
+		foreach (static::getPdo()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
 			}
@@ -193,7 +193,7 @@ class Model {
 	}
 
 	static function getBy($params = array(), $meta = array()) {
-		$pdo = static::getPDO();
+		$pdo = static::getPdo();
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
@@ -220,7 +220,7 @@ class Model {
 
 		foreach (static::filterParams($params) as $param => $value) {
 
-			if ($value instanceof PDO\Expressions\Expression) {
+			if ($value instanceof Pdo\Expressions\Expression) {
 
 				$sql .= " AND ( " . $value->getWhereConditionSQL($pdo, $param) . " ) ";
 				$query->setParam($param, $value->getValue());
@@ -272,7 +272,7 @@ class Model {
 	}
 
 	static function getByQuery($sql, $params = array()) {
-		$query = static::getPDO()->createQuery($sql, $params);
+		$query = static::getPdo()->createQuery($sql, $params);
 		$query->setClass(static::getClass());
 
 		return $query->getResult();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\PDO\Config;
+namespace Katu\Pdo\Config;
 
 class MySQL {
 
@@ -28,7 +28,7 @@ class MySQL {
 		);
 	}
 
-	public function getPDOArray() {
+	public function getPdoArray() {
 		return array(
 			'driver'   => 'pdo_mysql',
 			'host'     => $this->host,
@@ -39,7 +39,7 @@ class MySQL {
 		);
 	}
 
-	public function getPDODSN() {
+	public function getPdoDSN() {
 		return 'mysql:dbname=' . $this->database . ';host=' . $this->host . ';charset=' . $this->charset;
 	}
 

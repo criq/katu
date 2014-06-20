@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\PDO;
+namespace Katu\Pdo;
 
 use \PDO;
 use \Katu\Config;
@@ -20,11 +20,11 @@ class Connection {
 
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 
-			throw new \Katu\Exceptions\MissingPDOConfigException("Missing PDO config for instance " . $name . ".");
+			throw new \Katu\Exceptions\MissingPdoConfigException("Missing PDO config for instance " . $name . ".");
 
 		}
 
-		$this->connection = new PDO($config->getPDODSN(), $config->user, $config->password, array(
+		$this->connection = new PDO($config->getPdoDSN(), $config->user, $config->password, array(
 			PDO::ATTR_PERSISTENT => TRUE,
 		));
 	}

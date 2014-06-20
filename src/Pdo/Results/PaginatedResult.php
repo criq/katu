@@ -1,9 +1,9 @@
 <?php
 
-namespace Katu\PDO\Results;
+namespace Katu\Pdo\Results;
 
 use \PDO;
-use \Katu\PDO\Meta\Page;
+use \Katu\Pdo\Meta\Page;
 
 class PaginatedResult extends Result {
 
@@ -28,7 +28,7 @@ class PaginatedResult extends Result {
 
 	public function getPageFromMeta() {
 		foreach ($this->meta as $_meta) {
-			if ($_meta instanceof \Katu\PDO\Meta\Page) {
+			if ($_meta instanceof \Katu\Pdo\Meta\Page) {
 				return $_meta;
 			}
 		}
