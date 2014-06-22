@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Pdo\Meta;
+namespace Katu\Pdo\Expressions;
 
 class Page {
 

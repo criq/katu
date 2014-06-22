@@ -207,7 +207,7 @@ class Model {
 	}
 
 	static function getOneBy() {
-		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Pdo\Meta\Page(1, 1)))))->getOne();
+		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Pdo\Expressions\Page(1, 1)))))->getOne();
 	}
 
 	static function getAll($meta = array()) {

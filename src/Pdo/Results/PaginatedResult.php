@@ -3,7 +3,7 @@
 namespace Katu\Pdo\Results;
 
 use \PDO;
-use \Katu\Pdo\Meta\Page;
+use \Katu\Pdo\Expressions\Page;
 
 class PaginatedResult extends Result {
 
@@ -28,7 +28,7 @@ class PaginatedResult extends Result {
 
 	public function getPageFromMeta() {
 		foreach ($this->meta as $_meta) {
-			if ($_meta instanceof \Katu\Pdo\Meta\Page) {
+			if ($_meta instanceof \Katu\Pdo\Expressions\Page) {
 				return $_meta;
 			}
 		}
