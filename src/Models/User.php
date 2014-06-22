@@ -8,6 +8,7 @@ class User extends \Katu\Model {
 
 	const TABLE = 'users';
 
+
 	static function create() {
 		return self::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
