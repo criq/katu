@@ -12,6 +12,7 @@ class Email {
 	public $fromName;
 
 	public $to = array();
+	public $cc = array();
 
 	public $headers = array();
 
@@ -80,6 +81,12 @@ class Email {
 		return $this;
 	}
 
+	public function addCc($toEmailAddress, $toName = NULL) {
+		$this->cc[$toEmailAddress] = $toName;
+
+		return $this;
+	}
+
 	public function addHeader($name, $value) {
 		$this->headers[$name] = $value;
 
@@ -123,6 +130,14 @@ class Email {
 				'email' => $toEmailAddress,
 				'name'  => $toName,
 				'type'  => 'to',
+			);
+		}
+
+		foreach ($this->cc as $toEmailAddress => $toName) {
+			$message['to'][] = array(
+				'email' => $toEmailAddress,
+				'name'  => $toName,
+				'type'  => 'cc',
 			);
 		}
 
