@@ -30,4 +30,11 @@ class Page {
 		return (int) $this->perPage;
 	}
 
+	public function getSql(&$context = array()) {
+		$context['bindValues']['pageOffset'] = $this->getOffset();
+		$context['bindValues']['pageLimit']  = $this->getLimit();
+
+		return " :pageOffset, :pageLimit ";
+	}
+
 }

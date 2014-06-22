@@ -16,6 +16,7 @@ class Connection {
 		$this->name = $name;
 
 		try {
+
 			$config = Config::getDB($name);
 
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
@@ -52,6 +53,10 @@ class Connection {
 		$query->setClass($class);
 
 		return $query;
+	}
+
+	public function createSelectSqlBuilder($sql = NULL, $params = array()) {
+		return new SqlBuilder\Select;
 	}
 
 }

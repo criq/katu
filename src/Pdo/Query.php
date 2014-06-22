@@ -8,45 +8,54 @@ class Query {
 
 	public $pdo;
 	public $sql;
-	public $params = array();
-
+	public $bindValues = array();
 	public $page;
 	public $class;
 
-	public function __construct($pdo, $sql = "", $params = array()) {
+	public function __construct(Connection $pdo, $sql = '', $bindValues = array()) {
 		$this->pdo = $pdo;
 		$this->sql = $sql;
-		$this->params = $params;
+		$this->bindValues = $bindValues;
 	}
 
-	public function setSQL($sql) {
-		$this->sql = $sql;
+	public function setSql($sql) {
+		return $this->sql = $sql;
 	}
 
-	public function setParam($param, $value) {
-		$this->params[$param] = $value;
+	public function setFromSql(Expression $sql) {
+		$this->sql = $sql->getSql();
+		$this->bindValues = $sql->getBindValues();
+
+		$page = $sql->getPage();
+		if ($page) {
+			$this->setPage($page);
+		}
 	}
 
-	public function setParams($params) {
-		$this->params = array_merge($this->params, $params);
+	public function setBindValue($bindValue, $value) {
+		return $this->bindValues[$bindValue] = $value;
+	}
+
+	public function setBindValues($bindValues) {
+		return $this->bindValues = array_merge($this->bindValues, $bindValues);
 	}
 
 	public function setPage($page) {
-		$this->page = $page;
+		return $this->page = $page;
 	}
 
 	public function setClass($class) {
-		$this->class = $class;
+		return $this->class = $class;
 	}
 
 	public function getStatement() {
 		$statement = $this->pdo->connection->prepare($this->sql);
 
-		foreach ($this->params as $param => $value) {
+		foreach ($this->bindValues as $bindValue => $value) {
 			if (is_int($value)) {
-				$statement->bindValue($param, $value, PDO::PARAM_INT);
+				$statement->bindValue($bindValue, $value, PDO::PARAM_INT);
 			} else {
-				$statement->bindValue($param, $value, PDO::PARAM_STR);
+				$statement->bindValue($bindValue, $value, PDO::PARAM_STR);
 			}
 		}
 

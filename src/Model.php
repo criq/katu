@@ -2,12 +2,6 @@
 
 namespace Katu;
 
-use \Katu\Pdo\Meta\Select;
-use \Katu\Pdo\Meta\Join;
-use \Katu\Pdo\Meta\GroupBy;
-use \Katu\Pdo\Meta\OrderBy;
-use \Katu\Pdo\Meta\Page;
-
 class Model {
 
 	protected $__updated = FALSE;
@@ -35,6 +29,10 @@ class Model {
 		trigger_error('Undeclared class method ' . $name . '.');
 	}
 
+	static function getClass() {
+		return get_called_class();
+	}
+
 	static function getPdo() {
 		if (!defined('static::DATABASE')) {
 			throw new \Exception("Undefined database.");
@@ -48,36 +46,11 @@ class Model {
 			throw new \Exception("Undefined table.");
 		}
 
-		return static::TABLE;
-	}
-
-	static function getClass() {
-		return get_called_class();
-	}
-
-	static function getColumns() {
-		$columns = array();
-
-		foreach (static::getPdo()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
-			$columns[$row['Field']] = new \Katu\Pdo\Column($row);
-		}
-
-		return $columns;
+		return new Pdo\Table(static::getPdo(), static::TABLE);
 	}
 
 	static function getColumn($name) {
-		$columns = static::getColumns();
-		if (!isset($columns[$name])) {
-			throw new \Exception("Invalid column " . $name . ".");
-		}
-
-		return $columns[$name];
-	}
-
-	static function getColumnNames() {
-		return array_values(array_map(function($i) {
-			return $i->name;
-		}, static::getColumns()));
+		return new Pdo\Column(static::getTable(), $name);
 	}
 
 	static function query($sql = NULL, $params = array(), $setStaticClass = TRUE) {
@@ -89,18 +62,18 @@ class Model {
 		return $query;
 	}
 
-	static function insert($params = array()) {
+	static function insert($bindValues = array()) {
 		$query = static::getPdo()->createQuery();
 
-		$columns = array_keys($params);
+		$columns = array_keys($bindValues);
 		$values  = array_map(function($i) {
 			return ':' . $i;
-		}, array_keys($params));
+		}, array_keys($bindValues));
 
 		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ( " . implode(", ", $values) . " ) ";
 
-		$query->setSQL($sql);
-		$query->setParams($params);
+		$query->setSql($sql);
+		$query->setBindValues($bindValues);
 		$query->getResult();
 
 		return static::get(static::getPdo()->getLastInsertId());
@@ -122,29 +95,29 @@ class Model {
 	public function save() {
 		if ($this->__updated) {
 
-			$columns = static::getColumnNames();
+			$columns = static::getTable()->getColumnNames();
 
-			$params = array();
-			foreach (get_object_vars($this) as $param => $value) {
-				if (in_array($param, $columns) && $param != static::getIDColumnName()) {
-					$params[$param] = $value;
+			$bindValues = array();
+			foreach (get_object_vars($this) as $name => $value) {
+				if (in_array($name, $columns) && $name != static::getIdColumnName()) {
+					$bindValues[$name] = $value;
 				}
 			}
 
 			$set = array();
-			foreach ($params as $param => $value) {
-				$set[] = $param . " = :" . $param;
+			foreach ($bindValues as $name => $value) {
+				$set[] = $name . " = :" . $name;
 			}
 
 			if ($set) {
 
 				$query = static::getPdo()->createQuery();
 
-				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIDColumnName() . " = :" . $this->getIDColumnName() . " ) ";
+				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
 
-				$query->setSQL($sql);
-				$query->setParams($params);
-				$query->setParam(static::getIDColumnName(), $this->getID());
+				$query->setSql($sql);
+				$query->setBindValues($bindValues);
+				$query->setBindValue(static::getIdColumnName(), $this->getID());
 				$query->getResult();
 
 			}
@@ -158,15 +131,15 @@ class Model {
 	public function delete() {
 		$query = static::getPdo()->createQuery();
 
-		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIDColumnName() . " = :" . static::getIDColumnName();
+		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIdColumnName() . " = :" . static::getIdColumnName();
 
-		$query->setSQL($sql);
-		$query->setParam(static::getIDColumnName(), $this->getID());
+		$query->setSql($sql);
+		$query->setBindValue(static::getIdColumnName(), $this->getID());
 
 		return $query->getResult();
 	}
 
-	static function getIDColumnName() {
+	static function getIdColumnName() {
 		foreach (static::getPdo()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {
 				return $row['Field'];
@@ -177,7 +150,7 @@ class Model {
 	}
 
 	public function getID() {
-		return $this->{static::getIDColumnName()};
+		return $this->{static::getIdColumnName()};
 	}
 
 	static function filterParams($params) {
@@ -197,74 +170,44 @@ class Model {
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
-		$metaSelectUsed = FALSE;
+		$sql = new Pdo\Expressions\Select();
+		$sql->from(static::getTable());
 
-		$sql = " SELECT SQL_CALC_FOUND_ROWS ";
-
-		foreach ((array) $meta as $_meta) {
-
-			if ($_meta instanceof Select) {
-				$sql .= $_meta->getSelect();
-				$metaSelectUsed = TRUE;
-			}
-
-		}
-
-		if (!$metaSelectUsed) {
-			$sql .= " * ";
-		}
-
-		$sql .= " FROM " . static::getTable();
-
-		$sql .= " WHERE ( 1 ) ";
-
-		foreach (static::filterParams($params) as $param => $value) {
-
-			if ($value instanceof Pdo\Expressions\Expression) {
-
-				$sql .= " AND ( " . $value->getWhereConditionSQL($pdo, $param) . " ) ";
-				$query->setParam($param, $value->getValue());
-
+		foreach ($params as $name => $value) {
+			if ($value instanceof Pdo\Expression) {
+				$sql->where($value);
 			} else {
-
-				$sql .= " AND ( " . $param . " = :" . $param . " ) ";
-				$query->setParam($param, $value);
-
+				$sql->where(new Pdo\Expressions\CmpEq(static::getColumn($name), new Pdo\Expressions\BindValue($name, $value)));
 			}
-
 		}
 
-		foreach ((array) $meta as $_meta) {
-
-			if ($_meta instanceof GroupBy) {
-				$sql .= " GROUP BY " . $_meta->getGroupBy();
-			}
-
-			if ($_meta instanceof OrderBy) {
-				$sql .= " ORDER BY " . $_meta->getOrderBy();
-			}
-
-			if ($_meta instanceof Page) {
-				$sql .= " LIMIT :offset, :limit ";
-
-				$query->setParam('offset', $_meta->getOffset(), \PDO::PARAM_INT);
-				$query->setParam('limit', $_meta->getLimit(), \PDO::PARAM_INT);
-				$query->setPage($_meta);
-			}
-
+		if (isset($meta['select'])) {
+			$sql->select($meta['select']);
 		}
 
-		$query->setSQL($sql);
+		if (isset($meta['groupBy'])) {
+			$sql->groupBy($meta['groupBy']);
+		}
+
+		if (isset($meta['orderBy'])) {
+			$sql->orderBy($meta['orderBy']);
+		}
+
+		if (isset($meta['page'])) {
+			$sql->page($meta['page']);
+		}
+
+		$query->setFromSql($sql);
 
 		return $query->getResult();
 	}
 
 	static function get($primaryKey) {
-		return static::getOneBy(array(static::getIDColumnName() => $primaryKey));
+		return static::getOneBy(array(static::getIdColumnName() => $primaryKey));
 	}
 
 	static function getOneBy() {
-		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Page(1, 1)))))->getOne();
+		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Pdo\Meta\Page(1, 1)))))->getOne();
 	}
 
 	static function getAll($meta = array()) {
@@ -316,10 +259,10 @@ class Model {
 		return $object;
 	}
 
-	static function getIDProperties() {
+	static function getIdProperties() {
 		return array_values(array_filter(array_map(function($i) {
 			return preg_match('#^(?<property>[a-zA-Z_]+)_?[Ii][Dd]$#', $i) ? $i : NULL;
-		}, static::getColumnNames())));
+		}, static::getTable()->getColumnNames())));
 	}
 
 	public function getBoundObject($model) {
@@ -328,7 +271,7 @@ class Model {
 			return FALSE;
 		}
 
-		foreach (static::getIDProperties() as $property) {
+		foreach (static::getIdProperties() as $property) {
 			$proposedModel = '\\App\\Models\\' . ucfirst(preg_replace('#^(.+)_?[Ii][Dd]$#', '\\1', $property));
 			if ($proposedModel && $nsModel == $proposedModel) {
 				$object = $proposedModel::get($this->{$property});
@@ -342,7 +285,7 @@ class Model {
 	}
 
 	static function getPropertyName($property) {
-		$properties = array_merge(array_keys(get_class_vars(get_called_class())), static::getColumnNames());
+		$properties = array_merge(array_keys(get_class_vars(get_called_class())), static::getTable()->getColumnNames());
 
 		foreach ($properties as $_property) {
 			if (strtolower($_property) === strtolower($property)) {
@@ -354,7 +297,7 @@ class Model {
 	}
 
 	static function getColumnUniqueID($column) {
-		$columns = static::getColumns();
+		$columns = static::getColumnDescriptions();
 		if (!$columns[$column]->length) {
 			throw new \Exception("Unable to get column length.");
 		}
