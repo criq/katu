@@ -125,8 +125,28 @@ class Select extends \Katu\Pdo\Expression {
 		return $this;
 	}
 
-	public function page($page) {
+	public function setPage($page) {
 		$this->_optPage = $page;
+
+		return $this;
+	}
+
+	public function setOptions($options = array()) {
+		if (isset($options['select'])) {
+			$this->select($options['select']);
+		}
+
+		if (isset($options['groupBy'])) {
+			$this->groupBy($options['groupBy']);
+		}
+
+		if (isset($options['orderBy'])) {
+			$this->orderBy($options['orderBy']);
+		}
+
+		if (isset($options['page'])) {
+			$this->setPage($options['page']);
+		}
 
 		return $this;
 	}

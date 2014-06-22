@@ -165,36 +165,21 @@ class Model {
 		return $_params;
 	}
 
-	static function getBy($params = array(), $meta = array()) {
+	static function getBy($params = array(), $options = array()) {
 		$pdo = static::getPdo();
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
 		$sql = new Pdo\Expressions\Select();
+		$sql->setOptions($options);
 		$sql->from(static::getTable());
 
 		foreach ($params as $name => $value) {
 			if ($value instanceof Pdo\Expression) {
 				$sql->where($value);
 			} else {
-				$sql->where(new Pdo\Expressions\CmpEq(static::getColumn($name), new Pdo\Expressions\BindValue($name, $value)));
+				$sql->where(new Pdo\Expressions\CmpEq(static::getColumn($name), $value));
 			}
-		}
-
-		if (isset($meta['select'])) {
-			$sql->select($meta['select']);
-		}
-
-		if (isset($meta['groupBy'])) {
-			$sql->groupBy($meta['groupBy']);
-		}
-
-		if (isset($meta['orderBy'])) {
-			$sql->orderBy($meta['orderBy']);
-		}
-
-		if (isset($meta['page'])) {
-			$sql->page($meta['page']);
 		}
 
 		$query->setFromSql($sql);
@@ -210,18 +195,9 @@ class Model {
 		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Pdo\Expressions\Page(1, 1)))))->getOne();
 	}
 
-	static function getAll($meta = array()) {
-		return static::getBy(array(), $meta);
+	static function getAll($options = array()) {
+		return static::getBy(array(), $options);
 	}
-
-	static function getByQuery($sql, $params = array()) {
-		$query = static::getPdo()->createQuery($sql, $params);
-		$query->setClass(static::getClass());
-
-		return $query->getResult();
-	}
-
-
 
 	static function getOneOrCreateWithArray($getBy, $array = array()) {
 		$object = static::getOneBy($getBy);
@@ -241,8 +217,6 @@ class Model {
 
 		return $object;
 	}
-
-
 
 	static function getFromAssoc($array) {
 		if (!$array) {
