@@ -16,12 +16,45 @@ class Result implements \Iterator {
 		$this->pdo       = $pdo;
 		$this->statement = $statement;
 
-		$this->statement->execute();
+		try {
 
-		if ((int) $this->statement->errorCode()) {
-			$error = $this->statement->errorInfo();
-			throw new \Exception($error[2], $error[1]);
+			$this->statement->execute();
+
+			if ((int) $this->statement->errorCode()) {
+				$error = $this->statement->errorInfo();
+				throw new \Exception($error[2], $error[1]);
+			}
+
+		} catch (\Exception $e) {
+
+			// Non-existing table.
+			if ($e->getCode() == 1146 && preg_match('#^Table \'(.+)\.(?<table>.+)\' doesn\'t exist$#', $e->getMessage(), $match)) {
+
+				// Create the table.
+				$sqlFileName = __DIR__ . '/../../Sql/' . $match['table'] . '.create.sql';
+				if (file_exists(realpath($sqlFileName))) {
+
+					// There is a file, let's create the table.
+					$createQuery = $this->pdo->createQuery(file_get_contents($sqlFileName));
+					$createQuery->getResult();
+
+					$this->statement->execute();
+
+					if ((int) $this->statement->errorCode()) {
+						$error = $this->statement->errorInfo();
+						throw new \Exception($error[2], $error[1]);
+					}
+
+				}
+
+			} else {
+
+				throw $e;
+
+			}
+
 		}
+
 	}
 
 	public function getCount() {

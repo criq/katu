@@ -8,23 +8,6 @@ class User extends \Katu\Model {
 
 	const TABLE = 'users';
 
-	/*
-	static function createTable() {
-		const CREATE_COMMAND = "
-	CREATE TABLE `users` (
-		`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-		`timeCreated` datetime NOT NULL,
-		`emailAddressId` int(11) unsigned NOT NULL,
-		`name` varchar(255) NOT NULL DEFAULT '',
-		`password` text NOT NULL,
-		`isActive` enum('0','1') NOT NULL DEFAULT '1',
-		PRIMARY KEY (`id`),
-		KEY `emailAddressId` (`emailAddressId`)
-		) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-	";
-	}
-	*/
-
 	static function create() {
 		return self::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),

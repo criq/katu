@@ -8,6 +8,10 @@ class EmailAddress extends \Katu\Model {
 
 	const TABLE = 'email_addresses';
 
+	static function createTable() {
+
+	}
+
 	static function create($emailAddress) {
 		if (!self::checkCrudParams($emailAddress)) {
 			throw new \Exception("Invalid arguments.");
