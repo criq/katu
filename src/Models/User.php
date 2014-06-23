@@ -92,6 +92,8 @@ class User extends \Katu\Model {
 	}
 
 	public function hasPermission($permission) {
+		var_dump("A"); die;
+
 		return (bool) \App\Models\UserPermission::getOneBy(array(
 			'userId'     => (int)    ($this->id),
 			'permission' => (string) (trim($permission)),
