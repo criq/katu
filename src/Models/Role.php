@@ -53,6 +53,18 @@ class Role extends \Katu\Model {
 		return TRUE;
 	}
 
+	public function addPermission($permission) {
+		return \App\Models\RolePermission::make($this, $permission);
+	}
+
+	public function addPermissions($permissions) {
+		foreach ((array) $permissions as $permission) {
+			$this->addPermission($permission);
+		}
+
+		return TRUE;
+	}
+
 	public function hasPermission($permission) {
 		return (bool) \App\Models\RolePermission::getOneBy(array(
 			'roleId'     => (int)    ($this->id),
@@ -60,8 +72,14 @@ class Role extends \Katu\Model {
 		));
 	}
 
-	public function addPermission($permission) {
-		return \App\Models\RolePermission::make($this, $permission);
+	public function deleteAllPermissions() {
+		foreach (\App\Models\RolePermission::getBy(array(
+			'roleId' => $this->id,
+		)) as $rolePermission) {
+			$rolePermission->delete();
+		}
+
+		return TRUE;
 	}
 
 	public function userCanEdit($user) {
