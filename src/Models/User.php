@@ -80,6 +80,17 @@ class User extends \Katu\Model {
 		return \Katu\Session::reset('katu.user.id');
 	}
 
+	public function hasRole($role) {
+		return (bool) \App\Models\UserRole::getOneBy(array(
+			'userId' => (int) ($this->id),
+			'roleId' => (int) ($role->id),
+		));
+	}
+
+	public function addRole($role) {
+		return \App\Models\UserRole::make($this, $role);
+	}
+
 	public function hasPermission($permission) {
 		return (bool) \App\Models\UserPermission::getOneBy(array(
 			'userId'     => (int)    ($this->id),

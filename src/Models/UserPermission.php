@@ -2,8 +2,6 @@
 
 namespace Katu\Models;
 
-use \Katu\Exception;
-
 class UserPermission extends \Katu\Model {
 
 	const TABLE = 'user_permissions';

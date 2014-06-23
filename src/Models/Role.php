@@ -53,6 +53,17 @@ class Role extends \Katu\Model {
 		return TRUE;
 	}
 
+	public function hasPermission($permission) {
+		return (bool) \App\Models\RolePermission::getOneBy(array(
+			'roleId'     => (int)    ($this->id),
+			'permission' => (string) (trim($permission)),
+		));
+	}
+
+	public function addPermission($permission) {
+		return \App\Models\RolePermission::make($this, $permission);
+	}
+
 	public function userCanEdit($user) {
 		if (!$user) {
 			return FALSE;
