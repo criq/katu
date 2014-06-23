@@ -53,4 +53,28 @@ class Role extends \Katu\Model {
 		return TRUE;
 	}
 
+	public function userCanEdit($user) {
+		if (!$user) {
+			return FALSE;
+		}
+
+		return $user->hasPermission('roles.edit');
+	}
+
+	public function userCanEditPermissions($user) {
+		if (!$user) {
+			return FALSE;
+		}
+
+		return $user->hasPermission('roles.editPermissions');
+	}
+
+	public function userCanDelete($user) {
+		if (!$user) {
+			return FALSE;
+		}
+
+		return $user->hasPermission('roles.delete');
+	}
+
 }
