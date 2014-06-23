@@ -23,6 +23,22 @@ class Role extends \Katu\Model {
 		), $name);
 	}
 
+	public function delete() {
+		foreach (\App\Models\RolePermission::getBy(array(
+			'roleId' => $this->id,
+		)) as $rolePermission) {
+			$rolePermission->delete();
+		}
+
+		foreach (\App\Models\UserRole::getBy(array(
+			'roleId' => $this->id,
+		)) as $userRole) {
+			$userRole->delete();
+		}
+
+		return parent::delete();
+	}
+
 	static function checkCrudParams($name) {
 		if (!static::checkName($name)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid name.", 'name');
