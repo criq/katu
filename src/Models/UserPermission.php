@@ -7,11 +7,11 @@ class UserPermission extends \Katu\Model {
 	const TABLE = 'user_permissions';
 
 	static function create($user, $permission) {
-		if (!self::checkCrudParams($user, $permission)) {
+		if (!static::checkCrudParams($user, $permission)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
-		return self::insert(array(
+		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
 			'userId'      => (int)    ($user->id),
 			'permission'  => (string) (trim($permission)),
@@ -19,11 +19,11 @@ class UserPermission extends \Katu\Model {
 	}
 
 	static function make($user, $permission) {
-		if (!self::checkCrudParams($user, $permission)) {
+		if (!static::checkCrudParams($user, $permission)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
-		return self::getOneOrCreateWithList(array(
+		return static::getOneOrCreateWithList(array(
 			'userId'     => (int)    ($user->id),
 			'permission' => (string) (trim($permission)),
 		), $user, $permission);

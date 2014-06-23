@@ -9,7 +9,7 @@ class User extends \Katu\Model {
 	const TABLE = 'users';
 
 	static function create() {
-		return self::insert(array(
+		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
 		));
 	}
@@ -34,7 +34,7 @@ class User extends \Katu\Model {
 	}
 
 	static function getCurrent() {
-		return self::get(\Katu\Session::get('katu.user.id'));
+		return static::get(\Katu\Session::get('katu.user.id'));
 	}
 
 	public function addUserService($serviceName, $serviceUserID) {

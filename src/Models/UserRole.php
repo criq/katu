@@ -7,11 +7,11 @@ class UserRole extends \Katu\Model {
 	const TABLE = 'user_roles';
 
 	static function create($user, $role) {
-		if (!self::checkCrudParams($user, $role)) {
+		if (!static::checkCrudParams($user, $role)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
-		return self::insert(array(
+		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
 			'userId'      => (int)    ($user->id),
 			'roleId'      => (int)    ($role->id),
@@ -19,11 +19,11 @@ class UserRole extends \Katu\Model {
 	}
 
 	static function make($user, $role) {
-		if (!self::checkCrudParams($user, $role)) {
+		if (!static::checkCrudParams($user, $role)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
-		return self::getOneOrCreateWithList(array(
+		return static::getOneOrCreateWithList(array(
 			'userId' => (int) ($user->id),
 			'roleId' => (int) ($role->id),
 		), $user, $role);

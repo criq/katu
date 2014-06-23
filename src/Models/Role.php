@@ -7,18 +7,24 @@ class Role extends \Katu\Model {
 	const TABLE = 'roles';
 
 	static function create($name) {
-		if (!self::checkCrudParams($name)) {
+		if (!static::checkCrudParams($name)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
-		return self::insert(array(
+		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
 			'name'        => (string) (trim($name)),
 		));
 	}
 
+	static function make($name) {
+		return static::getOneOrCreateWithList(array(
+			'name' => $name,
+		), $name);
+	}
+
 	static function checkCrudParams($name) {
-		if (!self::checkName($name)) {
+		if (!static::checkName($name)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid name.", 'name');
 		}
 

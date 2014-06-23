@@ -9,11 +9,11 @@ class Setting extends \Katu\Model {
 	const TABLE = 'settings';
 
 	static function create($creator, $name, $value, $isSystem, $description = NULL) {
-		if (!self::checkCrudParams($creator, $name, $value, $isSystem)) {
+		if (!static::checkCrudParams($creator, $name, $value, $isSystem)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
-		return self::insert(array(
+		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
 			'creatorId'   => (int)    ($creator->id),
 			'name'        => (string) (trim($name)),

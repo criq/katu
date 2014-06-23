@@ -13,11 +13,11 @@ class Geocode extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid geocode address.");
 		}
 
-		$hash = self::getHashByGeocodeAddress($geocodeAddress);
+		$hash = static::getHashByGeocodeAddress($geocodeAddress);
 
 		$geocode = static::getOneBy(array('hash' => $hash));
 		if (!$geocode) {
-			$geocode = self::insert(array(
+			$geocode = static::insert(array(
 				'timeCreated'  => (string) \Katu\Utils\DateTime::get()->getDBDatetimeFormat(),
 				'hash'         => (string) $hash,
 				'language'     => (string) $geocodeAddress->language,
