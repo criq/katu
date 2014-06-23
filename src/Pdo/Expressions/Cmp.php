@@ -10,10 +10,12 @@ abstract class Cmp extends \Katu\Pdo\Expression {
 	public function __construct($name, $value = NULL) {
 		$this->name = $name;
 
-		if (!($value instanceof BindValue)) {
-			$this->value = new BindValue(NULL, $value);
-		} else {
+		if ($value instanceof BindValue) {
 			$this->value = $value;
+		} elseif ($value instanceof \Katu\Pdo\Column) {
+			$this->value = $value;
+		} else {
+			$this->value = new BindValue(NULL, $value);
 		}
 	}
 

@@ -91,13 +91,36 @@ class User extends \Katu\Model {
 		return \App\Models\UserRole::make($this, $role);
 	}
 
-	public function hasPermission($permission) {
-		var_dump("A"); die;
+	public function getRolePermissions() {
+		$sql = (new \Katu\Pdo\Expressions\Select(\App\Models\RolePermission::getColumn('permission')))
+			->from(\App\Models\RolePermission::getTable())
+			->join(\App\Models\UserRole::getColumn('roleId'), \App\Models\RolePermission::getColumn('roleId'))
+			->where(\App\Models\UserRole::getColumn('roleId'), $this->id)
+			->groupBy(\App\Models\RolePermission::getColumn('permission'));
 
-		return (bool) \App\Models\UserPermission::getOneBy(array(
-			'userId'     => (int)    ($this->id),
-			'permission' => (string) (trim($permission)),
-		));
+		return static::getPdo()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
+	}
+
+	public function getUserPermissions() {
+		return \App\Models\UserPermission::getBy(array(
+			'userId' => (int) ($this->id),
+		))->getPropertyValues('permission');
+	}
+
+	public function getAllPermissions() {
+		return array_values(array_unique(array_merge($this->getRolePermissions(), $this->getUserPermissions())));
+	}
+
+	public function hasPermission($permission) {
+		return in_array($permission, $this->getAllPermissions());
+	}
+
+	public function hasRolePermission($permission) {
+		return in_array($permission, $this->getRolePermissions());
+	}
+
+	public function hasUserPermission($permission) {
+		return in_array($permission, $this->getUserPermissions());
 	}
 
 	public function addPermission($permission) {

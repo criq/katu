@@ -48,6 +48,10 @@ class Connection {
 		return new Query($this, $sql, $params);
 	}
 
+	public function createQueryFromSql(Expression $sql) {
+		return new Query($this, $sql->getSql(), $sql->getBindValues());
+	}
+
 	public function createClassQuery($class, $sql = NULL, $params = array()) {
 		$query = new Query($this, $sql, $params);
 		$query->setClass($class);

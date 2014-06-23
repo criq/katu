@@ -44,4 +44,14 @@ class ClassResult extends PaginatedResult {
 		return $object;
 	}
 
+	public function getPropertyValues($property) {
+		$values = array();
+
+		foreach ($this as $object) {
+			$values[] = $object->$property;
+		}
+
+		return $values;
+	}
+
 }
