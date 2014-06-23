@@ -21,7 +21,7 @@ class UserPasswordToken extends \Katu\Model {
 
 	static function checkCrudParams($user) {
 		if (!$user || !($user instanceof User)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid user.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid user.", 'user');
 		}
 
 		return TRUE;

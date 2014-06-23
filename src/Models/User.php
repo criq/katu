@@ -16,14 +16,14 @@ class User extends \Katu\Model {
 
 	static function createWithEmailAddress($emailAddress) {
 		if (!$emailAddress || !($emailAddress instanceof EmailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
 		}
 
 		// Look for another user with this e-mail address.
 		if (static::getBy(array(
 			'emailAddressId' => $emailAddress->id,
 		))->getTotal()) {
-			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is already in use.");
+			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is already in use.", 'emailAddress');
 		}
 
 		$object = parent::create();
@@ -50,7 +50,7 @@ class User extends \Katu\Model {
 
 	public function setEmailAddress($emailAddress) {
 		if (!$emailAddress || !($emailAddress instanceof EmailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
 		}
 
 		// Look for another user with this e-mail address.
@@ -58,7 +58,7 @@ class User extends \Katu\Model {
 			'emailAddressId' => $emailAddress->id,
 			new CmpNotEq(static::getColumn('id'), $this->id),
 		))->getTotal()) {
-			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is used by another user.");
+			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is used by another user.", 'emailAddress');
 		}
 
 		$this->update('emailAddressId', $emailAddress->id);
@@ -80,6 +80,29 @@ class User extends \Katu\Model {
 		return \Katu\Session::reset('katu.user.id');
 	}
 
+	public function addRole($role) {
+		return \App\Models\UserRole::make($this, $role);
+	}
+
+	public function addRolesByIds($roleIds) {
+		$roles = array();
+
+		foreach ((array) $roleIds as $roleId) {
+			$role = \App\Models\Role::get($roleId);
+			if (!$role) {
+				throw new \Katu\Exceptions\InputErrorException("Invalid role ID.");
+			}
+
+			$roles[] = $role;
+		}
+
+		foreach ($roles as $role) {
+			$this->addRole($role);
+		}
+
+		return TRUE;
+	}
+
 	public function hasRole($role) {
 		return (bool) \App\Models\UserRole::getOneBy(array(
 			'userId' => (int) ($this->id),
@@ -87,8 +110,45 @@ class User extends \Katu\Model {
 		));
 	}
 
-	public function addRole($role) {
-		return \App\Models\UserRole::make($this, $role);
+	public function deleteAllRoles() {
+		foreach (\App\Models\UserRole::getBy(array(
+			'userId' => $this->id,
+		)) as $userRole) {
+			$userRole->delete();
+		}
+
+		return TRUE;
+	}
+
+	public function addUserPermission($permission) {
+		return \App\Models\UserPermission::make($this, $permission);
+	}
+
+	public function addUserPermissions($permissions) {
+		foreach ((array) $permissions as $permission) {
+			$this->addUserPermission($permission);
+		}
+
+		return TRUE;
+	}
+
+	public function deleteAllUserPermissions() {
+		foreach (\App\Models\UserPermission::getBy(array(
+			'userId' => $this->id,
+		)) as $userPermission) {
+			$userPermission->delete();
+		}
+
+		return TRUE;
+	}
+
+	static function currentHasPermission($permission) {
+		$user = static::getCurrent();
+		if (!$user) {
+			return FALSE;
+		}
+
+		return $user->hasPermission($permission);
 	}
 
 	public function getRolePermissions() {
@@ -121,19 +181,6 @@ class User extends \Katu\Model {
 
 	public function hasUserPermission($permission) {
 		return in_array($permission, $this->getUserPermissions());
-	}
-
-	public function addPermission($permission) {
-		return \App\Models\UserPermission::make($this, $permission);
-	}
-
-	static function currentHasPermission($permission) {
-		$user = static::getCurrent();
-		if (!$user) {
-			return FALSE;
-		}
-
-		return $user->hasPermission($permission);
 	}
 
 }
