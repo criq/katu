@@ -25,10 +25,10 @@ class Setting extends \Katu\Model {
 
 	static function checkCrudParams($creator, $name, $value, $isSystem) {
 		if (!$creator || !($creator instanceof \App\Models\Creator)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting creator.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting creator.", 'creator');
 		}
 		if (!static::checkName($name)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting name.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting name.", 'name');
 		}
 
 		return TRUE;
@@ -36,7 +36,7 @@ class Setting extends \Katu\Model {
 
 	static function checkName($name, $object = NULL) {
 		if (!trim($name)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Missing setting name.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Missing setting name.", 'name');
 		}
 
 		$attr['name'] = trim($name);
@@ -45,7 +45,7 @@ class Setting extends \Katu\Model {
 		}
 
 		if (static::getBy($attr)->getTotal()) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Setting already exists.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Setting already exists.", 'name');
 		}
 
 		return TRUE;
@@ -53,7 +53,7 @@ class Setting extends \Katu\Model {
 
 	public function setName($name) {
 		if (!static::checkName($name, $this)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting name.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting name.", 'name');
 		}
 
 		$this->update('name', trim($name));
@@ -74,7 +74,7 @@ class Setting extends \Katu\Model {
 	static function getByName($name) {
 		$setting = static::getObject($name);
 		if (!$setting) {
-			throw new \Katu\Exceptions\MissingSettingException("Missing setting " . $name . ".");
+			throw new \Katu\Exceptions\MissingSettingException("Missing setting " . $name . ".", 'name');
 		}
 
 		return $setting->getValue();

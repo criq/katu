@@ -8,13 +8,9 @@ class EmailAddress extends \Katu\Model {
 
 	const TABLE = 'email_addresses';
 
-	static function createTable() {
-
-	}
-
 	static function create($emailAddress) {
 		if (!self::checkCrudParams($emailAddress)) {
-			throw new \Exception("Invalid arguments.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
 		return self::insert(array(
@@ -25,7 +21,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function make($emailAddress) {
 		if (!self::checkCrudParams($emailAddress)) {
-			throw new \Exception("Invalid arguments.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
 		return self::getOneOrCreateWithList(array(
@@ -35,7 +31,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function checkCrudParams($emailAddress) {
 		if (!self::checkEmailAddress($emailAddress)) {
-			throw new \Exception("Invalid e-mail address.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
 		}
 
 		return TRUE;
@@ -43,11 +39,11 @@ class EmailAddress extends \Katu\Model {
 
 	static function checkEmailAddress($emailAddress) {
 		if (!trim($emailAddress)) {
-			throw new \Exception("Missing e-mail address.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Missing e-mail address.", 'emailAddress');
 		}
 
 		if (!self::isValid($emailAddress)) {
-			throw new \Exception("Invalid e-mail address.");
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
 		}
 
 		return TRUE;
