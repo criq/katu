@@ -96,4 +96,24 @@ class Setting extends \Katu\Model {
 		}
 	}
 
+	public function userCanEdit($user) {
+		if (!$user) {
+			return FALSE;
+		}
+
+		return $user->hasPermission('settings.edit');
+	}
+
+	public function userCanDelete($user) {
+		if (!$user) {
+			return FALSE;
+		}
+
+		if ($this->isSystem) {
+			return FALSE;
+		}
+
+		return $user->hasPermission('settings.delete');
+	}
+
 }

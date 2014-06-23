@@ -14,6 +14,25 @@ class User extends \Katu\Model {
 		));
 	}
 
+	static function createWithEmailAddress($emailAddress) {
+		if (!$emailAddress || !($emailAddress instanceof EmailAddress)) {
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.");
+		}
+
+		// Look for another user with this e-mail address.
+		if (static::getBy(array(
+			'emailAddressId' => $emailAddress->id,
+		))->getTotal()) {
+			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is already in use.");
+		}
+
+		$object = parent::create();
+		$object->setEmailAddress($emailAddress);
+		$object->save();
+
+		return $object;
+	}
+
 	static function getCurrent() {
 		return self::get(\Katu\Session::get('katu.user.id'));
 	}
@@ -27,6 +46,30 @@ class User extends \Katu\Model {
 			'userID'      => (int)    ($this->id),
 			'serviceName' => (string) ($serviceName),
 		));
+	}
+
+	public function setEmailAddress($emailAddress) {
+		if (!$emailAddress || !($emailAddress instanceof EmailAddress)) {
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.");
+		}
+
+		// Look for another user with this e-mail address.
+		if (static::getBy(array(
+			'emailAddressId' => $emailAddress->id,
+			new CmpNotEq(static::getColumn('id'), $this->id),
+		))->getTotal()) {
+			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is used by another user.");
+		}
+
+		$this->update('emailAddressId', $emailAddress->id);
+
+		return TRUE;
+	}
+
+	public function setName($name) {
+		$this->update('name', trim($name));
+
+		return TRUE;
 	}
 
 	public function login() {
