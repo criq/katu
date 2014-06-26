@@ -32,11 +32,11 @@ class View {
 		// Filters.
 
 		$twig->addFilter(new \Twig_SimpleFilter('url', function($string) {
-			return Utils\URL::getSite($string);
+			return Utils\Url::getSite($string);
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnail', function($uri, $size = 640, $quality = 100) {
-			return \Katu\Utils\Image::getThumbnailURL($uri, $size, $quality);
+			return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality);
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnailPath', function($uri, $size = 640, $quality = 100) {
@@ -80,11 +80,11 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
-			return call_user_func_array(array('\Katu\Utils\URL', 'getFor'), func_get_args());
+			return call_user_func_array(array('\Katu\Utils\Url', 'getFor'), func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCurrentUrl', function() {
-			return call_user_func_array(array('\Katu\Utils\URL', 'getCurrent'), func_get_args());
+			return call_user_func_array(array('\Katu\Utils\Url', 'getCurrent'), func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {

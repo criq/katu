@@ -9,15 +9,14 @@ class Select extends \Katu\Pdo\Expression {
 	public $join    = array();
 	public $where   = array();
 	public $groupBy = array();
+	public $having  = array();
 	public $orderBy = array();
 
 	private $_optGetTotalRows = TRUE;
 	private $_optPage;
 
-	public function __construct($select = NULL) {
-		if ($select) {
-			$this->select($select);
-		}
+	public function __construct() {
+		call_user_func_array(array($this, 'select'), func_get_args());
 
 		return $this;
 	}
@@ -37,11 +36,11 @@ class Select extends \Katu\Pdo\Expression {
 
 			$this->select[] = func_get_arg(0);
 
-		} elseif (
-			count(func_get_args()) == 1
-		) {
+		} else {
 
-			$this->select[] = func_get_arg(0);
+			foreach (func_get_args() as $arg) {
+				$this->select[] = $arg;
+			}
 
 		}
 
@@ -119,6 +118,12 @@ class Select extends \Katu\Pdo\Expression {
 		return $this;
 	}
 
+	public function having($having) {
+		$this->having[] = $having;
+
+		return $this;
+	}
+
 	public function orderBy($orderBy) {
 		$this->orderBy[] = $orderBy;
 
@@ -188,6 +193,12 @@ class Select extends \Katu\Pdo\Expression {
 			$sql .= " GROUP BY " . implode(", ", array_map(function($i) use(&$context) {
 				return $i->getSql($context);
 			}, $this->groupBy));
+		}
+
+		if ($this->having) {
+			$sql .= " HAVING " . implode(" AND ", array_map(function($i) use(&$context) {
+				return $i->getSql($context);
+			}, $this->having));
 		}
 
 		if ($this->orderBy) {
