@@ -109,7 +109,7 @@ class View {
 			return $pagination->getPaginationPages(func_get_arg(1));
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getPaginationURL', function() {
+		$twig->addFunction(new \Twig_SimpleFunction('getPaginationUrl', function() {
 			$url       =          new \Katu\Types\TURL(func_get_arg(0));
 			$page      = (int)    func_get_arg(1);
 			$pageIdent = (string) func_get_arg(2);

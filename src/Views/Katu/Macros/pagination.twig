@@ -11,7 +11,11 @@
 
 			<span class="segment prev">
 				{% if pagination.page > 1 %}
+<<<<<<< HEAD
 					<a class="node skip prev active" href="{{ getPaginationURL(url, pagination.page - 1, pageIdent) }}">{{ prevCopy }}</a>
+=======
+					<span class="node skip prev active"><a href="{{ getPaginationUrl(url, pagination.page - 1, pageIdent) }}">{{ prevCopy }}</a></span>
+>>>>>>> c9e9d43387f4f0b6cc7a0d8dde533e95100d24d6
 				{% else %}
 					<span class="node skip prev inactive">{{ prevCopy }}</span>
 				{% endif %}
@@ -21,7 +25,11 @@
 				{% for key, page in pages %}
 
 					{% if page != pagination.page %}
+<<<<<<< HEAD
 						<a class="node page active" href="{{ getPaginationURL(url, page, pageIdent) }}">{{ page }}</a>
+=======
+						<span class="node page active"><a href="{{ getPaginationUrl(url, page, pageIdent) }}">{{ page }}</a></span>
+>>>>>>> c9e9d43387f4f0b6cc7a0d8dde533e95100d24d6
 					{% else %}
 						<span class="node page inactive current">{{ page }}</span>
 					{% endif %}
@@ -35,7 +43,11 @@
 
 			<span class="segment next">
 				{% if pagination.page < pagination.getMaxPage %}
+<<<<<<< HEAD
 					<a class="node skip next active" href="{{ getPaginationURL(url, pagination.page + 1, pageIdent) }}">{{ nextCopy }}</a>
+=======
+					<span class="node skip next active"><a href="{{ getPaginationUrl(url, pagination.page + 1, pageIdent) }}">{{ nextCopy }}</a></span>
+>>>>>>> c9e9d43387f4f0b6cc7a0d8dde533e95100d24d6
 				{% else %}
 					<span class="node skip next active">{{ nextCopy }}</span>
 				{% endif %}
