@@ -53,10 +53,33 @@ class Model {
 		return new Pdo\Column(static::getTable(), $name);
 	}
 
-	static function query($sql = NULL, $params = array(), $setStaticClass = TRUE) {
-		$query = static::getPdo()->createQuery($sql, $params);
-		if ($setStaticClass) {
-			$query->setClass(static::getClass());
+	static function createQuery() {
+		// Sql expression.
+		if (
+			count(func_get_args()) == 1
+			&& func_get_arg(0) instanceof Pdo\Expression
+		) {
+
+			$query = static::getPdo()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
+
+		// Raw sql and bind values.
+		} elseif (
+			count(func_get_args()) == 2
+		) {
+
+			$query = static::getPdo()->createClassQuery(static::getClass(), func_get_arg(0), func_get_arg(1));
+
+		// Raw sql.
+		} elseif (
+			count(func_get_args()) == 1
+		) {
+
+			$query = static::getPdo()->createClassQuery(static::getClass(), func_get_arg(0));
+
+		} else {
+
+			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments passed to query.");
+
 		}
 
 		return $query;

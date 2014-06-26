@@ -138,6 +138,10 @@ class Select extends \Katu\Pdo\Expression {
 		return $this;
 	}
 
+	public function getPage() {
+		return $this->_optPage;
+	}
+
 	public function setOptions($options = array()) {
 		if (isset($options['select'])) {
 			$this->select($options['select']);
@@ -220,10 +224,6 @@ class Select extends \Katu\Pdo\Expression {
 		$this->getSql($context);
 
 		return isset($context['bindValues']) ? (array) $context['bindValues'] : array();
-	}
-
-	public function getPage() {
-		return $this->_optPage;
 	}
 
 }

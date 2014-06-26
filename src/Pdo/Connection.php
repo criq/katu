@@ -45,11 +45,16 @@ class Connection {
 
 
 	public function createQuery($sql = NULL, $params = array()) {
-		return new Query($this, $sql, $params);
+		$query = new Query($this, $sql, $params);
+
+		return $query;
 	}
 
 	public function createQueryFromSql(Expression $sql) {
-		return new Query($this, $sql->getSql(), $sql->getBindValues());
+		$query = new Query($this);
+		$query->setFromSql($sql);
+
+		return $query;
 	}
 
 	public function createClassQuery($class, $sql = NULL, $params = array()) {
@@ -59,8 +64,11 @@ class Connection {
 		return $query;
 	}
 
-	public function createSelectSqlBuilder($sql = NULL, $params = array()) {
-		return new SqlBuilder\Select;
+	public function createClassQueryFromSql($class, Expression $sql) {
+		$query = static::createQueryFromSql($sql);
+		$query->setClass($class);
+
+		return $query;
 	}
 
 }
