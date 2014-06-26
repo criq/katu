@@ -6,14 +6,14 @@ use \Katu\App;
 use \Katu\Config;
 use \Katu\Types\TURL;
 
-class URL {
+class Url {
 
-	static function isHTTPS() {
+	static function isHttps() {
 		return isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
 	}
 
 	static function getCurrent() {
-		return new TURL('http' . (self::isHTTPS() ? 's' : NULL) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+		return new TURL('http' . (self::isHttps() ? 's' : NULL) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 	}
 
 	static function getBase() {
