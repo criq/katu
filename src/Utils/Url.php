@@ -27,7 +27,7 @@ class Url {
 	static function getFor($handle, $args = array()) {
 		$app = App::get();
 
-		return new TURL(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle, $args)));
+		return new TURL(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle, array_map('urlencode', $args))));
 	}
 
 	static function joinPaths() {
