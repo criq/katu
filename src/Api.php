@@ -25,7 +25,7 @@ class Api {
 	}
 
 	static function getUrl($endpoint) {
-		return Utils\URL::joinPaths(Config::get('app', 'apiUrl'), $endpoint);
+		return Utils\Url::joinPaths(Config::get('app', 'apiUrl'), $endpoint);
 	}
 
 	static function get($endpoint, $params = array(), &$curl = NULL) {

@@ -6,7 +6,7 @@ use \Katu\App;
 use \Katu\Config;
 use \Katu\Session;
 use \Katu\Utils\Facebook;
-use \Katu\Utils\URL;
+use \Katu\Utils\Url;
 use \Katu\Types\TURL;
 use \Facebook\FacebookSession;
 use \Facebook\FacebookRedirectLoginHelper;

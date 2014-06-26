@@ -49,7 +49,7 @@ class Cookie {
 	}
 
 	static function getDefautDomain() {
-		return '.' . Utils\URL::getBase()->get2ndLevelDomain();
+		return '.' . Utils\Url::getBase()->get2ndLevelDomain();
 	}
 
 }

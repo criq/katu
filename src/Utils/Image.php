@@ -13,7 +13,7 @@ class Image {
 	static function getThumbnailURL($uri, $size, $quality = 100) {
 		static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality), $size, $quality);
 
-		return \Katu\Utils\URL::joinPaths(\Katu\Utils\URL::getBase(), TMP_DIR, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality));
+		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), TMP_DIR, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality));
 	}
 
 	static function getThumbnailPath($uri, $size, $quality = 100) {
