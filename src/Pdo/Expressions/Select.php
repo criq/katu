@@ -112,8 +112,10 @@ class Select extends \Katu\Pdo\Expression {
 		return $this;
 	}
 
-	public function groupBy($groupBy) {
-		$this->groupBy[] = $groupBy;
+	public function groupBy() {
+		foreach (func_get_args() as $arg) {
+			$this->groupBy[] = $arg;
+		}
 
 		return $this;
 	}
