@@ -10,10 +10,10 @@ class DefaultSetting {
 	public $isSystem;
 
 	public function __construct($name, $value, $isSystem = TRUE, $description = NULL) {
-		$this->name = $name;
-		$this->value = $value;
+		$this->name        = $name;
+		$this->value       = $value;
 		$this->description = $description;
-		$this->isSystem = $isSystem;
+		$this->isSystem    = $isSystem;
 	}
 
 	public function make($creator) {

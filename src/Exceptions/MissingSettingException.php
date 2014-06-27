@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class MissingSettingException extends Exception {
+class MissingSettingException extends NamedErrorException {
 
 }

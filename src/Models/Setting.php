@@ -90,12 +90,6 @@ class Setting extends \Katu\Model {
 		return $settings;
 	}
 
-	static function setupDefaults($creator) {
-		foreach (\Katu\Config::get('settings', 'defaults') as $defaultSetting) {
-			$defaultSetting->make($creator);
-		}
-	}
-
 	public function userCanEdit($user) {
 		if (!$user) {
 			return FALSE;
