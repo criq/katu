@@ -137,6 +137,12 @@ class View {
 
 		}
 
+		$data['_request']['uri']    = $app->request->getResourceUri();
+		$data['_request']['params'] = $app->request->params();
+		if ($app->request->params('returnUri')) {
+			$data['_request']['returnUrl'] = (string) \Katu\Utils\Url::getSite($app->request->params('returnUri'));
+		}
+
 		if (class_exists('\App\Models\User')) {
 			$data['_user'] = \App\Models\User::getCurrent();
 		}

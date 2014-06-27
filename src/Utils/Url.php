@@ -24,10 +24,10 @@ class Url {
 		return new TURL(self::joinPaths(self::getBase(), $uri));
 	}
 
-	static function getFor($handle, $args = array()) {
+	static function getFor($handle, $args = array(), $params = array()) {
 		$app = App::get();
 
-		return new TURL(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle, array_map('urlencode', $args))));
+		return TURL::make(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle, array_map('urlencode', $args))), $params);
 	}
 
 	static function joinPaths() {
