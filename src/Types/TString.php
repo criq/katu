@@ -14,6 +14,10 @@ class TString {
 		$this->value = $value;
 	}
 
+	public function __toString() {
+		return $this->value;
+	}
+
 	static function isValid($value) {
 		return is_string($value);
 	}
@@ -33,6 +37,10 @@ class TString {
 		), $options);
 
 		return \URLify::filter($this->value, isset($options['maxLength']) ? $options['maxLength'] : NULL, isset($options['language']) ? $options['language'] : NULL);
+	}
+
+	public function getAsFloat() {
+		return (float) (trim((strtr($this->value, ',', '.'))));
 	}
 
 }
