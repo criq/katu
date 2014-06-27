@@ -30,20 +30,24 @@ class TPagination {
 		$this->pages   = (int) ceil($total / $perPage);
 	}
 
-	static function getPageIdent() {
+	static function getAppPageIdent() {
 		return \Katu\Config::get('app', 'pagination', 'pageIdent');
 	}
 
+	static function getAppPerPage() {
+		return \Katu\Config::get('app', 'pagination', 'perPage');
+	}
+
 	static function getPageFromRequest($params) {
-		if (!isset($params[self::getPageIdent()])) {
+		if (!isset($params[static::getAppPageIdent()])) {
 			return 1;
 		}
 
-		if ($params[self::getPageIdent()] < 1) {
+		if ($params[static::getAppPageIdent()] < 1) {
 			return 1;
 		}
 
-		return (int) $params[self::getPageIdent()];
+		return (int) $params[static::getAppPageIdent()];
 	}
 
 	public function getMinPage() {
@@ -56,9 +60,9 @@ class TPagination {
 
 	public function getPaginationPages($options = array()) {
 		$options = array_merge(array(
-			'allPagesLimit' => self::PAGINATION_ALL_PAGES_LIMIT,
-			'endsOffset'    => self::PAGINATION_ENDS_OFFSET,
-			'currentOffset' => self::PAGINATION_CURRENT_OFFSET,
+			'allPagesLimit' => static::PAGINATION_ALL_PAGES_LIMIT,
+			'endsOffset'    => static::PAGINATION_ENDS_OFFSET,
+			'currentOffset' => static::PAGINATION_CURRENT_OFFSET,
 		), $options);
 
 		if (!$this->total) {
