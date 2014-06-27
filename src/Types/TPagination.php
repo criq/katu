@@ -38,6 +38,12 @@ class TPagination {
 		return \Katu\Config::get('app', 'pagination', 'perPage');
 	}
 
+	static function getRequestPageExpression() {
+		$app = \Katu\App::get();
+
+		return new \Katu\Pdo\Expressions\Page(static::getPageFromRequest($app->request->params()), static::getAppPerPage());
+	}
+
 	static function getPageFromRequest($params) {
 		if (!isset($params[static::getAppPageIdent()])) {
 			return 1;
