@@ -40,7 +40,7 @@ class TString {
 	}
 
 	public function getAsFloat() {
-		return (float) (trim((strtr($this->value, ',', '.'))));
+		return (float) floatval(trim(strtr($this->value, ',', '.')));
 	}
 
 }

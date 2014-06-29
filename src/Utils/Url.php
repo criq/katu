@@ -30,6 +30,12 @@ class Url {
 		return TURL::make(self::joinPaths(self::getBase()->getHostWithProtocol(), $app->urlFor($handle, array_map('urlencode', $args))), $params);
 	}
 
+	static function getReturnUrl($defaultRoute) {
+		$app = App::get();
+
+		return $app->request->params('returnUri') ? static::getSite($app->request->params('returnUri')) : \Katu\Utils\Url::getFor($defaultRoute);
+	}
+
 	static function joinPaths() {
 		return implode('/', array_map(function($i){
 			return trim($i, '/');
