@@ -37,7 +37,7 @@ class ClassResult extends PaginatedResult {
 		}
 
 		$object = $objects[0];
-		if ($object) {
+		if ($object && method_exists($object, 'save')) {
 			$object->save();
 		}
 
