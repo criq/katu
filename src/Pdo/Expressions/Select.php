@@ -4,13 +4,13 @@ namespace Katu\Pdo\Expressions;
 
 class Select extends \Katu\Pdo\Expression {
 
-	public $select  = array();
-	public $from    = array();
-	public $join    = array();
-	public $where   = array();
-	public $groupBy = array();
-	public $having  = array();
-	public $orderBy = array();
+	public $select   = array();
+	public $from     = array();
+	public $join     = array();
+	public $where    = array();
+	public $groupBy  = array();
+	public $having   = array();
+	public $orderBy  = array();
 
 	private $_optGetTotalRows = TRUE;
 	private $_optPage;
@@ -19,6 +19,84 @@ class Select extends \Katu\Pdo\Expression {
 		call_user_func_array(array($this, 'select'), func_get_args());
 
 		return $this;
+	}
+
+	static function __evaluateExpression() {
+		if (
+			count(func_get_args() == 2)
+			&& func_get_arg(0) instanceof \Katu\Pdo\Column
+			&& in_array(gettype(func_get_arg(1)), array('string', 'int', 'integer')) === TRUE
+		) {
+
+			return new CmpEq(func_get_arg(0), new BindValue(NULL, func_get_arg(1)));
+
+		} elseif (
+			count(func_get_args()) == 2
+			&& is_string(func_get_arg(0))
+			&& in_array(gettype(func_get_arg(1)), array('string', 'int', 'integer')) === TRUE
+		) {
+
+			return new CmpEq(new Alias(func_get_arg(0)), new BindValue(NULL, func_get_arg(1)));
+
+		} elseif (
+			count(func_get_args()) == 2
+			&& func_get_arg(0) instanceof \Katu\Pdo\Expression
+			&& in_array(gettype(func_get_arg(1)), array('string', 'int', 'integer')) === TRUE
+		) {
+
+			return new CmpEq(func_get_arg(0), new BindValue(NULL, func_get_arg(1)));
+
+		} elseif (
+			count(func_get_args()) == 1
+		) {
+
+			return func_get_arg(0);
+
+		} else {
+
+			throw new \Katu\Exceptions\PdoExpressionErorException("Invalid arguments passed to expression.");
+
+		}
+	}
+
+	static function __evaluateJoin() {
+		$joinMethod = func_get_arg(0);
+
+		switch ($joinMethod) {
+			case 'join':     $joinExpression = '\Katu\Pdo\Expressions\Join';     break;
+			case 'leftJoin': $joinExpression = '\Katu\Pdo\Expressions\LeftJoin'; break;
+		}
+
+		if (
+			count(func_get_args()) == 2
+			&& func_get_arg(1) instanceof \Katu\Pdo\Expression
+		) {
+
+			return func_get_arg(1);
+
+		} elseif (
+			count(func_get_args()) == 3
+			&& func_get_arg(1) instanceof \Katu\Pdo\Column
+			&& func_get_arg(2) instanceof \Katu\Pdo\Column
+		) {
+
+			return new $joinExpression(func_get_arg(1)->table, new CmpEq(func_get_arg(1), func_get_arg(2)));
+
+		} elseif (
+			count(func_get_args()) == 5
+			&& func_get_arg(1) instanceof \Katu\Pdo\Table
+			&& is_string(func_get_arg(2))
+			&& func_get_arg(3) instanceof \Katu\Pdo\Table
+			&& is_string(func_get_arg(4))
+		) {
+
+			return new $joinExpression(func_get_arg(1), new CmpEq(new Column(func_get_arg(1), func_get_arg(2)), new Column(func_get_arg(3), func_get_arg(4))));
+
+		} else {
+
+			throw new \Katu\Exceptions\PdoExpressionErorException("Invalid arguments passed to expression.");
+
+		}
 	}
 
 	public function select() {
@@ -54,60 +132,19 @@ class Select extends \Katu\Pdo\Expression {
 	}
 
 	public function join() {
-		if (
-			count(func_get_args()) == 1
-			&& func_get_arg(0) instanceof \Katu\Pdo\Expression
-		) {
+		$this->join[] = call_user_func_array(array('static', '__evaluateJoin'), array_merge(array(__FUNCTION__), func_get_args()));
 
-			$this->join[] = func_get_arg(0);
+		return $this;
+	}
 
-		} elseif (
-			count(func_get_args()) == 2
-			&& func_get_arg(0) instanceof \Katu\Pdo\Column
-			&& func_get_arg(1) instanceof \Katu\Pdo\Column
-		) {
-
-			$this->join[] = new Join(func_get_arg(0)->table, new CmpEq(func_get_arg(0), func_get_arg(1)));
-
-		} elseif (
-			count(func_get_args()) == 4
-			&& func_get_arg(0) instanceof \Katu\Pdo\Table
-			&& is_string(func_get_arg(1))
-			&& func_get_arg(2) instanceof \Katu\Pdo\Table
-			&& is_string(func_get_arg(3))
-		) {
-
-			$this->join[] = new Join(func_get_arg(0), new CmpEq(new Column(func_get_arg(0), func_get_arg(1)), new Column(func_get_arg(2), func_get_arg(3))));
-
-		} else {
-
-			throw new \Katu\Exceptions\PdoExpressionErorException("Invalid arguments passed to expression.");
-
-		}
+	public function leftJoin() {
+		$this->join[] = call_user_func_array(array('static', '__evaluateJoin'), array_merge(array(__FUNCTION__), func_get_args()));
 
 		return $this;
 	}
 
 	public function where() {
-		if (
-			count(func_get_args() == 2)
-			&& func_get_arg(0) instanceof \Katu\Pdo\Column
-			&& in_array(gettype(func_get_arg(1)), array('string', 'int'))
-		) {
-
-			$this->where[] = new CmpEq(func_get_arg(0), new BindValue(NULL, func_get_arg(1)));
-
-		} elseif (
-			count(func_get_args()) == 1
-		) {
-
-			$this->where[] = func_get_arg(0);
-
-		} else {
-
-			throw new \Katu\Exceptions\PdoExpressionErorException("Invalid arguments passed to expression.");
-
-		}
+		$this->where[] = call_user_func_array(array('static', '__evaluateExpression'), func_get_args());
 
 		return $this;
 	}
@@ -120,8 +157,8 @@ class Select extends \Katu\Pdo\Expression {
 		return $this;
 	}
 
-	public function having($having) {
-		$this->having[] = $having;
+	public function having() {
+		$this->having[] = call_user_func_array(array('static', '__evaluateExpression'), func_get_args());
 
 		return $this;
 	}
