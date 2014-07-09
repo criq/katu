@@ -19,6 +19,7 @@ class Email {
 	public $template;
 	public $content = array();
 	public $variables = array();
+	public $recipientVariables = array();
 
 	public function __construct($subject = NULL) {
 		$this->setSubject($subject);
@@ -117,6 +118,12 @@ class Email {
 		return $this;
 	}
 
+	public function setRecipientVariable($emailAddress, $name, $value) {
+		$this->recipientVariables[$emailAddress][$name] = $value;
+
+		return $this;
+	}
+
 	public function getMessageForMandrill($message) {
 		$message['subject']    = $this->subject;
 		$message['html']       = $this->html;
@@ -141,7 +148,10 @@ class Email {
 			);
 		}
 
+		$message['merge_vars'] = $this->getRecipientVariablesForMandrill();
 		$message['global_merge_vars'] = $this->getVariablesForMandrill();
+
+		var_dump($message); die;
 
 		return $message;
 	}
@@ -167,6 +177,21 @@ class Email {
 				'name'    => $name,
 				'content' => $value,
 			);
+		}
+
+		return $variables;
+	}
+
+	public function getRecipientVariablesForMandrill() {
+		$variables = array();
+
+		foreach ($this->recipientVariables as $recipient => $vars) {
+			foreach ($vars as $name => $value) {
+				$variables[$recipient][] = array(
+					'name'    => $name,
+					'content' => $value,
+				);
+			}
 		}
 
 		return $variables;
