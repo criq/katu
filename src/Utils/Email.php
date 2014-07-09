@@ -148,8 +148,8 @@ class Email {
 			);
 		}
 
-		$message['merge_vars'] = $this->getRecipientVariablesForMandrill();
 		$message['global_merge_vars'] = $this->getVariablesForMandrill();
+		$message['merge_vars'] = $this->getRecipientVariablesForMandrill();
 
 		return $message;
 	}
