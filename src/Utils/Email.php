@@ -184,12 +184,17 @@ class Email {
 		$variables = array();
 
 		foreach ($this->recipientVariables as $recipient => $vars) {
+			$recipientVars = array();
 			foreach ($vars as $name => $value) {
-				$variables[$recipient][] = array(
+				$recipientVars[] = array(
 					'name'    => $name,
 					'content' => $value,
 				);
 			}
+			$variables[] = array(
+				'rcpt' => $recipient,
+				'vars' => $recipientVars,
+			);
 		}
 
 		return $variables;
