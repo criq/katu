@@ -151,8 +151,6 @@ class Email {
 		$message['merge_vars'] = $this->getRecipientVariablesForMandrill();
 		$message['global_merge_vars'] = $this->getVariablesForMandrill();
 
-		var_dump($message); die;
-
 		return $message;
 	}
 
