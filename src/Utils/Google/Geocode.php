@@ -18,7 +18,7 @@ class Geocode {
 				'key'      => Config::get('google', 'geocode', 'api', 'key'),
 			));
 
-			$curl = new \Curl;
+			$curl = new \Curl\Curl;
 			$curl->get((string) $url);
 
 			return $curl->response;

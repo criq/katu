@@ -38,7 +38,7 @@ class Cache {
 	static function getUrl($url, $timeout = NULL, $options = array()) {
 		return \Katu\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
 
-			$curl = new \Curl;
+			$curl = new \Curl\Curl;
 			if ($curl->get($url)) {
 				throw new \Katu\Exception("Error getting URL.");
 			}
