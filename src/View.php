@@ -79,6 +79,10 @@ class View {
 			}
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('getBaseDir', function() {
+			return BASE_DIR;
+		}));
+
 		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
 			return call_user_func_array(array('\Katu\Utils\Url', 'getFor'), func_get_args());
 		}));

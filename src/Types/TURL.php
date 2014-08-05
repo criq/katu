@@ -78,6 +78,16 @@ class TURL {
 		return $this;
 	}
 
+	public function getQueryParam($name) {
+		$parts = $this->getParts();
+
+		if (isset($parts['query'][$name])) {
+			return $parts['query'][$name];
+		}
+
+		return NULL;
+	}
+
 	public function getWithoutQuery() {
 		$parts = $this->getParts();
 
