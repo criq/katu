@@ -12,16 +12,22 @@ class Api {
 		return Utils\JSON::respond($res);
 	}
 
-	static function error($error = NULL) {
+	static function error($error = NULL, $code = NULL) {
 		$app = App::get();
 
 		$app->response->setStatus(400);
 
-		return Utils\JSON::respond(array(
+		$res = array(
 			'error' => array(
 				'message' => $error,
 			),
-		));
+		);
+
+		if ($code) {
+			$res['error']['code'] = $code;
+		}
+
+		return Utils\JSON::respond($res);
 	}
 
 	static function getUrl($endpoint) {
