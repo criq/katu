@@ -39,11 +39,18 @@ class Cache {
 		return \Katu\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
 
 			$curl = new \Curl\Curl;
-			if ($curl->get($url)) {
-				throw new \Katu\Exception("Error getting URL.");
+			$curl->setOpt(CURLOPT_FOLLOWLOCATION, TRUE);
+			$response = $curl->get($url);
+
+			if ($curl->error) {
+				throw new \Katu\Exceptions\ErrorException("Error getting URL.");
 			}
 
-			return $curl->response;
+			if (is_object($response) && is_a($response, 'SimpleXMLElement')) {
+				$response = $response->asXML();
+			}
+
+			return $response;
 
 		}, $timeout, $options);
 	}
