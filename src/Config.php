@@ -55,7 +55,7 @@ class Config {
 		$files = array();
 
 		foreach (scandir($dir) as $file) {
-			if (preg_match('#^[a-z]+\.php$#', $file)) {
+			if (preg_match('#^[a-z]+\.php$#i', $file)) {
 				$files[] = Utils\FS::joinPaths($dir, $file);
 			}
 		}
