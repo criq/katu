@@ -3,6 +3,7 @@
 namespace Katu\Models;
 
 use \Katu\Exception;
+use \Katu\Pdo\Expressions\CmpNotEq;
 
 class User extends \Katu\Model {
 
@@ -26,7 +27,7 @@ class User extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is already in use.", 'emailAddress');
 		}
 
-		$object = parent::create();
+		$object = static::create();
 		$object->setEmailAddress($emailAddress);
 		$object->save();
 
