@@ -39,7 +39,11 @@ class Cache {
 		return \Katu\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
 
 			$curl = new \Curl\Curl;
-			$curl->setOpt(CURLOPT_FOLLOWLOCATION, TRUE);
+			try {
+				$curl->setOpt(CURLOPT_FOLLOWLOCATION, TRUE);
+			} catch (\ErrorException $e) {
+				// Nothing to do, open_basedir is probably set.
+			}
 			$response = $curl->get($url);
 
 			if ($curl->error) {
