@@ -22,7 +22,8 @@
 		"michelf/php-markdown": "1.*",
 		"intervention/image": "1.*",
 		"jbroadway/urlify": "1.0.*@dev",
-		"jabli/amiko": "0.1.*@dev"
+		"jabli/amiko": "0.1.*@dev",
+		"jabli/sexy": "dev-master"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
