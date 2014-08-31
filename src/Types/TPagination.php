@@ -41,7 +41,7 @@ class TPagination {
 	static function getRequestPageExpression($perPage = NULL) {
 		$app = \Katu\App::get();
 
-		return new \Katu\Pdo\Expressions\Page(static::getPageFromRequest($app->request->params()), is_null($perPage) ? static::getAppPerPage() : $perPage);
+		return new \Sexy\Page(static::getPageFromRequest($app->request->params()), is_null($perPage) ? static::getAppPerPage() : $perPage);
 	}
 
 	static function getPageFromRequest($params) {

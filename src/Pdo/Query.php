@@ -22,7 +22,7 @@ class Query {
 		return $this->sql = $sql;
 	}
 
-	public function setFromSql(Expression $sql) {
+	public function setFromSql(\Sexy\Expression $sql) {
 		$this->sql = $sql->getSql();
 		$this->bindValues = $sql->getBindValues();
 

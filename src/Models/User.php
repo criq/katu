@@ -3,7 +3,7 @@
 namespace Katu\Models;
 
 use \Katu\Exception;
-use \Katu\Pdo\Expressions\CmpNotEq;
+use \Sexy\CmpNotEq;
 
 class User extends \Katu\Model {
 
@@ -153,7 +153,7 @@ class User extends \Katu\Model {
 	}
 
 	public function getRolePermissions() {
-		$sql = (new \Katu\Pdo\Expressions\Select(\App\Models\RolePermission::getColumn('permission')))
+		$sql = (new \Sexy\Select(\App\Models\RolePermission::getColumn('permission')))
 			->from(\App\Models\RolePermission::getTable())
 			->join(\App\Models\UserRole::getColumn('roleId'), \App\Models\RolePermission::getColumn('roleId'))
 			->where(\App\Models\UserRole::getColumn('userId'), $this->id)

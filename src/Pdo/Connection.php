@@ -50,7 +50,7 @@ class Connection {
 		return $query;
 	}
 
-	public function createQueryFromSql(Expression $sql) {
+	public function createQueryFromSql(\Sexy\Expression $sql) {
 		$query = new Query($this);
 		$query->setFromSql($sql);
 
@@ -64,7 +64,7 @@ class Connection {
 		return $query;
 	}
 
-	public function createClassQueryFromSql($class, Expression $sql) {
+	public function createClassQueryFromSql($class, \Sexy\Expression $sql) {
 		$query = static::createQueryFromSql($sql);
 		$query->setClass($class);
 

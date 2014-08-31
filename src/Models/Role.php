@@ -55,7 +55,7 @@ class Role extends \Katu\Model {
 		// Look for another role with this name.
 		$getBy['name'] = trim($name);
 		if ($object) {
-			$getBy[] = new \Katu\Pdo\Expressions\CmpNotEq(static::getColumn('id'), $object->id);
+			$getBy[] = new \Sexy\CmpNotEq(static::getColumn('id'), $object->id);
 		}
 
 		if (static::getBy($getBy)->getTotal()) {

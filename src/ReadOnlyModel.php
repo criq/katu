@@ -44,7 +44,7 @@ class ReadOnlyModel {
 		// Sql expression.
 		if (
 			count(func_get_args()) == 1
-			&& func_get_arg(0) instanceof Pdo\Expression
+			&& func_get_arg(0) instanceof \Sexy\Expression
 		) {
 
 			$query = static::getPdo()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
@@ -103,15 +103,15 @@ class ReadOnlyModel {
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
-		$sql = new Pdo\Expressions\Select();
+		$sql = new \Sexy\Select();
 		$sql->setOptions($options);
 		$sql->from(static::getTable());
 
 		foreach ($params as $name => $value) {
-			if ($value instanceof Pdo\Expression) {
+			if ($value instanceof \Sexy\Expression) {
 				$sql->where($value);
 			} else {
-				$sql->where(new Pdo\Expressions\CmpEq(static::getColumn($name), $value));
+				$sql->where(new \Sexy\CmpEq(static::getColumn($name), $value));
 			}
 		}
 
@@ -125,7 +125,7 @@ class ReadOnlyModel {
 	}
 
 	static function getOneBy() {
-		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Pdo\Expressions\Page(1, 1)))))->getOne();
+		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new \Sexy\Page(1, 1)))))->getOne();
 	}
 
 	static function getAll($options = array()) {
