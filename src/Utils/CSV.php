@@ -50,6 +50,20 @@ class CSV {
 		return $rows;
 	}
 
+	static function setFromAssoc($array) {
+		$csv = new self();
+		$line = 0;
+
+		foreach ($array as $row) {
+			if (++$line == 1) {
+				$csv->add(array_keys($row));
+			}
+			$csv->add(array_values($row));
+		}
+
+		return $csv;
+	}
+
 	public function add() {
 		return $this->writer->writeRow(is_array(@func_get_arg(0)) ? func_get_arg(0) : func_get_args());
 	}
