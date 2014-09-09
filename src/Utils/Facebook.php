@@ -24,6 +24,7 @@ class Facebook {
 
 			// Check the Facebook user.
 			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
+			var_dump($facebookUser); die;
 
 			// Check scopes.
 			$sessionInfo = $session->getSessionInfo();
