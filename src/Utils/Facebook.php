@@ -24,7 +24,6 @@ class Facebook {
 
 			// Check the Facebook user.
 			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
-			var_dump($facebookUser); die;
 
 			// Check scopes.
 			$sessionInfo = $session->getSessionInfo();
@@ -40,6 +39,22 @@ class Facebook {
 
 				// Create new user.
 				$user = \App\Models\User::create();
+
+				// Assign e-mail address.
+				if (class_exists('\App\Models\EmailAddress') && $facebookUser->getProperty('email')) {
+
+					$emailAddress = \App\Models\EmailAddress::make($facebookUser->getProperty('email'));
+
+					if (!\App\Models\User::getBy(array(
+						'emailAddressId' => $emailAddress->id,
+					))->getTotal()) {
+						$user->setEmailAddress($emailAddress);
+						$user->save();
+					}
+
+				}
+
+				// Assign user service.
 				$userService = $user->addUserService('facebook', $facebookUser->getId());
 
 			}
