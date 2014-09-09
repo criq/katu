@@ -20,6 +20,7 @@ class Facebook {
 
 			$session = static::getSession();
 
+
 			$helper = new FacebookRedirectLoginHelper((string) $redirectUrl);
 
 			// Check the Facebook user.
