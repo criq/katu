@@ -73,11 +73,11 @@ class Facebook {
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
-					return $callbackCollection->call('error');
+					return $callbackCollection->call('error', array($e));
 
 				} catch (\Exception $e) {
 
-					return $callbackCollection->call('error');
+					return $callbackCollection->call('error', array($e));
 
 				}
 
@@ -91,7 +91,7 @@ class Facebook {
 		// Other error.
 		} catch (\Exception $e) {
 
-			return $callbackCollection->call('error');
+			return $callbackCollection->call('error', array($e));
 
 		}
 
