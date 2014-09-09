@@ -13,14 +13,14 @@ use \Facebook\FacebookRedirectLoginHelper;
 
 class Facebook {
 
-	static function login(TURL $redirectURL, CallbackCollection $callbackCollection, $scopes = array()) {
+	static function login(TURL $redirectUrl, CallbackCollection $callbackCollection, $scopes = array()) {
 		try {
 
 			$app = App::get();
 
 			$session = static::getSession();
 
-			$helper = new FacebookRedirectLoginHelper((string) $redirectURL);
+			$helper = new FacebookRedirectLoginHelper((string) $redirectUrl);
 
 			// Check the Facebook user.
 			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
@@ -69,7 +69,7 @@ class Facebook {
 						throw new \Exception();
 					}
 
-					return \Katu\Controller::redirect($redirectURL);
+					return \Katu\Controller::redirect($redirectUrl);
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
