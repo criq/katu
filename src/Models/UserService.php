@@ -25,7 +25,7 @@ class UserService extends \Katu\Model {
 	}
 
 	public function getUser() {
-		return \App\Models\User::get($this->userID);
+		return \App\Models\User::get($this->userId);
 	}
 
 	public function setServiceAccessToken($serviceAccessToken) {

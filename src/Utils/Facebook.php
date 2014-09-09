@@ -55,7 +55,7 @@ class Facebook {
 			return $callbackCollection->call('success');
 
 		// Invalid token, login.
-		} catch (\Facebook\FacebookSDKException $e) {
+		} catch (\ErrorException $e) {
 
 			// Redirected back.
 			if ($app->request->params('code') && $app->request->params('state')) {
@@ -122,12 +122,12 @@ class Facebook {
 		return Session::reset('facebook.token');
 	}
 
-	static function setUser($userID) {
-		return Session::set('facebook.userID', $userID);
+	static function setUser($userId) {
+		return Session::set('facebook.userId', $userId);
 	}
 
-	static function getUser($userID) {
-		return Session::get('facebook.userID');
+	static function getUser($userId) {
+		return Session::get('facebook.userId');
 	}
 
 }

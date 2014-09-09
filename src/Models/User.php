@@ -44,7 +44,7 @@ class User extends \Katu\Model {
 
 	public function getDefaultUserServiceByName($serviceName) {
 		return \App\Models\UserService::getOneBy(array(
-			'userID'      => (int)    ($this->id),
+			'userId'      => (int)    ($this->id),
 			'serviceName' => (string) ($serviceName),
 		));
 	}
