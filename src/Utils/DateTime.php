@@ -32,6 +32,10 @@ class DateTime extends \DateTime {
 		return ($this->getTimestamp() + $timeout) >= time();
 	}
 
+	public function isToday() {
+		return (new static('now', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
+	}
+
 	public function isInFuture() {
 		return $this->getTimestamp() > time();
 	}
