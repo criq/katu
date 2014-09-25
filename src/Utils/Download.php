@@ -11,16 +11,17 @@ class Download {
 			$saveAs = basename($filename);
 		}
 
-		$app->response->headers->set('Content-Length', FS::getSize($filename));
-		$app->response->headers->set('Content-Transfer-Encoding', 'Binary');
-		$app->response->headers->set('Content-Disposition', $disposition . '; filename=' . basename($saveAs));
-		$app->response->headers->set('Expires', '0');
-		$app->response->headers->set('Cache-Control', 'must-revalidate');
-		$app->response->headers->set('Pragma', 'public');
+		header('Content-Description: File Transfer');
+		header('Content-Transfer-Encoding: Binary');
+		header('Content-Type: application/octet-stream');
+		header('Content-Disposition: ' . $disposition . '; filename=' . basename($saveAs));
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		header('Content-Length: ' . FS::getSize($filename));
+		readfile($filename);
 
-		$app->response->setBody(readfile($filename));
-
-		return TRUE;
+		die;
 	}
 
 }
