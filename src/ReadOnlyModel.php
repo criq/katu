@@ -2,6 +2,11 @@
 
 namespace Katu;
 
+use \App\Models\File;
+use \App\Models\FileAttachment;
+use \Sexy\Select;
+use \Sexy\CmpIn;
+
 class ReadOnlyModel {
 
 	public function __call($name, $args) {
@@ -103,7 +108,7 @@ class ReadOnlyModel {
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
-		$sql = new \Sexy\Select();
+		$sql = new Select();
 		$sql->setOptions($options);
 		$sql->from(static::getTable());
 
@@ -216,6 +221,36 @@ class ReadOnlyModel {
 		} while (static::getOneBy(array($column => $string)));
 
 		return $string;
+	}
+
+	public function getFileAttachments($properties = array()) {
+		$properties['objectModel'] = $this->getClass();
+		$properties['objectId']    = $this->getId();
+
+		return FileAttachment::getBy($properties);
+	}
+
+	public function getImageAttachments($properties = array()) {
+		$sql = (new Select(FileAttachment::getTable()))
+			->from(FileAttachment::getTable())
+			->join(File::getColumn('id'), FileAttachment::getColumn('fileId'))
+			->where(new CmpIn(File::getColumn('type'), array('image/jpeg', 'image/png', 'image/gif')))
+			->where(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
+			->where(FileAttachment::getColumn('objectId'), (int) $this->getId())
+			;
+
+		return FileAttachment::createQuery($sql)->getResult();
+	}
+
+	public function getImage() {
+		$imageAttachments = $this->getImageAttachments();
+
+
+		if ($imageAttachments->getTotal()) {
+			return $imageAttachments[0];
+		}
+
+		return FALSE;
 	}
 
 }

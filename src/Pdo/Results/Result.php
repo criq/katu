@@ -4,7 +4,7 @@ namespace Katu\Pdo\Results;
 
 use \PDO;
 
-class Result implements \Iterator {
+class Result implements \Iterator, \ArrayAccess {
 
 	public $pdo;
 	public $statement;
