@@ -16,13 +16,13 @@ class User extends \Katu\Model {
 	}
 
 	static function createWithEmailAddress($emailAddress) {
-		if (!$emailAddress || !($emailAddress instanceof EmailAddress)) {
+		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
 		}
 
 		// Look for another user with this e-mail address.
 		if (static::getBy(array(
-			'emailAddressId' => $emailAddress->id,
+			'emailAddressId' => $emailAddress->getId(),
 		))->getTotal()) {
 			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is already in use.", 'emailAddress');
 		}
@@ -44,25 +44,25 @@ class User extends \Katu\Model {
 
 	public function getDefaultUserServiceByName($serviceName) {
 		return \App\Models\UserService::getOneBy(array(
-			'userId'      => (int)    ($this->id),
+			'userId'      => (int)    ($this->getId()),
 			'serviceName' => (string) ($serviceName),
 		));
 	}
 
 	public function setEmailAddress($emailAddress) {
-		if (!$emailAddress || !($emailAddress instanceof EmailAddress)) {
+		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
 		}
 
 		// Look for another user with this e-mail address.
 		if (static::getBy(array(
-			'emailAddressId' => $emailAddress->id,
-			new CmpNotEq(static::getColumn('id'), $this->id),
+			'emailAddressId' => $emailAddress->getId(),
+			new CmpNotEq(static::getColumn('id'), $this->getId()),
 		))->getTotal()) {
 			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is used by another user.", 'emailAddress');
 		}
 
-		$this->update('emailAddressId', $emailAddress->id);
+		$this->update('emailAddressId', $emailAddress->getId());
 
 		return TRUE;
 	}
@@ -74,7 +74,7 @@ class User extends \Katu\Model {
 	}
 
 	public function login() {
-		return \Katu\Session::set('katu.user.id', (int) $this->id);
+		return \Katu\Session::set('katu.user.id', (int) $this->getId());
 	}
 
 	static function logout() {
@@ -106,14 +106,14 @@ class User extends \Katu\Model {
 
 	public function hasRole($role) {
 		return (bool) \App\Models\UserRole::getOneBy(array(
-			'userId' => (int) ($this->id),
-			'roleId' => (int) ($role->id),
+			'userId' => (int) ($this->getId()),
+			'roleId' => (int) ($role->getId()),
 		));
 	}
 
 	public function deleteAllRoles() {
 		foreach (\App\Models\UserRole::getBy(array(
-			'userId' => $this->id,
+			'userId' => $this->getId(),
 		)) as $userRole) {
 			$userRole->delete();
 		}
@@ -135,7 +135,7 @@ class User extends \Katu\Model {
 
 	public function deleteAllUserPermissions() {
 		foreach (\App\Models\UserPermission::getBy(array(
-			'userId' => $this->id,
+			'userId' => $this->getId(),
 		)) as $userPermission) {
 			$userPermission->delete();
 		}
@@ -156,7 +156,7 @@ class User extends \Katu\Model {
 		$sql = (new \Sexy\Select(\App\Models\RolePermission::getColumn('permission')))
 			->from(\App\Models\RolePermission::getTable())
 			->join(\App\Models\UserRole::getColumn('roleId'), \App\Models\RolePermission::getColumn('roleId'))
-			->where(\App\Models\UserRole::getColumn('userId'), $this->id)
+			->where(\App\Models\UserRole::getColumn('userId'), $this->getId())
 			->groupBy(\App\Models\RolePermission::getColumn('permission'));
 
 		return static::getPdo()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
@@ -164,7 +164,7 @@ class User extends \Katu\Model {
 
 	public function getUserPermissions() {
 		return \App\Models\UserPermission::getBy(array(
-			'userId' => (int) ($this->id),
+			'userId' => (int) ($this->getId()),
 		))->getPropertyValues('permission');
 	}
 
