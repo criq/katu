@@ -36,7 +36,7 @@ class TString {
 			'lowercase' => TRUE,
 		), $options);
 
-		return \URLify::filter($this->value, isset($options['maxLength']) ? $options['maxLength'] : NULL, isset($options['language']) ? $options['language'] : NULL);
+		return \URLify::filter($this->value, isset($options['maxLength']) ? $options['maxLength'] : 255, isset($options['language']) ? $options['language'] : NULL);
 	}
 
 	public function getAsFloat() {

@@ -36,6 +36,10 @@ class Upload {
 		return (bool) $this->getErrorID();
 	}
 
+	public function isType($types) {
+		return in_array($this->fileType, (array) $types);
+	}
+
 	public function getErrorNumber() {
 		return $this->error;
 	}
