@@ -242,12 +242,10 @@ class ReadOnlyModel {
 		return FileAttachment::createQuery($sql)->getResult();
 	}
 
-	public function getImage() {
+	public function getImageFile() {
 		$imageAttachments = $this->getImageAttachments();
-
-
 		if ($imageAttachments->getTotal()) {
-			return $imageAttachments[0];
+			return $imageAttachments[0]->getFile();
 		}
 
 		return FALSE;

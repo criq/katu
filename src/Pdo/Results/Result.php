@@ -105,4 +105,32 @@ class Result implements \Iterator, \ArrayAccess {
 		return isset($this->iteratorArray[$this->position]);
 	}
 
+	public function offsetSet($offset, $value) {
+		$this->setIteratorArray();
+
+		if (is_null($offset)) {
+			$this->iteratorArray[] = $value;
+		} else {
+			$this->iteratorArray[$offset] = $value;
+		}
+	}
+
+	public function offsetExists($offset) {
+		$this->setIteratorArray();
+
+		return isset($this->iteratorArray[$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		$this->setIteratorArray();
+
+		unset($this->iteratorArray[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		$this->setIteratorArray();
+
+		return isset($this->iteratorArray[$offset]) ? $this->iteratorArray[$offset] : null;
+	}
+
 }
