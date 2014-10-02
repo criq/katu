@@ -2,8 +2,6 @@
 
 namespace Katu\Utils;
 
-use \Intervention\Image\Image as InterventionImage;
-
 class Image {
 
 	const THUMBNAIL_DIR = 'image/thumbnails';
@@ -46,7 +44,7 @@ class Image {
 		if (!file_exists($destination)) {
 
 			@mkdir(dirname($destination), 0777, TRUE);
-			$image = InterventionImage::make($source);
+			$image = \Intervention\Image\Image::make($source);
 			$image->resize($size, $size, TRUE);
 			$image->save($destination);
 
@@ -59,8 +57,8 @@ class Image {
 		if (!file_exists($destination)) {
 
 			@mkdir(dirname($destination), 0777, TRUE);
-			$image = InterventionImage::make($source);
-			$image->fit($size, $size);
+			$image = \Intervention\Image\Image::make($source);
+			$image->grab($size, $size);
 			$image->save($destination);
 
 		}
