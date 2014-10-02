@@ -119,4 +119,8 @@ class File extends \Katu\Model {
 		return \App\Models\FileAttachment::make($creator, $object, $this);
 	}
 
+	public function getPath() {
+		return static::getDirPath() . '/' . $this->path;
+	}
+
 }

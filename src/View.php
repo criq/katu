@@ -39,6 +39,10 @@ class View {
 			return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality);
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnail', function($uri, $size = 640, $quality = 100) {
+			return \Katu\Utils\Image::getSquareThumbnailUrl($uri, $size, $quality);
+		}));
+
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnailPath', function($uri, $size = 640, $quality = 100) {
 			return \Katu\Utils\Image::getThumbnailPath($uri, $size, $quality);
 		}));

@@ -10,15 +10,32 @@ class Image {
 		return implode('_', array(sha1($uri), $size, $quality)) . '.jpg';
 	}
 
-	static function getThumbnailURL($uri, $size, $quality = 100) {
+	static function getSquareThumbnailFilename($uri, $size, $quality = 100) {
+		return implode('_', array(sha1($uri), $size, $quality, 'sq')) . '.jpg';
+	}
+
+	static function getThumbnailUrl($uri, $size, $quality = 100) {
 		static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality), $size, $quality);
 
 		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), TMP_DIR, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality));
 	}
 
+	static function getSquareThumbnailUrl($uri, $size, $quality = 100) {
+		static::makeSquareThumbnail($uri, static::getSquareThumbnailPath($uri, $size, $quality), $size, $quality);
+
+		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), TMP_DIR, static::THUMBNAIL_DIR, self::getSquareThumbnailFilename($uri, $size, $quality));
+	}
+
 	static function getThumbnailPath($uri, $size, $quality = 100) {
 		$thumbnailPath = \Katu\Utils\FS::joinPaths(TMP_PATH, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality));
 		static::makeThumbnail($uri, $thumbnailPath, $size, $quality);
+
+		return $thumbnailPath;
+	}
+
+	static function getSquareThumbnailPath($uri, $size, $quality = 100) {
+		$thumbnailPath = \Katu\Utils\FS::joinPaths(TMP_PATH, static::THUMBNAIL_DIR, self::getSquareThumbnailFilename($uri, $size, $quality));
+		static::makeSquareThumbnail($uri, $thumbnailPath, $size, $quality);
 
 		return $thumbnailPath;
 	}
@@ -29,6 +46,19 @@ class Image {
 			@mkdir(dirname($destination), 0777, TRUE);
 			$image = \Intervention\Image\Image::make($source);
 			$image->resize($size, $size, TRUE);
+			$image->save($destination);
+
+		}
+
+		return TRUE;
+	}
+
+	static function makeSquareThumbnail($source, $destination, $size, $quality = 100) {
+		if (!file_exists($destination)) {
+
+			@mkdir(dirname($destination), 0777, TRUE);
+			$image = \Intervention\Image\Image::make($source);
+			$image->fit($size, $size);
 			$image->save($destination);
 
 		}

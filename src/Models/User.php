@@ -153,23 +153,31 @@ class User extends \Katu\Model {
 	}
 
 	public function getRolePermissions() {
-		$sql = (new \Sexy\Select(\App\Models\RolePermission::getColumn('permission')))
-			->from(\App\Models\RolePermission::getTable())
-			->join(\App\Models\UserRole::getColumn('roleId'), \App\Models\RolePermission::getColumn('roleId'))
-			->where(\App\Models\UserRole::getColumn('userId'), $this->getId())
-			->groupBy(\App\Models\RolePermission::getColumn('permission'));
+		if (class_exists('\App\Models\RolePermission')) {
+			$sql = (new \Sexy\Select(\App\Models\RolePermission::getColumn('permission')))
+				->from(\App\Models\RolePermission::getTable())
+				->join(\App\Models\UserRole::getColumn('roleId'), \App\Models\RolePermission::getColumn('roleId'))
+				->where(\App\Models\UserRole::getColumn('userId'), $this->getId())
+				->groupBy(\App\Models\RolePermission::getColumn('permission'));
 
-		return static::getPdo()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
+			return static::getPdo()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
+		}
+
+		return FALSE;
 	}
 
 	public function getUserPermissions() {
-		return \App\Models\UserPermission::getBy(array(
-			'userId' => (int) ($this->getId()),
-		))->getPropertyValues('permission');
+		if (class_exists('\App\Models\UserPermission')) {
+			return \App\Models\UserPermission::getBy(array(
+				'userId' => (int) ($this->getId()),
+			))->getPropertyValues('permission');
+		}
+
+		return FALSE;
 	}
 
 	public function getAllPermissions() {
-		return array_unique(array_merge($this->getRolePermissions(), $this->getUserPermissions()));
+		return array_filter(array_unique(array_merge((array) $this->getRolePermissions(), (array) $this->getUserPermissions())));
 	}
 
 	public function hasPermission($permission) {

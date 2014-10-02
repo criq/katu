@@ -251,4 +251,19 @@ class ReadOnlyModel {
 		return FALSE;
 	}
 
+	public function getImagePath() {
+		$file = $this->getImageFile();
+		if ($file) {
+			return $file->getPath();
+		}
+
+		return FALSE;
+	}
+
+	public function hasImage() {
+		$path = $this->getImagePath();
+
+		return $path && file_exists($path);
+	}
+
 }
