@@ -68,7 +68,7 @@ class Facebook {
 
 			$user->login();
 
-			return $callbackCollection->call('success');
+			return $callbackCollection->call('success', array($facebookUser, $user));
 
 		// Invalid token, login.
 		} catch (\ErrorException $e) {
