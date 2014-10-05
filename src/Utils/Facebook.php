@@ -70,6 +70,11 @@ class Facebook {
 
 			return $callbackCollection->call('success', array($facebookUser, $user));
 
+		// Redirect to login.
+		} catch (\Facebook\FacebookAuthorizationException $e) {
+
+			return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
+
 		// Invalid token, login.
 		} catch (\ErrorException $e) {
 
