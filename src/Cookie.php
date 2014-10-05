@@ -18,8 +18,12 @@ class Cookie {
 		return setcookie($name, $value, $lifetime, $config['path'], $config['domain']);
 	}
 
-	static function get($name) {
+	static function get($name = null) {
 		$name = strtr($name, '.', '_');
+
+		if (!$name) {
+			return $_COOKIE;
+		}
 
 		return isset($_COOKIE[$name]) ? $_COOKIE[$name] : NULL;
 	}
