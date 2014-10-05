@@ -137,6 +137,11 @@ class View {
 			return Utils\CSRF::getFreshToken($params);
 		}));
 
+		// Extend Twig.
+		if (class_exists('\App\Extensions\View') && method_exists('\App\Extensions\View', 'extendTwig')) {
+			\App\Extensions\View::extendTwig($twig);
+		}
+
 		$data['_site']['baseUrl'] = Config::getApp('baseUrl');
 		$data['_site']['apiUrl']  = Config::getApp('apiUrl');
 		try {
