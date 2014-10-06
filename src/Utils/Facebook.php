@@ -77,6 +77,13 @@ class Facebook {
 
 			return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
 
+		// Redirect to login.
+		} catch (\Facebook\FacebookSDKException $e) {
+
+			static::resetToken();
+
+			return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
+
 		// Invalid token, login.
 		} catch (\ErrorException $e) {
 

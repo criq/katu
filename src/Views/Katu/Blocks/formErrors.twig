@@ -3,7 +3,7 @@
 		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 		<strong>Chyba!</strong>
 		{% for error in errors %}
-			<br />{{ error }}
+			<br />{{ error|raw }}
 		{% endfor %}
 	</div>
 {% endif %}

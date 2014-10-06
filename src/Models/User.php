@@ -49,6 +49,10 @@ class User extends \Katu\Model {
 		));
 	}
 
+	public function hasEmailAddress() {
+		return (bool) $this->emailAddressId;
+	}
+
 	public function setEmailAddress($emailAddress) {
 		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
@@ -78,6 +82,8 @@ class User extends \Katu\Model {
 	}
 
 	static function logout() {
+		\Katu\Utils\Facebook::resetToken();
+
 		return \Katu\Session::reset('katu.user.id');
 	}
 
