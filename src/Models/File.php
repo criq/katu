@@ -20,7 +20,7 @@ class File extends \Katu\Model {
 		}
 
 		// Check the writability of files folder.
-		if (!is_writable(static::getDirName())) {
+		if (!is_writable(static::getDirPath())) {
 			throw new \Katu\Exceptions\ArgumentErrorException("File folder isn't writable.");
 		}
 
