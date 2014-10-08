@@ -23,31 +23,28 @@ class Image {
 	}
 
 	static function getDirName() {
-		return \Katu\Config::get('app', 'files', 'publicDir');
+		return \Katu\Config::get('app', 'tmp', 'publicDir');
 	}
 
 	static function getDirPath() {
 		$path = BASE_DIR . '/' . static::getDirName();
-		var_dump($path); die;
 
 		// Check the writability of the folder.
-		if (!is_writable(static::getDirPath())) {
-			throw new \Katu\Exceptions\ArgumentErrorException("File folder isn't writable.");
+		if (!is_writable($path)) {
+			throw new \Katu\Exceptions\ArgumentErrorException("Public tmp folder isn't writable.");
 		}
 
-		return realpath();
-
-
+		return realpath($path);
 	}
 
 	static function getThumbnailUrl($uri, $size, $quality = 100, $options = array()) {
 		static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality, $options), $size, $quality, $options);
 
-		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
+		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), \Katu\Config::get('app', 'tmp', 'publicUrl'), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
 	}
 
 	static function getThumbnailPath($uri, $size, $quality = 100, $options = array()) {
-		$thumbnailPath = \Katu\Utils\FS::joinPaths(TMP_PATH, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
+		$thumbnailPath = \Katu\Utils\FS::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
 		static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
 
 		return $thumbnailPath;
