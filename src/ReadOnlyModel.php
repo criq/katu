@@ -230,7 +230,7 @@ class ReadOnlyModel {
 		return FileAttachment::getBy($properties);
 	}
 
-	public function getImageAttachments($properties = array()) {
+	public function getImageFileAttachments($properties = array()) {
 		$sql = (new Select(FileAttachment::getTable()))
 			->from(FileAttachment::getTable())
 			->join(File::getColumn('id'), FileAttachment::getColumn('fileId'))
@@ -243,7 +243,7 @@ class ReadOnlyModel {
 	}
 
 	public function getImageFile() {
-		$imageAttachments = $this->getImageAttachments();
+		$imageAttachments = $this->getImageFileAttachments();
 		if ($imageAttachments->getTotal()) {
 			return $imageAttachments[0]->getFile();
 		}

@@ -40,7 +40,7 @@ class View {
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnail', function($uri, $size = 640, $quality = 100) {
-			return \Katu\Utils\Image::getSquareThumbnailUrl($uri, $size, $quality);
+			return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality, array('format' => 'square'));
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnailPath', function($uri, $size = 640, $quality = 100) {

@@ -6,59 +6,72 @@ class Image {
 
 	const THUMBNAIL_DIR = 'image/thumbnails';
 
-	static function getThumbnailFilename($uri, $size, $quality = 100) {
-		return implode('_', array(sha1($uri), $size, $quality)) . '.jpg';
-	}
-
-	static function getSquareThumbnailFilename($uri, $size, $quality = 100) {
-		return implode('_', array(sha1($uri), $size, $quality, 'sq')) . '.jpg';
-	}
-
-	static function getThumbnailUrl($uri, $size, $quality = 100) {
-		static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality), $size, $quality);
-
-		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), TMP_DIR, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality));
-	}
-
-	static function getSquareThumbnailUrl($uri, $size, $quality = 100) {
-		static::makeSquareThumbnail($uri, static::getSquareThumbnailPath($uri, $size, $quality), $size, $quality);
-
-		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), TMP_DIR, static::THUMBNAIL_DIR, self::getSquareThumbnailFilename($uri, $size, $quality));
-	}
-
-	static function getThumbnailPath($uri, $size, $quality = 100) {
-		$thumbnailPath = \Katu\Utils\FS::joinPaths(TMP_PATH, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality));
-		static::makeThumbnail($uri, $thumbnailPath, $size, $quality);
-
-		return $thumbnailPath;
-	}
-
-	static function getSquareThumbnailPath($uri, $size, $quality = 100) {
-		$thumbnailPath = \Katu\Utils\FS::joinPaths(TMP_PATH, static::THUMBNAIL_DIR, self::getSquareThumbnailFilename($uri, $size, $quality));
-		static::makeSquareThumbnail($uri, $thumbnailPath, $size, $quality);
-
-		return $thumbnailPath;
-	}
-
-	static function makeThumbnail($source, $destination, $size, $quality = 100) {
-		if (!file_exists($destination)) {
-
-			@mkdir(dirname($destination), 0777, TRUE);
-			$image = \Intervention\Image\Image::make($source);
-			$image->resize($size, $size, TRUE);
-			$image->save($destination);
-
+	static function getThumbnailFilename($uri, $size, $quality = 100, $options = array()) {
+		if ($uri instanceof \App\Models\File) {
+			$uri = $uri->getPath();
+		} elseif ($uri instanceof \App\Models\FileAttachment) {
+			$uri = $uri->getFile()->getPath();
 		}
 
-		return TRUE;
+		$suffixes = array();
+		foreach ($options as $key => $value) {
+			$suffixes[] = $key;
+			$suffixes[] = $value;
+		}
+
+		return implode('_', array(sha1($uri), $size, $quality, implode('_', $suffixes))) . '.jpg';
 	}
 
-	static function makeSquareThumbnail($source, $destination, $size, $quality = 100) {
+	static function getDirName() {
+		return \Katu\Config::get('app', 'files', 'publicDir');
+	}
+
+	static function getDirPath() {
+		$path = BASE_DIR . '/' . static::getDirName();
+		var_dump($path); die;
+
+		// Check the writability of the folder.
+		if (!is_writable(static::getDirPath())) {
+			throw new \Katu\Exceptions\ArgumentErrorException("File folder isn't writable.");
+		}
+
+		return realpath();
+
+
+	}
+
+	static function getThumbnailUrl($uri, $size, $quality = 100, $options = array()) {
+		static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality, $options), $size, $quality, $options);
+
+		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
+	}
+
+	static function getThumbnailPath($uri, $size, $quality = 100, $options = array()) {
+		$thumbnailPath = \Katu\Utils\FS::joinPaths(TMP_PATH, static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
+		static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
+
+		return $thumbnailPath;
+	}
+
+	static function makeThumbnail($source, $destination, $size, $quality = 100, $options = array()) {
 		if (!file_exists($destination)) {
 
 			@mkdir(dirname($destination), 0777, TRUE);
+
+			if ($source instanceof \App\Models\File) {
+				$source = $source->getPath();
+			} elseif ($source instanceof \App\Models\FileAttachment) {
+				$source = $source->getFile()->getPath();
+			}
+
 			$image = \Intervention\Image\Image::make($source);
-			$image->grab($size, $size);
+
+			if (isset($options['format']) && $options['format'] == 'square') {
+				$image->grab($size, $size);
+			} else {
+				$image->resize($size, $size, TRUE);
+			}
+
 			$image->save($destination);
 
 		}
