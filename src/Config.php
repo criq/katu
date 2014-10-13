@@ -40,7 +40,11 @@ class Config {
 
 			foreach (self::getFiles() as $file) {
 				$pathinfo = pathinfo($file);
-				$config[$pathinfo['filename']] = include $file;
+				if ($pathinfo['extension'] == 'yaml') {
+					$config[$pathinfo['filename']] = \Katu\Utils\YAML::decode($file);
+				} else {
+					$config[$pathinfo['filename']] = include $file;
+				}
 			}
 
 			$cached = Cache::setRuntime('config', $config);
@@ -55,7 +59,7 @@ class Config {
 		$files = array();
 
 		foreach (scandir($dir) as $file) {
-			if (preg_match('#^[a-z]+\.php$#i', $file)) {
+			if (preg_match('#^[a-z]+\.(php|yaml)$#i', $file)) {
 				$files[] = Utils\FS::joinPaths($dir, $file);
 			}
 		}
