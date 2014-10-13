@@ -127,4 +127,8 @@ class File extends \Katu\Model {
 		return \Katu\Utils\Image::getThumbnailUrl($this->getPath(), $size, $quality, $options);
 	}
 
+	public function getThumbnailPath($size, $quality = 100, $options = array()) {
+		return \Katu\Utils\Image::getThumbnailPath($this->getPath(), $size, $quality, $options);
+	}
+
 }

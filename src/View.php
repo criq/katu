@@ -75,6 +75,12 @@ class View {
 			return FALSE;
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('shorten', function($string, $length, $options = array()) {
+			$shorter = substr($string, 0, $length);
+
+			return $shorter;
+		}));
+
 		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
