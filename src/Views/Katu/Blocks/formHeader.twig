@@ -6,5 +6,5 @@
 <input type="hidden" name="formName" value="{{ name }}" />
 <input type="hidden" name="formToken" value="{{ token.token }}" />
 {% if captcha %}
-{% include "Blocks/formCaptcha.twig" with {token: token, minDuration: minDuration} %}
+{% include "Blocks/formCaptcha.twig" with { token: token, minDuration: minDuration } %}
 {% endif %}

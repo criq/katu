@@ -223,14 +223,14 @@ class ReadOnlyModel {
 		return $string;
 	}
 
-	public function getFileAttachments($properties = array()) {
+	public function getFileAttachments($properties = array(), $options = array()) {
 		$properties['objectModel'] = $this->getClass();
 		$properties['objectId']    = $this->getId();
 
-		return FileAttachment::getBy($properties);
+		return FileAttachment::getBy($properties, $options);
 	}
 
-	public function getImageFileAttachments($properties = array()) {
+	public function getImageFileAttachments($properties = array(), $options = array()) {
 		$sql = (new Select(FileAttachment::getTable()))
 			->from(FileAttachment::getTable())
 			->join(File::getColumn('id'), FileAttachment::getColumn('fileId'))
@@ -238,6 +238,8 @@ class ReadOnlyModel {
 			->where(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
 			->where(FileAttachment::getColumn('objectId'), (int) $this->getId())
 			;
+
+		$sql->setOptions($options);
 
 		return FileAttachment::createQuery($sql)->getResult();
 	}

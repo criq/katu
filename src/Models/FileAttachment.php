@@ -13,7 +13,7 @@ class FileAttachment extends \Katu\Model {
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
-			'creatorId'   => (int)    ($creator->id),
+			'creatorId'   => (int)    ($creator ? $creator->id : null),
 			'objectModel' => (string) ($object->getClass()),
 			'objectId'    => (int)    ($object->getId()),
 			'fileId'      => (int)    ($file->id),
@@ -33,7 +33,7 @@ class FileAttachment extends \Katu\Model {
 	}
 
 	static function checkCrudParams($creator, $object, $file) {
-		if (!$creator || !($creator instanceof \App\Models\Creator)) {
+		if ($creator && !($creator instanceof \App\Models\Creator)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file attachment creator.", 'file');
 		}
 		if (!is_a($object, '\Katu\Model')) {

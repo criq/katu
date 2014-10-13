@@ -29,7 +29,7 @@ class File extends \Katu\Model {
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
-			'creatorId'   => (int)    ($creator->id),
+			'creatorId'   => (int)    ($creator ? $creator->id : null),
 			'path'        => (string) ($path),
 			'name'        => (string) ($upload->fileName),
 			'type'        => (string) ($upload->fileType),
@@ -38,7 +38,7 @@ class File extends \Katu\Model {
 	}
 
 	static function checkCrudParams($creator) {
-		if (!$creator || !($creator instanceof \App\Models\Creator)) {
+		if ($creator && !($creator instanceof \App\Models\Creator)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file creator.", 'file');
 		}
 
@@ -121,6 +121,10 @@ class File extends \Katu\Model {
 
 	public function getPath() {
 		return static::getDirPath() . '/' . $this->path;
+	}
+
+	public function getThumbnailUrl($size, $quality = 100, $options = array()) {
+		return \Katu\Utils\Image::getThumbnailUrl($this->getPath(), $size, $quality, $options);
 	}
 
 }
