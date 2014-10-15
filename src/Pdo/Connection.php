@@ -16,18 +16,22 @@ class Connection {
 		$this->name = $name;
 
 		try {
-
 			$config = Config::getDB($name);
-
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-
 			throw new \Katu\Exceptions\MissingPdoConfigException("Missing PDO config for instance " . $name . ".");
-
 		}
 
-		$this->connection = new PDO($config->getPdoDSN(), $config->user, $config->password, array(
-			PDO::ATTR_PERSISTENT => TRUE,
-		));
+		// Try to connect.
+		for ($i = 1; $i <= 3; $i++) {
+			try {
+				$this->connection = new PDO($config->getPdoDSN(), $config->user, $config->password, array(
+					PDO::ATTR_PERSISTENT => true,
+				));
+				break;
+			} catch (\ErrorException $e) {
+				// Retry.
+			}
+		}
 	}
 
 	static function getInstance($name) {
@@ -44,7 +48,7 @@ class Connection {
 
 
 
-	public function createQuery($sql = NULL, $params = array()) {
+	public function createQuery($sql = null, $params = array()) {
 		$query = new Query($this, $sql, $params);
 
 		return $query;
@@ -57,7 +61,7 @@ class Connection {
 		return $query;
 	}
 
-	public function createClassQuery($class, $sql = NULL, $params = array()) {
+	public function createClassQuery($class, $sql = null, $params = array()) {
 		$query = new Query($this, $sql, $params);
 		$query->setClass($class);
 
