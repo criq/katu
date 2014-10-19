@@ -26,7 +26,7 @@ class ReadOnlyModel {
 	}
 
 	public function getAppClassName() {
-		return strtolower(implode(array_slice(explode('\\', $this->getClass()), -1, 1)));
+		return implode(array_slice(explode('\\', $this->getClass()), -1, 1));
 	}
 
 	static function getPdo() {
