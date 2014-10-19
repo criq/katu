@@ -26,10 +26,15 @@ class Upload {
 
 	static function get($key) {
 		if (!isset($_FILES[$key])) {
-			throw new \Exception("Upload missing.", self::ERROR_NO_FILE);
+			return false;
 		}
 
-		return new self($_FILES[$key]);
+		$upload = new self($_FILES[$key]);
+		if ($upload->error == UPLOAD_ERR_NO_FILE) {
+			return false;
+		}
+
+		return $upload;
 	}
 
 	public function isInError() {
