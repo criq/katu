@@ -21,12 +21,34 @@ class ReadOnlyModel {
 		trigger_error('Undeclared class method ' . $name . '.');
 	}
 
+	static function getAppModels() {
+		$dir = BASE_DIR . '/app/Models/';
+		$ns = '\\App\\Models';
+
+		$models = array();
+
+		foreach (scandir($dir) as $file) {
+			$path = $dir . $file;
+			if (is_file($path)) {
+				$pathinfo = pathinfo($file);
+				$model = $ns . '\\' . $pathinfo['filename'];
+				if (class_exists($model)) {
+					$models[] = ltrim($model, '\\');
+				}
+			}
+		}
+
+		natsort($models);
+
+		return $models;
+	}
+
 	static function getClass() {
 		return get_called_class();
 	}
 
-	public function getAppClassName() {
-		return implode(array_slice(explode('\\', $this->getClass()), -1, 1));
+	static function getAppClass() {
+		return implode(array_slice(explode('\\', static::getClass()), -1, 1));
 	}
 
 	static function getPdo() {
