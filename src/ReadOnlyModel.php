@@ -25,6 +25,10 @@ class ReadOnlyModel {
 		return get_called_class();
 	}
 
+	public function getAppClassName() {
+		return strtolower(implode(array_slice(explode('\\', $this->getClass()), -1, 1)));
+	}
+
 	static function getPdo() {
 		if (!defined('static::DATABASE')) {
 			throw new \Exception("Undefined database.");
