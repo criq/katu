@@ -38,8 +38,8 @@ class User extends \Katu\Model {
 		return static::get(\Katu\Session::get('katu.user.id'));
 	}
 
-	public function addUserService($serviceName, $serviceUserID) {
-		return \App\Models\UserService::create($this, $serviceName, $serviceUserID);
+	public function addUserService($serviceName, $serviceUserId) {
+		return \App\Models\UserService::create($this, $serviceName, $serviceUserId);
 	}
 
 	public function getDefaultUserServiceByName($serviceName) {

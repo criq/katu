@@ -25,16 +25,6 @@ class Facebook {
 			// Check the Facebook user.
 			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
 
-			/*
-			// Check scopes.
-			$sessionInfo = $session->getSessionInfo();
-			foreach ($scopes as $scope) {
-				if (!in_array($scope, $sessionInfo->getScopes())) {
-					throw new \Facebook\FacebookSDKException("Missing " . $scope . " scope.");
-				}
-			}
-			*/
-
 			// Login the user.
 			$userService = \App\Models\UserService::getByServiceAndID('facebook', $facebookUser->getId())->getOne();
 			if (!$userService) {

@@ -8,19 +8,19 @@ class UserService extends \Katu\Model {
 
 	const TABLE = 'user_services';
 
-	static function create($user, $serviceName, $serviceUserID) {
+	static function create($user, $serviceName, $serviceUserId) {
 		return static::insert(array(
 			'timeCreated'   => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
 			'userId'        => (int)    ($user->id),
 			'serviceName'   => (string) ($serviceName),
-			'serviceUserID' => (string) ($serviceUserID),
+			'serviceUserId' => (string) ($serviceUserId),
 		));
 	}
 
-	static function getByServiceAndID($serviceName, $serviceUserID) {
+	static function getByServiceAndID($serviceName, $serviceUserId) {
 		return static::getBy(array(
 			'serviceName'   => (string) ($serviceName),
-			'serviceUserID' => (string) ($serviceUserID),
+			'serviceUserId' => (string) ($serviceUserId),
 		));
 	}
 
