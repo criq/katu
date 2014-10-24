@@ -19,7 +19,7 @@ class Image {
 			$suffixes[] = $value;
 		}
 
-		return implode('_', array(sha1($uri), $size, $quality, implode('_', $suffixes))) . '.jpg';
+		return implode('_', array_filter(array(sha1($uri), $size, $quality, $suffixes))) . '.jpg';
 	}
 
 	static function getDirName() {

@@ -6,8 +6,7 @@ use \Katu\App;
 
 class Controller {
 
-	static $errors = array();
-	static $data   = array();
+	static $data = array();
 
 	static function redirect($url, $code = 302) {
 		try {
@@ -25,8 +24,6 @@ class Controller {
 		$app = App::get();
 
 		try {
-
-			static::$data['_errors'] = static::$errors;
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
@@ -98,15 +95,20 @@ class Controller {
 	}
 
 	static function addError($error) {
-		if ($error instanceof \Exception) {
-			return static::$errors[] = $error->getMessage();
+		if ($error instanceof \Katu\Exceptions\ArgumentErrorException) {
+			static::$data['_namedArgumentsInError'][] = $error->getName();
+			static::$data['_errors'][$error->getName()][] = $error->getMessage();
+		} elseif ($error instanceof \Exception) {
+			static::$data['_errors'][] = $error->getMessage();
+		} else {
+			static::$data['_errors'][] = $error;
 		}
 
-		return static::$errors[] = $error;
+		return true;
 	}
 
 	static function hasErrors() {
-		return (bool) static::$errors;
+		return (bool) (isset(static::$data['_errors']) ? static::$data['_errors'] : false);
 	}
 
 }

@@ -69,7 +69,11 @@ class Result implements \Iterator, \ArrayAccess {
 		$values = array();
 
 		foreach ($this as $row) {
-			$values[] = $row[$column];
+			if (is_object($row)) {
+				$values[] = $row->$column;
+			} else {
+				$values[] = $row[$column];
+			}
 		}
 
 		return $values;
