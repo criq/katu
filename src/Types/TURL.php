@@ -2,7 +2,7 @@
 
 namespace Katu\Types;
 
-class TURL {
+class TUrl {
 
 	const DEFAULT_SCHEME = 'http';
 

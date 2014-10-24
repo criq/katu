@@ -7,13 +7,13 @@ use \Katu\Config;
 use \Katu\Session;
 use \Katu\Utils\Facebook;
 use \Katu\Utils\Url;
-use \Katu\Types\TURL;
+use \Katu\Types\TUrl;
 use \Facebook\FacebookSession;
 use \Facebook\FacebookRedirectLoginHelper;
 
 class Facebook {
 
-	static function login(TURL $redirectUrl, CallbackCollection $callbackCollection, $scopes = array()) {
+	static function login(TUrl $redirectUrl, CallbackCollection $callbackCollection, $scopes = array()) {
 		try {
 
 			$app = App::get();

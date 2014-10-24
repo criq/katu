@@ -124,7 +124,7 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getPaginationUrl', function() {
-			$url       =          new \Katu\Types\TURL(func_get_arg(0));
+			$url       =          new \Katu\Types\TUrl(func_get_arg(0));
 			$page      = (int)    func_get_arg(1);
 			$pageIdent = (string) func_get_arg(2);
 

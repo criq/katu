@@ -4,14 +4,14 @@ namespace Katu\Utils\Google;
 
 use \Katu\Config;
 use \Katu\Utils\Cache;
-use \Katu\Types\TURL;
+use \Katu\Types\TUrl;
 
 class Geocode {
 
 	static function geocode($address, $language = 'en') {
 		$res = Cache::get(array('geocode', $language, sha1($address)), function() use($address, $language) {
 
-			$url = TURL::make('https://maps.googleapis.com/maps/api/geocode/json', array(
+			$url = TUrl::make('https://maps.googleapis.com/maps/api/geocode/json', array(
 				'address'  => $address,
 				'sensor'   => 'false',
 				'language' => $language,
