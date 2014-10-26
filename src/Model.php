@@ -97,9 +97,17 @@ class Model extends ReadOnlyModel {
 		return $query->getResult();
 	}
 
-	public function setUniqueColumnValue($column, $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789') {
+	public function setUniqueColumnValue($column, $chars = null, $length = null) {
+		if (is_null($chars)) {
+			$chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+		}
+
+		if (is_null($length)) {
+			$length = static::getColumn($column)->getProperties()->length;
+		}
+
 		while (TRUE) {
-			$string = \Katu\Utils\Random::getFromChars($chars, static::getColumn($column)->getProperties()->length);
+			$string = \Katu\Utils\Random::getFromChars($chars, $length);
 			if (!static::getBy(array($column => $string))->getTotal()) {
 				$this->update($column, $string);
 				$this->save();

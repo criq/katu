@@ -234,21 +234,6 @@ class ReadOnlyModel {
 		return FALSE;
 	}
 
-	static function getColumnUniqueId($column) {
-		$columns = static::getColumnDescriptions();
-		if (!$columns[$column]->length) {
-			throw new \Exception("Unable to get column length.");
-		}
-
-		do {
-
-			$string = \Katu\Utils\Random::getIDString($columns[$column]->length);
-
-		} while (static::getOneBy(array($column => $string)));
-
-		return $string;
-	}
-
 	public function getFileAttachments($properties = array(), $options = array()) {
 		$properties['objectModel'] = $this->getClass();
 		$properties['objectId']    = $this->getId();

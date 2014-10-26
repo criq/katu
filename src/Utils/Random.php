@@ -31,7 +31,7 @@ class Random {
 		return static::getFromChars(static::ALNUM, $length);
 	}
 
-	static function getIDString($length = 32) {
+	static function getIdString($length = 32) {
 		return static::getFromChars(static::IDSTRING, $length);
 	}
 
