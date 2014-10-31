@@ -11,7 +11,7 @@ class User extends \Katu\Model {
 
 	static function create() {
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 		));
 	}
 

@@ -14,7 +14,7 @@ class Setting extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'creatorId'   => (int)    ($creator->id),
 			'name'        => (string) (trim($name)),
 			'value'       => (string) (trim($value)),

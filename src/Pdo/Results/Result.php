@@ -45,6 +45,10 @@ class Result implements \Iterator, \ArrayAccess {
 						throw new \Exception($error[2], $error[1]);
 					}
 
+				} else {
+
+					throw $e;
+
 				}
 
 			} else {

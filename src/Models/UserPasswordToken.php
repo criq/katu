@@ -12,8 +12,8 @@ class UserPasswordToken extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
-			'timeExpires' => (string) (\Katu\Utils\DateTime::get('+ 1 hour')->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
+			'timeExpires' => (string) (\Katu\Utils\DateTime::get('+ 1 hour')->getDbDatetimeFormat()),
 			'userId'      => (int)    ($user->id),
 			'token'       => (string) (\Katu\Utils\Random::getString(static::getColumn('token')->getProperties()->length)),
 		));
@@ -32,7 +32,7 @@ class UserPasswordToken extends \Katu\Model {
 	}
 
 	public function expire() {
-		$this->update('timeUsed', \Katu\Utils\DateTime::get()->getDBDatetimeFormat());
+		$this->update('timeUsed', \Katu\Utils\DateTime::get()->getDbDatetimeFormat());
 		$this->save();
 
 		return TRUE;

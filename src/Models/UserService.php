@@ -10,7 +10,7 @@ class UserService extends \Katu\Model {
 
 	static function create($user, $serviceName, $serviceUserId) {
 		return static::insert(array(
-			'timeCreated'   => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated'   => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'userId'        => (int)    ($user->id),
 			'serviceName'   => (string) ($serviceName),
 			'serviceUserId' => (string) ($serviceUserId),

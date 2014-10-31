@@ -28,7 +28,11 @@ class Cache {
 			return gzcompress(serialize(call_user_func($callback)), 9);
 		};
 
-		return unserialize(gzuncompress($cache->getOrCreate(self::getCacheName($name), $opts, $callback)));
+		try {
+			return unserialize(gzuncompress($cache->getOrCreate(self::getCacheName($name), $opts, $callback)));
+		} catch (\Katu\Exceptions\DoNotCacheException $e) {
+			return $e->data;
+		}
 	}
 
 	static function getCacheName($name) {

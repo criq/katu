@@ -12,7 +12,7 @@ class UserRole extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'userId'      => (int)    ($user->id),
 			'roleId'      => (int)    ($role->id),
 		));

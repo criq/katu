@@ -8,6 +8,10 @@ class Geocode extends \Katu\Model {
 
 	const TABLE = 'geocodes';
 
+	static function make() {
+		return static::getOrCreateFromAddress(call_user_func_array('\Katu\Utils\Google\Geocode::geocode', func_get_args()));
+	}
+
 	static function getOrCreateFromAddress($geocodeAddress) {
 		if (!$geocodeAddress || !($geocodeAddress instanceof \Katu\Utils\Google\GeocodeAddress)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid geocode address.");
@@ -18,7 +22,7 @@ class Geocode extends \Katu\Model {
 		$geocode = static::getOneBy(array('hash' => $hash));
 		if (!$geocode) {
 			$geocode = static::insert(array(
-				'timeCreated'  => (string) \Katu\Utils\DateTime::get()->getDBDatetimeFormat(),
+				'timeCreated'  => (string) \Katu\Utils\DateTime::get()->getDbDatetimeFormat(),
 				'hash'         => (string) $hash,
 				'language'     => (string) $geocodeAddress->language,
 				'number'       => (string) $geocodeAddress->number,
