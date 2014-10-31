@@ -22,7 +22,7 @@ class Session {
 			$_SESSION[static::REFERENCE_KEY] = array();
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function &getReference() {
@@ -31,7 +31,7 @@ class Session {
 		return $_SESSION[static::REFERENCE_KEY];
 	}
 
-	static function get($key = NULL) {
+	static function get($key = null) {
 		static::init();
 
 		$reference =& static::getReference();
@@ -41,7 +41,7 @@ class Session {
 		}
 
 		if (!isset($reference[$key])) {
-			return NULL;
+			return null;
 		}
 
 		return $reference[$key];
@@ -53,7 +53,7 @@ class Session {
 		$reference =& static::getReference();
 		$reference[$key] = $value;
 
-		return TRUE;
+		return true;
 	}
 
 	static function add($key, $value) {
@@ -64,22 +64,22 @@ class Session {
 			$reference[$key][] = $value;
 		}
 
-		return TRUE;
+		return true;
 	}
 
-	static function reset($key = NULL) {
+	static function reset($key = null) {
 		static::init();
 
 		if (!$key) {
 			$reference =& static::getReference();
-			$reference = NULL;
+			$reference = null;
 
-			return TRUE;
+			return true;
 		}
 
-		static::set($key, NULL);
+		static::set($key, null);
 
-		return TRUE;
+		return true;
 	}
 
 	static function setCookieParams($config = array()) {
