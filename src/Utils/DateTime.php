@@ -48,4 +48,10 @@ class DateTime extends \DateTime {
 		return time() - $this->getTimestamp();
 	}
 
+	static function getMicroseconds() {
+		list($micro, $timestamp) = explode(' ', microtime(false));
+
+		return (float) $micro;
+	}
+
 }

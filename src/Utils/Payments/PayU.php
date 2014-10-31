@@ -20,10 +20,10 @@ class PayU {
 
 	static function createWithDefaultConfig() {
 		return new static(
-			\Katu\Config::get('payu', 'api', 'keys', 'pos_id'),
-			\Katu\Config::get('payu', 'api', 'keys', 'pos_auth_key'),
-			\Katu\Config::get('payu', 'api', 'keys', 'key_one'),
-			\Katu\Config::get('payu', 'api', 'keys', 'key_two')
+			\Katu\Config::get('payu', 'posId'),
+			\Katu\Config::get('payu', 'posAuthKey'),
+			\Katu\Config::get('payu', 'keyOne'),
+			\Katu\Config::get('payu', 'keyTwo')
 		);
 	}
 
