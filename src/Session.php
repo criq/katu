@@ -4,7 +4,7 @@ namespace Katu;
 
 class Session {
 
-	const REFERENCE_KEY = 'katu.session';
+	const KEY = 'katu.session';
 
 	static function start() {
 		if (!session_id()) {
@@ -18,40 +18,31 @@ class Session {
 			session_start();
 		}
 
-		if (!isset($_SESSION[static::REFERENCE_KEY])) {
-			$_SESSION[static::REFERENCE_KEY] = array();
+		if (!isset($_SESSION[static::KEY])) {
+			$_SESSION[static::KEY] = array();
 		}
 
 		return true;
 	}
 
-	static function &getReference() {
-		static::init();
-
-		return $_SESSION[static::REFERENCE_KEY];
-	}
-
 	static function get($key = null) {
 		static::init();
 
-		$reference =& static::getReference();
-
 		if (!$key) {
-			return $reference;
+			return $_SESSION[static::KEY];
 		}
 
-		if (!isset($reference[$key])) {
+		if (!isset($_SESSION[static::KEY][$key])) {
 			return null;
 		}
 
-		return $reference[$key];
+		return $_SESSION[static::KEY][$key];
 	}
 
 	static function set($key, $value) {
 		static::init();
 
-		$reference =& static::getReference();
-		$reference[$key] = $value;
+		$_SESSION[static::KEY][$key] = $value;
 
 		return true;
 	}
@@ -59,9 +50,8 @@ class Session {
 	static function add($key, $value) {
 		static::init();
 
-		$reference =& static::getReference();
 		if (trim($value)) {
-			$reference[$key][] = $value;
+			$_SESSION[static::KEY][$key][] = $value;
 		}
 
 		return true;
@@ -71,8 +61,7 @@ class Session {
 		static::init();
 
 		if (!$key) {
-			$reference =& static::getReference();
-			$reference = null;
+			$_SESSION[static::KEY] = null;
 
 			return true;
 		}
