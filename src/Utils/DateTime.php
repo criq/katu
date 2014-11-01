@@ -12,15 +12,19 @@ class DateTime extends \DateTime {
 		return new DateTime($string);
 	}
 
+	static function createFromDateTime($dateTime) {
+		return new static('@' . $dateTime->getTimestamp(), $dateTime->getTimezone());
+	}
+
 	public function toLocalTimezone() {
 		return $this->setTimezone(new \DateTimeZone(\Katu\Config::get('app', 'timezone')));
 	}
 
-	public function getDBDateFormat() {
+	public function getDbDateFormat() {
 		return $this->format('Y-m-d');
 	}
 
-	public function getDBDateTimeFormat() {
+	public function getDbDateTimeFormat() {
 		return $this->format('Y-m-d H:i:s');
 	}
 
