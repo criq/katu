@@ -123,11 +123,11 @@ class File extends \Katu\Model {
 		return static::getDirPath() . '/' . $this->path;
 	}
 
-	public function getThumbnailUrl($size, $quality = 100, $options = array()) {
+	public function getThumbnailUrl($size = 640, $quality = 100, $options = array()) {
 		return \Katu\Utils\Image::getThumbnailUrl($this->getPath(), $size, $quality, $options);
 	}
 
-	public function getThumbnailPath($size, $quality = 100, $options = array()) {
+	public function getThumbnailPath($size = 640, $quality = 100, $options = array()) {
 		return \Katu\Utils\Image::getThumbnailPath($this->getPath(), $size, $quality, $options);
 	}
 

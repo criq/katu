@@ -89,6 +89,13 @@ class Model extends ReadOnlyModel {
 	public function delete() {
 		$query = static::getPdo()->createQuery();
 
+		// Delete file attachments.
+		if (class_exists('\App\Models\FileAttachment')) {
+			foreach ($this->getFileAttachments() as $fileAttachment) {
+				$fileAttachment->delete();
+			}
+		}
+
 		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIdColumnName() . " = :" . static::getIdColumnName();
 
 		$query->setSql($sql);
