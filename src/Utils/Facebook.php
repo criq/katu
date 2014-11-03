@@ -108,6 +108,8 @@ class Facebook {
 
 				static::resetToken();
 
+				header('Location: ' . $helper->getLoginUrl($scopes)); die;
+
 				return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
 
 			}
