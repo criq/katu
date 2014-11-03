@@ -13,7 +13,7 @@ class Controller {
 
 			$app = App::get();
 
-			return $app->redirect((string) $url, $code);
+			return $app->redirect((string) $url, $code); die;
 
 		} catch (\Exception $e) {
 
