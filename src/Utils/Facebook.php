@@ -26,7 +26,7 @@ class Facebook {
 			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
 
 			// Login the user.
-			$userService = \App\Models\UserService::getByServiceAndID('facebook', $facebookUser->getId())->getOne();
+			$userService = \App\Models\UserService::getByServiceAndId('facebook', $facebookUser->getId())->getOne();
 			if (!$userService) {
 
 				// Create new user.
@@ -106,6 +106,8 @@ class Facebook {
 			// Redirect to login.
 			} else {
 
+				static::resetToken();
+
 				return \Katu\Controller::redirect($helper->getLoginUrl($scopes));
 
 			}
@@ -129,7 +131,7 @@ class Facebook {
 	static function getSession() {
 		static::startAppSession();
 
-		return new \Facebook\FacebookSession(static::getToken());
+		return new FacebookSession(static::getToken());
 	}
 
 	static function setToken($token) {

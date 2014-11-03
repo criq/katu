@@ -17,7 +17,7 @@ class UserService extends \Katu\Model {
 		));
 	}
 
-	static function getByServiceAndID($serviceName, $serviceUserId) {
+	static function getByServiceAndId($serviceName, $serviceUserId) {
 		return static::getBy(array(
 			'serviceName'   => (string) ($serviceName),
 			'serviceUserId' => (string) ($serviceUserId),
