@@ -21,18 +21,20 @@ class Facebook {
 
 			$app = App::get();
 
-			$helper = new FacebookRedirectLoginHelper((string) $oAuthRedirectUrl);
-
 			$session = static::getSession();
 
-			var_dump($session); die;
+			$helper = new FacebookRedirectLoginHelper((string) $oAuthRedirectUrl);
 
 			// Check the Facebook user.
 			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
 
-
-			if ($scopes) {
-				var_dump($session->getSessionInfo()->getScopes());
+			foreach ($scopes as $scope) {
+				if (!isset($sessionScopes)) {
+					$sessionScopes = $session->getSessionInfo()->getScopes();
+				}
+				if (!in_array($scope, $sessionScopes)) {
+					return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
+				}
 			}
 
 			// Login the user.
