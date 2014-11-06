@@ -67,7 +67,7 @@ class Facebook {
 			$userService->save();
 
 			$user = $userService->getUser();
-			$user->setName($facebookUser->getName());
+			$user->setName($facebookUser->getFirstName(), $facebookUser->getLastName());
 			$user->save();
 
 			$user->login();
