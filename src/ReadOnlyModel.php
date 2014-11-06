@@ -9,6 +9,10 @@ use \Sexy\CmpIn;
 
 class ReadOnlyModel {
 
+	public function __toString() {
+		return (string) $this->getId();
+	}
+
 	public function __call($name, $args) {
 		// Bind getter.
 		if (preg_match('#^get(?<property>[a-z]+)$#i', $name, $match) && count($args) == 0) {
