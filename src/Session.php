@@ -50,7 +50,7 @@ class Session {
 	static function add($key, $value, $instance = null) {
 		static::init();
 
-		if (trim($value)) {
+		if ($value) {
 			if (!is_null($instance)) {
 				$_SESSION[static::KEY][$key][$instance] = $value;
 			} else {
