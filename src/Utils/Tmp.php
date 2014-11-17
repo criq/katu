@@ -11,6 +11,10 @@ class Tmp {
 		return $path;
 	}
 
+	static function get($name) {
+		return file_get_contents(static::getPath($name));
+	}
+
 	static function getPath($name) {
 		return TMP_PATH . static::getFileName($name);
 	}
