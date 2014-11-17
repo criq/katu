@@ -12,7 +12,11 @@ class Tmp {
 	}
 
 	static function get($name) {
-		return file_get_contents(static::getPath($name));
+		if (file_exists(static::getPath($name))) {
+			return file_get_contents(static::getPath($name));
+		}
+
+		return null;
 	}
 
 	static function getPath($name) {
