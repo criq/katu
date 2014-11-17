@@ -16,10 +16,7 @@ class ReadOnlyModel {
 	public function __call($name, $args) {
 		// Bind getter.
 		if (preg_match('#^get(?<property>[a-z]+)$#i', $name, $match) && count($args) == 0) {
-			$object = $this->getBoundObject($match['property']);
-			if ($object) {
-				return $object;
-			}
+			return $this->getBoundObject($match['property']);
 		}
 
 		trigger_error('Undeclared class method ' . $name . '.');

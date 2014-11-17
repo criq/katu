@@ -55,7 +55,9 @@ class Image {
 
 			@mkdir(dirname($destination), 0777, TRUE);
 
-			if ($source instanceof \App\Models\File) {
+			if ($source instanceof \Katu\ReadOnlyModel) {
+				$source = $source->getImagePath();
+			} elseif ($source instanceof \App\Models\File) {
 				$source = $source->getPath();
 			} elseif ($source instanceof \App\Models\FileAttachment) {
 				$source = $source->getFile()->getPath();
