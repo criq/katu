@@ -63,7 +63,11 @@ class Image {
 				$source = $source->getFile()->getPath();
 			}
 
-			$image = \Intervention\Image\Image::make($source);
+			try {
+				$image = \Intervention\Image\Image::make($source);
+			} catch (\Exception $e) {
+				return false;
+			}
 
 			if (isset($options['format']) && $options['format'] == 'square') {
 				$image->grab($size, $size);
