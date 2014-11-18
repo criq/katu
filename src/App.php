@@ -95,10 +95,22 @@ class App {
 
 		$app = self::get();
 
+		// Redirect to canonical host.
 		try {
 			if ($app->request->getMethod() == 'GET' && Config::get('app', 'redirectToCanonicalHost')) {
-				$canonicalHost = (new Types\TUrl(Config::get('app', 'baseUrl')))->getHost();
-				var_dump($canonicalHost); die;
+				$currentUrl    = Utils\Url::getCurrent();
+				$currentHost   = $currentUrl->getHost();
+				$canonicalUrl  = new Types\TUrl(Config::get('app', 'baseUrl'));
+				$canonicalHost = $canonicalUrl->getHost();
+
+				if ($currentHost != $canonicalHost) {
+					$canonicalParts = $currentUrl->getParts();
+					$canonicalParts['host'] = $canonicalHost;
+
+					$redirectUrl = Types\TUrl::build($canonicalParts);
+
+					return header('Location: ' . (string) $redirectUrl, 301); die;
+				}
 			}
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			// Nothing to do.

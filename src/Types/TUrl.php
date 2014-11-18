@@ -24,6 +24,32 @@ class TUrl {
 		return new self($url . ($params ? ('?' . http_build_query($params)) : NULL));
 	}
 
+	static function build($parts) {
+		$url = '';
+
+		if (!isset($parts['host'])) {
+			throw new \Exception("Missing host");
+		}
+
+		if (!isset($parts['scheme'])) {
+			$url .= self::DEFAULT_SCHEME;
+		} else {
+			$url .= $parts['scheme'];
+		}
+
+		$url .= '://' . $parts['host'];
+
+		if (isset($parts['path'])) {
+			$url .= $parts['path'];
+		}
+
+		if (isset($parts['query']) && $parts['query']) {
+			$url .= '?' . http_build_query($parts['query']);
+		}
+
+		return $url;
+	}
+
 	static function isValid($value) {
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== FALSE;
 	}
@@ -123,32 +149,6 @@ class TUrl {
 		$this->value = self::build($parts);
 
 		return $this;
-	}
-
-	static function build($parts) {
-		$url = '';
-
-		if (!isset($parts['host'])) {
-			throw new \Exception("Missing host");
-		}
-
-		if (!isset($parts['scheme'])) {
-			$url .= self::DEFAULT_SCHEME;
-		} else {
-			$url .= $parts['scheme'];
-		}
-
-		$url .= '://' . $parts['host'];
-
-		if (isset($parts['path'])) {
-			$url .= $parts['path'];
-		}
-
-		if (isset($parts['query']) && $parts['query']) {
-			$url .= '?' . http_build_query($parts['query']);
-		}
-
-		return $url;
 	}
 
 }
