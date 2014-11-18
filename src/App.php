@@ -96,10 +96,9 @@ class App {
 		$app = self::get();
 
 		try {
-			var_dump($app)
-			if (Config::get('app', 'redirectToCanonicalHost')) {
-				$tUrl = new Types\TUrl(Config::get('app', 'baseUrl'));
-				var_dump($tUrl->getHostWithScheme()); die;
+			if ($app->request->getMethod() == 'GET' && Config::get('app', 'redirectToCanonicalHost')) {
+				$canonicalHost = (new Types\TUrl(Config::get('app', 'baseUrl')))->getHost();
+				var_dump($canonicalHost); die;
 			}
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			// Nothing to do.
