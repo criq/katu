@@ -93,7 +93,10 @@ class App {
 	static function run() {
 		self::init();
 
+		$app = self::get();
+
 		try {
+			var_dump($app)
 			if (Config::get('app', 'redirectToCanonicalHost')) {
 				$tUrl = new Types\TUrl(Config::get('app', 'baseUrl'));
 				var_dump($tUrl->getHostWithScheme()); die;
