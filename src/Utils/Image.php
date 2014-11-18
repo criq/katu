@@ -38,14 +38,22 @@ class Image {
 	}
 
 	static function getThumbnailUrl($uri, $size, $quality = 100, $options = array()) {
-		static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality, $options), $size, $quality, $options);
+		try {
+			static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality, $options), $size, $quality, $options);
+		} catch (\Exception $e) {
+			return false;
+		}
 
 		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), \Katu\Config::get('app', 'tmp', 'publicUrl'), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
 	}
 
 	static function getThumbnailPath($uri, $size, $quality = 100, $options = array()) {
 		$thumbnailPath = \Katu\Utils\FS::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
-		static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
+		try {
+			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
+		} catch (\Exception $e) {
+			return false;
+		}
 
 		return $thumbnailPath;
 	}
@@ -53,14 +61,14 @@ class Image {
 	static function makeThumbnail($source, $destination, $size, $quality = 100, $options = array()) {
 		if (!file_exists($destination)) {
 
-			@mkdir(dirname($destination), 0777, TRUE);
+			@mkdir(dirname($destination), 0777, true);
 
-			if ($source instanceof \Katu\ReadOnlyModel) {
-				$source = $source->getImagePath();
+			if ($source instanceof \App\Models\FileAttachment) {
+				$source = $source->getFile()->getPath();
 			} elseif ($source instanceof \App\Models\File) {
 				$source = $source->getPath();
-			} elseif ($source instanceof \App\Models\FileAttachment) {
-				$source = $source->getFile()->getPath();
+			} elseif ($source instanceof \Katu\ReadOnlyModel) {
+				$source = $source->getImagePath();
 			}
 
 			try {
@@ -68,26 +76,26 @@ class Image {
 			} catch (\Exception $e) {
 				error_log($e);
 
-				return false;
+				throw new \Katu\Exceptions\ImageErrorException($e->getMessage());
 			}
 
 			if (isset($options['format']) && $options['format'] == 'square') {
 				$image->grab($size, $size);
 			} else {
-				$image->resize($size, $size, TRUE);
+				$image->resize($size, $size, true);
 			}
 
 			$image->save($destination);
 
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function getMime($path) {
 		$size = @getimagesize($path);
 		if (!isset($size['mime'])) {
-			return FALSE;
+			return false;
 		}
 
 		return $size['mime'];
@@ -96,7 +104,7 @@ class Image {
 	static function getType($path) {
 		$mime = static::getMime($path);
 		if (strpos($mime, 'image/') !== 0) {
-			return FALSE;
+			return false;
 		}
 
 		list($image, $type) = explode('/', $mime);
@@ -108,17 +116,17 @@ class Image {
 		$type = static::getType($path);
 		switch ($type) {
 			case 'jpeg' : return 'imagecreatefromjpeg'; break;
-			case 'gif' :  return 'imagecreatefromgif';  break;
-			case 'png' :  return 'imagecreatefrompng';  break;
+			case 'gif'  : return 'imagecreatefromgif';  break;
+			case 'png'  : return 'imagecreatefrompng';  break;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	static function getSize($path) {
 		$size = @getimagesize($path);
 		if (!$size) {
-			return FALSE;
+			return false;
 		}
 
 		return new \Katu\Types\TImageSize($size[0], $size[1]);
@@ -130,7 +138,7 @@ class Image {
 			return $size->x;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	static function getHeight($path) {
@@ -139,7 +147,7 @@ class Image {
 			return $size->y;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	static function getColorRgb($color) {
