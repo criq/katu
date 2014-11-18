@@ -66,6 +66,8 @@ class Image {
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
+				error_log($e);
+
 				return false;
 			}
 
