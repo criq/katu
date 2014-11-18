@@ -4,9 +4,9 @@ namespace Katu\Utils;
 
 class Cache {
 
-	static function get($name, $callback, $timeout = NULL, $options = array()) {
+	static function get($name, $callback, $timeout = null, $options = array()) {
 		if (isset($options['dir'])) {
-			@mkdir(dirname($dir), 0777, TRUE);
+			@mkdir(dirname($dir), 0777, true);
 			$dir = $options['dir'];
 		} else {
 			if (!defined('TMP_PATH')) {
@@ -39,16 +39,11 @@ class Cache {
 		return implode('__', (array) $name);
 	}
 
-	static function getUrl($url, $timeout = NULL, $options = array()) {
+	static function getUrl($url, $timeout = null, $options = array()) {
 		return \Katu\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
 
-			$curl = new \Curl\Curl;
-			try {
-				$curl->setOpt(CURLOPT_FOLLOWLOCATION, TRUE);
-			} catch (\ErrorException $e) {
-				// Nothing to do, open_basedir is probably set.
-			}
-			$response = $curl->get($url);
+			$url = new \Katu\Types\TUrl((string) $url);
+			$response = $url->get($curl);
 
 			if ($curl->error) {
 				throw new \Katu\Exceptions\ErrorException("Error getting URL.");
@@ -68,7 +63,7 @@ class Cache {
 			$GLOBALS['katu.cache.runtime'] = array();
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function setRuntime($name, $value) {
@@ -83,7 +78,7 @@ class Cache {
 		self::initRuntime();
 
 		if (!isset($GLOBALS['katu.cache.runtime'][$name])) {
-			return NULL;
+			return null;
 		}
 
 		return $GLOBALS['katu.cache.runtime'][$name];

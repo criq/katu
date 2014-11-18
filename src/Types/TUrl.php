@@ -21,7 +21,7 @@ class TUrl {
 	}
 
 	static function make($url, $params = array()) {
-		return new self($url . ($params ? ('?' . http_build_query($params)) : NULL));
+		return new self($url . ($params ? ('?' . http_build_query($params)) : null));
 	}
 
 	static function build($parts) {
@@ -51,7 +51,7 @@ class TUrl {
 	}
 
 	static function isValid($value) {
-		return filter_var(trim($value), FILTER_VALIDATE_URL) !== FALSE;
+		return filter_var(trim($value), FILTER_VALIDATE_URL) !== false;
 	}
 
 	public function getScheme() {
@@ -92,7 +92,7 @@ class TUrl {
 		return $parts;
 	}
 
-	public function addQueryParam($name, $value, $overwrite = TRUE) {
+	public function addQueryParam($name, $value, $overwrite = true) {
 		$parts = $this->getParts();
 
 		if (!$overwrite && isset($parts['query'][$name])) {
@@ -123,7 +123,7 @@ class TUrl {
 			return $parts['query'][$name];
 		}
 
-		return NULL;
+		return null;
 	}
 
 	public function getWithoutQuery() {
@@ -149,6 +149,28 @@ class TUrl {
 		$this->value = self::build($parts);
 
 		return $this;
+	}
+
+	public function get(&$curl) {
+		$url = $this;
+
+		$curl = new \Curl\Curl;
+		try {
+			$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+		} catch (\ErrorException $e) {
+			// Nothing to do, open_basedir is probably set.
+		}
+
+		// Bypass disabled CURLOPT_FOLLOWLOCATION.
+		while ($url) {
+			$response = $curl->get($url);
+			if (in_array($curl->http_status_code, [301, 302]) && isset($curl->response_headers['Location'])) {
+				$url = new static($curl->response_headers['Location']);
+			} else {
+				return $response;
+			}
+		}
+
 	}
 
 }
