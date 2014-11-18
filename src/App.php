@@ -93,6 +93,15 @@ class App {
 	static function run() {
 		self::init();
 
+		try {
+			if (Config::get('app', 'redirectToCanonicalHost')) {
+				$tUrl = new Types\TUrl(Config::get('app', 'baseUrl'));
+				var_dump($tUrl->getHostWithScheme()); die;
+			}
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			// Nothing to do.
+		}
+
 		$catchAll = function() {
 			$app = self::get();
 

@@ -4,10 +4,10 @@ namespace Katu;
 
 class View {
 
-	static function render($template, $data = array(), $options = array()) {
+	static function render($template, $data = [], $options = []) {
 		$app = \Katu\App::get();
 
-		$dirs = array();
+		$dirs = [];
 
 		if (isset($options['dirs']) && $options['dirs']) {
 			foreach ($options['dirs'] as $dir) {
@@ -17,17 +17,17 @@ class View {
 		}
 
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
-			$dirs = array_filter(array(
+			$dirs = array_filter([
 				realpath(BASE_DIR . '/app/Views/'),
 				realpath(Utils\FS::joinPaths(Utils\Composer::getDir(), substr(__DIR__, strcmp(Utils\Composer::getDir(), __DIR__)), 'Views')),
-			));
+			]);
 		}
 
 		$loader = new \Twig_Loader_Filesystem($dirs);
-		$twig   = new \Twig_Environment($loader, array(
+		$twig   = new \Twig_Environment($loader, [
 			'cache'       => Utils\FS::joinPaths(TMP_PATH, 'twig'),
 			'auto_reload' => TRUE,
-		));
+		]);
 
 		// Filters.
 
@@ -40,11 +40,15 @@ class View {
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnail', function($uri, $size = 640, $quality = 100) {
-			return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality, array('format' => 'square'));
+			return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality, ['format' => 'square']);
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnailPath', function($uri, $size = 640, $quality = 100) {
 			return \Katu\Utils\Image::getThumbnailPath($uri, $size, $quality);
+		}));
+
+		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnailPath', function($uri, $size = 640, $quality = 100) {
+			return \Katu\Utils\Image::getThumbnailPath($uri, $size, $quality, ['format' => 'square']);
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('imageWidthAndHeightAttributes', function($path) {
@@ -75,7 +79,7 @@ class View {
 			return FALSE;
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('shorten', function($string, $length, $options = array()) {
+		$twig->addFilter(new \Twig_SimpleFilter('shorten', function($string, $length, $options = []) {
 			$shorter = substr($string, 0, $length);
 
 			return $shorter;
@@ -94,27 +98,27 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
-			return call_user_func_array(array('\Katu\Utils\Url', 'getFor'), func_get_args());
+			return call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCurrentUrl', function() {
-			return call_user_func_array(array('\Katu\Utils\Url', 'getCurrent'), func_get_args());
+			return call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {
-			return call_user_func_array(array('\Katu\Config', 'get'), func_get_args());
+			return call_user_func_array(['\Katu\Config', 'get'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCookie', function() {
-			return call_user_func_array(array('\Katu\Cookie', 'get'), func_get_args());
+			return call_user_func_array(['\Katu\Cookie', 'get'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getSession', function() {
-			return call_user_func_array(array('\Katu\Session', 'get'), func_get_args());
+			return call_user_func_array(['\Katu\Session', 'get'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFlash', function() {
-			return call_user_func_array(array('\Katu\Flash', 'get'), func_get_args());
+			return call_user_func_array(['\Katu\Flash', 'get'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getPages', function() {
@@ -148,6 +152,7 @@ class View {
 			\App\Extensions\View::extendTwig($twig);
 		}
 
+		$data['_site']['baseDir'] = BASE_DIR;
 		$data['_site']['baseUrl'] = Config::getApp('baseUrl');
 		$data['_site']['apiUrl']  = Config::getApp('apiUrl');
 		try {
@@ -185,15 +190,15 @@ class View {
 		return trim($twig->render($template . '.twig', $data));
 	}
 
-	static function renderFromDir($dir, $template, $data = array()) {
-		return self::render($template, $data, array(
-			'dirs' => array(
+	static function renderFromDir($dir, $template, $data = []) {
+		return self::render($template, $data, [
+			'dirs' => [
 				$dir,
-			),
-		));
+			],
+		]);
 	}
 
-	static function renderCondensed($template, $data = array()) {
+	static function renderCondensed($template, $data = []) {
 		$src = self::render($template, $data);
 
 		return preg_replace('#[\v\t]#', NULL, $src);

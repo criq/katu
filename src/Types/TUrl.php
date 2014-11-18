@@ -28,7 +28,19 @@ class TUrl {
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== FALSE;
 	}
 
-	public function getHostWithProtocol() {
+	public function getScheme() {
+		$parts = $this->getParts();
+
+		return $parts['scheme'];
+	}
+
+	public function getHost() {
+		$parts = $this->getParts();
+
+		return $parts['host'];
+	}
+
+	public function getHostWithScheme() {
 		$parts = $this->getParts();
 
 		return $parts['scheme'] . '://' . $parts['host'];

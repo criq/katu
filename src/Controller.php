@@ -6,7 +6,7 @@ use \Katu\App;
 
 class Controller {
 
-	static $data = array();
+	static $data = [];
 
 	static function redirect($url, $code = 302) {
 		try {
@@ -20,7 +20,7 @@ class Controller {
 		}
 	}
 
-	static function render($template, $code = 200, $headers = array()) {
+	static function render($template, $code = 200, $headers = []) {
 		$app = App::get();
 
 		try {
