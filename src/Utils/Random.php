@@ -11,6 +11,7 @@ class Random {
 	const ALNUM_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	const ALNUM_LOWER = 'abcdefghijklmnopqrstuvwxyz0123456789';
 	const ALNUM = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	const ALNUM_SPECIAL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$-_.+!*()';
 
 	const NUM = '0123456789';
 
