@@ -2,7 +2,7 @@
 
 namespace Katu\Pdo;
 
-class Table {
+class Table extends \Sexy\Expression {
 
 	public $pdo;
 	public $name;
@@ -16,7 +16,7 @@ class Table {
 		return $this->getSql();
 	}
 
-	public function getSql() {
+	public function getSql(&$context = []) {
 		return $this->name;
 	}
 

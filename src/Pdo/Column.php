@@ -2,7 +2,7 @@
 
 namespace Katu\Pdo;
 
-class Column {
+class Column extends \Sexy\Expression {
 
 	public $table;
 	public $name;
@@ -16,12 +16,16 @@ class Column {
 		return $this->getSql();
 	}
 
-	public function getSql() {
-		return $this->table->getSql() . '.' . $this->name;
+	public function getSql(&$context = []) {
+		return $this->table->getSql() . "." . $this->name;
 	}
 
 	public function getProperties() {
 		return new ColumnProperties($this->table->getColumnDescription($this->name));
+	}
+
+	public function getTable() {
+		return $this->table;
 	}
 
 }
