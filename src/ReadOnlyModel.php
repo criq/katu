@@ -143,7 +143,7 @@ class ReadOnlyModel {
 			if ($value instanceof \Sexy\Expression) {
 				$sql->where($value);
 			} else {
-				$sql->where(new \Sexy\CmpEq(static::getColumn($name), $value));
+				$sql->whereEq(static::getColumn($name), $value);
 			}
 		}
 
@@ -245,10 +245,10 @@ class ReadOnlyModel {
 	public function getImageFileAttachments($properties = array(), $options = array()) {
 		$sql = (new Select(FileAttachment::getTable()))
 			->from(FileAttachment::getTable())
-			->join(File::getColumn('id'), FileAttachment::getColumn('fileId'))
-			->where(new CmpIn(File::getColumn('type'), array('image/jpeg', 'image/png', 'image/gif')))
-			->where(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
-			->where(FileAttachment::getColumn('objectId'), (int) $this->getId())
+			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
+			->whereIn(File::getColumn('type'), array('image/jpeg', 'image/png', 'image/gif'))
+			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
+			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
 			;
 
 		$sql->setOptions($options);
