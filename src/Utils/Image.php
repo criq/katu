@@ -6,12 +6,22 @@ class Image {
 
 	const THUMBNAIL_DIR = 'image/thumbnails';
 
-	static function getThumbnailFilename($uri, $size, $quality = 100, $options = array()) {
-		if ($uri instanceof \App\Models\File) {
-			$uri = $uri->getPath();
-		} elseif ($uri instanceof \App\Models\FileAttachment) {
-			$uri = $uri->getFile()->getPath();
+	static function getValidSource($source) {
+		if ($source instanceof \App\Models\File) {
+			$source = $source->getPath();
+		} elseif ($source instanceof \App\Models\FileAttachment) {
+			$source = $source->getFile()->getPath();
+		} elseif ($source instanceof \Katu\ReadOnlyModel) {
+			$source = $source->getImagePath();
 		}
+
+		return $source;
+	}
+
+	static function getThumbnailFilename($uri, $size, $quality = 100, $options = array()) {
+		$uri = static::getValidSource($uri);
+
+		$pathinfo = pathinfo($uri);
 
 		$suffixes = array();
 		foreach ($options as $key => $value) {
@@ -19,7 +29,7 @@ class Image {
 			$suffixes[] = $value;
 		}
 
-		return implode('_', array_filter(array_merge(array(sha1($uri), $size, $quality), $suffixes))) . '.jpg';
+		return implode('_', array_filter(array_merge(array(sha1($uri), $size, $quality), $suffixes))) . (isset($pathinfo['extension']) ? '.' . strtolower($pathinfo['extension']) : null);
 	}
 
 	static function getDirName() {
@@ -38,8 +48,9 @@ class Image {
 	}
 
 	static function getThumbnailUrl($uri, $size, $quality = 100, $options = array()) {
+		$thumbnailPath = static::getThumbnailPath($uri, $size, $quality, $options);
 		try {
-			static::makeThumbnail($uri, static::getThumbnailPath($uri, $size, $quality, $options), $size, $quality, $options);
+			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
 		} catch (\Exception $e) {
 			return false;
 		}
@@ -63,13 +74,7 @@ class Image {
 
 			@mkdir(dirname($destination), 0777, true);
 
-			if ($source instanceof \App\Models\FileAttachment) {
-				$source = $source->getFile()->getPath();
-			} elseif ($source instanceof \App\Models\File) {
-				$source = $source->getPath();
-			} elseif ($source instanceof \Katu\ReadOnlyModel) {
-				$source = $source->getImagePath();
-			}
+			$source = static::getValidSource($source);
 
 			try {
 				$image = \Intervention\Image\Image::make($source);

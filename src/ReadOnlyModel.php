@@ -6,6 +6,10 @@ use \App\Models\File;
 use \App\Models\FileAttachment;
 use \Sexy\Select;
 use \Sexy\CmpIn;
+use \Sexy\OrderBy;
+use \Sexy\Page;
+use \Sexy\Keyword;
+use \Sexy\Expression;
 
 class ReadOnlyModel {
 
@@ -76,7 +80,7 @@ class ReadOnlyModel {
 		// Sql expression.
 		if (
 			count(func_get_args()) == 1
-			&& func_get_arg(0) instanceof \Sexy\Expression
+			&& func_get_arg(0) instanceof Expression
 		) {
 
 			$query = static::getPdo()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
@@ -140,7 +144,7 @@ class ReadOnlyModel {
 		$sql->from(static::getTable());
 
 		foreach ($params as $name => $value) {
-			if ($value instanceof \Sexy\Expression) {
+			if ($value instanceof Expression) {
 				$sql->where($value);
 			} else {
 				$sql->whereEq(static::getColumn($name), $value);
@@ -157,7 +161,7 @@ class ReadOnlyModel {
 	}
 
 	static function getOneBy() {
-		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new \Sexy\Page(1, 1)))))->getOne();
+		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Page(1, 1)))))->getOne();
 	}
 
 	static function getAll($options = array()) {
@@ -249,6 +253,7 @@ class ReadOnlyModel {
 			->whereIn(File::getColumn('type'), array('image/jpeg', 'image/png', 'image/gif'))
 			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
 			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
+			->orderBy(new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('DESC')))
 			;
 
 		$sql->setOptions($options);
