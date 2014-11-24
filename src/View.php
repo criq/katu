@@ -85,6 +85,10 @@ class View {
 			return $shorter;
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('asArray', function($variable) {
+			return (array) $variable;
+		}));
+
 		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
