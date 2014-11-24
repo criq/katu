@@ -42,6 +42,14 @@ class App {
 		return Config::get('app', 'slim', 'mode') == 'development';
 	}
 
+	static function isTest() {
+		return Config::get('app', 'slim', 'mode') == 'testing';
+	}
+
+	static function isProd() {
+		return Config::get('app', 'slim', 'mode') == 'production';
+	}
+
 	static function get() {
 		$app = \Slim\Slim::getInstance();
 		if (!$app) {

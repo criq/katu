@@ -18,12 +18,12 @@ class Image {
 		return $source;
 	}
 
-	static function getThumbnailFilename($uri, $size, $quality = 100, $options = array()) {
+	static function getThumbnailFilename($uri, $size, $quality = 100, $options = []) {
 		$uri = static::getValidSource($uri);
 
 		$pathinfo = pathinfo($uri);
 
-		$suffixes = array();
+		$suffixes = [];
 		foreach ($options as $key => $value) {
 			$suffixes[] = $key;
 			$suffixes[] = $value;
@@ -47,7 +47,7 @@ class Image {
 		return realpath($path);
 	}
 
-	static function getThumbnailUrl($uri, $size, $quality = 100, $options = array()) {
+	static function getThumbnailUrl($uri, $size, $quality = 100, $options = []) {
 		$thumbnailPath = static::getThumbnailPath($uri, $size, $quality, $options);
 		try {
 			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
@@ -58,7 +58,7 @@ class Image {
 		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), \Katu\Config::get('app', 'tmp', 'publicUrl'), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
 	}
 
-	static function getThumbnailPath($uri, $size, $quality = 100, $options = array()) {
+	static function getThumbnailPath($uri, $size, $quality = 100, $options = []) {
 		$thumbnailPath = \Katu\Utils\FS::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
 		try {
 			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
@@ -69,7 +69,7 @@ class Image {
 		return $thumbnailPath;
 	}
 
-	static function makeThumbnail($source, $destination, $size, $quality = 100, $options = array()) {
+	static function makeThumbnail($source, $destination, $size, $quality = 100, $options = []) {
 		if (!file_exists($destination)) {
 
 			@mkdir(dirname($destination), 0777, true);
