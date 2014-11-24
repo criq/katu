@@ -31,7 +31,7 @@ class Email {
 		try {
 			$fakeEmailAddress = \Katu\Config::get('app', 'email', 'useFakeEmailAddress');
 			list($username, $domain) = explode('@', $fakeEmailAddress);
-			return $username . '+' . md5($emailAddress) . '@' . $domain;
+			return $username . '+' . substr(md5($emailAddress), 0, 8) . '@' . $domain;
 		} catch (\Exception $e) {
 			return $emailAddress;
 		}
@@ -211,7 +211,6 @@ class Email {
 	}
 
 	public function sendWithMandrillThroughApi($mandrillApi, $message = []) {
-		var_dump($this); die;
 		if ($this->template) {
 			return $mandrillApi->messages->sendTemplate($this->template, $this->getContentForMandrill(), $this->getMessageForMandrill($message));
 		} else {
