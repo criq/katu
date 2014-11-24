@@ -115,7 +115,7 @@ class ReadOnlyModel {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getId() {
@@ -189,7 +189,7 @@ class ReadOnlyModel {
 
 	static function getFromAssoc($array) {
 		if (!$array) {
-			return FALSE;
+			return false;
 		}
 
 		$class = static::getClass();
@@ -211,7 +211,7 @@ class ReadOnlyModel {
 	public function getBoundObject($model) {
 		$nsModel = '\\App\\Models\\' . $model;
 		if (!class_exists($nsModel)) {
-			return FALSE;
+			return false;
 		}
 
 		foreach (static::getIdProperties() as $property) {
@@ -224,7 +224,7 @@ class ReadOnlyModel {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	static function getPropertyName($property) {
@@ -236,7 +236,7 @@ class ReadOnlyModel {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getFileAttachments($properties = array(), $options = array()) {
@@ -267,7 +267,7 @@ class ReadOnlyModel {
 			return $imageAttachments[0]->getFile();
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getImagePath() {
@@ -276,7 +276,7 @@ class ReadOnlyModel {
 			return $file->getPath();
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function hasImage() {
