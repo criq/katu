@@ -16,22 +16,36 @@ class Geocode {
 				$componentArray[] = implode(':', [$componentName, $componentValue]);
 			}
 
-			$url = TUrl::make('https://maps.googleapis.com/maps/api/geocode/json', [
-				'address'    => $address,
-				'components' => implode('|', $componentArray),
-				'sensor'     => 'false',
-				'language'   => $language,
-				'key'        => Config::get('google', 'geocode', 'api', 'key'),
-			]);
-
-			$curl = new \Curl\Curl;
-			$response = $curl->get((string) $url);
-
-			if (!isset($response->status) || (isset($response->status) && $response->status != 'OK')) {
-				throw new \Katu\Exceptions\DoNotCacheException($response);
+			try {
+				$apiKeys = Config::get('google', 'geocode', 'api', 'keys');
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
+				$apiKeys = [Config::get('google', 'geocode', 'api', 'key')];
 			}
 
-			return $response;
+			foreach ($apiKeys as $apiKey) {
+
+				$url = TUrl::make('https://maps.googleapis.com/maps/api/geocode/json', [
+					'address'    => $address,
+					'components' => implode('|', $componentArray),
+					'sensor'     => 'false',
+					'language'   => $language,
+					'key'        => $apiKey,
+				]);
+
+				$curl = new \Curl\Curl;
+				$response = $curl->get((string) $url);
+
+				if (isset($response->status) && $response->status == 'OVER_QUERY_LIMIT') {
+					continue;
+				}
+
+				if (isset($response->status) && in_array($response->status, ['OK', 'ZERO_RESULTS'])) {
+					return $response;
+				}
+
+			}
+
+			throw new \Katu\Exceptions\DoNotCacheException(isset($response) ? $response : null);
 
 		});
 

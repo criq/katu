@@ -36,8 +36,10 @@ class Geocode extends \Katu\Model {
 				'country'      => (string) $geocodeAddress->country,
 				'zip'          => (string) $geocodeAddress->zip,
 				'formatted'    => (string) $geocodeAddress->formatted,
-				'lat'          => (string) $geocodeAddress->latlng->lat,
-				'lng'          => (string) $geocodeAddress->latlng->lng,
+				'lat'          => (float)  $geocodeAddress->latlng->lat->getDeg(),
+				'lng'          => (float)  $geocodeAddress->latlng->lng->getDeg(),
+				'latRad'       => (float)  $geocodeAddress->latlng->lat->getRad(),
+				'lngRad'       => (float)  $geocodeAddress->latlng->lng->getRad(),
 			));
 		}
 
