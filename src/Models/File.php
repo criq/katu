@@ -45,6 +45,18 @@ class File extends \Katu\Model {
 		return TRUE;
 	}
 
+	public function delete() {
+		foreach (\App\Models\FileAttachment::getBy([
+			'fileId' => $this,
+		]) as $fileAttachment) {
+			$fileAttachment->delete();
+		}
+
+		@unlink($this->getPath());
+
+		return parent::delete();
+	}
+
 	static function getDirName() {
 		return \Katu\Config::get('app', 'files', 'dir');
 	}
