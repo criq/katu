@@ -89,6 +89,10 @@ class View {
 			return (array) $variable;
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('joinInSentence', function($list, $delimiter, $lastDelimiter) {
+			return (new \Katu\Types\TArray($list))->implodeInSentence($delimiter, $lastDelimiter);
+		}));
+
 		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
