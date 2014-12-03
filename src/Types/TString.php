@@ -43,4 +43,17 @@ class TString {
 		return (float) floatval(trim(strtr($this->value, ',', '.')));
 	}
 
+	public function getAsArray() {
+		$chars = [];
+		for ($i = 0; $i < mb_strlen($this->value); $i++) {
+			$chars[] = mb_substr($this->value, $i, 1);
+		}
+
+		return $chars;
+	}
+
+	public function getWbr() {
+		return implode('<wbr />', $this->getAsArray());
+	}
+
 }
