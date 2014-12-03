@@ -29,7 +29,13 @@ class Image {
 			$suffixes[] = $value;
 		}
 
-		return implode('_', array_filter(array_merge(array(sha1($uri), $size, $quality), $suffixes))) . (isset($pathinfo['extension']) ? '.' . strtolower($pathinfo['extension']) : null);
+		if (isset($options['extension'])) {
+			$extension = '.' . ltrim($options['extension'], '.');
+		} else {
+			$extension = (isset($pathinfo['extension']) ? '.' . strtolower($pathinfo['extension']) : null);
+		}
+
+		return implode('_', array_filter(array_merge(array(sha1($uri), $size, $quality), $suffixes))) . $extension;
 	}
 
 	static function getDirName() {

@@ -49,6 +49,10 @@ class User extends \Katu\Model {
 		));
 	}
 
+	public function hasPassword() {
+		return (bool) $this->password;
+	}
+
 	public function hasEmailAddress() {
 		return (bool) $this->emailAddressId;
 	}
@@ -68,13 +72,19 @@ class User extends \Katu\Model {
 
 		$this->update('emailAddressId', $emailAddress->getId());
 
-		return TRUE;
+		return true;
+	}
+
+	public function setPlainPassword($password, $hash = 'sha512') {
+		$this->update('password', \Katu\Utils\Password::encode($hash, $password));
+
+		return true;
 	}
 
 	public function setName($name) {
 		$this->update('name', trim($name));
 
-		return TRUE;
+		return true;
 	}
 
 	public function login() {
@@ -107,7 +117,7 @@ class User extends \Katu\Model {
 			$this->addRole($role);
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function hasRole($role) {
@@ -124,7 +134,7 @@ class User extends \Katu\Model {
 			$userRole->delete();
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function addUserPermission($permission) {
@@ -136,7 +146,7 @@ class User extends \Katu\Model {
 			$this->addUserPermission($permission);
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function deleteAllUserPermissions() {
@@ -146,13 +156,13 @@ class User extends \Katu\Model {
 			$userPermission->delete();
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function currentHasPermission($permission) {
 		$user = static::getCurrent();
 		if (!$user) {
-			return FALSE;
+			return false;
 		}
 
 		return $user->hasPermission($permission);
@@ -169,7 +179,7 @@ class User extends \Katu\Model {
 			return static::getPdo()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getUserPermissions() {
@@ -179,7 +189,7 @@ class User extends \Katu\Model {
 			))->getPropertyValues('permission');
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getAllPermissions() {

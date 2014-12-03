@@ -6,14 +6,14 @@ class UserLoginToken extends \Katu\Model {
 
 	const TABLE = 'user_login_tokens';
 
-	static function create($user) {
+	static function create($user, $timeout = 86400) {
 		if (!static::checkCrudParams($user)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
-			'timeExpires' => (string) (\Katu\Utils\DateTime::get('+ 1 hour')->getDbDatetimeFormat()),
+			'timeExpires' => (string) (\Katu\Utils\DateTime::get('+ ' . $timeout . ' seconds')->getDbDatetimeFormat()),
 			'userId'      => (int)    ($user->id),
 			'token'       => (string) (\Katu\Utils\Random::getString(static::getColumn('token')->getProperties()->length)),
 		));
