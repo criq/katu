@@ -28,12 +28,16 @@ class Email {
 	}
 
 	static function resolveEmailAddress($emailAddress) {
+		$emailAddresses = [];
 		try {
-			$fakeEmailAddress = \Katu\Config::get('app', 'email', 'useFakeEmailAddress');
-			list($username, $domain) = explode('@', $fakeEmailAddress);
-			return $username . '+' . substr(md5($emailAddress), 0, 8) . '@' . $domain;
+			$fakeEmailAddresses = (array) \Katu\Config::get('app', 'email', 'useFakeEmailAddress');
+			foreach ($fakeEmailAddresses as $fakeEmailAddress) {
+				list($username, $domain) = explode('@', $fakeEmailAddress);
+				$emailAddresses[] = $username . '+' . substr(md5($emailAddress), 0, 8) . '@' . $domain;
+			}
+			return $emailAddresses;
 		} catch (\Exception $e) {
-			return $emailAddress;
+			return $emailAddresses;
 		}
 	}
 
@@ -68,7 +72,8 @@ class Email {
 	}
 
 	public function setFromEmailAddress($fromEmailAddress) {
-		$this->fromEmailAddress = static::resolveEmailAddress($fromEmailAddress);
+		$emailAddresses = static::resolveEmailAddress($fromEmailAddress);
+		$this->fromEmailAddress = $emailAddresses[0];
 
 		return $this;
 	}
@@ -80,20 +85,24 @@ class Email {
 	}
 
 	public function setFrom($fromEmailAddress, $fromName = null) {
-		$this->setFromEmailAddress(static::resolveEmailAddress($fromEmailAddress));
+		$this->setFromEmailAddress($fromEmailAddress);
 		$this->setFromName($fromName);
 
 		return $this;
 	}
 
 	public function addTo($toEmailAddress, $toName = null) {
-		$this->to[static::resolveEmailAddress($toEmailAddress)] = $toName;
+		foreach (static::resolveEmailAddress($toEmailAddress) as $emailAddress) {
+			$this->to[$emailAddress] = $toName;
+		}
 
 		return $this;
 	}
 
 	public function addCc($toEmailAddress, $toName = null) {
-		$this->cc[static::resolveEmailAddress($toEmailAddress)] = $toName;
+		foreach (static::resolveEmailAddress($toEmailAddress) as $emailAddress) {
+			$this->cc[$emailAddress] = $toName;
+		}
 
 		return $this;
 	}
@@ -105,7 +114,8 @@ class Email {
 	}
 
 	public function setReplyTo($emailAddress) {
-		$this->addHeader('Reply-To', static::resolveEmailAddress($emailAddress));
+		$emailAddresses = static::resolveEmailAddress($emailAddress);
+		$this->addHeader('Reply-To', $emailAddresses[0]);
 
 		return $this;
 	}
@@ -129,7 +139,9 @@ class Email {
 	}
 
 	public function setRecipientVariable($emailAddress, $name, $value) {
-		$this->recipientVariables[static::resolveEmailAddress($emailAddress)][$name] = $value;
+		foreach (static::resolveEmailAddress($emailAddress) as $emailAddress) {
+			$this->recipientVariables[$emailAddress][$name] = $value;
+		}
 
 		return $this;
 	}
