@@ -13,7 +13,19 @@ class DateTime extends \DateTime {
 	}
 
 	static function createFromDateTime($dateTime) {
-		return new static('@' . $dateTime->getTimestamp(), $dateTime->getTimezone());
+		if ($dateTime) {
+			return new static('@' . $dateTime->getTimestamp(), $dateTime->getTimezone());
+		} else {
+			return false;
+		}
+	}
+
+	static function createFromFormat($format, $string, $dateTimeZone = null) {
+		if ($dateTimeZone) {
+			return static::createFromDateTime(\DateTime::createFromFormat($format, $string, $dateTimeZone));
+		} else {
+			return static::createFromDateTime(\DateTime::createFromFormat($format, $string));
+		}
 	}
 
 	public function toLocalTimezone() {
