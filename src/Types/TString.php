@@ -30,13 +30,15 @@ class TString {
 		return $this->getNumberOfWords() >= $n;
 	}
 
-	public function getForUrl($options = array()) {
-		$options = array_merge(array(
+	public function getForUrl($options = []) {
+		$options = array_merge([
 			'delimiter' => '-',
-			'lowercase' => TRUE,
-		), $options);
+			'lowercase' => true,
+		], $options);
 
-		return \URLify::filter($this->value, isset($options['maxLength']) ? $options['maxLength'] : 255, isset($options['language']) ? $options['language'] : NULL);
+		\URLify::$remove_list = [];
+
+		return \URLify::filter($this->value, isset($options['maxLength']) ? $options['maxLength'] : 255, isset($options['language']) ? $options['language'] : null);
 	}
 
 	public function getAsFloat() {

@@ -75,4 +75,8 @@ class Geocode extends \Katu\Model {
 		return sha1(json_encode($array));
 	}
 
+	public function hasPropertyAddress() {
+		return ($this->number || $this->premise || $this->street);
+	}
+
 }
