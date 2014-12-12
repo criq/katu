@@ -21,7 +21,11 @@ class ExceptionCollection extends Exception implements \Iterator {
 	}
 
 	public function hasExceptions() {
-		return (bool) (count($this->exceptionCollection));
+		return (bool) $this->countExceptions();
+	}
+
+	public function countExceptions() {
+		return (int) (count($this->exceptionCollection));
 	}
 
 	public function rewind() {

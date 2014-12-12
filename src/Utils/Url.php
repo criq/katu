@@ -27,7 +27,7 @@ class Url {
 	static function getFor($handle, $args = array(), $params = array()) {
 		$app = App::get();
 
-		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', $args))), $params);
+		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', (array) $args))), $params);
 	}
 
 	static function getReturnUrl($defaultRoute, $defaultParams = array()) {

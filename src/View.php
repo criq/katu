@@ -155,7 +155,12 @@ class View {
 			return Utils\CSRF::getFreshToken($params);
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('blabla', function($sentences = 10) {
+			return implode(' ', (new \Katu\Types\TArray(\Katu\Utils\Blabot::getList()))->getRandomItems($sentences));
+		}));
+
 		// Extend Twig.
+
 		if (class_exists('\App\Extensions\View') && method_exists('\App\Extensions\View', 'extendTwig')) {
 			\App\Extensions\View::extendTwig($twig);
 		}

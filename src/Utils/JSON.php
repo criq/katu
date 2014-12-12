@@ -10,14 +10,14 @@ class JSON {
 		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
 		$app->response->setBody(self::encode($var));
 
-		return TRUE;
+		return true;
 	}
 
 	static function getEncodeBitmask() {
 		return
-			  (defined('JSON_PRETTY_PRINT')      ? JSON_PRETTY_PRINT      : NULL)
-			| (defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : NULL)
-			| (defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : NULL)
+			  (defined('JSON_PRETTY_PRINT')      ? JSON_PRETTY_PRINT      : null)
+			| (defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : null)
+			| (defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : null)
 		;
 	}
 
@@ -30,11 +30,11 @@ class JSON {
 	}
 
 	static function decodeAsObjects($var) {
-		return @json_decode($var, FALSE);
+		return @json_decode($var, false);
 	}
 
 	static function decodeAsArray($var) {
-		return @json_decode($var, TRUE);
+		return @json_decode($var, true);
 	}
 
 }

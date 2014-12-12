@@ -4,28 +4,30 @@ namespace Katu;
 
 class Api {
 
-	static function success($res = NULL) {
+	static function success($res = null) {
 		$app = App::get();
-
 		$app->response->setStatus(200);
 
 		return Utils\JSON::respond($res);
 	}
 
-	static function error($error = NULL, $code = NULL) {
-		$app = App::get();
-
-		$app->response->setStatus(400);
-
-		$res = array(
-			'error' => array(
+	static function error($error = null, $code = null) {
+		$res = [
+			'error' => [
 				'message' => $error,
-			),
-		);
+			],
+		];
 
 		if ($code) {
 			$res['error']['code'] = $code;
 		}
+
+		return static::errors($res);
+	}
+
+	static function errors($res = []) {
+		$app = App::get();
+		$app->response->setStatus(400);
 
 		return Utils\JSON::respond($res);
 	}
@@ -34,11 +36,11 @@ class Api {
 		return Utils\Url::joinPaths(Config::get('app', 'apiUrl'), $endpoint);
 	}
 
-	static function get($endpoint, $params = array(), &$curl = NULL) {
+	static function get($endpoint, $params = [], &$curl = null) {
 		return \Amiko\Amiko::get(static::getUrl($endpoint), $params, $curl);
 	}
 
-	static function post($endpoint, $params = array(), &$curl = NULL) {
+	static function post($endpoint, $params = [], &$curl = null) {
 		return \Amiko\Amiko::post(static::getUrl($endpoint), $params, $curl);
 	}
 
