@@ -4,22 +4,14 @@ namespace Katu\Utils;
 
 class Cache {
 
-	static function get($name, $callback, $timeout = null, $options = array()) {
-		if (isset($options['dir'])) {
-			@mkdir(dirname($dir), 0777, true);
-			$dir = $options['dir'];
-		} else {
-			if (!defined('TMP_PATH')) {
-				throw new \Exception("Undefined TMP_PATH.");
-			}
-			$dir = TMP_PATH;
-		}
+	static function get($name, $callback, $timeout = null, $options = []) {
+		$cacheName = self::getCacheName($name);
 
 		$cache = new \Gregwar\Cache\Cache;
-		$cache->setCacheDirectory($dir);
+		$cache->setCacheDirectory(static::getCacheDir($cacheName));
 		$cache->setPrefixSize(0);
 
-		$opts = array();
+		$opts = [];
 		if (isset($timeout) && !is_null($timeout)) {
 			$opts['max-age'] = $timeout;
 		}
@@ -29,18 +21,33 @@ class Cache {
 		};
 
 		try {
-			return unserialize(gzuncompress($cache->getOrCreate(self::getCacheName($name), $opts, $callback)));
+			return unserialize(gzuncompress($cache->getOrCreate(static::getCacheFile($cacheName), $opts, $callback)));
 		} catch (\Katu\Exceptions\DoNotCacheException $e) {
 			return $e->data;
 		}
 	}
 
 	static function getCacheName($name) {
-		return implode('__', (array) $name);
+		$path = implode('/', array_map(function($i) {
+			if (is_string($i) || is_int($i) || is_float($i) || is_bool($i)) {
+				return (string) $i;
+			}
+			return sha1(serialize($i));
+		}, (array) $name));
+
+		return $path;
 	}
 
-	static function getUrl($url, $timeout = null, $options = array()) {
-		return \Katu\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
+	static function getCacheDir($cacheName) {
+		return TMP_PATH . '/' . dirname($cacheName);
+	}
+
+	static function getCacheFile($cacheName) {
+		return basename($cacheName);
+	}
+
+	static function getUrl($url, $timeout = null, $options = []) {
+		return \Katu\Utils\Cache::get(['url', sha1($url)], function() use($url) {
 
 			$url = new \Katu\Types\TUrl((string) $url);
 			$response = $url->get($curl);
@@ -60,7 +67,7 @@ class Cache {
 
 	static function initRuntime() {
 		if (!isset($GLOBALS['katu.cache.runtime'])) {
-			$GLOBALS['katu.cache.runtime'] = array();
+			$GLOBALS['katu.cache.runtime'] = [];
 		}
 
 		return true;
