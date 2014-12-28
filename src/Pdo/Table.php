@@ -8,7 +8,7 @@ class Table extends \Sexy\Expression {
 	public $name;
 
 	public function __construct($pdo, $name) {
-		$this->pdo = $pdo;
+		$this->pdo  = $pdo;
 		$this->name = $name;
 	}
 
@@ -17,7 +17,7 @@ class Table extends \Sexy\Expression {
 	}
 
 	public function getSql(&$context = []) {
-		return $this->name;
+		return implode('.', [$this->pdo->config->database, $this->name]);
 	}
 
 	public function getColumnDescriptions() {

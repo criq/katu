@@ -8,6 +8,7 @@ use \Katu\Config;
 class Connection {
 
 	public $name;
+	public $config;
 	public $connection;
 
 	static $connections = array();
@@ -16,7 +17,7 @@ class Connection {
 		$this->name = $name;
 
 		try {
-			$config = Config::getDB($name);
+			$this->config = Config::getDB($name);
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			throw new \Katu\Exceptions\MissingPdoConfigException("Missing PDO config for instance " . $name . ".");
 		}
@@ -24,7 +25,7 @@ class Connection {
 		// Try to connect.
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->connection = new PDO($config->getPdoDSN(), $config->user, $config->password, array(
+				$this->connection = new PDO($this->config->getPdoDSN(), $this->config->user, $this->config->password, array(
 					PDO::ATTR_PERSISTENT => true,
 				));
 				break;
