@@ -35,7 +35,7 @@ class App {
 		// Default content-type header for debugging, will be probably overwritten by app.
 		header('Content-Type: text/html; charset=UTF-8');
 
-		return TRUE;
+		return true;
 	}
 
 	static function isDev() {
