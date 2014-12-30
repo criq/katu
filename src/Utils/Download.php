@@ -4,7 +4,7 @@ namespace Katu\Utils;
 
 class Download {
 
-	static function respond($filename, $saveAs = NULL, $disposition = 'attachment') {
+	static function respond($filename, $saveAs = null, $disposition = 'attachment') {
 		$app = \Katu\App::get();
 
 		if (!$saveAs) {

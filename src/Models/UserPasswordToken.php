@@ -24,7 +24,7 @@ class UserPasswordToken extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid user.", 'user');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function isValid() {
@@ -35,7 +35,7 @@ class UserPasswordToken extends \Katu\Model {
 		$this->update('timeUsed', \Katu\Utils\DateTime::get()->getDbDatetimeFormat());
 		$this->save();
 
-		return TRUE;
+		return true;
 	}
 
 }

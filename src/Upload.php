@@ -70,7 +70,7 @@ class Upload {
 
 			// 0
 			case UPLOAD_ERR_OK :
-				return FALSE;
+				return false;
 			break;
 
 			// 1

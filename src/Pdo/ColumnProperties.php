@@ -50,7 +50,7 @@ class ColumnProperties {
 		$this->isPrimary  = (bool) ($description['Key'] == 'PRI');
 		$this->isUnique   = (bool) ($description['Key'] == 'UNI');
 		$this->isMulti    = (bool) ($description['Key'] == 'MUL');
-		$this->isUnsigned = (bool) (strpos($description['Type'], 'unsigned') !== FALSE);
+		$this->isUnsigned = (bool) (strpos($description['Type'], 'unsigned') !== false);
 		$this->isAi       = (bool) ($description['Extra'] == 'auto_increment');
 	}
 

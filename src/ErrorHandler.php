@@ -19,17 +19,17 @@ class ErrorHandler {
 			define('ERROR_LOG', Utils\FS::joinPaths(LOG_PATH, static::ERROR_LOG));
 		}
 
-		ini_set('display_errors', FALSE);
+		ini_set('display_errors', false);
 		ini_set('error_log', ERROR_LOG);
 
-		set_error_handler(function ($message, $level = 0, $file = NULL, $line = NULL) {
+		set_error_handler(function ($message, $level = 0, $file = null, $line = null) {
 			throw new \ErrorException($message, 0, $level, $file, $line);
 		});
 
 		set_exception_handler(function ($exception) {
 			static::handle($exception);
 
-			return TRUE;
+			return true;
 		});
 
 		register_shutdown_function(function () {
@@ -39,10 +39,10 @@ class ErrorHandler {
 			}
 		});
 
-		return TRUE;
+		return true;
 	}
 
-	static function log($message, $level = 0, $file = NULL, $line = NULL) {
+	static function log($message, $level = 0, $file = null, $line = null) {
 		$log = new \Monolog\Logger('KatuLogger');
 		$log->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
 		$log->addError($message, array(
@@ -51,7 +51,7 @@ class ErrorHandler {
 			'line'  => $line,
 		));
 
-		return TRUE;
+		return true;
 	}
 
 	static function handle($e) {

@@ -40,7 +40,7 @@ class RolePermission extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid permission.", 'permission');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function isValidPermission($permission) {

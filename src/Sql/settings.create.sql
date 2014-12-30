@@ -1,12 +1,12 @@
 CREATE TABLE `settings` (
-	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-	`timeCreated` datetime NOT NULL,
-	`timeEdited` datetime NOT NULL,
-	`creatorId` int(11) unsigned NOT NULL,
-	`name` varchar(255) NOT NULL DEFAULT '',
-	`description` text NOT NULL,
-	`value` longtext NOT NULL,
-	`isSystem` enum('0','1') NOT NULL DEFAULT '0',
+	`id` int(11) unsigned NOT null AUTO_INCREMENT,
+	`timeCreated` datetime NOT null,
+	`timeEdited` datetime NOT null,
+	`creatorId` int(11) unsigned NOT null,
+	`name` varchar(255) NOT null DEFAULT '',
+	`description` text NOT null,
+	`value` longtext NOT null,
+	`isSystem` enum('0','1') NOT null DEFAULT '0',
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

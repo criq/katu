@@ -35,13 +35,13 @@ class CSRF {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	static function isValidToken($tokenToken) {
 		$token = static::getValidTokenByToken($tokenToken);
 		if (!$token) {
-			return FALSE;
+			return false;
 		}
 
 		return $token->isValid();

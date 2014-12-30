@@ -6,10 +6,10 @@ class Cookie {
 
 	const DEFAULT_LIFETIME = 86400;
 	const DEFAULT_PATH     = '/';
-	const DEFAULT_SECURE   = FALSE;
-	const DEFAULT_HTTPONLY = FALSE;
+	const DEFAULT_SECURE   = false;
+	const DEFAULT_HTTPONLY = false;
 
-	static function set($name, $value = NULL, $lifetime = NULL) {
+	static function set($name, $value = null, $lifetime = null) {
 		$config = self::getConfig();
 
 		$name = strtr($name, '.', '_');
@@ -25,11 +25,11 @@ class Cookie {
 			return $_COOKIE;
 		}
 
-		return isset($_COOKIE[$name]) ? $_COOKIE[$name] : NULL;
+		return isset($_COOKIE[$name]) ? $_COOKIE[$name] : null;
 	}
 
 	static function remove($name) {
-		return self::set($name, NULL, -86400);
+		return self::set($name, null, -86400);
 	}
 
 	static function getDefaultConfig() {

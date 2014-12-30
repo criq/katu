@@ -34,7 +34,7 @@ class EmailAddress extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function checkEmailAddress($emailAddress) {
@@ -46,7 +46,7 @@ class EmailAddress extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function isValid($emailAddress) {

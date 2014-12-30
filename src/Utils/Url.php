@@ -13,7 +13,7 @@ class Url {
 	}
 
 	static function getCurrent() {
-		return new TUrl('http' . (self::isHttps() ? 's' : NULL) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+		return new TUrl('http' . (self::isHttps() ? 's' : null) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 	}
 
 	static function getBase() {

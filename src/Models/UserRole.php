@@ -37,7 +37,7 @@ class UserRole extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid role.", 'role');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 }

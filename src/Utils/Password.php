@@ -19,7 +19,7 @@ class Password {
 	static function verify($attempt, $token) {
 		$analyzed = static::analyzeHashed($token);
 		if (!$analyzed) {
-			return FALSE;
+			return false;
 		}
 
 		return hash($analyzed['hash'], static::getHashable($attempt, $analyzed['salt'])) == $analyzed['hashed'];
@@ -27,12 +27,12 @@ class Password {
 
 	static function analyzeHashed($token) {
 		if (!$token) {
-			return FALSE;
+			return false;
 		}
 
 		$delimiter = substr($token, 0, 1);
 		if (!$delimiter) {
-			return FALSE;
+			return false;
 		}
 
 		list($hash, $salt, $hashed) = explode($delimiter, substr($token, 1));

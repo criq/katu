@@ -4,7 +4,7 @@ namespace Katu\Utils;
 
 class DateTime extends \DateTime {
 
-	static function get($string = NULL) {
+	static function get($string = null) {
 		if (is_int($string)) {
 			return new DateTime('@' . $string);
 		}

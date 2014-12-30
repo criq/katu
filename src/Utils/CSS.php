@@ -29,7 +29,7 @@ class CSS {
 				}
 			}
 
-			$css = NULL;
+			$css = null;
 
 			// Implode.
 			foreach ($css_files as $css_file) {
@@ -41,10 +41,10 @@ class CSS {
 
 		} catch (\Exception $e) {
 
-			return FALSE;
+			return false;
 		}
 
-		return TRUE;
+		return true;
 	}
 
 }

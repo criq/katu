@@ -42,7 +42,7 @@ class File extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file creator.", 'file');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function delete() {
@@ -65,8 +65,8 @@ class File extends \Katu\Model {
 		return realpath(BASE_DIR . '/' . static::getDirName());
 	}
 
-	static function generatePath($srcName = NULL) {
-		while (TRUE) {
+	static function generatePath($srcName = null) {
+		while (true) {
 
 			try {
 				$subDirs = \Katu\Config::get('app', 'files', 'subDirs');
@@ -118,7 +118,7 @@ class File extends \Katu\Model {
 		$dstPath = static::getDirPath() . '/' . $path;
 		$dstDirPath = dirname($dstPath);
 
-		@mkdir($dstDirPath, 0777, TRUE);
+		@mkdir($dstDirPath, 0777, true);
 
 		if (!copy($srcPath, $dstPath)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Error occured during copying the upload.");

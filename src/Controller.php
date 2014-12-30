@@ -32,7 +32,7 @@ class Controller {
 			// Remove flash memory.
 			Flash::reset();
 
-			return TRUE;
+			return true;
 
 		} catch (\Exception $e) {
 
@@ -55,7 +55,7 @@ class Controller {
 		return static::renderError($code);
 	}
 
-	static function isSubmittedWithToken($name = NULL) {
+	static function isSubmittedWithToken($name = null) {
 		$app = App::get();
 
 		return $app->request->params('formSubmitted')
@@ -63,41 +63,41 @@ class Controller {
 			&& Utils\CSRF::isValidToken($app->request->params('formToken'));
 	}
 
-	static function isSubmittedByHuman($name = NULL) {
+	static function isSubmittedByHuman($name = null) {
 		$app = App::get();
 
 		// Check basic form params.
 		if (!static::isSubmittedWithToken($name)) {
-			return FALSE;
+			return false;
 		}
 
 		// Get the token.
 		$token = Utils\CSRF::getValidTokenByToken($app->request->params('formToken'));
 		if (!$token) {
-			return FALSE;
+			return false;
 		}
 
 		// Check token age. Compare with tokens minDuration.
 		if ($token->getAge() < $token->minDuration) {
-			return FALSE;
+			return false;
 		}
 
 		// Check captcha. Should be empty.
 		if ($app->request->params('yourName_' . $token->secret) !== '') {
-			return FALSE;
+			return false;
 		}
 
-		return TRUE;
+		return true;
 	}
 
-	static function getSubmittedFormWithToken($name = NULL) {
+	static function getSubmittedFormWithToken($name = null) {
 		$app = App::get();
 
 		if (static::isSubmittedWithToken($name)) {
 			return new Form\Evaluation($name);
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	static function addError($error) {

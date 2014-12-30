@@ -43,7 +43,7 @@ class FileAttachment extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file.", 'file');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 }

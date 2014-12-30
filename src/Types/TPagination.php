@@ -38,7 +38,7 @@ class TPagination {
 		return \Katu\Config::get('app', 'pagination', 'perPage');
 	}
 
-	static function getRequestPageExpression($perPage = NULL) {
+	static function getRequestPageExpression($perPage = null) {
 		$app = \Katu\App::get();
 
 		return new \Sexy\Page(static::getPageFromRequest($app->request->params()), is_null($perPage) ? static::getAppPerPage() : $perPage);
@@ -85,7 +85,7 @@ class TPagination {
 		$pages = array_merge($pages, range($this->getMaxPage() - $options['endsOffset'], $this->getMaxPage()));
 
 		$pages = array_unique(array_filter($pages, function($i){
-			return ($i > 0 && $i <= $this->getMaxPage()) ? TRUE : FALSE;
+			return ($i > 0 && $i <= $this->getMaxPage()) ? true : false;
 		}));
 		natsort($pages);
 		$pages = array_values($pages);

@@ -1,10 +1,10 @@
 CREATE TABLE `files` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `timeCreated` datetime NOT NULL,
-  `creatorId` int(11) unsigned NOT NULL,
-  `path` text NOT NULL,
-  `name` text NOT NULL,
-  `type` varchar(255) NOT NULL DEFAULT '',
-  `size` int(10) unsigned NOT NULL,
+  `id` int(11) unsigned NOT null AUTO_INCREMENT,
+  `timeCreated` datetime NOT null,
+  `creatorId` int(11) unsigned NOT null,
+  `path` text NOT null,
+  `name` text NOT null,
+  `type` varchar(255) NOT null DEFAULT '',
+  `size` int(10) unsigned NOT null,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

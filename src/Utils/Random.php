@@ -40,7 +40,7 @@ class Random {
 		return static::getFromChars(static::NUM, $length);
 	}
 
-	static function getWord($length = 8, $seed = NULL) {
+	static function getWord($length = 8, $seed = null) {
 		$seed = is_null($seed) ? rand(0, 1) : $seed;
 		$word = '';
 

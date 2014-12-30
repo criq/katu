@@ -31,7 +31,7 @@ class UserService extends \Katu\Model {
 	public function setServiceAccessToken($serviceAccessToken) {
 		$this->update('serviceAccessToken', $serviceAccessToken);
 
-		return TRUE;
+		return true;
 	}
 
 }

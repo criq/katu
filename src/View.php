@@ -26,7 +26,7 @@ class View {
 		$loader = new \Twig_Loader_Filesystem($dirs);
 		$twig   = new \Twig_Environment($loader, [
 			'cache'       => Utils\FS::joinPaths(TMP_PATH, 'twig'),
-			'auto_reload' => TRUE,
+			'auto_reload' => true,
 		]);
 
 		// Filters.
@@ -57,7 +57,7 @@ class View {
 				return 'width="' . $size->x . '" height="' . $size->y . '"';
 			}
 
-			return FALSE;
+			return false;
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('imageWidth', function($path) {
@@ -76,7 +76,7 @@ class View {
 				return 'data:' . $mime . ';base64,' . $base64;
 			}
 
-			return FALSE;
+			return false;
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('shorten', function($string, $length, $options = []) {
@@ -214,7 +214,7 @@ class View {
 	static function renderCondensed($template, $data = []) {
 		$src = self::render($template, $data);
 
-		return preg_replace('#[\v\t]#', NULL, $src);
+		return preg_replace('#[\v\t]#', null, $src);
 	}
 
 }

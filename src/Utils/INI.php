@@ -5,8 +5,8 @@ namespace Katu\Utils;
 class INI {
 
 	static function parse($path) {
-		$src = @parse_ini_file($path, TRUE);
-		if ($src === FALSE) {
+		$src = @parse_ini_file($path, true);
+		if ($src === false) {
 			throw new \Exception("Invalid INI file.");
 		}
 

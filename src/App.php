@@ -80,7 +80,7 @@ class App {
 		return $app;
 	}
 
-	static function getPdo($name = NULL) {
+	static function getPdo($name = null) {
 		$names = array_keys(Config::getDB());
 
 		if ($name) {

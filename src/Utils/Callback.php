@@ -6,7 +6,7 @@ class Callback {
 
 	public $callable;
 
-	public function __construct($callable = NULL) {
+	public function __construct($callable = null) {
 		if (!is_callable($callable)) {
 			throw new \Exception("Not a callable.");
 		}
