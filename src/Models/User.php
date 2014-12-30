@@ -172,9 +172,9 @@ class User extends \Katu\Model {
 		if (class_exists('\App\Models\RolePermission')) {
 			$sql = (new \Sexy\Select(\App\Models\RolePermission::getColumn('permission')))
 				->from(\App\Models\RolePermission::getTable())
-				->join(\App\Models\UserRole::getColumn('roleId'), \App\Models\RolePermission::getColumn('roleId'))
-				->where(\App\Models\UserRole::getColumn('userId'), $this->getId())
-				->groupBy(\App\Models\RolePermission::getColumn('permission'));
+				->joinColumns(\App\Models\RolePermission::getColumn('roleId'), \App\Models\UserRole::getColumn('roleId'))
+				->whereEq(\App\Models\UserRole::getColumn('userId'), $this->getId())
+				->groupBy(new \Sexy\GroupBy(\App\Models\RolePermission::getColumn('permission')));
 
 			return static::getPdo()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
 		}
