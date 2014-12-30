@@ -47,7 +47,19 @@ class Cache {
 	}
 
 	static function getUrl($url, $timeout = null, $options = []) {
-		return \Katu\Utils\Cache::get(['url', sha1($url)], function() use($url) {
+		$tUrl  = new \Katu\Types\TUrl($url);
+		$parts = $tUrl->getParts();
+		$path  = implode('/', array_map(function($i) {
+			return trim($i, '/');
+		}, [
+			'url',
+			$parts['scheme'],
+			$parts['host'],
+			$parts['path'],
+			isset($parts['query']) ? sha1(serialize($parts['query'])) : null,
+		]));
+
+		return \Katu\Utils\Cache::get($path, function() use($url) {
 
 			$url = new \Katu\Types\TUrl((string) $url);
 			$response = $url->get($curl);
