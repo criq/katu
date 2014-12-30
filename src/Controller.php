@@ -9,11 +9,25 @@ class Controller {
 	static $data = [];
 
 	static function redirect($url, $code = 302) {
+		$app = App::get();
+
 		try {
 
-			$app = App::get();
+			if ($url instanceof Types\TUrl || is_string($url)) {
+				$urls = [$url];
+			} elseif (is_array($url)) {
+				$urls = $url;
+			}
 
-			return $app->redirect((string) $url, $code); die;
+			$urls = array_map(function($i) {
+				return new Types\TUrl((string) $i);
+			}, $urls);
+
+			foreach ((array) $urls as $url) {
+				if (Types\TUrl::isValid($url)) {
+					return $app->redirect((string) $url, $code); die;
+				}
+			}
 
 		} catch (\Exception $e) {
 

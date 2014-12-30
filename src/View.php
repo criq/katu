@@ -174,10 +174,11 @@ class View {
 
 		}
 
-		$data['_request']['uri']    = $app->request->getResourceUri();
-		$data['_request']['params'] = $app->request->params();
-		if ($app->request->params('returnUri')) {
-			$data['_request']['returnUrl'] = (string) \Katu\Utils\Url::getSite($app->request->params('returnUri'));
+		$data['_request']['uri']    = (string) ($app->request->getResourceUri());
+		$data['_request']['url']    = (string) (Utils\Url::getCurrent());
+		$data['_request']['params'] = (array)  ($app->request->params());
+		if ($app->request->params('returnUrl')) {
+			$data['_request']['returnUrl'] = (string) \Katu\Utils\Url::getSite($app->request->params('returnUrl'));
 		}
 
 		if (class_exists('\App\Models\User')) {

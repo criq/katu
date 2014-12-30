@@ -24,16 +24,10 @@ class Url {
 		return new TUrl(self::joinPaths(self::getBase(), $uri));
 	}
 
-	static function getFor($handle, $args = array(), $params = array()) {
+	static function getFor($handle, $args = [], $params = []) {
 		$app = App::get();
 
 		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', (array) $args))), $params);
-	}
-
-	static function getReturnUrl($defaultRoute, $defaultParams = array()) {
-		$app = App::get();
-
-		return $app->request->params('returnUri') ? static::getSite($app->request->params('returnUri')) : \Katu\Utils\Url::getFor($defaultRoute, $defaultParams);
 	}
 
 	static function joinPaths() {
