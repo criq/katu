@@ -189,6 +189,12 @@ class Facebook {
 		return new FacebookSession(static::getToken());
 	}
 
+	static function getAppSession() {
+		static::startAppSession();
+
+		return new FacebookSession(implode('|', [Config::get('facebook', 'appId'), Config::get('facebook', 'secret')]));
+	}
+
 	static function setToken($token) {
 		return Session::set('facebook.token', $token);
 	}

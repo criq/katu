@@ -37,6 +37,15 @@ class Model extends ReadOnlyModel {
 		return static::get(static::getPdo()->getLastInsertId());
 	}
 
+	static function upsert($bindValues) {
+		$object = static::getOneBy($bindValues);
+		if (!$object) {
+			$object = static::insert($bindValues);
+		}
+
+		return $object;
+	}
+
 	public function update($property, $value) {
 		if (property_exists($this, $property)) {
 			if ($this->$property !== $value) {
