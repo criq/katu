@@ -151,7 +151,7 @@ class TUrl {
 		return $this;
 	}
 
-	public function get(&$curl) {
+	public function get(&$curl = null) {
 		$url = $this;
 
 		$curl = new \Curl\Curl;
