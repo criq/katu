@@ -35,11 +35,13 @@ class Cache {
 			return sha1(serialize($i));
 		}, (array) $name));
 
+		$path = trim($path, '/');
+
 		return $path;
 	}
 
 	static function getCacheDir($cacheName) {
-		return TMP_PATH . '/' . dirname($cacheName);
+		return FS::joinPaths(TMP_PATH, dirname($cacheName));
 	}
 
 	static function getCacheFile($cacheName) {
@@ -47,17 +49,20 @@ class Cache {
 	}
 
 	static function getUrl($url, $timeout = null, $options = []) {
-		$tUrl  = new \Katu\Types\TUrl($url);
+		$tUrl = new \Katu\Types\TUrl($url);
 		$parts = $tUrl->getParts();
-		$path  = implode('/', array_map(function($i) {
+		$path = trim(implode('/', array_map(function($i) {
 			return trim($i, '/');
-		}, [
+		}, array_filter([
 			'url',
 			$parts['scheme'],
 			$parts['host'],
 			$parts['path'],
 			isset($parts['query']) ? sha1(serialize($parts['query'])) : null,
-		]));
+			'.cache',
+		]))), '/');
+
+		$path = preg_replace('#/+#', '/', $path);
 
 		return \Katu\Utils\Cache::get($path, function() use($url) {
 
