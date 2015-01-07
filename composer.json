@@ -23,11 +23,9 @@
 		"intervention/image": "1.*",
 		"jbroadway/urlify": "1.0.*@dev",
 		"jabli/amiko": "0.1.*",
-		"jabli/sexy": "0.2.*"
-	},
-	"require-dev": {
-		"symfony/dom-crawler": "3.0.*@dev",
-		"symfony/css-selector": "3.0.*@dev"
+		"jabli/sexy": "0.2.*",
+		"symfony/dom-crawler": "2.*",
+		"symfony/css-selector": "2.*"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
