@@ -24,6 +24,8 @@
 		"jbroadway/urlify": "1.0.*@dev",
 		"jabli/amiko": "0.1.*",
 		"jabli/sexy": "0.2.*",
+	},
+	"require-dev": {
 		"symfony/dom-crawler": "3.0.*@dev",
 		"symfony/css-selector": "3.0.*@dev"
 	},
