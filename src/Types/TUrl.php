@@ -21,14 +21,14 @@ class TUrl {
 	}
 
 	static function make($url, $params = array()) {
-		return new self($url . ($params ? ('?' . http_build_query($params)) : NULL));
+		return new self($url . ($params ? ('?' . http_build_query($params)) : null));
 	}
 
 	static function isValid($value) {
-		return filter_var(trim($value), FILTER_VALIDATE_URL) !== FALSE;
+		return filter_var(trim($value), FILTER_VALIDATE_URL) !== false;
 	}
 
-	public function getHostWithProtocol() {
+	public function getHostWithScheme() {
 		$parts = $this->getParts();
 
 		return $parts['scheme'] . '://' . $parts['host'];
@@ -85,7 +85,7 @@ class TUrl {
 			return $parts['query'][$name];
 		}
 
-		return NULL;
+		return null;
 	}
 
 	public function getWithoutQuery() {
