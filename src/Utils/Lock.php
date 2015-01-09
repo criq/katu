@@ -30,7 +30,7 @@ class Lock {
 
 		touch($this->path);
 
-		return TRUE;
+		return true;
 	}
 
 	public function unlock() {
@@ -38,7 +38,7 @@ class Lock {
 			unlink($this->path);
 		}
 
-		return TRUE;
+		return true;
 	}
 
 }

@@ -4,22 +4,14 @@ namespace Katu\Utils;
 
 class Cache {
 
-	static function get($name, $callback, $timeout = NULL, $options = array()) {
-		if (isset($options['dir'])) {
-			@mkdir(dirname($dir), 0777, TRUE);
-			$dir = $options['dir'];
-		} else {
-			if (!defined('TMP_PATH')) {
-				throw new \Exception("Undefined TMP_PATH.");
-			}
-			$dir = TMP_PATH;
-		}
+	static function get($name, $callback, $timeout = null, $options = []) {
+		$cacheName = self::getCacheName($name);
 
 		$cache = new \Gregwar\Cache\Cache;
-		$cache->setCacheDirectory($dir);
+		$cache->setCacheDirectory(static::getCacheDir($cacheName));
 		$cache->setPrefixSize(0);
 
-		$opts = array();
+		$opts = [];
 		if (isset($timeout) && !is_null($timeout)) {
 			$opts['max-age'] = $timeout;
 		}
@@ -28,23 +20,54 @@ class Cache {
 			return gzcompress(serialize(call_user_func($callback)), 9);
 		};
 
-		return unserialize(gzuncompress($cache->getOrCreate(self::getCacheName($name), $opts, $callback)));
+		try {
+			return unserialize(gzuncompress($cache->getOrCreate(static::getCacheFile($cacheName), $opts, $callback)));
+		} catch (\Katu\Exceptions\DoNotCacheException $e) {
+			return $e->data;
+		}
 	}
 
 	static function getCacheName($name) {
-		return implode('__', (array) $name);
+		$path = implode('/', array_map(function($i) {
+			if (is_string($i) || is_int($i) || is_float($i) || is_bool($i)) {
+				return (string) $i;
+			}
+			return sha1(serialize($i));
+		}, (array) $name));
+
+		$path = trim($path, '/');
+
+		return $path;
 	}
 
-	static function getUrl($url, $timeout = NULL, $options = array()) {
-		return \Katu\Utils\Cache::get(array('url', sha1($url)), function() use($url) {
+	static function getCacheDir($cacheName) {
+		return FS::joinPaths(TMP_PATH, dirname($cacheName));
+	}
 
-			$curl = new \Curl\Curl;
-			try {
-				$curl->setOpt(CURLOPT_FOLLOWLOCATION, TRUE);
-			} catch (\ErrorException $e) {
-				// Nothing to do, open_basedir is probably set.
-			}
-			$response = $curl->get($url);
+	static function getCacheFile($cacheName) {
+		return basename($cacheName);
+	}
+
+	static function getUrl($url, $timeout = null, $options = []) {
+		$tUrl = new \Katu\Types\TUrl($url);
+		$parts = $tUrl->getParts();
+		$path = trim(implode('/', array_map(function($i) {
+			return trim($i, '/');
+		}, array_filter([
+			'url',
+			$parts['scheme'],
+			$parts['host'],
+			isset($parts['path']) ? $parts['path'] : null,
+			isset($parts['query']) ? sha1(serialize($parts['query'])) : null,
+			'.cache',
+		]))), '/');
+
+		$path = preg_replace('#/+#', '/', $path);
+
+		return \Katu\Utils\Cache::get($path, function() use($url) {
+
+			$url = new \Katu\Types\TUrl((string) $url);
+			$response = $url->get($curl);
 
 			if ($curl->error) {
 				throw new \Katu\Exceptions\ErrorException("Error getting URL.");
@@ -61,10 +84,10 @@ class Cache {
 
 	static function initRuntime() {
 		if (!isset($GLOBALS['katu.cache.runtime'])) {
-			$GLOBALS['katu.cache.runtime'] = array();
+			$GLOBALS['katu.cache.runtime'] = [];
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function setRuntime($name, $value) {
@@ -79,7 +102,7 @@ class Cache {
 		self::initRuntime();
 
 		if (!isset($GLOBALS['katu.cache.runtime'][$name])) {
-			return NULL;
+			return null;
 		}
 
 		return $GLOBALS['katu.cache.runtime'][$name];

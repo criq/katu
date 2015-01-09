@@ -23,7 +23,7 @@ class TAcceptedLocaleCollection {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 }

@@ -25,7 +25,7 @@ class Env {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	static function getWholeHash() {

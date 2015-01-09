@@ -8,10 +8,10 @@ class CSV {
 	public $writer;
 	public $reader;
 
-	public function __construct($path = NULL, $options = array()) {
+	public function __construct($path = null, $options = []) {
 		if ($path) {
 			@touch($path);
-			if (!is_writable($path)) {
+			if ((!isset($options['readOnly']) || (isset($options['readOnly']) && !$options['readOnly'])) && !is_writable($path)) {
 				throw new \Exception("Unable to write into specified file.");
 			}
 
@@ -39,9 +39,10 @@ class CSV {
 		}
 	}
 
-	static function readToArray($path, $options = array()) {
+	static function readToArray($path, $options = []) {
+		$options['readOnly'] = true;
 		$csv = new self($path, $options);
-		$rows = array();
+		$rows = [];
 
 		while ($row = $csv->reader->getRow()) {
 			$rows[] = $row;

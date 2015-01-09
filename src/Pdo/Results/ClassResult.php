@@ -18,7 +18,7 @@ class ClassResult extends PaginatedResult {
 		}
 	}
 
-	public function getObjects($class = NULL) {
+	public function getObjects($class = null) {
 		if (!$class && $this->class) {
 			$class = $this->class;
 		}
@@ -26,14 +26,14 @@ class ClassResult extends PaginatedResult {
 		return $this->statement->fetchAll(PDO::FETCH_CLASS, $class);
 	}
 
-	public function getOne($class = NULL) {
+	public function getOne($class = null) {
 		if (!$class && $this->class) {
 			$class = $this->class;
 		}
 
 		$objects = $this->getObjects();
 		if (!isset($objects[0])) {
-			return FALSE;
+			return false;
 		}
 
 		$object = $objects[0];

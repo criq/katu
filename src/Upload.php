@@ -45,6 +45,22 @@ class Upload {
 		return in_array($this->fileType, (array) $types);
 	}
 
+	public function isJpegImage() {
+		return $this->fileType == 'image/jpeg';
+	}
+
+	public function isPngImage() {
+		return $this->fileType == 'image/png';
+	}
+
+	public function isGifImage() {
+		return $this->fileType == 'image/gif';
+	}
+
+	public function isSupportedImage() {
+		return $this->isJpegImage() || $this->isPngImage() || $this->isGifImage();
+	}
+
 	public function getErrorNumber() {
 		return $this->error;
 	}
@@ -54,7 +70,7 @@ class Upload {
 
 			// 0
 			case UPLOAD_ERR_OK :
-				return FALSE;
+				return false;
 			break;
 
 			// 1

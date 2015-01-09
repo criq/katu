@@ -33,7 +33,7 @@ class PaginatedResult extends Result {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getPagination() {

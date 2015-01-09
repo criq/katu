@@ -2,13 +2,13 @@
 
 namespace Katu\Pdo;
 
-class Table {
+class Table extends \Sexy\Expression {
 
 	public $pdo;
 	public $name;
 
 	public function __construct($pdo, $name) {
-		$this->pdo = $pdo;
+		$this->pdo  = $pdo;
 		$this->name = $name;
 	}
 
@@ -16,8 +16,8 @@ class Table {
 		return $this->getSql();
 	}
 
-	public function getSql() {
-		return $this->name;
+	public function getSql(&$context = []) {
+		return implode('.', [$this->pdo->config->database, $this->name]);
 	}
 
 	public function getColumnDescriptions() {

@@ -4,10 +4,10 @@ namespace Katu\Types;
 
 class TLocale {
 
-	public $language   = NULL;
-	public $country    = NULL;
+	public $language   = null;
+	public $country    = null;
 
-	public function __construct($language = NULL, $country = NULL) {
+	public function __construct($language = null, $country = null) {
 		$this->language   = (string) $language;
 		$this->country    = (string) $country;
 	}

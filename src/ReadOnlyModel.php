@@ -6,16 +6,21 @@ use \App\Models\File;
 use \App\Models\FileAttachment;
 use \Sexy\Select;
 use \Sexy\CmpIn;
+use \Sexy\OrderBy;
+use \Sexy\Page;
+use \Sexy\Keyword;
+use \Sexy\Expression;
 
 class ReadOnlyModel {
+
+	public function __toString() {
+		return (string) $this->getId();
+	}
 
 	public function __call($name, $args) {
 		// Bind getter.
 		if (preg_match('#^get(?<property>[a-z]+)$#i', $name, $match) && count($args) == 0) {
-			$object = $this->getBoundObject($match['property']);
-			if ($object) {
-				return $object;
-			}
+			return $this->getBoundObject($match['property']);
 		}
 
 		trigger_error('Undeclared class method ' . $name . '.');
@@ -75,7 +80,7 @@ class ReadOnlyModel {
 		// Sql expression.
 		if (
 			count(func_get_args()) == 1
-			&& func_get_arg(0) instanceof \Sexy\Expression
+			&& func_get_arg(0) instanceof Expression
 		) {
 
 			$query = static::getPdo()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
@@ -110,7 +115,7 @@ class ReadOnlyModel {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getId() {
@@ -139,10 +144,10 @@ class ReadOnlyModel {
 		$sql->from(static::getTable());
 
 		foreach ($params as $name => $value) {
-			if ($value instanceof \Sexy\Expression) {
+			if ($value instanceof Expression) {
 				$sql->where($value);
 			} else {
-				$sql->where(new \Sexy\CmpEq(static::getColumn($name), $value));
+				$sql->whereEq(static::getColumn($name), $value);
 			}
 		}
 
@@ -156,7 +161,7 @@ class ReadOnlyModel {
 	}
 
 	static function getOneBy() {
-		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new \Sexy\Page(1, 1)))))->getOne();
+		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Page(1, 1)))))->getOne();
 	}
 
 	static function getAll($options = array()) {
@@ -184,7 +189,7 @@ class ReadOnlyModel {
 
 	static function getFromAssoc($array) {
 		if (!$array) {
-			return FALSE;
+			return false;
 		}
 
 		$class = static::getClass();
@@ -199,14 +204,14 @@ class ReadOnlyModel {
 
 	static function getIdProperties() {
 		return array_values(array_filter(array_map(function($i) {
-			return preg_match('#^(?<property>[a-zA-Z_]+)_?[Ii][Dd]$#', $i) ? $i : NULL;
+			return preg_match('#^(?<property>[a-zA-Z_]+)_?[Ii][Dd]$#', $i) ? $i : null;
 		}, static::getTable()->getColumnNames())));
 	}
 
 	public function getBoundObject($model) {
 		$nsModel = '\\App\\Models\\' . $model;
 		if (!class_exists($nsModel)) {
-			return FALSE;
+			return null;
 		}
 
 		foreach (static::getIdProperties() as $property) {
@@ -219,7 +224,7 @@ class ReadOnlyModel {
 			}
 		}
 
-		return FALSE;
+		return null;
 	}
 
 	static function getPropertyName($property) {
@@ -231,7 +236,7 @@ class ReadOnlyModel {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getFileAttachments($properties = array(), $options = array()) {
@@ -244,10 +249,11 @@ class ReadOnlyModel {
 	public function getImageFileAttachments($properties = array(), $options = array()) {
 		$sql = (new Select(FileAttachment::getTable()))
 			->from(FileAttachment::getTable())
-			->join(File::getColumn('id'), FileAttachment::getColumn('fileId'))
-			->where(new CmpIn(File::getColumn('type'), array('image/jpeg', 'image/png', 'image/gif')))
-			->where(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
-			->where(FileAttachment::getColumn('objectId'), (int) $this->getId())
+			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
+			->whereIn(File::getColumn('type'), array('image/jpeg', 'image/png', 'image/gif'))
+			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
+			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
+			->orderBy(new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('DESC')))
 			;
 
 		$sql->setOptions($options);
@@ -261,7 +267,7 @@ class ReadOnlyModel {
 			return $imageAttachments[0]->getFile();
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getImagePath() {
@@ -270,7 +276,7 @@ class ReadOnlyModel {
 			return $file->getPath();
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function hasImage() {

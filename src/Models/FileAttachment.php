@@ -12,7 +12,7 @@ class FileAttachment extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'creatorId'   => (int)    ($creator ? $creator->id : null),
 			'objectModel' => (string) ($object->getClass()),
 			'objectId'    => (int)    ($object->getId()),
@@ -43,7 +43,7 @@ class FileAttachment extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file.", 'file');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 }

@@ -13,7 +13,7 @@ class Url {
 	}
 
 	static function getCurrent() {
-		return new TUrl('http' . (self::isHttps() ? 's' : NULL) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+		return new TUrl('http' . (self::isHttps() ? 's' : null) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 	}
 
 	static function getBase() {
@@ -24,16 +24,10 @@ class Url {
 		return new TUrl(self::joinPaths(self::getBase(), $uri));
 	}
 
-	static function getFor($handle, $args = array(), $params = array()) {
+	static function getFor($handle, $args = [], $params = []) {
 		$app = App::get();
 
-		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', $args))), $params);
-	}
-
-	static function getReturnUrl($defaultRoute, $defaultParams = array()) {
-		$app = App::get();
-
-		return $app->request->params('returnUri') ? static::getSite($app->request->params('returnUri')) : \Katu\Utils\Url::getFor($defaultRoute, $defaultParams);
+		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', (array) $args))), $params);
 	}
 
 	static function joinPaths() {

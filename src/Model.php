@@ -4,7 +4,7 @@ namespace Katu;
 
 class Model extends ReadOnlyModel {
 
-	protected $__updated = FALSE;
+	protected $__updated = false;
 
 	public function __call($name, $args) {
 		// Setter.
@@ -13,14 +13,14 @@ class Model extends ReadOnlyModel {
 			$value    = $args[0];
 
 			if ($property && $this->update($property, $value)) {
-				return TRUE;
+				return true;
 			}
 		}
 
 		return parent::__call($name, $args);
 	}
 
-	static function insert($bindValues = array()) {
+	static function insert($bindValues = []) {
 		$query = static::getPdo()->createQuery();
 
 		$columns = array_keys($bindValues);
@@ -37,17 +37,26 @@ class Model extends ReadOnlyModel {
 		return static::get(static::getPdo()->getLastInsertId());
 	}
 
+	static function upsert($bindValues) {
+		$object = static::getOneBy($bindValues);
+		if (!$object) {
+			$object = static::insert($bindValues);
+		}
+
+		return $object;
+	}
+
 	public function update($property, $value) {
 		if (property_exists($this, $property)) {
 			if ($this->$property !== $value) {
 				$this->$property = $value;
-				$this->__updated = TRUE;
+				$this->__updated = true;
 			}
 
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function save() {
@@ -55,14 +64,14 @@ class Model extends ReadOnlyModel {
 
 			$columns = static::getTable()->getColumnNames();
 
-			$bindValues = array();
+			$bindValues = [];
 			foreach (get_object_vars($this) as $name => $value) {
 				if (in_array($name, $columns) && $name != static::getIdColumnName()) {
 					$bindValues[$name] = $value;
 				}
 			}
 
-			$set = array();
+			$set = [];
 			foreach ($bindValues as $name => $value) {
 				$set[] = $name . " = :" . $name;
 			}
@@ -80,14 +89,21 @@ class Model extends ReadOnlyModel {
 
 			}
 
-			$this->__updated = FALSE;
+			$this->__updated = false;
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function delete() {
 		$query = static::getPdo()->createQuery();
+
+		// Delete file attachments.
+		if (class_exists('\App\Models\FileAttachment')) {
+			foreach ($this->getFileAttachments() as $fileAttachment) {
+				$fileAttachment->delete();
+			}
+		}
 
 		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIdColumnName() . " = :" . static::getIdColumnName();
 
@@ -102,17 +118,21 @@ class Model extends ReadOnlyModel {
 			$chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 		}
 
-		if (is_null($length)) {
-			$length = static::getColumn($column)->getProperties()->length;
+		if (is_string($column)) {
+			$column = static::getColumn($column);
 		}
 
-		while (TRUE) {
+		if (is_null($length)) {
+			$length = $column->getProperties()->length;
+		}
+
+		while (true) {
 			$string = \Katu\Utils\Random::getFromChars($chars, $length);
-			if (!static::getBy(array($column => $string))->getTotal()) {
-				$this->update($column, $string);
+			if (!static::getBy([$column->name => $string])->getTotal()) {
+				$this->update($column->name, $string);
 				$this->save();
 
-				return TRUE;
+				return true;
 			}
 		}
 	}

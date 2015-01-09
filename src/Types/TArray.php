@@ -44,4 +44,19 @@ class TArray {
 		return new self($res);
 	}
 
+	public function implodeInSentence($delimiter, $lastDelimiter) {
+		$arrayList = (array) array_slice($this->value, 0, -1);
+		$arrayLast = (array) array_slice($this->value, -1, 1);
+
+		return implode($lastDelimiter, array_filter([implode($delimiter, $arrayList), $arrayLast[0]]));
+	}
+
+	public function getRandomItems($n) {
+		$array = [];
+		for ($i = 0; $i < $n; $i++) {
+			$res[] = $this->value[array_rand($this->value)];
+		}
+		return $res;
+	}
+
 }

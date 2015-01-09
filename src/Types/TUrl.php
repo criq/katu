@@ -24,8 +24,46 @@ class TUrl {
 		return new self($url . ($params ? ('?' . http_build_query($params)) : null));
 	}
 
+	static function build($parts) {
+		$url = '';
+
+		if (!isset($parts['host'])) {
+			throw new \Exception("Missing host");
+		}
+
+		if (!isset($parts['scheme'])) {
+			$url .= self::DEFAULT_SCHEME;
+		} else {
+			$url .= $parts['scheme'];
+		}
+
+		$url .= '://' . $parts['host'];
+
+		if (isset($parts['path'])) {
+			$url .= $parts['path'];
+		}
+
+		if (isset($parts['query']) && $parts['query']) {
+			$url .= '?' . http_build_query($parts['query']);
+		}
+
+		return $url;
+	}
+
 	static function isValid($value) {
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== false;
+	}
+
+	public function getScheme() {
+		$parts = $this->getParts();
+
+		return $parts['scheme'];
+	}
+
+	public function getHost() {
+		$parts = $this->getParts();
+
+		return $parts['host'];
 	}
 
 	public function getHostWithScheme() {
@@ -54,7 +92,7 @@ class TUrl {
 		return $parts;
 	}
 
-	public function addQueryParam($name, $value, $overwrite = TRUE) {
+	public function addQueryParam($name, $value, $overwrite = true) {
 		$parts = $this->getParts();
 
 		if (!$overwrite && isset($parts['query'][$name])) {
@@ -113,30 +151,26 @@ class TUrl {
 		return $this;
 	}
 
-	static function build($parts) {
-		$url = '';
+	public function get(&$curl = null) {
+		$url = $this;
 
-		if (!isset($parts['host'])) {
-			throw new \Exception("Missing host");
+		$curl = new \Curl\Curl;
+		try {
+			$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+		} catch (\ErrorException $e) {
+			// Nothing to do, open_basedir is probably set.
 		}
 
-		if (!isset($parts['scheme'])) {
-			$url .= self::DEFAULT_SCHEME;
-		} else {
-			$url .= $parts['scheme'];
+		// Bypass disabled CURLOPT_FOLLOWLOCATION.
+		while ($url) {
+			$response = $curl->get($url);
+			if (in_array($curl->http_status_code, [301, 302]) && isset($curl->response_headers['Location'])) {
+				$url = new static($curl->response_headers['Location']);
+			} else {
+				return $response;
+			}
 		}
 
-		$url .= '://' . $parts['host'];
-
-		if (isset($parts['path'])) {
-			$url .= $parts['path'];
-		}
-
-		if (isset($parts['query']) && $parts['query']) {
-			$url .= '?' . http_build_query($parts['query']);
-		}
-
-		return $url;
 	}
 
 }

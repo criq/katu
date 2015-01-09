@@ -12,7 +12,7 @@ class UserRole extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'userId'      => (int)    ($user->id),
 			'roleId'      => (int)    ($role->id),
 		));
@@ -37,7 +37,7 @@ class UserRole extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid role.", 'role');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 }

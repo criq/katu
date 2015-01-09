@@ -9,7 +9,7 @@ class DefaultSetting {
 	public $description;
 	public $isSystem;
 
-	public function __construct($name, $value, $isSystem = TRUE, $description = NULL) {
+	public function __construct($name, $value, $isSystem = true, $description = null) {
 		$this->name        = $name;
 		$this->value       = $value;
 		$this->description = $description;

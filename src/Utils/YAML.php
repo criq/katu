@@ -10,7 +10,7 @@ class YAML {
 		$app->response->headers->set('Content-Type', 'text/plain; charset=UTF-8');
 		$app->response->setBody(self::encode($var));
 
-		return TRUE;
+		return true;
 	}
 
 	static function encode($var) {

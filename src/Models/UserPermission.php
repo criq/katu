@@ -12,7 +12,7 @@ class UserPermission extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'userId'      => (int)    ($user->id),
 			'permission'  => (string) (trim($permission)),
 		));
@@ -40,7 +40,7 @@ class UserPermission extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid permission.", 'permission');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	static function getAvailable() {

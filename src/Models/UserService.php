@@ -10,14 +10,14 @@ class UserService extends \Katu\Model {
 
 	static function create($user, $serviceName, $serviceUserId) {
 		return static::insert(array(
-			'timeCreated'   => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated'   => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'userId'        => (int)    ($user->id),
 			'serviceName'   => (string) ($serviceName),
 			'serviceUserId' => (string) ($serviceUserId),
 		));
 	}
 
-	static function getByServiceAndID($serviceName, $serviceUserId) {
+	static function getByServiceAndId($serviceName, $serviceUserId) {
 		return static::getBy(array(
 			'serviceName'   => (string) ($serviceName),
 			'serviceUserId' => (string) ($serviceUserId),
@@ -31,7 +31,7 @@ class UserService extends \Katu\Model {
 	public function setServiceAccessToken($serviceAccessToken) {
 		$this->update('serviceAccessToken', $serviceAccessToken);
 
-		return TRUE;
+		return true;
 	}
 
 }

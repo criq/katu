@@ -12,7 +12,7 @@ class Role extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'name'        => (string) (trim($name)),
 		));
 	}
@@ -44,10 +44,10 @@ class Role extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid name.", 'name');
 		}
 
-		return TRUE;
+		return true;
 	}
 
-	static function checkName($name, $object = NULL) {
+	static function checkName($name, $object = null) {
 		if (!trim($name)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Missing name.", 'name');
 		}
@@ -62,7 +62,7 @@ class Role extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Another role with this name already exists.", 'name');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function setName($name) {
@@ -72,7 +72,7 @@ class Role extends \Katu\Model {
 
 		$this->update('name', trim($name));
 
-		return TRUE;
+		return true;
 	}
 
 	public function addPermission($permission) {
@@ -84,7 +84,7 @@ class Role extends \Katu\Model {
 			$this->addPermission($permission);
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function hasPermission($permission) {
@@ -101,12 +101,12 @@ class Role extends \Katu\Model {
 			$rolePermission->delete();
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function userCanEdit($user) {
 		if (!$user) {
-			return FALSE;
+			return false;
 		}
 
 		return $user->hasPermission('roles.edit');
@@ -114,7 +114,7 @@ class Role extends \Katu\Model {
 
 	public function userCanEditPermissions($user) {
 		if (!$user) {
-			return FALSE;
+			return false;
 		}
 
 		return $user->hasPermission('roles.editPermissions');
@@ -122,7 +122,7 @@ class Role extends \Katu\Model {
 
 	public function userCanDelete($user) {
 		if (!$user) {
-			return FALSE;
+			return false;
 		}
 
 		return $user->hasPermission('roles.delete');

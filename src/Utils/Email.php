@@ -11,20 +11,34 @@ class Email {
 	public $fromEmailAddress;
 	public $fromName;
 
-	public $to = array();
-	public $cc = array();
+	public $to = [];
+	public $cc = [];
 
-	public $headers = array();
+	public $headers = [];
 
 	public $template;
-	public $content = array();
-	public $variables = array();
-	public $recipientVariables = array();
+	public $content = [];
+	public $variables = [];
+	public $recipientVariables = [];
 
-	public function __construct($subject = NULL) {
+	public function __construct($subject = null) {
 		$this->setSubject($subject);
 
 		return $this;
+	}
+
+	static function resolveEmailAddress($emailAddress) {
+		try {
+			$fakeEmailAddresses = (array) \Katu\Config::get('app', 'email', 'useFakeEmailAddress');
+			$emailAddresses = [];
+			foreach ($fakeEmailAddresses as $fakeEmailAddress) {
+				list($username, $domain) = explode('@', $fakeEmailAddress);
+				$emailAddresses[] = $username . '+' . substr(md5($emailAddress), 0, 8) . '@' . $domain;
+			}
+			return $emailAddresses;
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return [$emailAddress];
+		}
 	}
 
 	public function setSubject($subject) {
@@ -45,7 +59,7 @@ class Email {
 		return $this;
 	}
 
-	public function setBody($html, $text = NULL) {
+	public function setBody($html, $text = null) {
 		$this->setHtml($html);
 
 		if ($text) {
@@ -58,7 +72,8 @@ class Email {
 	}
 
 	public function setFromEmailAddress($fromEmailAddress) {
-		$this->fromEmailAddress = $fromEmailAddress;
+		$emailAddresses = static::resolveEmailAddress($fromEmailAddress);
+		$this->fromEmailAddress = $emailAddresses[0];
 
 		return $this;
 	}
@@ -69,21 +84,25 @@ class Email {
 		return $this;
 	}
 
-	public function setFrom($fromEmailAddress, $fromName = NULL) {
+	public function setFrom($fromEmailAddress, $fromName = null) {
 		$this->setFromEmailAddress($fromEmailAddress);
 		$this->setFromName($fromName);
 
 		return $this;
 	}
 
-	public function addTo($toEmailAddress, $toName = NULL) {
-		$this->to[$toEmailAddress] = $toName;
+	public function addTo($toEmailAddress, $toName = null) {
+		foreach (static::resolveEmailAddress($toEmailAddress) as $emailAddress) {
+			$this->to[$emailAddress] = $toName;
+		}
 
 		return $this;
 	}
 
-	public function addCc($toEmailAddress, $toName = NULL) {
-		$this->cc[$toEmailAddress] = $toName;
+	public function addCc($toEmailAddress, $toName = null) {
+		foreach (static::resolveEmailAddress($toEmailAddress) as $emailAddress) {
+			$this->cc[$emailAddress] = $toName;
+		}
 
 		return $this;
 	}
@@ -95,7 +114,8 @@ class Email {
 	}
 
 	public function setReplyTo($emailAddress) {
-		$this->addHeader('Reply-To', $emailAddress);
+		$emailAddresses = static::resolveEmailAddress($emailAddress);
+		$this->addHeader('Reply-To', $emailAddresses[0]);
 
 		return $this;
 	}
@@ -119,7 +139,9 @@ class Email {
 	}
 
 	public function setRecipientVariable($emailAddress, $name, $value) {
-		$this->recipientVariables[$emailAddress][$name] = $value;
+		foreach (static::resolveEmailAddress($emailAddress) as $emailAddress) {
+			$this->recipientVariables[$emailAddress][$name] = $value;
+		}
 
 		return $this;
 	}
@@ -133,19 +155,19 @@ class Email {
 		$message['headers']    = $this->headers;
 
 		foreach ($this->to as $toEmailAddress => $toName) {
-			$message['to'][] = array(
+			$message['to'][] = [
 				'email' => $toEmailAddress,
 				'name'  => $toName,
 				'type'  => 'to',
-			);
+			];
 		}
 
 		foreach ($this->cc as $toEmailAddress => $toName) {
-			$message['to'][] = array(
+			$message['to'][] = [
 				'email' => $toEmailAddress,
 				'name'  => $toName,
 				'type'  => 'cc',
-			);
+			];
 		}
 
 		$message['global_merge_vars'] = $this->getVariablesForMandrill();
@@ -155,52 +177,52 @@ class Email {
 	}
 
 	public function getContentForMandrill() {
-		$content = array();
+		$content = [];
 
 		foreach ($this->content as $name => $value) {
-			$content[] = array(
+			$content[] = [
 				'name'    => $name,
 				'content' => $value,
-			);
+			];
 		}
 
 		return $content;
 	}
 
 	public function getVariablesForMandrill() {
-		$variables = array();
+		$variables = [];
 
 		foreach ($this->variables as $name => $value) {
-			$variables[] = array(
+			$variables[] = [
 				'name'    => $name,
 				'content' => $value,
-			);
+			];
 		}
 
 		return $variables;
 	}
 
 	public function getRecipientVariablesForMandrill() {
-		$variables = array();
+		$variables = [];
 
 		foreach ($this->recipientVariables as $recipient => $vars) {
-			$recipientVars = array();
+			$recipientVars = [];
 			foreach ($vars as $name => $value) {
-				$recipientVars[] = array(
+				$recipientVars[] = [
 					'name'    => $name,
 					'content' => $value,
-				);
+				];
 			}
-			$variables[] = array(
+			$variables[] = [
 				'rcpt' => $recipient,
 				'vars' => $recipientVars,
-			);
+			];
 		}
 
 		return $variables;
 	}
 
-	public function sendWithMandrillThroughApi($mandrillApi, $message = array()) {
+	public function sendWithMandrillThroughApi($mandrillApi, $message = []) {
 		if ($this->template) {
 			return $mandrillApi->messages->sendTemplate($this->template, $this->getContentForMandrill(), $this->getMessageForMandrill($message));
 		} else {

@@ -11,6 +11,7 @@ class Random {
 	const ALNUM_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	const ALNUM_LOWER = 'abcdefghijklmnopqrstuvwxyz0123456789';
 	const ALNUM = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	const ALNUM_SPECIAL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$-_.+!*()';
 
 	const NUM = '0123456789';
 
@@ -24,7 +25,7 @@ class Random {
 	}
 
 	static function getFileName($length = 32) {
-		return static::getFromChars(static::ALPHA_SMALL, $length);
+		return static::getFromChars(static::ALPHA_LOWER, $length);
 	}
 
 	static function getString($length = 32) {
@@ -39,7 +40,7 @@ class Random {
 		return static::getFromChars(static::NUM, $length);
 	}
 
-	static function getWord($length = 8, $seed = NULL) {
+	static function getWord($length = 8, $seed = null) {
 		$seed = is_null($seed) ? rand(0, 1) : $seed;
 		$word = '';
 

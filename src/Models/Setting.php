@@ -8,13 +8,13 @@ class Setting extends \Katu\Model {
 
 	const TABLE = 'settings';
 
-	static function create($creator, $name, $value, $isSystem, $description = NULL) {
+	static function create($creator, $name, $value, $isSystem, $description = null) {
 		if (!static::checkCrudParams($creator, $name, $value, $isSystem)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDBDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'creatorId'   => (int)    ($creator->id),
 			'name'        => (string) (trim($name)),
 			'value'       => (string) (trim($value)),
@@ -31,10 +31,10 @@ class Setting extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting name.", 'name');
 		}
 
-		return TRUE;
+		return true;
 	}
 
-	static function checkName($name, $object = NULL) {
+	static function checkName($name, $object = null) {
 		if (!trim($name)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Missing setting name.", 'name');
 		}
@@ -48,7 +48,7 @@ class Setting extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Setting already exists.", 'name');
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function setName($name) {
@@ -58,7 +58,7 @@ class Setting extends \Katu\Model {
 
 		$this->update('name', trim($name));
 
-		return TRUE;
+		return true;
 	}
 
 	public function getValue() {
@@ -92,7 +92,7 @@ class Setting extends \Katu\Model {
 
 	public function userCanEdit($user) {
 		if (!$user) {
-			return FALSE;
+			return false;
 		}
 
 		return $user->hasPermission('settings.edit');
@@ -100,11 +100,11 @@ class Setting extends \Katu\Model {
 
 	public function userCanDelete($user) {
 		if (!$user) {
-			return FALSE;
+			return false;
 		}
 
 		if ($this->isSystem) {
-			return FALSE;
+			return false;
 		}
 
 		return $user->hasPermission('settings.delete');

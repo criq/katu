@@ -1,0 +1,23 @@
+CREATE TABLE `geocodes` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `timeCreated` datetime NOT NULL,
+  `hash` char(40) NOT NULL DEFAULT '',
+  `language` char(5) NOT NULL DEFAULT '',
+  `number` varchar(10) NOT NULL DEFAULT '',
+  `premise` varchar(10) NOT NULL DEFAULT '',
+  `street` varchar(100) NOT NULL DEFAULT '',
+  `neighborhood` varchar(100) NOT NULL DEFAULT '',
+  `part` varchar(100) NOT NULL DEFAULT '',
+  `city` varchar(100) NOT NULL DEFAULT '',
+  `county` varchar(100) NOT NULL DEFAULT '',
+  `district` varchar(100) NOT NULL DEFAULT '',
+  `country` varchar(100) NOT NULL DEFAULT '',
+  `zip` varchar(10) NOT NULL DEFAULT '',
+  `formatted` varchar(255) NOT NULL DEFAULT '',
+  `lat` double(10,7) NOT NULL,
+  `lng` double(10,7) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `hash` (`hash`),
+  KEY `language` (`language`),
+  KEY `latlng` (`lat`,`lng`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

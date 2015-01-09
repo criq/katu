@@ -6,21 +6,35 @@ use \Katu\App;
 
 class Controller {
 
-	static $data = array();
+	static $data = [];
 
 	static function redirect($url, $code = 302) {
+		$app = App::get();
+
 		try {
 
-			$app = App::get();
+			if ($url instanceof Types\TUrl || is_string($url)) {
+				$urls = [$url];
+			} elseif (is_array($url)) {
+				$urls = $url;
+			}
 
-			return $app->redirect((string) $url, $code);
+			$urls = array_map(function($i) {
+				return new Types\TUrl((string) $i);
+			}, $urls);
+
+			foreach ((array) $urls as $url) {
+				if (Types\TUrl::isValid($url)) {
+					return $app->redirect((string) $url, $code); die;
+				}
+			}
 
 		} catch (\Exception $e) {
 
 		}
 	}
 
-	static function render($template, $code = 200, $headers = array()) {
+	static function render($template, $code = 200, $headers = []) {
 		$app = App::get();
 
 		try {
@@ -32,9 +46,15 @@ class Controller {
 			// Remove flash memory.
 			Flash::reset();
 
-			return TRUE;
+			return true;
 
-		} catch (\Exception $e) { throw new Exceptions\TemplateException($e->getMessage()); }
+		} catch (\Exception $e) {
+
+			error_log($e);
+
+			throw new Exceptions\TemplateException($e->getMessage());
+
+		}
 	}
 
 	static function renderError($code = 500) {
@@ -49,7 +69,7 @@ class Controller {
 		return static::renderError($code);
 	}
 
-	static function isSubmittedWithToken($name = NULL) {
+	static function isSubmittedWithToken($name = null) {
 		$app = App::get();
 
 		return $app->request->params('formSubmitted')
@@ -57,41 +77,41 @@ class Controller {
 			&& Utils\CSRF::isValidToken($app->request->params('formToken'));
 	}
 
-	static function isSubmittedByHuman($name = NULL) {
+	static function isSubmittedByHuman($name = null) {
 		$app = App::get();
 
 		// Check basic form params.
 		if (!static::isSubmittedWithToken($name)) {
-			return FALSE;
+			return false;
 		}
 
 		// Get the token.
 		$token = Utils\CSRF::getValidTokenByToken($app->request->params('formToken'));
 		if (!$token) {
-			return FALSE;
+			return false;
 		}
 
 		// Check token age. Compare with tokens minDuration.
 		if ($token->getAge() < $token->minDuration) {
-			return FALSE;
+			return false;
 		}
 
 		// Check captcha. Should be empty.
 		if ($app->request->params('yourName_' . $token->secret) !== '') {
-			return FALSE;
+			return false;
 		}
 
-		return TRUE;
+		return true;
 	}
 
-	static function getSubmittedFormWithToken($name = NULL) {
+	static function getSubmittedFormWithToken($name = null) {
 		$app = App::get();
 
 		if (static::isSubmittedWithToken($name)) {
 			return new Form\Evaluation($name);
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	static function addError($error) {

@@ -8,11 +8,11 @@ class ExceptionCollection extends Exception implements \Iterator {
 
 	private $position = 0;
 
-	public function __construct($message = NULL, $code = 0, $context = array(), $previous = NULL) {
+	public function __construct($message = null, $code = 0, $context = array(), $previous = null) {
 		parent::__construct($message, $code, $context, $previous);
 	}
 
-	public function setMessage($message = NULL) {
+	public function setMessage($message = null) {
 		$this->message = $message;
 	}
 
@@ -21,7 +21,11 @@ class ExceptionCollection extends Exception implements \Iterator {
 	}
 
 	public function hasExceptions() {
-		return (bool) (count($this->exceptionCollection));
+		return (bool) $this->countExceptions();
+	}
+
+	public function countExceptions() {
+		return (int) (count($this->exceptionCollection));
 	}
 
 	public function rewind() {

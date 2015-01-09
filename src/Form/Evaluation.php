@@ -8,11 +8,11 @@ use \Katu\Flash;
 
 class Evaluation {
 
-	public $name = NULL;
+	public $name = null;
 	public $params = array();
 	public $errors = array();
 
-	public function __construct($name = NULL) {
+	public function __construct($name = null) {
 		$app = App::get();
 
 		// Set form name.
@@ -23,7 +23,7 @@ class Evaluation {
 	}
 
 	public function getParam($param) {
-		return isset($this->params[$param]) ? $this->params[$param] : NULL;
+		return isset($this->params[$param]) ? $this->params[$param] : null;
 	}
 
 	public function addError($error) {
@@ -31,29 +31,29 @@ class Evaluation {
 			if ($error->getMessage()) {
 				$this->errors[] = new Error($error->getMessage());
 
-				return TRUE;
+				return true;
 			}
 
-			return FALSE;
+			return false;
 		}
 
 		if (trim($error)) {
 			$this->errors[] = new Error($error);
 
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function addFieldError($type, $fields, $error) {
 		if (trim($error)) {
 			$this->errors[] = new FieldError($type, $fields, $error);
 
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function hasErrors() {

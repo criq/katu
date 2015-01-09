@@ -35,11 +35,19 @@ class App {
 		// Default content-type header for debugging, will be probably overwritten by app.
 		header('Content-Type: text/html; charset=UTF-8');
 
-		return TRUE;
+		return true;
 	}
 
 	static function isDev() {
 		return Config::get('app', 'slim', 'mode') == 'development';
+	}
+
+	static function isTest() {
+		return Config::get('app', 'slim', 'mode') == 'testing';
+	}
+
+	static function isProd() {
+		return Config::get('app', 'slim', 'mode') == 'production';
 	}
 
 	static function get() {
@@ -72,7 +80,7 @@ class App {
 		return $app;
 	}
 
-	static function getPdo($name = NULL) {
+	static function getPdo($name = null) {
 		$names = array_keys(Config::getDB());
 
 		if ($name) {
@@ -92,6 +100,29 @@ class App {
 
 	static function run() {
 		self::init();
+
+		$app = self::get();
+
+		// Redirect to canonical host.
+		try {
+			if ($app->request->getMethod() == 'GET' && Config::get('app', 'redirectToCanonicalHost')) {
+				$currentUrl    = Utils\Url::getCurrent();
+				$currentHost   = $currentUrl->getHost();
+				$canonicalUrl  = new Types\TUrl(Config::get('app', 'baseUrl'));
+				$canonicalHost = $canonicalUrl->getHost();
+
+				if ($currentHost != $canonicalHost) {
+					$canonicalParts = $currentUrl->getParts();
+					$canonicalParts['host'] = $canonicalHost;
+
+					$redirectUrl = Types\TUrl::build($canonicalParts);
+
+					return header('Location: ' . (string) $redirectUrl, 301); die;
+				}
+			}
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			// Nothing to do.
+		}
 
 		$catchAll = function() {
 			$app = self::get();
