@@ -211,7 +211,7 @@ class ReadOnlyModel {
 	public function getBoundObject($model) {
 		$nsModel = '\\App\\Models\\' . $model;
 		if (!class_exists($nsModel)) {
-			return false;
+			return null;
 		}
 
 		foreach (static::getIdProperties() as $property) {
@@ -224,7 +224,7 @@ class ReadOnlyModel {
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	static function getPropertyName($property) {

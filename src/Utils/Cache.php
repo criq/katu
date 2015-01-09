@@ -57,7 +57,7 @@ class Cache {
 			'url',
 			$parts['scheme'],
 			$parts['host'],
-			$parts['path'],
+			isset($parts['path']) ? $parts['path'] : null,
 			isset($parts['query']) ? sha1(serialize($parts['query'])) : null,
 			'.cache',
 		]))), '/');
