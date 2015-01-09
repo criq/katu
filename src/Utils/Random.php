@@ -25,7 +25,7 @@ class Random {
 	}
 
 	static function getFileName($length = 32) {
-		return static::getFromChars(static::ALPHA_SMALL, $length);
+		return static::getFromChars(static::ALPHA_LOWER, $length);
 	}
 
 	static function getString($length = 32) {
