@@ -27,4 +27,8 @@ class Tmp {
 		return implode('__', (array) $name);
 	}
 
+	static function debug($var) {
+		return static::set(implode('.', ['debug', time(), Random::getFileName(8)]), serialize($var));
+	}
+
 }
