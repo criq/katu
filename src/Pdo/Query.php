@@ -8,11 +8,11 @@ class Query {
 
 	public $pdo;
 	public $sql;
-	public $bindValues = array();
+	public $bindValues = [];
 	public $page;
 	public $class;
 
-	public function __construct(Connection $pdo, $sql = '', $bindValues = array()) {
+	public function __construct(Connection $pdo, $sql = '', $bindValues = []) {
 		$this->pdo = $pdo;
 		$this->sql = $sql;
 		$this->bindValues = $bindValues;
