@@ -38,39 +38,41 @@ class Facebook {
 			}
 
 			// Login the user.
-			$userService = \App\Models\UserService::getByServiceAndId('facebook', $facebookUser->getId())->getOne();
-			if (!$userService) {
+			if (class_exists('\App\Models\User') && class_exists('\App\Models\UserService')) {
+				$userService = \App\Models\UserService::getByServiceAndId('facebook', $facebookUser->getId())->getOne();
+				if (!$userService) {
 
-				// Create new user.
-				$user = \App\Models\User::create();
+					// Create new user.
+					$user = \App\Models\User::create();
 
-				// Assign e-mail address.
-				if (class_exists('\App\Models\EmailAddress') && $facebookUser->getProperty('email')) {
+					// Assign e-mail address.
+					if (class_exists('\App\Models\EmailAddress') && $facebookUser->getProperty('email')) {
 
-					$emailAddress = \App\Models\EmailAddress::make($facebookUser->getProperty('email'));
+						$emailAddress = \App\Models\EmailAddress::make($facebookUser->getProperty('email'));
 
-					if (!\App\Models\User::getBy([
-						'emailAddressId' => $emailAddress->id,
-					])->getTotal()) {
-						$user->setEmailAddress($emailAddress);
-						$user->save();
+						if (!\App\Models\User::getBy([
+							'emailAddressId' => $emailAddress->id,
+						])->getTotal()) {
+							$user->setEmailAddress($emailAddress);
+							$user->save();
+						}
+
 					}
+
+					// Assign user service.
+					$userService = $user->addUserService('facebook', $facebookUser->getId());
 
 				}
 
-				// Assign user service.
-				$userService = $user->addUserService('facebook', $facebookUser->getId());
+				$userService->setServiceAccessToken($session->getToken());
+				$userService->save();
 
+				$user = $userService->getUser();
+				$user->setName($facebookUser->getFirstName(), $facebookUser->getLastName());
+				$user->save();
+
+				$user->login();
 			}
-
-			$userService->setServiceAccessToken($session->getToken());
-			$userService->save();
-
-			$user = $userService->getUser();
-			$user->setName($facebookUser->getFirstName(), $facebookUser->getLastName());
-			$user->save();
-
-			$user->login();
 
 			if ($callbackCollection && $callbackCollection->exists('success')) {
 				return $callbackCollection->call('success', [static::getScenarioReturnUrl($app->request->params('state')), $facebookUser, $user]);
@@ -107,7 +109,7 @@ class Facebook {
 						throw new \Exception();
 					}
 
-					return \Katu\Controller::redirect(static::getRedirectUrl($app->request->params('state')));
+					return \Katu\Controller::redirect($scenarioReturnUrl);
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
@@ -115,7 +117,7 @@ class Facebook {
 						return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
 					}
 
-					return false;
+					throw $e;
 
 				} catch (\Exception $e) {
 
@@ -123,7 +125,7 @@ class Facebook {
 						return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
 					}
 
-					return false;
+					throw $e;
 
 				}
 
@@ -143,7 +145,7 @@ class Facebook {
 				return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
 			}
 
-			return false;
+			throw $e;
 
 		}
 
