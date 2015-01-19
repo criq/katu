@@ -117,8 +117,6 @@ class Image {
 				// No problem, it's not a URL.
 			}
 
-			var_dump($source);
-
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
