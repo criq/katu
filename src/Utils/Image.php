@@ -110,6 +110,13 @@ class Image {
 
 			$source = static::getValidSource($source);
 
+			// Try a URL as a source.
+			try {
+				$source = \Katu\Utils\Cache::getUrl(new \Katu\Types\TUrl($source));
+			} catch (\Exception $e) {
+				// No problem, it's not a URL.
+			}
+
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
