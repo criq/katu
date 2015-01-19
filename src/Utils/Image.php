@@ -114,13 +114,13 @@ class Image {
 			try {
 				$source = \Katu\Utils\Cache::getUrl(new \Katu\Types\TUrl($source));
 			} catch (\Exception $e) {
-				// No problem, it's not a URL.
+				var_dump($e); die;
 			}
 
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
-				error_log($e);
+				\Katu\ErrorHandler::log($e);
 
 				throw new \Katu\Exceptions\ImageErrorException($e->getMessage());
 			}
