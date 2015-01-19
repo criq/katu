@@ -114,7 +114,7 @@ class Image {
 			try {
 				$source = \Katu\Utils\Cache::getUrl(new \Katu\Types\TUrl($source));
 			} catch (\Exception $e) {
-				var_dump($e); die;
+
 			}
 
 			try {
