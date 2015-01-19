@@ -50,6 +50,7 @@ class Image {
 
 		$fileNameSuffix = implode('_', $fileNameSuffixes);
 
+		$fileNameExtension = null;
 		if (isset($pathinfo['extension'])) {
 			$fileNameExtension = '.' . $pathinfo['extension'];
 		}
@@ -120,6 +121,8 @@ class Image {
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
+				\Katu\ErrorHandler::log($e);
+
 				return false;
 			}
 
