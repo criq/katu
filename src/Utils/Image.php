@@ -122,7 +122,7 @@ class Image {
 			} catch (\Exception $e) {
 				\Katu\ErrorHandler::log($e);
 
-				throw new \Katu\Exceptions\ImageErrorException($e->getMessage());
+				return false;
 			}
 
 			if (isset($options['format']) && $options['format'] == 'square') {
