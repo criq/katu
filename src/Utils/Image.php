@@ -42,7 +42,10 @@ class Image {
 
 		$fileNameHash = sha1(JSON::encodeStandard($fileNameHashParts));
 
-		$fileNameSuffixes = [];
+		$fileNameSuffixes = [
+			'size'    => (int) $size,
+			'quality' => (int) $quality,
+		];
 		foreach ($options as $key => $value) {
 			$fileNameSuffixes[] = $key;
 			$fileNameSuffixes[] = $value;
