@@ -112,11 +112,7 @@ class Image {
 
 			// Try a URL as a source.
 			try {
-				$url = new \Katu\Types\TUrl($source);
-				var_dump($url);
-				$source = \Katu\Utils\Cache::getUrl($url);
-				var_dump($source);
-				die;
+				$source = \Katu\Utils\Cache::getUrl(new \Katu\Types\TUrl($source));
 			} catch (\Exception $e) {
 
 			}
