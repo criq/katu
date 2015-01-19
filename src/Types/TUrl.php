@@ -84,9 +84,15 @@ class TUrl {
 	public function getParts() {
 		$parts = parse_url($this->value);
 
+		if (!isset($parts['path'])) {
+			$parts['path'] = null;
+		}
+
 		if (isset($parts['query'])) {
 			parse_str($parts['query'], $query_params);
-			$parts['query'] = $query_params;
+			$parts['query'] = (array) $query_params;
+		} else {
+			$parts['query'] = [];
 		}
 
 		return $parts;

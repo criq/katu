@@ -21,21 +21,50 @@ class Image {
 	static function getThumbnailFilename($uri, $size, $quality = 100, $options = []) {
 		$uri = static::getValidSource($uri);
 
-		$pathinfo = pathinfo($uri);
+		try {
+			$url = new \Katu\Types\TUrl($uri);
+			$parts = $url->getParts();
+			$pathinfo = pathinfo($parts['path']);
 
-		$suffixes = [];
+			$fileNameHashParts = [
+				$parts['scheme'],
+				$parts['host'],
+				$parts['path'],
+				$parts['query'],
+			];
+		} catch (\Exception $e) {
+			$pathinfo = pathinfo($uri);
+
+			$fileNameHashParts = [
+				$pathinfo['dirname'],
+				$pathinfo['basename'],
+			];
+		}
+
+		$fileNameHash = sha1(JSON::encodeStandard($fileNameHashParts));
+
+		$fileNameSuffixes = [];
 		foreach ($options as $key => $value) {
-			$suffixes[] = $key;
-			$suffixes[] = $value;
+			$fileNameSuffixes[] = $key;
+			$fileNameSuffixes[] = $value;
 		}
 
+		$fileNameSuffix = implode('_', $fileNameSuffixes);
+
+		if (isset($pathinfo['extension'])) {
+			$fileNameExtension = '.' . $pathinfo['extension'];
+		}
 		if (isset($options['extension'])) {
-			$extension = '.' . ltrim($options['extension'], '.');
-		} else {
-			$extension = (isset($pathinfo['extension']) ? '.' . strtolower($pathinfo['extension']) : null);
+			$fileNameExtension = '.' . ltrim($options['extension'], '.');
 		}
 
-		return implode('_', array_filter(array_merge(array(sha1($uri), $size, $quality), $suffixes))) . $extension;
+		return implode([
+			implode('_', array_filter([
+				$fileNameHash,
+				$fileNameSuffix,
+			])),
+			$fileNameExtension,
+		]);
 	}
 
 	static function getDirName() {
