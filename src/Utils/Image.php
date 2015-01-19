@@ -121,8 +121,7 @@ class Image {
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
-				#\Katu\ErrorHandler::log($e);
-				return false;
+				throw new \Katu\Exceptions\ImageErrorException;
 			}
 
 			if (isset($options['format']) && $options['format'] == 'square') {
