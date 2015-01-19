@@ -36,8 +36,7 @@ class Image {
 			$pathinfo = pathinfo($uri);
 
 			$fileNameHashParts = [
-				$pathinfo['dirname'],
-				$pathinfo['basename'],
+				$uri,
 			];
 		}
 
