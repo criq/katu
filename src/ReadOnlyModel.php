@@ -30,7 +30,7 @@ class ReadOnlyModel {
 		$dir = BASE_DIR . '/app/Models/';
 		$ns = '\\App\\Models';
 
-		$models = array();
+		$models = [];
 
 		foreach (scandir($dir) as $file) {
 			$path = $dir . $file;
@@ -123,7 +123,7 @@ class ReadOnlyModel {
 	}
 
 	static function filterParams($params) {
-		$_params = array();
+		$_params = [];
 
 		foreach ($params as $param => $value) {
 			if (is_string($param)) {
@@ -134,7 +134,7 @@ class ReadOnlyModel {
 		return $_params;
 	}
 
-	static function getBy($params = array(), $options = array()) {
+	static function getBy($params = [], $options = []) {
 		$pdo = static::getPdo();
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
@@ -157,18 +157,20 @@ class ReadOnlyModel {
 	}
 
 	static function get($primaryKey) {
-		return static::getOneBy(array(static::getIdColumnName() => $primaryKey));
+		return static::getOneBy([
+			static::getIdColumnName() => $primaryKey,
+		]);
 	}
 
 	static function getOneBy() {
-		return call_user_func_array(array('static', 'getBy'), array_merge(func_get_args(), array(array(new Page(1, 1)))))->getOne();
+		return call_user_func_array(['static', 'getBy'], array_merge(func_get_args(), [[new Page(1, 1)]]))->getOne();
 	}
 
-	static function getAll($options = array()) {
-		return static::getBy(array(), $options);
+	static function getAll($options = []) {
+		return static::getBy([], $options);
 	}
 
-	static function getOneOrCreateWithArray($getBy, $array = array()) {
+	static function getOneOrCreateWithArray($getBy, $array = []) {
 		$object = static::getOneBy($getBy);
 		if (!$object) {
 			$properties = array_merge($getBy, $array);
@@ -181,7 +183,7 @@ class ReadOnlyModel {
 	static function getOneOrCreateWithList($getBy) {
 		$object = static::getOneBy($getBy);
 		if (!$object) {
-			$object = call_user_func_array(array('static', 'create'), array_slice(func_get_args(), 1));
+			$object = call_user_func_array(['static', 'create'], array_slice(func_get_args(), 1));
 		}
 
 		return $object;
@@ -239,18 +241,18 @@ class ReadOnlyModel {
 		return false;
 	}
 
-	public function getFileAttachments($properties = array(), $options = array()) {
+	public function getFileAttachments($properties = [], $options = []) {
 		$properties['objectModel'] = $this->getClass();
 		$properties['objectId']    = $this->getId();
 
 		return FileAttachment::getBy($properties, $options);
 	}
 
-	public function getImageFileAttachments($properties = array(), $options = array()) {
+	public function getImageFileAttachments($properties = [], $options = []) {
 		$sql = (new Select(FileAttachment::getTable()))
 			->from(FileAttachment::getTable())
 			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
-			->whereIn(File::getColumn('type'), array('image/jpeg', 'image/png', 'image/gif'))
+			->whereIn(File::getColumn('type'), ['image/jpeg', 'image/png', 'image/gif'])
 			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
 			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
 			->orderBy(new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('DESC')))
