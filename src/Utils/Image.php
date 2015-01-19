@@ -116,6 +116,7 @@ class Image {
 				var_dump($url);
 				$source = \Katu\Utils\Cache::getUrl($url);
 				var_dump($source);
+				die;
 			} catch (\Exception $e) {
 
 			}
