@@ -47,11 +47,10 @@ class Image {
 			'quality' => (int) $quality,
 		];
 		foreach ($options as $key => $value) {
-			$fileNameSuffixes[] = $key;
-			$fileNameSuffixes[] = $value;
+			$fileNameSuffixes[$key] = $value;
 		}
 
-		$fileNameSuffix = implode('_', $fileNameSuffixes);
+		$fileNameSuffix = (new \Katu\Types\TArray($fileNameSuffixes))->implodeWithKeys('_');
 
 		$fileNameExtension = null;
 		if (isset($pathinfo['extension'])) {

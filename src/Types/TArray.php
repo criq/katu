@@ -51,6 +51,19 @@ class TArray {
 		return implode($lastDelimiter, array_filter([implode($delimiter, $arrayList), $arrayLast[0]]));
 	}
 
+	public function implodeWithKeys($itemDelimiter, $keyValueDelimiter = null) {
+		if (!$keyValueDelimiter) {
+			$keyValueDelimiter = $itemDelimiter;
+		}
+
+		$items = [];
+		foreach ($this->value as $key => $value) {
+			$items[] = implode($keyValueDelimiter, [$key, $value]);
+		}
+
+		return implode($itemDelimiter, $items);
+	}
+
 	public function getRandomItems($n) {
 		$array = [];
 		for ($i = 0; $i < $n; $i++) {
