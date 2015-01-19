@@ -36,19 +36,35 @@ class View {
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnail', function($uri, $size = 640, $quality = 100) {
-			return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality);
+			try {
+				return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality);
+			} catch (\Katu\Exceptions\ImageErrorException $e) {
+				return false;
+			}
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnail', function($uri, $size = 640, $quality = 100) {
-			return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality, ['format' => 'square']);
+			try {
+				return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality, ['format' => 'square']);
+			} catch (\Katu\Exceptions\ImageErrorException $e) {
+				return false;
+			}
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnailPath', function($uri, $size = 640, $quality = 100) {
-			return \Katu\Utils\Image::getThumbnailPath($uri, $size, $quality);
+			try {
+				return \Katu\Utils\Image::getThumbnailPath($uri, $size, $quality);
+			} catch (\Katu\Exceptions\ImageErrorException $e) {
+				return false;
+			}
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnailPath', function($uri, $size = 640, $quality = 100) {
-			return \Katu\Utils\Image::getThumbnailPath($uri, $size, $quality, ['format' => 'square']);
+			try {
+				return \Katu\Utils\Image::getThumbnailPath($uri, $size, $quality, ['format' => 'square']);
+			} catch (\Katu\Exceptions\ImageErrorException $e) {
+				return false;
+			}
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('imageWidthAndHeightAttributes', function($path) {
