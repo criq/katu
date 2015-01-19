@@ -121,8 +121,7 @@ class Image {
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
-				\Katu\ErrorHandler::log($e);
-
+				#\Katu\ErrorHandler::log($e);
 				return false;
 			}
 
