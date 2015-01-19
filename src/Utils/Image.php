@@ -120,6 +120,7 @@ class Image {
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
+				var_dump($e); die;
 				\Katu\ErrorHandler::log($e);
 
 				return false;
