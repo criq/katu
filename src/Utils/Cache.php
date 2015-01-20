@@ -5,7 +5,7 @@ namespace Katu\Utils;
 class Cache {
 
 	static function get($name, $callback, $timeout = null, $options = []) {
-		$path = self::getCachePath($name);
+		$path = FS::getPathForName($name);
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
@@ -25,52 +25,6 @@ class Cache {
 		} catch (\Katu\Exceptions\DoNotCacheException $e) {
 			return $e->data;
 		}
-	}
-
-	static function getCachePath($name) {
-		$name = is_array($name) ? $name : [$name];
-		$segments = [];
-
-		// URL.
-		foreach ($name as $namePart) {
-
-			try {
-				$parts = (new \Katu\Types\TUrl($namePart))->getParts();
-				$segments[] = $parts['scheme'];
-				$segments[] = $parts['host'];
-				$segments[] = $parts['path'];
-				$segments[] = $parts['query'];
-			} catch (\Exception $e) {
-				$segments[] = $namePart;
-			}
-
-		}
-
-		// Explode "/" hashes into segments.
-		$_segments = [];
-		foreach ($segments as $segment) {
-			if (is_string($segment)) {
-				foreach (explode('/', trim($segment, '/')) as $e) {
-					$_segments[] = $e;
-				}
-			} else {
-				$_segments[] = sha1(serialize($segment));
-			}
-		}
-
-		$segments = $_segments;
-
-		// Sanitize.
-		foreach ($segments as &$segment) {
-			$segment = preg_replace('#[^a-z0-9\.\-_]#i', '_', $segment);
-		}
-
-		// Attach hashed hidden file name at the end.
-		$segments[] = '.' . sha1(serialize($name));
-
-		$path = implode('/', $segments);
-
-		return $path;
 	}
 
 	static function getCacheDir($path) {

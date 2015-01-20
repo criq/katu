@@ -6,6 +6,7 @@ class Tmp {
 
 	static function set($name, $value) {
 		$path = static::getPath($name);
+		@mkdir(dirname($path), 0777, true);
 		file_put_contents($path, $value);
 
 		return $path;
@@ -20,11 +21,7 @@ class Tmp {
 	}
 
 	static function getPath($name) {
-		return TMP_PATH . static::getFileName($name);
-	}
-
-	static function getFileName($name) {
-		return implode('__', (array) $name);
+		return TMP_PATH . FS::getPathForName($name);
 	}
 
 	static function debug($var) {

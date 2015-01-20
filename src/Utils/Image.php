@@ -109,6 +109,12 @@ class Image {
 	static function makeThumbnail($source, $destination, $size, $quality = 100, $options = []) {
 		if (!file_exists($destination)) {
 
+			// See if there's already been a failure.
+			$sourceHash = sha1(serialize($source));
+			if (Tmp::get(['image', 'failure', $sourceHash])) {
+				throw new \Katu\Exceptions\ImageErrorException;
+			}
+
 			@mkdir(dirname($destination), 0777, true);
 
 			$source = static::getValidSource($source);
@@ -123,6 +129,9 @@ class Image {
 			try {
 				$image = \Intervention\Image\Image::make($source);
 			} catch (\Exception $e) {
+				// Save the failure info.
+				Tmp::set(['image', 'failure', $sourceHash], (new \Katu\Utils\DateTime())->getDbDateTimeFormat());
+
 				throw new \Katu\Exceptions\ImageErrorException;
 			}
 
