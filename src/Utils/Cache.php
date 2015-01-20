@@ -54,7 +54,7 @@ class Cache {
 					$_segments[] = $e;
 				}
 			} else {
-				$_segments[] = sha1(JSON::encodeStandard($segment));
+				$_segments[] = sha1(serialize($segment));
 			}
 		}
 
