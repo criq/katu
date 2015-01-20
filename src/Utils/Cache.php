@@ -5,10 +5,10 @@ namespace Katu\Utils;
 class Cache {
 
 	static function get($name, $callback, $timeout = null, $options = []) {
-		$cacheName = self::getCacheName($name);
+		$path = self::getCachePath($name);
 
 		$cache = new \Gregwar\Cache\Cache;
-		$cache->setCacheDirectory(static::getCacheDir($cacheName));
+		$cache->setCacheDirectory(static::getCacheDir($path));
 		$cache->setPrefixSize(0);
 
 		$opts = [];
@@ -21,54 +21,70 @@ class Cache {
 		};
 
 		try {
-			return unserialize(gzuncompress($cache->getOrCreate(static::getCacheFile($cacheName), $opts, $callback)));
+			return unserialize(gzuncompress($cache->getOrCreate(static::getCacheFile($path), $opts, $callback)));
 		} catch (\Katu\Exceptions\DoNotCacheException $e) {
 			return $e->data;
 		}
 	}
 
-	static function getCacheName($name) {
-		$path = implode('/', array_map(function($i) {
-			if (is_string($i) || is_int($i) || is_float($i) || is_bool($i)) {
-				return (string) $i;
-			}
-			return sha1(serialize($i));
-		}, (array) $name));
+	static function getCachePath($name) {
+		$name = is_array($name) ? $name : [$name];
+		$segments = [];
 
-		$path = trim($path, '/');
+		// URL.
+		foreach ($name as $namePart) {
+
+			try {
+				$parts = (new \Katu\Types\TUrl($namePart))->getParts();
+				$segments[] = $parts['scheme'];
+				$segments[] = $parts['host'];
+				$segments[] = $parts['path'];
+				$segments[] = $parts['query'];
+			} catch (\Exception $e) {
+				$segments[] = $namePart;
+			}
+
+		}
+
+		// Explode "/" hashes into segments.
+		$_segments = [];
+		foreach ($segments as $segment) {
+			if (is_string($segment)) {
+				foreach (explode('/', trim($segment, '/')) as $e) {
+					$_segments[] = $e;
+				}
+			} else {
+				$_segments[] = sha1(JSON::encodeStandard($segment));
+			}
+		}
+
+		$segments = $_segments;
+
+		// Sanitize.
+		foreach ($segments as &$segment) {
+			$segment = preg_replace('#[^a-z0-9\.\-_]#i', '_', $segment);
+		}
+
+		// Attach hashed hidden file name at the end.
+		$segments[] = '.' . sha1(serialize($name));
+
+		$path = implode('/', $segments);
 
 		return $path;
 	}
 
-	static function getCacheDir($cacheName) {
-		return FS::joinPaths(TMP_PATH, dirname($cacheName));
+	static function getCacheDir($path) {
+		return FS::joinPaths(TMP_PATH, dirname($path));
 	}
 
-	static function getCacheFile($cacheName) {
-		return basename($cacheName);
+	static function getCacheFile($path) {
+		return basename($path);
 	}
 
 	static function getUrl($url, $timeout = null, $options = []) {
-		$tUrl = new \Katu\Types\TUrl($url);
-		$parts = $tUrl->getParts();
-		$path = trim(implode('/', array_map(function($i) {
-			return trim($i, '/');
-		}, array_filter([
-			'url',
-			$parts['scheme'],
-			$parts['host'],
-			isset($parts['path']) ? $parts['path'] : null,
-			isset($parts['query']) ? sha1(serialize($parts['query'])) : null,
-			'.cache',
-		]))), '/');
+		return \Katu\Utils\Cache::get($url, function() use($url) {
 
-		$path = preg_replace('#/+#', '/', $path);
-
-		return \Katu\Utils\Cache::get($path, function() use($url) {
-
-			$url = new \Katu\Types\TUrl((string) $url);
-			$response = $url->get($curl);
-
+			$response = (new \Katu\Types\TUrl((string) $url))->get($curl);
 			if ($curl->error) {
 				throw new \Katu\Exceptions\ErrorException("Error getting URL.");
 			}
