@@ -109,7 +109,7 @@ class Facebook {
 						throw new \Exception();
 					}
 
-					return \Katu\Controller::redirect($scenarioReturnUrl);
+					return \Katu\Controller::redirect(static::getRedirectUrl($app->request->params('state')));
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
