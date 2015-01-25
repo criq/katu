@@ -34,8 +34,4 @@ class TColorRgb {
 		]);
 	}
 
-	public function getPhpColor() {
-		return new \phpColors\Color($this->getHex());
-	}
-
 }
