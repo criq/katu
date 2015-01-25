@@ -84,6 +84,14 @@ class View {
 			return \Katu\Utils\Image::getHeight($path);
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('imageColor', function($uri) {
+			try {
+				return \Katu\Utils\Image::getColorAtCoords(\Katu\Utils\Image::getThumbnailUrl($uri, 1, 100, ['format' => 'square']));
+			} catch (\Katu\Exceptions\ImageErrorException $e) {
+				return false;
+			}
+		}));
+
 		$twig->addFilter(new \Twig_SimpleFilter('embedImage', function($path) {
 			$mime = @\Katu\Utils\Image::getMime($path);
 			$base64 = @base64_encode(@file_get_contents($path));

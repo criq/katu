@@ -89,6 +89,8 @@ class Image {
 		try {
 			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
 		} catch (\Exception $e) {
+			\Katu\ErrorHandler::log($e);
+
 			return false;
 		}
 
@@ -100,6 +102,8 @@ class Image {
 		try {
 			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
 		} catch (\Exception $e) {
+			\Katu\ErrorHandler::log($e);
+
 			return false;
 		}
 
@@ -132,7 +136,7 @@ class Image {
 				// Save the failure info.
 				Tmp::set(['image', 'failure', $sourceHash], (new \Katu\Utils\DateTime())->getDbDateTimeFormat());
 
-				throw new \Katu\Exceptions\ImageErrorException;
+				throw $e;
 			}
 
 			if (isset($options['format']) && $options['format'] == 'square') {
@@ -210,7 +214,7 @@ class Image {
 		return \Katu\Types\TColorRgb::getFromImageColor($color);
 	}
 
-	static function getColorAtCoords($path, \Katu\Types\TCoordsRectangle $coordsRectangle) {
+	static function getColorAtCoords($path, \Katu\Types\TCoordsRectangle $coordsRectangle = null) {
 		$createFunctionName = static::getImageCreateFunctionName($path);
 		if (!$createFunctionName) {
 			throw new \Exception("Invalid image type.");
@@ -218,6 +222,11 @@ class Image {
 
 		$image = $createFunctionName($path);
 		$pixel = imagecreatetruecolor(1, 1);
+
+		if (!$coordsRectangle) {
+			$coordsRectangle = new \Katu\Types\TCoordsRectangle(0, 0, imagesx($image), imagesy($image));
+		}
+
 		imagecopyresampled($pixel, $image, 0, 0, $coordsRectangle->xa, $coordsRectangle->ya, 1, 1, $coordsRectangle->xb - $coordsRectangle->xa, $coordsRectangle->yb - $coordsRectangle->ya);
 
 		return static::getColorRgb(imagecolorat($pixel, 0, 0));
