@@ -215,21 +215,23 @@ class Image {
 	}
 
 	static function getColorAtCoords($path, \Katu\Types\TCoordsRectangle $coordsRectangle = null) {
-		$createFunctionName = static::getImageCreateFunctionName($path);
-		if (!$createFunctionName) {
-			throw new \Exception("Invalid image type.");
-		}
+		return Cache::get(['image', 'color', $path], function() use($path, $coordsRectangle) {
+			$createFunctionName = static::getImageCreateFunctionName($path);
+			if (!$createFunctionName) {
+				throw new \Exception("Invalid image type.");
+			}
 
-		$image = $createFunctionName($path);
-		$pixel = imagecreatetruecolor(1, 1);
+			$image = $createFunctionName($path);
+			$pixel = imagecreatetruecolor(1, 1);
 
-		if (!$coordsRectangle) {
-			$coordsRectangle = new \Katu\Types\TCoordsRectangle(0, 0, imagesx($image), imagesy($image));
-		}
+			if (!$coordsRectangle) {
+				$coordsRectangle = new \Katu\Types\TCoordsRectangle(0, 0, imagesx($image), imagesy($image));
+			}
 
-		imagecopyresampled($pixel, $image, 0, 0, $coordsRectangle->xa, $coordsRectangle->ya, 1, 1, $coordsRectangle->xb - $coordsRectangle->xa, $coordsRectangle->yb - $coordsRectangle->ya);
+			imagecopyresampled($pixel, $image, 0, 0, $coordsRectangle->xa, $coordsRectangle->ya, 1, 1, $coordsRectangle->xb - $coordsRectangle->xa, $coordsRectangle->yb - $coordsRectangle->ya);
 
-		return static::getColorRgb(imagecolorat($pixel, 0, 0));
+			return static::getColorRgb(imagecolorat($pixel, 0, 0));
+		});
 	}
 
 }
