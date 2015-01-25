@@ -25,9 +25,7 @@
 		"jabli/amiko": "0.1.*",
 		"jabli/sexy": "0.2.*",
 		"symfony/dom-crawler": "2.*",
-		"symfony/css-selector": "2.*",
-		"mexitek/phpcolors": "0.3.*",
-		"mischiefcollective/colorjizz": "dev-master"
+		"symfony/css-selector": "2.*"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
