@@ -32,9 +32,6 @@ class App {
 		// Session.
 		\Katu\Session::setCookieParams();
 
-		// Default content-type header for debugging, will be probably overwritten by app.
-		header('Content-Type: text/html; charset=UTF-8');
-
 		return true;
 	}
 
@@ -74,6 +71,9 @@ class App {
 
 			// Add error middleware.
 			$app->add(new Middleware\ErrorMiddleware());
+
+			// Default content-type header for debugging, will be probably overwritten by app.
+			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
 		}
 
@@ -184,6 +184,26 @@ class App {
 
 		}
 
+	}
+
+	static function getExtendedClass($appClassName, $fallbackName) {
+		if (class_exists($appClassName)) {
+			return $appClassName;
+		} else {
+			return $fallbackName;
+		}
+	}
+
+	static function getControllerClass() {
+		return static::getExtendedClass('\App\Extensions\Controller', '\Katu\Controller');
+	}
+
+	static function getViewClass() {
+		return static::getExtendedClass('\App\Extensions\View', '\Katu\View');
+	}
+
+	static function getErrorHandlerClass() {
+		return static::getExtendedClass('\App\Extensions\ErrorHandler', '\Katu\ErrorHandler');
 	}
 
 }

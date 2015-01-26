@@ -63,21 +63,23 @@ class ErrorHandler {
 	}
 
 	static function resolveException($e) {
+		$controllerClass = \Katu\App::getControllerClass();
+
 		try {
 
 			throw $e;
 
 		} catch (Exceptions\NotFoundException $e) {
 
-			Controller::renderNotFound();
+			$controllerClass::renderNotFound();
 
 		} catch (Exceptions\UnauthorizedException $e) {
 
-			Controller::renderUnauthorized();
+			$controllerClass::renderUnauthorized();
 
 		} catch (Exceptions\UserErrorException $e) {
 
-			Controller::renderError($e->getMessage());
+			$controllerClass::renderError($e->getMessage());
 
 		}
 	}
