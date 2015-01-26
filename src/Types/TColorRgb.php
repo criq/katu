@@ -14,6 +14,14 @@ class TColorRgb {
 		$this->b = $b;
 	}
 
+	public function __toString() {
+		return implode(', ', [
+			$this->r,
+			$this->g,
+			$this->b,
+		]);
+	}
+
 	static function getFromImageColor($color) {
 		$r = ($color >> 16) & 0xFF;
 		$g = ($color >> 8) & 0xFF;
