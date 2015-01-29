@@ -140,7 +140,7 @@ class ReadOnlyModel {
 		$query->setClass(static::getClass());
 
 		$sql = new Select();
-		$sql->setExpressions($expressions);
+		$sql->addExpressions($expressions);
 		$sql->from(static::getTable());
 
 		foreach ($params as $name => $value) {
@@ -258,7 +258,7 @@ class ReadOnlyModel {
 			->orderBy(new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('DESC')))
 			;
 
-		$sql->setExpressions($expressions);
+		$sql->addExpressions($expressions);
 
 		return FileAttachment::createQuery($sql)->getResult();
 	}
