@@ -134,13 +134,13 @@ class ReadOnlyModel {
 		return $_params;
 	}
 
-	static function getBy($params = [], $options = []) {
+	static function getBy($params = [], $expressions = []) {
 		$pdo = static::getPdo();
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
 		$sql = new Select();
-		$sql->setOptions($options);
+		$sql->setExpressions($expressions);
 		$sql->from(static::getTable());
 
 		foreach ($params as $name => $value) {
@@ -248,7 +248,7 @@ class ReadOnlyModel {
 		return FileAttachment::getBy($properties, $options);
 	}
 
-	public function getImageFileAttachments($properties = [], $options = []) {
+	public function getImageFileAttachments($properties = [], $expressions = []) {
 		$sql = (new Select(FileAttachment::getTable()))
 			->from(FileAttachment::getTable())
 			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
@@ -258,7 +258,7 @@ class ReadOnlyModel {
 			->orderBy(new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('DESC')))
 			;
 
-		$sql->setOptions($options);
+		$sql->setExpressions($expressions);
 
 		return FileAttachment::createQuery($sql)->getResult();
 	}

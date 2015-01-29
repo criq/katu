@@ -9,7 +9,7 @@ use \Katu\Types\TUrl;
 class Geocode {
 
 	static function geocode($language, $address, $components = []) {
-		$res = Cache::get(['geocode', $language, sha1($address), sha1(\Katu\Utils\JSON::encode($components))], function() use($language, $address, $components) {
+		$res = Cache::get(['geocode', $language, $address, $components], function() use($language, $address, $components) {
 
 			$componentArray = [];
 			foreach ($components as $componentName => $componentValue) {
