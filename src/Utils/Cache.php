@@ -4,7 +4,29 @@ namespace Katu\Utils;
 
 class Cache {
 
-	static function get($name, $callback, $timeout = null, $options = []) {
+	static function get() {
+		if (is_callable(func_get_arg(0))) {
+			$name = null;
+			@list($callback, $timeout, $options) = func_get_args();
+		} else {
+			@list($name, $callback, $timeout, $options) = func_get_args();
+		}
+
+		// No name, generate it from position in code.
+		if (!$name) {
+			var_dump(func_get_args());
+			foreach (debug_backtrace() as $backtrace) {
+				if ($backtrace['file'] != __FILE__) {
+					$name = [
+						'anonymous',
+						$backtrace['file'],
+						$backtrace['line'],
+					];
+					break;
+				}
+			}
+		}
+
 		$path = FS::getPathForName($name);
 
 		$cache = new \Gregwar\Cache\Cache;
