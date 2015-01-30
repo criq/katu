@@ -14,13 +14,13 @@ class Cache {
 
 		// No name, generate it from position in code.
 		if (!$name) {
-			var_dump(func_get_args());
 			foreach (debug_backtrace() as $backtrace) {
 				if ($backtrace['file'] != __FILE__) {
 					$name = [
 						'anonymous',
 						$backtrace['file'],
 						$backtrace['line'],
+						$options,
 					];
 					break;
 				}
