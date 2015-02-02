@@ -4,11 +4,16 @@ namespace Katu\Utils;
 
 class JSON {
 
-	static function respond($var) {
+	static function respond($var, $options = []) {
 		$app = \Katu\App::get();
 
 		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
-		$app->response->setBody(self::encode($var));
+
+		if (isset($options['format']) && $options['format'] == 'standard') {
+			$app->response->setBody(self::encodeStandard($var));
+		} else {
+			$app->response->setBody(self::encode($var));
+		}
 
 		return true;
 	}

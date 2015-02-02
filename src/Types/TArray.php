@@ -8,7 +8,7 @@ class TArray {
 
 	public function __construct($value) {
 		if (!self::isValid($value)) {
-			throw new \Exception("Invalid e-mail address.");
+			throw new \Exception("Invalid array.");
 		}
 
 		$this->value = $value;

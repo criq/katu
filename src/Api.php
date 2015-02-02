@@ -4,11 +4,11 @@ namespace Katu;
 
 class Api {
 
-	static function success($res = null) {
+	static function success($res = null, $options = []) {
 		$app = App::get();
 		$app->response->setStatus(200);
 
-		return Utils\JSON::respond($res);
+		return Utils\JSON::respond($res, $options);
 	}
 
 	static function error($error = null, $code = null) {
