@@ -15,6 +15,12 @@ class App {
 		if (!defined('ERROR_LOG')) {
 			define('ERROR_LOG', Utils\FS::joinPaths(LOG_PATH, ErrorHandler::ERROR_LOG));
 		}
+		if (!defined('FILE_DIR')) {
+			define('FILE_DIR', 'files');
+		}
+		if (!defined('FILE_PATH')) {
+			define('FILE_PATH', rtrim(BASE_DIR) . '/' . FILE_DIR . '/');
+		}
 		if (!defined('TMP_DIR')) {
 			define('TMP_DIR', 'tmp');
 		}
