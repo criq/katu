@@ -74,7 +74,8 @@ class Controller {
 
 		return $app->request->params('formSubmitted')
 			&& $app->request->params('formName') == $name
-			&& Utils\CSRF::isValidToken($app->request->params('formToken'));
+			&& Utils\CSRF::isValidToken($app->request->params('formToken'))
+			;
 	}
 
 	static function isSubmittedByHuman($name = null) {
