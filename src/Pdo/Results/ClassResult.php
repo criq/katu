@@ -13,8 +13,8 @@ class ClassResult extends PaginatedResult {
 	}
 
 	public function setIteratorArray() {
-		if (is_null($this->iteratorArray)) {
-			$this->iteratorArray = $this->getObjects();
+		if (is_null($this->_iteratorArray)) {
+			$this->_iteratorArray = $this->getObjects();
 		}
 	}
 

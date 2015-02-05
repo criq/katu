@@ -108,6 +108,10 @@ class ReadOnlyModel {
 		return $query;
 	}
 
+	static function getIdColumn() {
+		return static::getColumn(static::getIdColumnName());
+	}
+
 	static function getIdColumnName() {
 		foreach (static::getPdo()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
 			if (isset($row['Key']) && $row['Key'] == 'PRI') {

@@ -137,4 +137,67 @@ class Model extends ReadOnlyModel {
 		}
 	}
 
+	public function setUniqueColumnSlug($column, $source, $force = false) {
+		// Generate slug.
+		$slug = (new \Katu\Types\TString($source))->getForUrl();
+
+		// If there already is a slug, keep it.
+		if (!$force && $this->$column) {
+			return true;
+		}
+
+		// If it's the same, keep it.
+		if (!$force && $slug == $this->$column) {
+			return true;
+		}
+
+		$preg = '^' . $slug . '(\-([0-9]+))?$';
+
+		// Select all already used slugs.
+		$sql = (new \Sexy\Select(static::getColumn($column)))
+			->from(static::getTable())
+			->where(new \Sexy\CmpNotEq(static::getIdColumn(), $this->getId()))
+			->where(new \Sexy\CmpRegexp(static::getColumn($column), $preg))
+			;
+		$res = static::getPdo()->createQueryFromSql($sql)->getResult();
+
+		// Nothing, keep the slug.
+		if (!$res->getCount()) {
+
+			$this->update($column, $slug);
+
+		// There are some, get a new slug.
+		} else {
+
+			$suffixes = [];
+			foreach ($res->getArray() as $item) {
+				preg_match('#' . $preg . '#', $item[$column], $match);
+				if (!isset($match[2])) {
+					$suffixes[] = 0;
+				} else {
+					$suffixes[] = (int) $match[2];
+				}
+			}
+
+			// Sort ascending.
+			natsort($suffixes);
+
+			// Find a free suffix;
+			$proposedSuffix = 0;
+			while (in_array($proposedSuffix, $suffixes)) {
+				$proposedSuffix++;
+			}
+
+			$this->update($column, implode('-', array_filter([
+				$slug,
+				$proposedSuffix,
+			])));
+
+		}
+
+		$this->save();
+
+		return true;
+	}
+
 }
