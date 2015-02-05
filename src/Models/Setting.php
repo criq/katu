@@ -39,12 +39,12 @@ class Setting extends \Katu\Model {
 			throw new \Katu\Exceptions\ArgumentErrorException("Missing setting name.", 'name');
 		}
 
-		$attr['name'] = trim($name);
+		$expressions['name'] = trim($name);
 		if ($object) {
-			$attr['id'] = new \Sexy\NotEquals($object->id);
+			$expressions[] = new \Sexy\CmpNotEq(static::getIdColumn(), $object->id);
 		}
 
-		if (static::getBy($attr)->getTotal()) {
+		if (static::getBy($expressions)->getTotal()) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Setting already exists.", 'name');
 		}
 
