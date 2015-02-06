@@ -54,6 +54,8 @@ class UserPermission extends \Katu\Model {
 			throw new \Katu\Exceptions\ErrorException("No permissions found.");
 		}
 
+		natsort($permissions);
+
 		return $permissions;
 	}
 

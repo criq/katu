@@ -98,7 +98,7 @@ class Image {
 	}
 
 	static function getThumbnailPath($uri, $size, $quality = 100, $options = []) {
-		$thumbnailPath = \Katu\Utils\FS::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
+		$thumbnailPath = \Katu\Utils\FileSystem::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
 		try {
 			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
 		} catch (\Exception $e) {

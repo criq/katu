@@ -18,7 +18,7 @@ class Download {
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate');
 		header('Pragma: public');
-		header('Content-Length: ' . FS::getSize($filename));
+		header('Content-Length: ' . FileSystem::getSize($filename));
 		readfile($filename);
 
 		die;

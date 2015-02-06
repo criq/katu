@@ -60,7 +60,7 @@ class Config {
 
 		foreach (scandir($dir) as $file) {
 			if (preg_match('#^[a-z]+\.(php|yaml)$#i', $file)) {
-				$files[] = Utils\FS::joinPaths($dir, $file);
+				$files[] = Utils\FileSystem::joinPaths($dir, $file);
 			}
 		}
 

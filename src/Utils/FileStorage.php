@@ -2,7 +2,7 @@
 
 namespace Katu\Utils;
 
-class File {
+class FileStorage {
 
 	static function set($name, $value) {
 		$path = static::getPath($name);
@@ -21,7 +21,7 @@ class File {
 	}
 
 	static function getPath($name) {
-		return FILE_PATH . FS::getPathForName($name);
+		return FILE_PATH . FileSystem::getPathForName($name);
 	}
 
 }

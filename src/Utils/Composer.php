@@ -5,7 +5,7 @@ namespace Katu\Utils;
 class Composer {
 
 	static function getJSON() {
-		$path = FS::joinPaths(BASE_DIR, 'composer.json');
+		$path = FileSystem::joinPaths(BASE_DIR, 'composer.json');
 		if (!file_exists($path)) {
 			throw new \Exception("Missing composer.json file.");
 		}
@@ -20,10 +20,10 @@ class Composer {
 	static function getDir() {
 		$json = self::getJSON();
 		if (isset($json['config']['vendor-dir'])) {
-			return realpath(FS::joinPaths(BASE_DIR, $json['config']['vendor-dir']));
+			return realpath(FileSystem::joinPaths(BASE_DIR, $json['config']['vendor-dir']));
 		}
 
-		return realpath(FS::joinPaths(BASE_DIR, 'vendor'));
+		return realpath(FileSystem::joinPaths(BASE_DIR, 'vendor'));
 	}
 
 }

@@ -27,7 +27,7 @@ class Cache {
 			}
 		}
 
-		$path = FS::getPathForName($name);
+		$path = FileSystem::getPathForName($name);
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
@@ -50,7 +50,7 @@ class Cache {
 	}
 
 	static function getCacheDir($path) {
-		return FS::joinPaths(TMP_PATH, dirname($path));
+		return FileSystem::joinPaths(TMP_PATH, dirname($path));
 	}
 
 	static function getCacheFile($path) {

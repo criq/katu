@@ -10,7 +10,7 @@ class CSS {
 		try {
 			$css_files = array();
 
-			$path = FS::joinPaths(BASE_DIR, \Katu\Config::getApp('css', 'path'));
+			$path = FileSystem::joinPaths(BASE_DIR, \Katu\Config::getApp('css', 'path'));
 			if (!file_exists($path)) {
 				throw new \Exception("Invalid CSS path.");
 			}
@@ -18,11 +18,11 @@ class CSS {
 			// Get directories.
 			foreach (scandir($path) as $file) {
 				if ($file != '.' && $file != '..') {
-					$subdir_path = realpath(FS::joinPaths($path, $file));
+					$subdir_path = realpath(FileSystem::joinPaths($path, $file));
 					if (is_dir($subdir_path)) {
 						foreach (scandir($subdir_path) as $css_file) {
 							if ($css_file != '.' && $css_file != '..' && preg_match('#\.css$#', $css_file)) {
-								$css_files[] = realpath(FS::joinPaths($subdir_path, $css_file));
+								$css_files[] = realpath(FileSystem::joinPaths($subdir_path, $css_file));
 							}
 						}
 					}
@@ -36,7 +36,7 @@ class CSS {
 				$css .= file_get_contents($css_file);
 			}
 
-			$imploded_path = FS::joinPaths(BASE_DIR, \Katu\Config::getApp('css', 'path'), \Katu\Config::getApp('css', 'filename'));
+			$imploded_path = FileSystem::joinPaths(BASE_DIR, \Katu\Config::getApp('css', 'path'), \Katu\Config::getApp('css', 'filename'));
 			file_put_contents($imploded_path, "\n" . $css . "\n");
 
 		} catch (\Exception $e) {

@@ -19,13 +19,13 @@ class View {
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
 			$dirs = array_filter([
 				realpath(BASE_DIR . '/app/Views/'),
-				realpath(Utils\FS::joinPaths(Utils\Composer::getDir(), substr(__DIR__, strcmp(Utils\Composer::getDir(), __DIR__)), 'Views')),
+				realpath(Utils\FileSystem::joinPaths(Utils\Composer::getDir(), substr(__DIR__, strcmp(Utils\Composer::getDir(), __DIR__)), 'Views')),
 			]);
 		}
 
 		$loader = new \Twig_Loader_Filesystem($dirs);
 		$twig   = new \Twig_Environment($loader, [
-			'cache'       => Utils\FS::joinPaths(TMP_PATH, 'twig'),
+			'cache'       => Utils\FileSystem::joinPaths(TMP_PATH, 'twig'),
 			'auto_reload' => true,
 		]);
 

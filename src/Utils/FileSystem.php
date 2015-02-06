@@ -2,7 +2,7 @@
 
 namespace Katu\Utils;
 
-class FS {
+class FileSystem {
 
 	static function joinPaths() {
 		return implode('/', array_map(function($i){
@@ -75,7 +75,30 @@ class FS {
 
 		// Sanitize.
 		foreach ($segments as &$segment) {
+			$segment = ltrim($segment, '.');
 			$segment = preg_replace('#[^a-z0-9\.\-_]#i', '_', $segment);
+		}
+
+		// Segments into folders.
+		foreach ($segments as &$segment) {
+
+			// Hashes.
+			if (preg_match('#^[0-9a-f]{40}$#', $segment)) {
+				$segment = implode('/', [
+					substr($segment, 0, 2),
+					substr($segment, 2, 2),
+					substr($segment, 4, 2),
+					$segment,
+				]);
+
+			// Any other string.
+			} else {
+				$segment = implode('/', [
+					substr($segment, 0, 1),
+					$segment,
+				]);
+			}
+
 		}
 
 		// Attach hashed hidden file name at the end.
