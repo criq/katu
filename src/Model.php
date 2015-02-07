@@ -23,7 +23,9 @@ class Model extends ReadOnlyModel {
 	static function insert($bindValues = []) {
 		$query = static::getPdo()->createQuery();
 
-		$columns = array_keys($bindValues);
+		$columns = array_map(function($i) {
+			return "`" . $i . "`";
+		}, array_keys($bindValues));
 		$values  = array_map(function($i) {
 			return ':' . $i;
 		}, array_keys($bindValues));
@@ -139,7 +141,9 @@ class Model extends ReadOnlyModel {
 
 	public function setUniqueColumnSlug($column, $source, $force = false) {
 		// Generate slug.
-		$slug = (new \Katu\Types\TString($source))->getForUrl();
+		$slug = (new \Katu\Types\TString($source))->getForUrl([
+			'maxLength' => 245,
+		]);
 
 		// If there already is a slug, keep it.
 		if (!$force && $this->$column) {
