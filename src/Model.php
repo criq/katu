@@ -75,7 +75,7 @@ class Model extends ReadOnlyModel {
 
 			$set = [];
 			foreach ($bindValues as $name => $value) {
-				$set[] = $name . " = :" . $name;
+				$set[] = "`" . $name . "` = :" . $name;
 			}
 
 			if ($set) {

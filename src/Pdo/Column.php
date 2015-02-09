@@ -19,7 +19,7 @@ class Column extends \Sexy\Expression {
 	public function getSql(&$context = []) {
 		return implode('.', [
 			$this->table->getSql(),
-			"`" . $this->name . "`",
+			$this->name == '*' ? '*' : "`" . $this->name . "`",
 		]);
 	}
 
