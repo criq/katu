@@ -17,7 +17,7 @@ class Table extends \Sexy\Expression {
 	}
 
 	public function getSql(&$context = []) {
-		return implode('.', [$this->pdo->config->database, $this->name]);
+		return implode('.', ["`" . $this->pdo->config->database . "`", "`" . $this->name . "`"]);
 	}
 
 	public function getColumnDescriptions() {
