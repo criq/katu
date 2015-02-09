@@ -2,6 +2,9 @@
 
 namespace Katu\Utils;
 
+use \Katu\Classes\FileSystemPathSegment;
+use \Katu\Classes\FileSystemPathSegments;
+
 class FileSystem {
 
 	static function joinPaths() {
@@ -40,78 +43,36 @@ class FileSystem {
 		return filesize($path);
 	}
 
-	static function getPathForName($name) {
-		$name = is_array($name) ? $name : [$name];
-		$segments = [];
+	static function getPathForName($nameParts) {
+		$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
+		$segments = new FileSystemPathSegments();
 
-		// URL.
-		foreach ($name as $namePart) {
+		// Special treatment of URLs.
+		foreach ($nameParts as $namePart) {
 
 			try {
-				$parts = (new \Katu\Types\TUrl($namePart))->getParts();
-				$segments = array_merge($segments, [$parts['scheme']], array_reverse(explode('.', $parts['host'])), [$parts['path']], [$parts['query']]);
-			} catch (\Exception $e) {
-				$segments[] = $namePart;
-			}
-
-		}
-
-		// Filter out slashes.
-		$segments = array_map(function($i) {
-			if (is_string($i)) {
-				return trim($i, '/');
-			}
-
-			return $i;
-		}, $segments);
-
-		// Filter empty ones.
-		$segments = array_values(array_filter($segments));
-
-		// Explode "/" hashes into segments.
-		$_segments = [];
-		foreach ($segments as $segment) {
-			if (is_string($segment)) {
-				foreach (explode('/', trim($segment, '/')) as $e) {
-					$_segments[] = $e;
+				$urlParts = (new \Katu\Types\TUrl($namePart))->getParts();
+				$segments->add((new FileSystemPathSegment($urlParts['scheme']))->disablePrefixFolder());
+				foreach (array_reverse(explode('.', $urlParts['host'])) as $segment) {
+					$segments->add((new FileSystemPathSegment($segment))->disablePrefixFolder());
 				}
-			} else {
-				$_segments[] = sha1(serialize($segment));
-			}
-		}
-
-		$segments = $_segments;
-
-		// Sanitize.
-		foreach ($segments as &$segment) {
-			$segment = ltrim($segment, '.');
-			$segment = preg_replace('#[^a-z0-9\.\-_]#i', '_', $segment);
-		}
-
-		// Segments into folders.
-		foreach ($segments as &$segment) {
-
-			// Hashes.
-			if (preg_match('#^[0-9a-f]{40}$#', $segment)) {
-				$segment = implode('/', [
-					substr($segment, 0, 2),
-					substr($segment, 2, 2),
-					substr($segment, 4, 2),
-					$segment,
-				]);
-
-			// Any other string.
-			} else {
-				$segment = implode('/', [
-					mb_strtoupper(substr($segment, 0, 1)),
-					$segment,
-				]);
+				$segments->add(new FileSystemPathSegment($urlParts['path']));
+				$segments->add(new FileSystemPathSegment($urlParts['query']));
+			} catch (\Exception $e) {
+				if ($namePart instanceof FileSystemPathSegment) {
+					$segments->add($namePart);
+				} else {
+					$segments->add(new FileSystemPathSegment($namePart));
+				}
 			}
 
 		}
+
+		// Get path segments.
+		$segments = $segments->getPathSegments();
 
 		// Attach hashed hidden file name at the end.
-		$segments[] = '.' . sha1(serialize($name));
+		$segments[] = '.' . sha1(serialize($segments));
 
 		$path = implode('/', $segments);
 

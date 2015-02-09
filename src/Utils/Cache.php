@@ -27,7 +27,10 @@ class Cache {
 			}
 		}
 
-		$path = FileSystem::getPathForName($name);
+		$path = FileSystem::getPathForName([
+			(new \Katu\Classes\FileSystemPathSegment('cache'))->disablePrefixFolder(),
+			$name,
+		]);
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
