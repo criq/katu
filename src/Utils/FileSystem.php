@@ -49,15 +49,24 @@ class FileSystem {
 
 			try {
 				$parts = (new \Katu\Types\TUrl($namePart))->getParts();
-				$segments[] = $parts['scheme'];
-				$segments[] = $parts['host'];
-				$segments[] = $parts['path'];
-				$segments[] = $parts['query'];
+				$segments = array_merge($segments, [$parts['scheme']], array_reverse(explode('.', $parts['host'])), [$parts['path']], [$parts['query']]);
 			} catch (\Exception $e) {
 				$segments[] = $namePart;
 			}
 
 		}
+
+		// Filter out slashes.
+		$segments = array_map(function($i) {
+			if (is_string($i)) {
+				return trim($i, '/');
+			}
+
+			return $i;
+		}, $segments);
+
+		// Filter empty ones.
+		$segments = array_values(array_filter($segments));
 
 		// Explode "/" hashes into segments.
 		$_segments = [];
@@ -94,7 +103,7 @@ class FileSystem {
 			// Any other string.
 			} else {
 				$segment = implode('/', [
-					substr($segment, 0, 1),
+					mb_strtoupper(substr($segment, 0, 1)),
 					$segment,
 				]);
 			}
