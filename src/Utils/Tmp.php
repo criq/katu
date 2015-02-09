@@ -5,7 +5,7 @@ namespace Katu\Utils;
 class Tmp extends FileStorage {
 
 	static function getPath($name) {
-		return TMP_PATH . FileSystem::getPathForName($name);
+		return FileSystem::joinPaths(TMP_PATH, FileSystem::getPathForName($name));
 	}
 
 	static function debug($var) {

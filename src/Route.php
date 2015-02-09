@@ -12,14 +12,14 @@ class Route {
 	public $method;
 	public $conditions;
 
-	public function __construct($pattern, $controller, $method = 'index', $conditions = array()) {
+	public function __construct($pattern, $controller, $method = 'index', $conditions = []) {
 		$this->pattern    = $pattern;
 		$this->controller = $controller;
 		$this->method     = $method;
 		$this->conditions = $conditions;
 	}
 
-	static function create($pattern, $controller, $method = 'index', $conditions = array()) {
+	static function create($pattern, $controller, $method = 'index', $conditions = []) {
 		return new self($pattern, $controller, $method, $conditions);
 	}
 
@@ -28,14 +28,17 @@ class Route {
 	}
 
 	public function getCallable() {
-		return array("\App\Controllers\\" . $this->controller, $this->method);
+		return [
+			"\App\Controllers\\" . $this->controller,
+			$this->method,
+		];
 	}
 
 	public function isCallable() {
 		return is_callable($this->getCallable());
 	}
 
-	public function setConditions($conditions = array()) {
+	public function setConditions($conditions = []) {
 		$this->conditions = $conditions;
 
 		return $this;
