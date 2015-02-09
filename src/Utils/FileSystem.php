@@ -109,4 +109,10 @@ class FileSystem {
 		return $path;
 	}
 
+	static function touch($path) {
+		@mkdir(dirname($path), 0777, true);
+
+		return touch($path);
+	}
+
 }

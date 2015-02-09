@@ -5,7 +5,7 @@ namespace Katu\Utils;
 class Lock {
 
 	public $timeout;
-	public $path;
+	public $name;
 
 	public function __construct() {
 		if (!func_get_arg(0)) {
@@ -18,24 +18,24 @@ class Lock {
 			throw new \Exception("Misisng lock name.");
 		}
 
-		if (!defined('TMP_PATH')) {
-			throw new \Exception("Undefined TMP_PATH.");
-		}
+		$this->name = array_slice(func_get_args(), 1);
 
-		$this->path = rtrim(TMP_PATH, '/') . '/.lock__' . implode('__', array_slice(func_get_args(), 1));
-
-		if (file_exists($this->path) && filectime($this->path) > (time() - $this->timeout)) {
+		if (file_exists($this->getPath()) && filectime($this->getPath()) > (time() - $this->timeout)) {
 			throw new \Exception("Lock exists.");
 		}
 
-		touch($this->path);
+		FileSystem::touch($this->getPath());
 
 		return true;
 	}
 
+	public function getPath() {
+		return FileSystem::joinPaths(TMP_PATH, call_user_func(['\Katu\Utils\FileSystem', 'getPathForName'], array_merge(['locks'], $this->name)));
+	}
+
 	public function unlock() {
-		if (file_exists($this->path)) {
-			unlink($this->path);
+		if (file_exists($this->getPath())) {
+			unlink($this->getPath());
 		}
 
 		return true;
