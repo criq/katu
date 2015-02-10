@@ -46,7 +46,7 @@ class FileSystemPathSegment {
 		if (is_string($name)) {
 
 			// Hashes.
-			if (preg_match('#^[0-9a-f]{40}$#', $name)) {
+			if (preg_match('#^[0-9a-f]{8,}$#', $name)) {
 				$prefixes = [];
 				for ($i = 0; $i < $this->hashPrefixFolderDepth; $i++) {
 					$prefixes[] = substr($name, $i * $this->hashPrefixFolderLength, $this->hashPrefixFolderLength);
