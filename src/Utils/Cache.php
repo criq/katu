@@ -6,7 +6,7 @@ class Cache {
 
 	static function get() {
 		if (is_callable(func_get_arg(0))) {
-			$name = null;
+			$name = [];
 			@list($callback, $timeout, $options) = func_get_args();
 		} else {
 			@list($name, $callback, $timeout, $options) = func_get_args();
@@ -27,10 +27,7 @@ class Cache {
 			}
 		}
 
-		$path = FileSystem::getPathForName([
-			(new \Katu\Classes\FileSystemPathSegment('cache'))->disablePrefixFolder(),
-			$name,
-		]);
+		$path = FileSystem::getPathForName(array_merge([(new \Katu\Classes\FileSystemPathSegment('cache'))->disablePrefixFolder()], is_array($name) ? $name : [$name]));
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
