@@ -79,6 +79,7 @@ class App {
 			$app->add(new Middleware\ErrorMiddleware());
 
 			// Default content-type header for debugging, will be probably overwritten by app.
+			header('Content-Type: text/html; charset=UTF-8');
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
 		}
