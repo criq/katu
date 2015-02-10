@@ -21,8 +21,9 @@ class FileSystemPathSegment {
 		if (is_string($name)) {
 			$e = explode('/', trim($name, '/'));
 			if (count($e) > 1) {
-				$name = new FileSystemPathSegments(array_map(function($i) {
-					return new static($i);
+				$parent = $this;
+				$name = new FileSystemPathSegments(array_map(function($i) use($parent) {
+					return (new static($i))->setPrefixLenthsFromParent($parent);
 				}, $e));
 			} elseif (count($e) == 1) {
 				$name = $e[0];
@@ -86,6 +87,15 @@ class FileSystemPathSegment {
 
 	public function setPrefixFolderLength($prefixFolderLength) {
 		$this->prefixFolderLength = (int) $prefixFolderLength;
+
+		return $this;
+	}
+
+	public function setPrefixLenthsFromParent($parent) {
+		$this->prefixFolderDepth      = $parent->prefixFolderDepth;
+		$this->prefixFolderLength     = $parent->prefixFolderLength;
+		$this->hashPrefixFolderDepth  = $parent->hashPrefixFolderDepth;
+		$this->hashPrefixFolderLength = $parent->hashPrefixFolderLength;
 
 		return $this;
 	}
