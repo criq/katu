@@ -17,9 +17,9 @@ class Cache {
 			foreach (debug_backtrace() as $backtrace) {
 				if ($backtrace['file'] != __FILE__) {
 					$name = [
-						'anonymous',
-						$backtrace['file'],
-						$backtrace['line'],
+						(new \Katu\Classes\FileSystemPathSegment('anonymous'))->disablePrefixFolder(),
+						(new \Katu\Classes\FileSystemPathSegment($backtrace['file']))->disablePrefixFolder(),
+						(new \Katu\Classes\FileSystemPathSegment($backtrace['line']))->disablePrefixFolder(),
 						$options,
 					];
 					break;

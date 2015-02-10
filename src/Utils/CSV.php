@@ -10,24 +10,33 @@ class CSV {
 
 	public function __construct($path = null, $options = []) {
 		if ($path) {
-			@touch($path);
+
+			FileSystem::touch($path);
+
 			if ((!isset($options['readOnly']) || (isset($options['readOnly']) && !$options['readOnly'])) && !is_writable($path)) {
 				throw new \Exception("Unable to write into specified file.");
 			}
 
 			$this->path = $path;
+
 		} else {
+
 			if (!defined('TMP_PATH')) {
 				throw new \Exception("Undefined TMP_PATH.");
 			}
 
-			$path = TMP_PATH . 'csv_' . Random::getFileName() . '.csv';
-			@touch($path);
+			$path = FileSystem::joinPaths(TMP_PATH, FileSystem::getPathForName([
+				(new \Katu\Classes\FileSystemPathSegment('csv'))->disablePrefixFolder(),
+				Random::getFileName(),
+			]));
+			FileSystem::touch($path);
+
 			if (!is_writable($path)) {
 				throw new \Exception("Unable to write into a temporary file.");
 			}
 
 			$this->path = $path;
+
 		}
 
 		$this->writer = new \EasyCSV\Writer($this->path);
