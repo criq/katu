@@ -7,7 +7,7 @@ class FileSystemPathSegment {
 	public $name;
 	public $prefixFolderDepth      = 1;
 	public $prefixFolderLength     = 1;
-	public $hashPrefixFolderDepth  = 2;
+	public $hashPrefixFolderDepth  = 3;
 	public $hashPrefixFolderLength = 2;
 
 	public function __construct($name = null) {
