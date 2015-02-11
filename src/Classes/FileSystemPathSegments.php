@@ -25,8 +25,14 @@ class FileSystemPathSegments {
 		return $segments;
 	}
 
-	public function add(FileSystemPathSegment $segment) {
-		$this->segments[] = $segment;
+	public function add($segment) {
+		if ($segment instanceof FileSystemPathSegment) {
+			$this->segments[] = $segment;
+		} else {
+			$this->segments[] = new FileSystemPathSegment($segment);
+		}
+
+		return true;
 	}
 
 }

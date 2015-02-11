@@ -12,6 +12,11 @@ class FileSystemPathSegment {
 
 	public function __construct($name = null) {
 		$this->name = $name;
+
+		if (is_string($this->name) && preg_match('#^\!(.+)$#', $this->name, $match)) {
+			$this->name = $match[1];
+			$this->disablePrefixFolder();
+		}
 	}
 
 	public function getPathSegments() {

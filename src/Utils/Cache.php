@@ -17,9 +17,9 @@ class Cache {
 			foreach (debug_backtrace() as $backtrace) {
 				if ($backtrace['file'] != __FILE__) {
 					$name = [
-						(new \Katu\Classes\FileSystemPathSegment('anonymous'))->disablePrefixFolder(),
-						(new \Katu\Classes\FileSystemPathSegment($backtrace['file']))->disablePrefixFolder(),
-						(new \Katu\Classes\FileSystemPathSegment($backtrace['line']))->disablePrefixFolder(),
+						'!anonymous',
+						'!' . $backtrace['file'],
+						'!' . $backtrace['line'],
 						$options,
 					];
 					break;
@@ -27,7 +27,7 @@ class Cache {
 			}
 		}
 
-		$path = FileSystem::getPathForName(array_merge([(new \Katu\Classes\FileSystemPathSegment('cache'))->disablePrefixFolder()], is_array($name) ? $name : [$name]));
+		$path = FileSystem::getPathForName(array_merge(['!cache'], is_array($name) ? $name : [$name]));
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));

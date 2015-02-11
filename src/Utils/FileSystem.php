@@ -45,6 +45,8 @@ class FileSystem {
 
 	static function getPathForName($nameParts) {
 		$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
+		$nameParts = array_values(array_filter($nameParts));
+
 		$segments = new FileSystemPathSegments();
 
 		// Special treatment of URLs.
@@ -52,18 +54,14 @@ class FileSystem {
 
 			try {
 				$urlParts = (new \Katu\Types\TUrl($namePart))->getParts();
-				$segments->add((new FileSystemPathSegment($urlParts['scheme']))->disablePrefixFolder());
+				$segments->add('!' . $urlParts['scheme']);
 				foreach (array_reverse(explode('.', $urlParts['host'])) as $segment) {
-					$segments->add((new FileSystemPathSegment($segment))->disablePrefixFolder());
+					$segments->add('!' . $segment);
 				}
-				$segments->add(new FileSystemPathSegment($urlParts['path']));
-				$segments->add(new FileSystemPathSegment($urlParts['query']));
+				$segments->add('!' . $urlParts['path']);
+				$segments->add($urlParts['query']);
 			} catch (\Exception $e) {
-				if ($namePart instanceof FileSystemPathSegment) {
-					$segments->add($namePart);
-				} else {
-					$segments->add(new FileSystemPathSegment($namePart));
-				}
+				$segments->add($namePart);
 			}
 
 		}

@@ -26,7 +26,7 @@ class CSV {
 			}
 
 			$path = FileSystem::joinPaths(TMP_PATH, FileSystem::getPathForName([
-				(new \Katu\Classes\FileSystemPathSegment('csv'))->disablePrefixFolder(),
+				'!csv',
 				Random::getFileName(),
 			]));
 			FileSystem::touch($path);
