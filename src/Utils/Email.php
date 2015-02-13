@@ -16,6 +16,8 @@ class Email {
 
 	public $headers = [];
 
+	public $attachments = [];
+
 	public $template;
 	public $content = [];
 	public $variables = [];
@@ -120,6 +122,16 @@ class Email {
 		return $this;
 	}
 
+	public function addAttachment($name, $type, $content) {
+		$this->attachments[] = [
+			'name'    => $name,
+			'type'    => $type,
+			'content' => base64_encode($content),
+		];
+
+		return $this;
+	}
+
 	public function setTemplate($template) {
 		$this->template = $template;
 
@@ -169,6 +181,8 @@ class Email {
 				'type'  => 'cc',
 			];
 		}
+
+		$message['attachments'] = $this->attachments;
 
 		$message['global_merge_vars'] = $this->getVariablesForMandrill();
 		$message['merge_vars'] = $this->getRecipientVariablesForMandrill();
