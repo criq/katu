@@ -11,7 +11,7 @@ class Connection {
 	public $config;
 	public $connection;
 
-	static $connections = array();
+	static $connections = [];
 
 	public function __construct($name) {
 		$this->name = $name;
@@ -25,9 +25,9 @@ class Connection {
 		// Try to connect.
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->connection = new PDO($this->config->getPdoDSN(), $this->config->user, $this->config->password, array(
+				$this->connection = new PDO($this->config->getPdoDSN(), $this->config->user, $this->config->password, [
 					PDO::ATTR_PERSISTENT => true,
-				));
+				]);
 				break;
 			} catch (\ErrorException $e) {
 				// Retry.
@@ -49,7 +49,7 @@ class Connection {
 
 
 
-	public function createQuery($sql = null, $params = array()) {
+	public function createQuery($sql = null, $params = []) {
 		$query = new Query($this, $sql, $params);
 
 		return $query;
@@ -62,7 +62,7 @@ class Connection {
 		return $query;
 	}
 
-	public function createClassQuery($class, $sql = null, $params = array()) {
+	public function createClassQuery($class, $sql = null, $params = []) {
 		$query = new Query($this, $sql, $params);
 		$query->setClass($class);
 
