@@ -20,8 +20,18 @@ class Table extends \Sexy\Expression {
 		return implode('.', ["`" . $this->pdo->config->database . "`", "`" . $this->name . "`"]);
 	}
 
+	public function getColumns() {
+		$columns = [];
+
+		foreach ($this->getColumnNames() as $columnName) {
+			$columns[] = new Column($this, $columnName);
+		}
+
+		return $columns;
+	}
+
 	public function getColumnDescriptions() {
-		$columns = array();
+		$columns = [];
 
 		foreach ($this->pdo->createQuery(" DESCRIBE " . $this->name)->getResult() as $properties) {
 			$columns[$properties['Field']] = $properties;

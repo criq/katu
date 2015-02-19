@@ -291,4 +291,32 @@ class ReadOnlyModel {
 		return $path && file_exists($path);
 	}
 
+	static function materialize($materializedTable) {
+		$pdo = static::getPdo();
+
+		// Delete original table.
+		try {
+			$sql = " DROP TABLE `" . $materializedTable->name . "` ";
+			$pdo->createQuery($sql)->getResult();
+		} catch (\Exception $e) {
+
+		}
+
+		// Create table and copy the data.
+		$sql = " CREATE TABLE `" . $materializedTable->name . "` AS SELECT * FROM `" . static::getTable()->name . "`";
+		$pdo->createQuery($sql)->getResult();
+
+		// Disable NULL.
+
+		// Create indices.
+		foreach ($materializedTable->getColumns() as $column) {
+			if (in_array($column->getProperties()->type, ['int', 'double', 'char', 'varchar'])) {
+				$sql = " ALTER TABLE `" . $materializedTable->name . "` ADD INDEX (`" . $column->name . "`) ";
+				$pdo->createQuery($sql)->getResult();
+			}
+		}
+
+		return true;
+	}
+
 }

@@ -25,6 +25,10 @@ class ColumnProperties {
 			$this->type = (string) $match['type'];
 			$this->length = (int) $match['length'];
 			$this->filter = FILTER_SANITIZE_NUMBER_INT;
+		} elseif (preg_match('#^(?<type>double)\((?<length>[0-9]+,[0-9]+)\)#', $description['Type'], $match)) {
+			$this->type = (string) $match['type'];
+			$this->length = $match['length'];
+			$this->filter = FILTER_SANITIZE_NUMBER_FLOAT;
 		} elseif (preg_match('#^(?<type>char|varchar)\((?<length>[0-9]+)\)#', $description['Type'], $match)) {
 			$this->type = (string) $match['type'];
 			$this->length = (int) $match['length'];
