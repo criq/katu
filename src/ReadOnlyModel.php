@@ -123,6 +123,10 @@ class ReadOnlyModel {
 	}
 
 	public function getId() {
+		if (property_exists($this, 'id')) {
+			return $this->id;
+		}
+
 		return $this->{static::getIdColumnName()};
 	}
 
