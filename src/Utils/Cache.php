@@ -74,30 +74,30 @@ class Cache {
 		}, $timeout, $options);
 	}
 
-	static function initRuntime() {
+	static function getName($name) {
+		return implode('.', is_array($name) ? $name : [$name]);
+	}
+
+	static function getRuntime($name, $callback = null) {
+		// Init global runtime cache.
 		if (!isset($GLOBALS['katu.cache.runtime'])) {
 			$GLOBALS['katu.cache.runtime'] = [];
 		}
 
-		return true;
-	}
+		$cacheName = static::getName($name);
 
-	static function setRuntime($name, $value) {
-		self::initRuntime();
-
-		$GLOBALS['katu.cache.runtime'][$name] = $value;
-
-		return $value;
-	}
-
-	static function getRuntime($name) {
-		self::initRuntime();
-
-		if (!isset($GLOBALS['katu.cache.runtime'][$name])) {
-			return null;
+		// There's something cached.
+		if (isset($GLOBALS['katu.cache.runtime'][$cacheName]) && !is_null($GLOBALS['katu.cache.runtime'][$cacheName])) {
+			return $GLOBALS['katu.cache.runtime'][$cacheName];
 		}
 
-		return $GLOBALS['katu.cache.runtime'][$name];
+		// There is callback.
+		if (!is_null($callback)) {
+			$GLOBALS['katu.cache.runtime'][$cacheName] = call_user_func($callback);
+			return $GLOBALS['katu.cache.runtime'][$cacheName];
+		}
+
+		return null;
 	}
 
 }

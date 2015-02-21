@@ -88,7 +88,7 @@ class App {
 	}
 
 	static function getPdo($name = null) {
-		$names = array_keys(Config::getDB());
+		$names = array_keys(Config::getDb());
 
 		if ($name) {
 			if (!in_array($name, $names)) {

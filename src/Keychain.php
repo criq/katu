@@ -7,25 +7,19 @@ use \Katu\Utils\Cache;
 class Keychain {
 
 	static function get() {
-		$cacheName = 'keychain.' . implode('.', func_get_args());
-		$cached = Cache::getRuntime($cacheName);
+		$args = func_get_args();
 
-		if (is_null($cached)) {
-
-			$array = new \Katu\Types\TArray(self::getAll());
-
-			$cached = Cache::setRuntime($cacheName, call_user_func_array(array($array, 'getValueByArgs'), func_get_args()));
-
-		}
-
-		return $cached;
+		return Cache::getRuntime(array_merge(['keychain'], $args), function() use($args) {
+			try {
+				return call_user_func_array([new \Katu\Types\TArray(self::getAll()), 'getValueByArgs'], $args);
+			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
+				throw new \Katu\Exceptions\MissingConfigException("Missing keychain for " . implode('.', $args) . ".");
+			}
+		});
 	}
 
 	static function getAll() {
-		$cached = Cache::getRuntime('keychain');
-
-		if (is_null($cached)) {
-
+		return Cache::getRuntime('keychain', function() {
 			if (!defined('BASE_DIR')) {
 				throw new \Exception("Undefined BASE_DIR.");
 			}
@@ -39,11 +33,8 @@ class Keychain {
 				throw new \Exception("Unable to read keychain file.");
 			}
 
-			$cached = Cache::setRuntime('keychain', Utils\YAML::decode($path));
-
-		}
-
-		return $cached;
+			return Utils\YAML::decode($path);
+		});
 	}
 
 }
