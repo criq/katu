@@ -76,7 +76,28 @@ class Table extends \Sexy\Expression {
 		}
 
 		if (isset($options['createIndices']) && $options['createIndices']) {
+			$indexableColumns = [];
+
+			foreach ($destinationTable->getColumns() as $column) {
+				if (in_array($column->getProperties()->type, ['int', 'double', 'char', 'varchar'])) {
+					$indexableColumns[] = $column;
+				}
+			}
+
+			if ($indexableColumns) {
+				$sql = " ALTER TABLE `" . $destinationTable->name . "` ADD INDEX (" . $indexableColumns . "); "
+			}
+
+			var_dump($indexableColumns); die;
+
 			// Try creating a joint index.
+
+
+
+
+			#
+
+
 			var_dump("A"); die;
 
 			// Create separate indices.
