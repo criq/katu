@@ -47,7 +47,31 @@ class Connection {
 		return $this->connection->lastInsertId();
 	}
 
+	public function getTables() {
+		$pdo = $this;
 
+		return array_map(function($i) use($pdo) {
+			return new Table($pdo, $i);
+		}, $this->getTableNames());
+	}
+
+	public function getTableNames() {
+		$tables = [];
+
+		$sql = " SHOW TABLES ";
+		$res = $this->createQuery($sql)->getResult()->getArray();
+
+		$pdo = $this;
+
+		return array_map(function($i) use($pdo) {
+			$names = array_values($i);
+			return $names[0];
+		}, $res);
+	}
+
+	public function tableExists($tableName) {
+		return in_array($tableName, $this->getTableNames());
+	}
 
 	public function createQuery($sql = null, $params = []) {
 		$query = new Query($this, $sql, $params);

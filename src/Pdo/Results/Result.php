@@ -47,15 +47,11 @@ class Result implements \Iterator, \ArrayAccess {
 					}
 
 				} else {
-
 					throw $e;
-
 				}
 
 			} else {
-
 				throw $e;
-
 			}
 
 		}

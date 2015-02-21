@@ -52,4 +52,43 @@ class Table extends \Sexy\Expression {
 		}, $this->getColumnDescriptions()));
 	}
 
+	public function delete() {
+		$sql = " DROP TABLE `" . $this->name . "` ";
+
+		return $this->pdo->createQuery($sql)->getResult();
+	}
+
+	public function copy($destinationTable, $options = []) {
+		// Delete the original table.
+		try {
+			$destinationTable->delete();
+		} catch (\Exception $e) {
+
+		}
+
+		// Create table and copy the data.
+		$sql = " CREATE TABLE `" . $destinationTable->name . "` AS SELECT * FROM `" . $this->name . "`";
+		$this->pdo->createQuery($sql)->getResult();
+
+		// Disable NULL.
+		if (isset($options['disableNull']) && $options['disableNull']) {
+
+		}
+
+		if (isset($options['createIndices']) && $options['createIndices']) {
+			// Try creating a joint index.
+			var_dump("A"); die;
+
+			// Create separate indices.
+			foreach ($destinationTable->getColumns() as $column) {
+				if (in_array($column->getProperties()->type, ['int', 'double', 'char', 'varchar'])) {
+					$sql = " ALTER TABLE `" . $destinationTable->name . "` ADD INDEX (`" . $column->name . "`) ";
+					$this->pdo->createQuery($sql)->getResult();
+				}
+			}
+		}
+
+		return true;
+	}
+
 }
