@@ -68,7 +68,7 @@ class Table extends \Sexy\Expression {
 
 		// Create table and copy the data.
 		$sql = " CREATE TABLE `" . $destinationTable->name . "` AS SELECT * FROM `" . $this->name . "`";
-		$this->pdo->createQuery($sql)->getResult();
+		$destinationTable->pdo->createQuery($sql)->getResult();
 
 		// Disable NULL.
 		if (isset($options['disableNull']) && $options['disableNull']) {
@@ -85,26 +85,24 @@ class Table extends \Sexy\Expression {
 			}
 
 			if ($indexableColumns) {
-				$sql = " ALTER TABLE `" . $destinationTable->name . "` ADD INDEX (" . $indexableColumns . "); "
+				$sql = " ALTER TABLE `" . $destinationTable->name . "` ADD INDEX (" . implode(', ', array_map(function($i) {
+					return "`" . $i->name . "`";
+				}, $indexableColumns)) . "); ";
+
+				try {
+					$destinationTable->pdo->createQuery($sql)->getResult();
+				} catch (\Exception $e) {
+
+				}
 			}
 
-			var_dump($indexableColumns); die;
-
-			// Try creating a joint index.
-
-
-
-
-			#
-
-
-			var_dump("A"); die;
-
 			// Create separate indices.
-			foreach ($destinationTable->getColumns() as $column) {
-				if (in_array($column->getProperties()->type, ['int', 'double', 'char', 'varchar'])) {
-					$sql = " ALTER TABLE `" . $destinationTable->name . "` ADD INDEX (`" . $column->name . "`) ";
-					$this->pdo->createQuery($sql)->getResult();
+			foreach ($indexableColumns as $indexableColumn) {
+				try {
+					$sql = " ALTER TABLE `" . $destinationTable->name . "` ADD INDEX (`" . $indexableColumn->name . "`) ";
+					$destinationTable->pdo->createQuery($sql)->getResult();
+				} catch (\Exception $e) {
+
 				}
 			}
 		}
