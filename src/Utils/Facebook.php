@@ -20,6 +20,7 @@ class Facebook {
 		try {
 
 			$app = App::get();
+			$controllerClass = \Katu\App::getControllerClass();
 
 			$session = static::getSession();
 
@@ -109,9 +110,7 @@ class Facebook {
 						throw new \Exception();
 					}
 
-					$controllerClass = \Katu\App::getControllerClass();
-
-					return $controllerClass::redirect(static::getRedirectUrl($app->request->params('state')));
+					return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
