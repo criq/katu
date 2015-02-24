@@ -204,4 +204,17 @@ class Model extends ReadOnlyModel {
 		return true;
 	}
 
+	static function checkUniqueColumnValue($column, $value, $excludeObject = null) {
+		$sql = (new \Sexy\Select(static::getTable()))
+			->from(static::getTable())
+			->whereEq($column, $value)
+			;
+
+		if ($excludeObject) {
+			$sql->where(new \Sexy\CmpNotEq(static::getIdColumn(), $excludeObject->getId()));
+		}
+
+		return !static::createQuery($sql)->getResult()->getTotal();
+	}
+
 }
