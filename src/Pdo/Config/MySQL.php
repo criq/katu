@@ -4,6 +4,7 @@ namespace Katu\Pdo\Config;
 
 class MySQL {
 
+	public $type;
 	public $host;
 	public $user;
 	public $password;
@@ -11,6 +12,7 @@ class MySQL {
 	public $charset;
 
 	public function __construct($host, $user, $password, $database, $charset) {
+		$this->type     = 'mysql';
 		$this->host     = $host;
 		$this->user     = $user;
 		$this->password = $password;

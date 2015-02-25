@@ -100,13 +100,24 @@ class Connection {
 		return $query;
 	}
 
-	public function saveToFiles() {
-		$dateTime = (new \Katu\Utils\DateTime())->format('YmdHis');
-		foreach ($this->getTables() as $table) {
-			$table->saveToFile(\Katu\Utils\FileSystem::joinPaths(BASE_DIR, 'databases', $this->name, $dateTime, $table->name));
+	public function dump($fileName = null) {
+		if (!$fileName) {
+			$fileName = \Katu\Utils\FileSystem::joinPaths(BASE_DIR, 'databases', $this->config->database, (new \Katu\Utils\DateTime())->format('YmdHis'));
 		}
 
-		return true;
+		\Katu\Utils\FileSystem::touch($fileName);
+
+		try {
+
+			$dump = new \Ifsnop\Mysqldump\Mysqldump($this->config->database, $this->config->user, $this->config->password, $this->config->host, $this->config->type, [
+				'add-drop-table' => true,
+			]);
+
+			$dump->start($fileName);
+
+		} catch (\Exception $e) {
+
+		}
 	}
 
 }
