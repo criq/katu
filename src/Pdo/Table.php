@@ -113,7 +113,7 @@ class Table extends \Sexy\Expression {
 	public function saveToFile($fileName) {
 		@mkdir(dirname($fileName), 0777, true);
 
-		$sql = " SELECT * INTO OUTFILE '" . $fileName . "' FROM `" . $this->name . "` ";
+		$sql = " SELECT * INTO OUTFILE '" . $fileName . "' FROM `" . $this->pdo->name . "`.`" . $this->name . "` ";
 
 		return $this->pdo->createQuery($sql)->getResult();
 	}
