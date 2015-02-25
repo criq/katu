@@ -101,7 +101,7 @@ class Connection {
 	}
 
 	public function saveToFiles() {
-		$dateTime = (new \Katu\Utils\DateTime())->format('Y.m.d.H.i.s');
+		$dateTime = (new \Katu\Utils\DateTime())->format('YmdHis');
 		foreach ($this->getTables() as $table) {
 			$table->saveToFile(\Katu\Utils\FileSystem::joinPaths(BASE_DIR, 'databases', $this->name, $dateTime, $table->name));
 		}

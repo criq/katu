@@ -112,6 +112,7 @@ class Table extends \Sexy\Expression {
 
 	public function saveToFile($fileName) {
 		@mkdir(dirname($fileName), 0777, true);
+		@chmod(dirname($fileName), 0777);
 
 		$sql = " SELECT * INTO OUTFILE '" . $fileName . "' FROM `" . $this->pdo->name . "`.`" . $this->name . "` ";
 
