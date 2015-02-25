@@ -111,12 +111,42 @@ class Table extends \Sexy\Expression {
 	}
 
 	public function saveToFile($fileName) {
-		@mkdir(dirname($fileName), 0777, true);
-		@chmod(dirname($fileName), 0777);
+		$dump = null;
+		$dump .= "DROP TABLE `" . $this->name . "`;\n";
 
-		$sql = " SELECT * INTO OUTFILE '" . $fileName . "' FROM `" . $this->pdo->name . "`.`" . $this->name . "` ";
+		$res = $this->pdo->createQuery(" SHOW CREATE TABLE `" . $this->name . "` ")->getResult()->getArray();
+		$dump .= $res[0]['Create Table'] . " ;\n";
 
-		return $this->pdo->createQuery($sql)->getResult();
+		echo $dump; die;
+
+
+		$res = $this->pdo->createQuery(" SELECT * FROM `" . $this->name . "` ")->getResult();
+
+
+
+
+		//$row2 = mysql_fetch_row(mysql_query('));
+		$return.= "\n\n".$row2[1].";\n\n";
+
+		for ($i = 0; $i < $num_fields; $i++)
+		{
+			while($row = mysql_fetch_row($result))
+			{
+				$return.= 'INSERT INTO '.$table.' VALUES(';
+				for($j=0; $j<$num_fields; $j++)
+				{
+					$row[$j] = addslashes($row[$j]);
+					$row[$j] = ereg_replace("\n","\\n",$row[$j]);
+					if (isset($row[$j])) { $return.= '"'.$row[$j].'"' ; } else { $return.= '""'; }
+					if ($j<($num_fields-1)) { $return.= ','; }
+				}
+				$return.= ");\n";
+			}
+		}
+		$return.="\n\n\n";
+
+
+
 	}
 
 	public function loadFromFile($fileName) {
