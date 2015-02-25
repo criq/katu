@@ -110,4 +110,18 @@ class Table extends \Sexy\Expression {
 		return true;
 	}
 
+	public function saveToFile($fileName) {
+		@mkdir(dirname($fileName), 0777, true);
+
+		$sql = " SELECT * INTO OUTFILE '" . $fileName . "' FROM `" . $this->name . "` ";
+
+		return $this->pdo->createQuery($sql)->getResult();
+	}
+
+	public function loadFromFile($fileName) {
+		$sql = " LOAD DATA INFILE '" . $fileName . "' INTO TABLE `" . $this->name . "` ";
+
+		return $this->pdo->createQuery($sql)->getResult();
+	}
+
 }

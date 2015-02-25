@@ -134,6 +134,10 @@ class ReadOnlyModel {
 		return $this->{static::getIdColumnName()};
 	}
 
+	public function exists() {
+		return (bool) static::get($this->getId());
+	}
+
 	static function filterParams($params) {
 		$_params = [];
 
