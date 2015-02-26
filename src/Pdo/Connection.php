@@ -127,7 +127,7 @@ class Connection {
 			$dump->start($fileName);
 
 		} catch (\Exception $e) {
-
+			var_dump($e);
 		}
 	}
 
