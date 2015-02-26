@@ -128,8 +128,6 @@ class Connection {
 
 		} catch (\Exception $e) {
 
-			var_dump($e);
-
 			@unlink($fileName);
 
 		}
