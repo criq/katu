@@ -119,17 +119,17 @@ class Connection {
 			$dumpOptions['add-drop-table'] = true;
 		}
 
-		\Katu\Utils\FileSystem::touch($fileName);
-
 		try {
 
-			var_dump($dumpOptions); die;
+			\Katu\Utils\FileSystem::touch($fileName);
 
 			$dump = new \Ifsnop\Mysqldump\Mysqldump($this->config->database, $this->config->user, $this->config->password, $this->config->host, $this->config->type, $dumpOptions);
 			$dump->start($fileName);
 
 		} catch (\Exception $e) {
-			var_dump($e);
+
+			@unlink($fileName);
+
 		}
 	}
 
