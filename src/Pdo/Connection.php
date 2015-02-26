@@ -128,6 +128,8 @@ class Connection {
 
 		} catch (\Exception $e) {
 
+			\Katu\ErrorHandler::log($e);
+
 			@unlink($fileName);
 
 		}
