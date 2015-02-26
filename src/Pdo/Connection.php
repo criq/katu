@@ -100,19 +100,30 @@ class Connection {
 		return $query;
 	}
 
-	public function dump($fileName = null) {
-		if (!$fileName) {
-			$fileName = \Katu\Utils\FileSystem::joinPaths(BASE_DIR, 'databases', $this->config->database, implode('.', [(new \Katu\Utils\DateTime())->format('YmdHis'), 'sql']));
+	public function dump($options = []) {
+		$extension = 'sql';
+		$dumpOptions = [];
+
+		if (isset($options['compress']) && $options['compress'] == 'gzip') {
+			$extension = 'sql.gz';
+			$dumpOptions['compress'] = 'Gzip';
+		}
+
+		if (isset($options['fileName']) && $options['fileName']) {
+			$fileName = $options['fileName'];
+		} else {
+			$fileName = \Katu\Utils\FileSystem::joinPaths(BASE_DIR, 'databases', $this->config->database, implode('.', [(new \Katu\Utils\DateTime())->format('YmdHis'), $extension]));
+		}
+
+		if (isset($options['addDropTable']) && $options['addDropTable']) {
+			$dumpOptions['add-drop-table'] = true;
 		}
 
 		\Katu\Utils\FileSystem::touch($fileName);
 
 		try {
 
-			$dump = new \Ifsnop\Mysqldump\Mysqldump($this->config->database, $this->config->user, $this->config->password, $this->config->host, $this->config->type, [
-				'add-drop-table' => true,
-			]);
-
+			$dump = new \Ifsnop\Mysqldump\Mysqldump($this->config->database, $this->config->user, $this->config->password, $this->config->host, $this->config->type, $dumpOptions);
 			$dump->start($fileName);
 
 		} catch (\Exception $e) {
