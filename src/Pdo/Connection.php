@@ -102,7 +102,7 @@ class Connection {
 
 	public function dump($fileName = null) {
 		if (!$fileName) {
-			$fileName = \Katu\Utils\FileSystem::joinPaths(BASE_DIR, 'databases', $this->config->database, (new \Katu\Utils\DateTime())->format('YmdHis'));
+			$fileName = \Katu\Utils\FileSystem::joinPaths(BASE_DIR, 'databases', $this->config->database, implode('.', [(new \Katu\Utils\DateTime())->format('YmdHis'), 'sql']));
 		}
 
 		\Katu\Utils\FileSystem::touch($fileName);
