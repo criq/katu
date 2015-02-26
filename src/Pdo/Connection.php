@@ -123,6 +123,8 @@ class Connection {
 
 		try {
 
+			var_dump($dumpOptions); die;
+
 			$dump = new \Ifsnop\Mysqldump\Mysqldump($this->config->database, $this->config->user, $this->config->password, $this->config->host, $this->config->type, $dumpOptions);
 			$dump->start($fileName);
 
