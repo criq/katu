@@ -27,7 +27,7 @@
 		"symfony/dom-crawler": "2.*",
 		"symfony/css-selector": "2.*",
 		"symfony/intl": "@stable",
-		"ifsnop/mysqldump-php": "dev-master"
+		"ifsnop/mysqldump-php": "1.*"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
