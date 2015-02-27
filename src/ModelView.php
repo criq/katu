@@ -4,7 +4,7 @@ namespace Katu;
 
 class ModelView extends ReadOnlyModel {
 
-	const CACHE = true;
+	const CACHE = 3600;
 
 	static function isCached() {
 		return defined('static::CACHE') && static::CACHE;
@@ -16,7 +16,14 @@ class ModelView extends ReadOnlyModel {
 		}
 
 		$lastCachedTime = static::getLastCachedTime();
+
+		// No cached time.
 		if (!$lastCachedTime) {
+			return true;
+		}
+
+		// Expired.
+		if ($lastCachedTime && $lastCachedTime < time() - static::CACHE) {
 			return true;
 		}
 
