@@ -86,17 +86,13 @@ class Cache {
 		}, $timeout, $options);
 	}
 
-	static function getName($name) {
-		return implode('.', is_array($name) ? $name : [$name]);
-	}
-
 	static function getRuntime($name, $callback = null) {
 		// Init global runtime cache.
 		if (!isset($GLOBALS['katu.cache.runtime'])) {
 			$GLOBALS['katu.cache.runtime'] = [];
 		}
 
-		$cacheName = static::getName($name);
+		$cacheName = static::getPath($name);
 
 		// There's something cached.
 		if (isset($GLOBALS['katu.cache.runtime'][$cacheName]) && !is_null($GLOBALS['katu.cache.runtime'][$cacheName])) {
