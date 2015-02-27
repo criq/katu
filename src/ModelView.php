@@ -8,6 +8,30 @@ class ModelView extends ReadOnlyModel {
 		return defined('static::CACHE') && static::CACHE;
 	}
 
+	static function isExpired() {
+		if (!static::isCached()) {
+			return false;
+		}
+
+		$lastCachedTime = static::getLastCachedTime();
+		if (!$lastCachedTime) {
+			return true;
+		}
+
+		if (isset(static::$sourceTables)) {
+			foreach (static::$sourceTables as $sourceTable) {
+				$table = new \Katu\Pdo\Table(static::getPdo(), $sourceTable);
+				$lastUpdatedTime = $table->getLastUpdatedTime();
+
+				if (!is_null($lastUpdatedTime) && $lastUpdatedTime > $lastCachedTime) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	static function getCachedName() {
 		return ['!databases', '!' . parent::getTable()->pdo->name, '!views', '!cached', '!' . static::TABLE];
 	}
@@ -29,20 +53,15 @@ class ModelView extends ReadOnlyModel {
 
 	static function getTable() {
 		// Do we want to materialize?
-		if (static::isCached()) {
-
- 			$sourceTable      = new \Katu\Pdo\Table(new \Katu\Pdo\Connection(static::DATABASE), static::TABLE);
+		if (static::isExpired()) {
+			$sourceTable      = new \Katu\Pdo\Table(new \Katu\Pdo\Connection(static::DATABASE), static::TABLE);
 			$destinationTable = new \Katu\Pdo\Table(static::getPdo(), static::getTableName());
 
-			\Katu\Utils\Cache::get(static::getCachedName(), function() use($sourceTable, $destinationTable) {
-				return static::refresh($sourceTable, $destinationTable);
-			}, static::CACHE);
+			static::refresh($sourceTable, $destinationTable);
+			static::updateLastCachedTime();
+		}
 
-			return parent::getTable();
-
- 		}
-
- 		return parent::getTable();
+		return parent::getTable();
 	}
 
 	static function refresh($sourceTable, $destinationTable) {
@@ -51,6 +70,18 @@ class ModelView extends ReadOnlyModel {
 			'disableNull'   => true,
 			'createIndices' => true,
 		]);
+	}
+
+	static function getLastCachedTmpName() {
+		return ['!databases', '!' . static::getPdo()->name, '!views', '!cached', '!' . static::TABLE];
+	}
+
+	static function updateLastCachedTime() {
+		return \Katu\Utils\Tmp::set(static::getLastCachedTmpName(), microtime(true));
+	}
+
+	static function getLastCachedTime() {
+		return \Katu\Utils\Tmp::get(static::getLastCachedTmpName());
 	}
 
 }

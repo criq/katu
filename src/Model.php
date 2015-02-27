@@ -36,6 +36,8 @@ class Model extends ReadOnlyModel {
 		$query->setBindValues($bindValues);
 		$query->getResult();
 
+		static::getTable()->touch();
+
 		return static::get(static::getPdo()->getLastInsertId());
 	}
 
@@ -54,6 +56,8 @@ class Model extends ReadOnlyModel {
 				$this->$property = $value;
 				$this->__updated = true;
 			}
+
+			static::getTable()->touch();
 
 			return true;
 		}
@@ -91,6 +95,8 @@ class Model extends ReadOnlyModel {
 
 			}
 
+			static::getTable()->touch();
+
 			$this->__updated = false;
 		}
 
@@ -112,7 +118,11 @@ class Model extends ReadOnlyModel {
 		$query->setSql($sql);
 		$query->setBindValue(static::getIdColumnName(), $this->getId());
 
-		return $query->getResult();
+		$res = $query->getResult();
+
+		static::getTable()->touch();
+
+		return $res;
 	}
 
 	public function setUniqueColumnValue($column, $chars = null, $length = null) {
