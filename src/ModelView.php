@@ -23,7 +23,7 @@ class ModelView extends ReadOnlyModel {
 		}
 
 		// Expired.
-		if ($lastCachedTime && $lastCachedTime < time() - static::CACHE) {
+		if (!is_null($lastCachedTime) && $lastCachedTime < time() - static::CACHE) {
 			return true;
 		}
 
