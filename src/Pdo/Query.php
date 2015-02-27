@@ -63,6 +63,8 @@ class Query {
 	}
 
 	public function getResult() {
+		#var_dump($this->getStatement());
+
 		if ($this->class) {
 			return new Results\ClassResult($this->pdo, $this->getStatement(), $this->page, $this->class);
 		} elseif ($this->page) {

@@ -150,7 +150,7 @@ class ReadOnlyModel {
 		return $_params;
 	}
 
-	static function getBy($params = [], $expressions = []) {
+	static function getBy($params = [], $expressions = [], $options = []) {
 		$pdo = static::getPdo();
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
@@ -167,6 +167,10 @@ class ReadOnlyModel {
 			}
 		}
 
+		if (isset($options['setOptGetTotalRows'])) {
+			$sql->setOptGetTotalRows($options['setOptGetTotalRows']);
+		}
+
 		$query->setFromSql($sql);
 
 		return $query->getResult();
@@ -179,7 +183,9 @@ class ReadOnlyModel {
 	}
 
 	static function getOneBy() {
-		return call_user_func_array(['static', 'getBy'], array_merge(func_get_args(), [[new Page(1, 1)]]))->getOne();
+		$args = array_merge(func_get_args(), [['page' => new Page(1, 1)]], [['setOptGetTotalRows' => false]]);
+
+		return call_user_func_array(['static', 'getBy'], $args)->getOne();
 	}
 
 	static function getAll($options = []) {
