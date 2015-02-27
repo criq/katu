@@ -9,7 +9,7 @@ class Table extends \Sexy\Expression {
 
 	public function __construct($pdo, $name) {
 		$this->pdo  = $pdo;
-		$this->name = $name;
+		$this->name = new Name($name);
 	}
 
 	public function __toString() {
@@ -17,7 +17,7 @@ class Table extends \Sexy\Expression {
 	}
 
 	public function getSql(&$context = []) {
-		return implode('.', ["`" . $this->pdo->config->database . "`", "`" . $this->name . "`"]);
+		return implode('.', [new Name($this->pdo->config->database), $this->name]);
 	}
 
 	public function getColumns() {
@@ -35,7 +35,7 @@ class Table extends \Sexy\Expression {
 
 		return \Katu\Utils\Cache::getRuntime(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], function() use($table) {
 			$columns = [];
-			foreach ($table->pdo->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
+			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $properties) {
 				$columns[$properties['Field']] = $properties;
 			}
 
@@ -46,7 +46,7 @@ class Table extends \Sexy\Expression {
 	public function getColumnDescription($columnName) {
 		$descriptions = $this->getColumnDescriptions();
 
-		return $descriptions[$columnName];
+		return $descriptions[$columnName instanceof Name ? $columnName->name : $columnName];
 	}
 
 	public function getColumnNames() {
@@ -55,8 +55,14 @@ class Table extends \Sexy\Expression {
 		}, $this->getColumnDescriptions()));
 	}
 
+	public function rename($name) {
+		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
+
+		return $this->pdo->createQuery($sql)->getResult();
+	}
+
 	public function delete() {
-		$sql = " DROP TABLE `" . $this->name . "` ";
+		$sql = " DROP TABLE " . $this->name;
 
 		return $this->pdo->createQuery($sql)->getResult();
 	}
@@ -70,7 +76,7 @@ class Table extends \Sexy\Expression {
 		}
 
 		// Create table and copy the data.
-		$sql = " CREATE TABLE `" . $destinationTable->name . "` AS SELECT * FROM `" . $this->name . "`";
+		$sql = " CREATE TABLE " . $destinationTable->name . " AS SELECT * FROM " . $this->name;
 		$destinationTable->pdo->createQuery($sql)->getResult();
 
 		// Disable NULL.
@@ -88,8 +94,8 @@ class Table extends \Sexy\Expression {
 			}
 
 			if ($indexableColumns) {
-				$sql = " ALTER TABLE `" . $destinationTable->name . "` ADD INDEX (" . implode(', ', array_map(function($i) {
-					return "`" . $i->name . "`";
+				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', array_map(function($i) {
+					return $i->name;
 				}, $indexableColumns)) . "); ";
 
 				try {
@@ -102,7 +108,7 @@ class Table extends \Sexy\Expression {
 			// Create separate indices.
 			foreach ($indexableColumns as $indexableColumn) {
 				try {
-					$sql = " ALTER TABLE `" . $destinationTable->name . "` ADD INDEX (`" . $indexableColumn->name . "`) ";
+					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . $indexableColumn->name . ") ";
 					$destinationTable->pdo->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
 

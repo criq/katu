@@ -40,14 +40,13 @@ class ModelView extends ReadOnlyModel {
 	}
 
 	static function getSourceTables() {
-		$pdo = static::getPdo();
-		$table = "`" . static::DATABASE . "`.`" . static::TABLE . "`";
+		$table = new \Katu\Pdo\Table(static::getPdo(), static::TABLE);
 
-		return \Katu\Utils\Cache::get(static::getSourceTablesName(), function() use($pdo, $table) {
+		return \Katu\Utils\Cache::get(static::getSourceTablesName(), function() use($table) {
 			$tables = [];
 
 			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
-			$res = $pdo->createQuery($sql)->getResult()->getArray();
+			$res = $table->pdo->createQuery($sql)->getResult()->getArray();
 			foreach ($res as $row) {
 				if (!preg_match('#^<derived[0-9]+>$#', $row['table'])) {
 					$tables[] = $row['table'];
@@ -88,18 +87,35 @@ class ModelView extends ReadOnlyModel {
 			$destinationTable = new \Katu\Pdo\Table(static::getPdo(), static::getTableName());
 
 			static::refresh($sourceTable, $destinationTable);
-			static::updateLastCachedTime();
 		}
 
 		return parent::getTable();
 	}
 
 	static function refresh($sourceTable, $destinationTable) {
-		// Copy into materialized view.
-		return $sourceTable->copy($destinationTable, [
+		// Get a temporary table.
+		$temporaryTableName = '_tmp_' . \Katu\Utils\Random::getIdString(8);
+		$temporaryTable = new \Katu\Pdo\Table($destinationTable->pdo, $temporaryTableName);
+
+		// Copy into temporary table view.
+		$sourceTable->copy($temporaryTable, [
 			'disableNull'   => true,
 			'createIndices' => true,
 		]);
+
+		// Drop the original table.
+		try {
+			$destinationTable->delete();
+		} catch (\Exception $e) {
+
+		}
+
+		// Rename the temporary table.
+		$temporaryTable->rename($destinationTable->name);
+
+		static::updateLastCachedTime();
+
+		return true;
 	}
 
 	static function getLastCachedTmpName() {

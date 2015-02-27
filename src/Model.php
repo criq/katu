@@ -24,7 +24,7 @@ class Model extends ReadOnlyModel {
 		$query = static::getPdo()->createQuery();
 
 		$columns = array_map(function($i) {
-			return "`" . $i . "`";
+			return new \Katu\Pdo\Name($i);
 		}, array_keys($bindValues));
 		$values  = array_map(function($i) {
 			return ':' . $i;
@@ -79,7 +79,7 @@ class Model extends ReadOnlyModel {
 
 			$set = [];
 			foreach ($bindValues as $name => $value) {
-				$set[] = "`" . $name . "` = :" . $name;
+				$set[] = (new \Katu\Pdo\Name($name)) . " = :" . $name;
 			}
 
 			if ($set) {
