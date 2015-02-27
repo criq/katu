@@ -33,7 +33,7 @@ class Table extends \Sexy\Expression {
 	public function getColumnDescriptions() {
 		$table = $this;
 
-		return \Katu\Utils\Cache::getRuntime(['!databases', '!' . $this->pdo->name, '!tables', '!descriptions', '!' . $this->name], function() use($table) {
+		return \Katu\Utils\Cache::getRuntime(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], function() use($table) {
 			$columns = [];
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
 				$columns[$properties['Field']] = $properties;
