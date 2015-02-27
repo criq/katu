@@ -31,13 +31,16 @@ class Table extends \Sexy\Expression {
 	}
 
 	public function getColumnDescriptions() {
-		$columns = [];
+		$table = $this;
 
-		foreach ($this->pdo->createQuery(" DESCRIBE " . $this->name)->getResult() as $properties) {
-			$columns[$properties['Field']] = $properties;
-		}
+		return \Katu\Utils\Cache::getRuntime(['!databases', '!' . $this->pdo->name, '!tables', '!descriptions', '!' . $this->name], function() use($table) {
+			$columns = [];
+			foreach ($table->pdo->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
+				$columns[$properties['Field']] = $properties;
+			}
 
-		return $columns;
+			return $columns;
+		});
 	}
 
 	public function getColumnDescription($columnName) {

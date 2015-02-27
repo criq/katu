@@ -117,20 +117,20 @@ class ReadOnlyModel {
 	}
 
 	static function getIdColumnName() {
-		foreach (static::getPdo()->createQuery(" DESCRIBE " . static::getTable())->getResult() as $row) {
-			if (isset($row['Key']) && $row['Key'] == 'PRI') {
-				return $row['Field'];
-			}
-		}
+		$table = static::getTable();
 
-		return false;
+		return \Katu\Utils\Cache::getRuntime(['!databases', '!' . $table->pdo->name, '!tables', '!idColumn', '!' . $table->name], function() use($table) {
+			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
+				if (isset($row['Key']) && $row['Key'] == 'PRI') {
+					return $row['Field'];
+				}
+			}
+
+			return false;
+		});
 	}
 
 	public function getId() {
-		if (property_exists($this, 'id')) {
-			return $this->id;
-		}
-
 		return $this->{static::getIdColumnName()};
 	}
 
