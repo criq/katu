@@ -27,18 +27,39 @@ class ModelView extends ReadOnlyModel {
 			return true;
 		}
 
-		if (isset(static::$sourceTables)) {
-			foreach (static::$sourceTables as $sourceTable) {
-				$table = new \Katu\Pdo\Table(static::getPdo(), $sourceTable);
-				$lastUpdatedTime = $table->getLastUpdatedTime();
+		foreach (static::getSourceTables() as $sourceTable) {
+			$table = new \Katu\Pdo\Table(static::getPdo(), $sourceTable);
+			$lastUpdatedTime = $table->getLastUpdatedTime();
 
-				if (!is_null($lastUpdatedTime) && $lastUpdatedTime > $lastCachedTime) {
-					return true;
-				}
+			if (!is_null($lastUpdatedTime) && $lastUpdatedTime > $lastCachedTime) {
+				return true;
 			}
 		}
 
 		return false;
+	}
+
+	static function getSourceTables() {
+		$pdo = static::getPdo();
+		$table = "`" . static::DATABASE . "`.`" . static::TABLE . "`";
+
+		return \Katu\Utils\Cache::get(static::getSourceTablesName(), function() use($pdo, $table) {
+			$tables = [];
+
+			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
+			$res = $pdo->createQuery($sql)->getResult()->getArray();
+			foreach ($res as $row) {
+				if (!preg_match('#^<derived[0-9]+>$#', $row['table'])) {
+					$tables[] = $row['table'];
+				}
+			}
+
+			return array_values(array_unique($tables));
+		});
+	}
+
+	static function getSourceTablesName() {
+		return ['!databases', '!' . parent::getTable()->pdo->name, '!views', '!sourceTables', '!' . static::TABLE];
 	}
 
 	static function getCachedName() {
