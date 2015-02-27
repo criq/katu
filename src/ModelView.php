@@ -4,7 +4,7 @@ namespace Katu;
 
 class ModelView extends ReadOnlyModel {
 
-	const CACHE = 3600;
+	const CACHE = 86400;
 
 	static function isCached() {
 		return defined('static::CACHE') && static::CACHE;
