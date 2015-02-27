@@ -12,22 +12,7 @@ class Cache {
 			@list($name, $callback, $timeout, $options) = func_get_args();
 		}
 
-		// No name, generate it from position in code.
-		if (!$name) {
-			foreach (debug_backtrace() as $backtrace) {
-				if ($backtrace['file'] != __FILE__) {
-					$name = [
-						'!anonymous',
-						'!' . $backtrace['file'],
-						'!' . $backtrace['line'],
-						$options,
-					];
-					break;
-				}
-			}
-		}
-
-		$path = FileSystem::getPathForName(array_merge(['!cache'], is_array($name) ? $name : [$name]));
+		$path = static::getPath($name);
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
@@ -49,12 +34,39 @@ class Cache {
 		}
 	}
 
+	static function reset($name) {
+		try {
+			return FileSystem::deleteDir(static::getCacheDir(static::getPath($name)));
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
 	static function getCacheDir($path) {
 		return FileSystem::joinPaths(TMP_PATH, dirname($path));
 	}
 
 	static function getCacheFile($path) {
 		return basename($path);
+	}
+
+	static function getPath($name) {
+		// No name, generate it from position in code.
+		if (!$name) {
+			foreach (debug_backtrace() as $backtrace) {
+				if ($backtrace['file'] != __FILE__) {
+					$name = [
+						'!anonymous',
+						'!' . $backtrace['file'],
+						'!' . $backtrace['line'],
+						$options,
+					];
+					break;
+				}
+			}
+		}
+
+		return FileSystem::getPathForName(array_merge(['!cache'], is_array($name) ? $name : [$name]));
 	}
 
 	static function getUrl($url, $timeout = null, $options = []) {

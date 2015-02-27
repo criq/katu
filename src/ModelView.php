@@ -8,6 +8,14 @@ class ModelView extends ReadOnlyModel {
 		return defined('static::CACHE') && static::CACHE;
 	}
 
+	static function getCachedName() {
+		return ['!databases', '!' . parent::getTable()->pdo->name, '!views', '!cached', '!' . static::TABLE];
+	}
+
+	static function resetCache() {
+		return \Katu\Utils\Cache::reset(static::getCachedName());
+	}
+
 	static function getTableName() {
 		if (static::isCached()) {
 			return implode('_', [
@@ -26,7 +34,7 @@ class ModelView extends ReadOnlyModel {
  			$sourceTable      = new \Katu\Pdo\Table(new \Katu\Pdo\Connection(static::DATABASE), static::TABLE);
 			$destinationTable = new \Katu\Pdo\Table(static::getPdo(), static::getTableName());
 
-			\Katu\Utils\Cache::get(['!materializedViews', '!refreshed', static::getTableName()], function() use($sourceTable, $destinationTable) {
+			\Katu\Utils\Cache::get(static::getCachedName(), function() use($sourceTable, $destinationTable) {
 				return static::refresh($sourceTable, $destinationTable);
 			}, static::CACHE);
 
