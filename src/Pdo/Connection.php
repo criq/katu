@@ -100,6 +100,18 @@ class Connection {
 		return $query;
 	}
 
+	public function begin() {
+		return $this->connection->beginTransaction();
+	}
+
+	public function commit() {
+		return $this->connection->commit();
+	}
+
+	public function rollback() {
+		return $this->connection->rollBack();
+	}
+
 	public function dump($options = []) {
 		$extension = 'sql';
 		$dumpOptions = [];
