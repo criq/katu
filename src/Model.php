@@ -214,13 +214,15 @@ class Model extends ReadOnlyModel {
 		return true;
 	}
 
-	static function checkUniqueColumnValue($column, $value, $excludeObject = null) {
+	static function checkUniqueColumnValue($whereExpressions, $excludeObject = null) {
 		$sql = (new \Sexy\Select(static::getTable()))
 			->from(static::getTable())
-			->whereEq($column, $value)
+			->addExpressions([
+				'where' => $whereExpressions,
+			])
 			;
 
-		if ($excludeObject) {
+		if (!is_null($excludeObject)) {
 			$sql->where(new \Sexy\CmpNotEq(static::getIdColumn(), $excludeObject->getId()));
 		}
 
