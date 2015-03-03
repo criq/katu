@@ -38,7 +38,7 @@ class Upload {
 	}
 
 	public function isInError() {
-		return (bool) $this->getErrorID();
+		return (bool) $this->getErrorId();
 	}
 
 	public function isType($types) {
@@ -111,7 +111,7 @@ class Upload {
 		}
 	}
 
-	public function getErrorID() {
+	public function getErrorId() {
 		switch ($this->getErrorNumber()) {
 
 			// 0
@@ -158,7 +158,7 @@ class Upload {
 	}
 
 	public function getException() {
-		return new \Exception($this->getErrorMessage(), $this->getErrorID());
+		return new \Exception($this->getErrorMessage(), $this->getErrorId());
 	}
 
 }
