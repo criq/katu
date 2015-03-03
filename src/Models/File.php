@@ -27,14 +27,14 @@ class File extends \Katu\Model {
 		// Get a new file name.
 		$path = static::copyUpload($upload, static::generatePath($upload->fileName));
 
-		return static::insert(array(
+		return static::insert([
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
 			'creatorId'   => (int)    ($creator ? $creator->id : null),
 			'path'        => (string) ($path),
 			'name'        => (string) ($upload->fileName),
 			'type'        => (string) ($upload->fileType),
 			'size'        => (string) ($upload->fileSize),
-		));
+		]);
 	}
 
 	static function checkCrudParams($creator) {
@@ -86,15 +86,15 @@ class File extends \Katu\Model {
 				$fileNameChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 			}
 
-			$subDirNames = array();
+			$subDirNames = [];
 			for ($i = 0; $i < $subDirs; $i++) {
 				$subDirNames[] = \Katu\Utils\Random::getFromChars($fileNameChars, rand(1, 3));
 			}
 
-			$path = trim(implode('/', array(
+			$path = trim(implode('/', [
 				implode('/', $subDirNames),
 				\Katu\Utils\Random::getFromChars($fileNameChars, $fileNameLength),
-			)), '/');
+			]), '/');
 
 			if ($srcName) {
 				$srcPathinfo = pathinfo($srcName);
@@ -135,11 +135,11 @@ class File extends \Katu\Model {
 		return static::getDirPath() . '/' . $this->path;
 	}
 
-	public function getThumbnailUrl($size = 640, $quality = 100, $options = array()) {
+	public function getThumbnailUrl($size = 640, $quality = 100, $options = []) {
 		return \Katu\Utils\Image::getThumbnailUrl($this->getPath(), $size, $quality, $options);
 	}
 
-	public function getThumbnailPath($size = 640, $quality = 100, $options = array()) {
+	public function getThumbnailPath($size = 640, $quality = 100, $options = []) {
 		return \Katu\Utils\Image::getThumbnailPath($this->getPath(), $size, $quality, $options);
 	}
 

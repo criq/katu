@@ -305,7 +305,10 @@ class ReadOnlyModel {
 			->whereIn(File::getColumn('type'), ['image/jpeg', 'image/png', 'image/gif'])
 			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
 			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
-			->orderBy(new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('desc')))
+			->orderBy([
+				new OrderBy(FileAttachment::getColumn('position')),
+				new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('desc')),
+			])
 			->addExpressions($expressions)
 			;
 
