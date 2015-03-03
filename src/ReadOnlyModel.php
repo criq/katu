@@ -188,8 +188,8 @@ class ReadOnlyModel {
 		return call_user_func_array(['static', 'getBy'], $args)->getOne();
 	}
 
-	static function getAll($options = []) {
-		return static::getBy([], $options);
+	static function getAll($expressions = []) {
+		return static::getBy([], $expressions);
 	}
 
 	static function getOneOrCreateWithArray($getBy, $array = []) {
