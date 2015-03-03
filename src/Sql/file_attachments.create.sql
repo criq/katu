@@ -5,6 +5,7 @@ CREATE TABLE `file_attachments` (
   `objectModel` varchar(255) NOT NULL DEFAULT '',
   `objectId` int(11) unsigned NOT NULL,
   `fileId` int(11) unsigned NOT NULL,
+  `position` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `objectModel` (`objectModel`,`objectId`,`fileId`)
+  KEY `objectModel` (`objectModel`,`objectId`,`fileId`,`position`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

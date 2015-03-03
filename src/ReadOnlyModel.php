@@ -5,6 +5,8 @@ namespace Katu;
 use \App\Models\File;
 use \App\Models\FileAttachment;
 use \Sexy\Select;
+use \Sexy\CmpEq;
+use \Sexy\CmpNotEq;
 use \Sexy\CmpIn;
 use \Sexy\OrderBy;
 use \Sexy\Page;
@@ -271,7 +273,29 @@ class ReadOnlyModel {
 	}
 
 	public function refreshFileAttachmentPositions() {
+		$position = 0;
 
+		// Refresh the ones with position.
+		foreach ($this->getFileAttachments([
+			new CmpNotEq(FileAttachment::getColumn('position'), 0),
+		], [
+			'orderBy' => FileAttachment::getColumn('position'),
+		]) as $fileAttachment) {
+			$fileAttachment->setPosition(++$position);
+			$fileAttachment->save();
+		}
+
+		// Refresh the ones without position.
+		foreach ($this->getFileAttachments([
+			new CmpEq(FileAttachment::getColumn('position'), 0),
+		], [
+			'orderBy' => FileAttachment::getColumn('timeCreated'),
+		]) as $fileAttachment) {
+			$fileAttachment->setPosition(++$position);
+			$fileAttachment->save();
+		}
+
+		return true;
 	}
 
 	public function getImageFileAttachments($expressions = []) {
