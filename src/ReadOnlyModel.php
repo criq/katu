@@ -270,6 +270,10 @@ class ReadOnlyModel {
 		return FileAttachment::getBy($params, $expressions);
 	}
 
+	public function refreshFileAttachmentPositions() {
+
+	}
+
 	public function getImageFileAttachments($expressions = []) {
 		$sql = (new Select(FileAttachment::getTable()))
 			->from(FileAttachment::getTable())
@@ -277,7 +281,7 @@ class ReadOnlyModel {
 			->whereIn(File::getColumn('type'), ['image/jpeg', 'image/png', 'image/gif'])
 			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
 			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
-			->orderBy(new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('DESC')))
+			->orderBy(new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('desc')))
 			->addExpressions($expressions)
 			;
 
