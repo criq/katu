@@ -46,4 +46,10 @@ class FileAttachment extends \Katu\Model {
 		return true;
 	}
 
+	public function getObject() {
+		$class = $this->objectModel;
+
+		return $class::get($this->objectId);
+	}
+
 }
