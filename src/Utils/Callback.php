@@ -14,7 +14,7 @@ class Callback {
 		$this->callable = $callable;
 	}
 
-	public function call($args = array()) {
+	public function call($args = []) {
 		return call_user_func_array($this->callable, $args);
 	}
 

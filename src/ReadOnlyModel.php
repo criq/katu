@@ -269,6 +269,10 @@ class ReadOnlyModel {
 		$params['objectModel'] = $this->getClass();
 		$params['objectId']    = $this->getId();
 
+		if (!isset($expressions['orderBy'])) {
+			$expressions['orderBy'] = FileAttachment::getColumn('position');
+		}
+
 		return FileAttachment::getBy($params, $expressions);
 	}
 

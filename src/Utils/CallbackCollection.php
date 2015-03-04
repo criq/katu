@@ -42,7 +42,7 @@ class CallbackCollection {
 		return isset($this->callbackCollection[$name]);
 	}
 
-	public function call($name, $args = array()) {
+	public function call($name, $args = []) {
 		if (!$this->exists($name)) {
 			throw new \Exception("Callback doesn't exist.");
 		}
