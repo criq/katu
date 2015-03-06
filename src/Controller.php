@@ -40,7 +40,7 @@ class Controller {
 
 		} catch (\Exception $e) {
 
-			error_log($e);
+			ErrorHandler::log($e);
 
 			throw new Exceptions\TemplateException($e->getMessage());
 
