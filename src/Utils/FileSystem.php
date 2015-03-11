@@ -7,6 +7,8 @@ use \Katu\Classes\FileSystemPathSegments;
 
 class FileSystem {
 
+	static $names = [];
+
 	static function joinPaths() {
 		return implode('/', array_map(function($i){
 			return rtrim($i, '/');
@@ -44,37 +46,42 @@ class FileSystem {
 	}
 
 	static function getPathForName($nameParts) {
-		$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
-		$nameParts = array_values(array_filter($nameParts));
+		$nameKey = sha1(serialize($nameParts));
+		if (!isset(static::$names[$nameKey])) {
 
-		$segments = new FileSystemPathSegments();
+			$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
+			$nameParts = array_values(array_filter($nameParts));
 
-		// Special treatment of URLs.
-		foreach ($nameParts as $namePart) {
+			$segments = new FileSystemPathSegments();
 
-			try {
-				$urlParts = (new \Katu\Types\TUrl($namePart))->getParts();
-				$segments->add('!' . $urlParts['scheme']);
-				foreach (array_reverse(explode('.', $urlParts['host'])) as $segment) {
-					$segments->add('!' . $segment);
+			// Special treatment of URLs.
+			foreach ($nameParts as $namePart) {
+
+				try {
+					$urlParts = (new \Katu\Types\TUrl($namePart))->getParts();
+					$segments->add('!' . $urlParts['scheme']);
+					foreach (array_reverse(explode('.', $urlParts['host'])) as $segment) {
+						$segments->add('!' . $segment);
+					}
+					$segments->add('!' . $urlParts['path']);
+					$segments->add($urlParts['query']);
+				} catch (\Exception $e) {
+					$segments->add($namePart);
 				}
-				$segments->add('!' . $urlParts['path']);
-				$segments->add($urlParts['query']);
-			} catch (\Exception $e) {
-				$segments->add($namePart);
+
 			}
+
+			// Get path segments.
+			$segments = $segments->getPathSegments();
+
+			// Attach hashed hidden file name at the end.
+			$segments[] = '.' . sha1(serialize($segments));
+
+			static::$names[$nameKey] = implode('/', $segments);
 
 		}
 
-		// Get path segments.
-		$segments = $segments->getPathSegments();
-
-		// Attach hashed hidden file name at the end.
-		$segments[] = '.' . sha1(serialize($segments));
-
-		$path = implode('/', $segments);
-
-		return $path;
+		return static::$names[$nameKey];
 	}
 
 	static function touch($path) {
