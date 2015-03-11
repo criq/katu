@@ -6,6 +6,7 @@ class Profiler {
 
 	static $profilers = [];
 
+	public $stopwatch;
 	public $queries = [];
 
 	public function __construct() {
@@ -49,29 +50,29 @@ class Profiler {
 		return $array;
 	}
 
-	static function initGlobal() {
+	static function init($name) {
 		if (static::isOn()) {
-			if (!isset(static::$profilers['global'])) {
-				static::$profilers['global'] = new static;
+			if (!isset(static::$profilers[$name])) {
+				static::$profilers[$name] = new static;
 			}
 
-			return static::$profilers['global'];
+			return static::$profilers[$name];
 		}
 
 		return false;
 	}
 
-	static function getGlobal() {
+	static function get($name) {
 		if (static::isOn()) {
-			return static::initGlobal();
+			return static::init($name);
 		}
 
 		return false;
 	}
 
-	static function dumpGlobal() {
+	static function dump($name) {
 		if (static::isOn()) {
-			$profiler = static::getGlobal();
+			$profiler = static::get($name);
 			$csv = CSV::setFromAssoc($profiler->getQueriesAsArray(), [
 				'delimiter' => ';',
 			]);
@@ -81,6 +82,10 @@ class Profiler {
 		}
 
 		return false;
+	}
+
+	static function reset($name) {
+		unset(static::$profilers[$name]);
 	}
 
 }

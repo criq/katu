@@ -183,6 +183,28 @@ class View {
 			return implode(' ', (new \Katu\Types\TArray(\Katu\Utils\Blabot::getList()))->getRandomItems($sentences));
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('start', function() {
+			if (\Katu\Utils\Profiler::isOn()) {
+				$profiler = \Katu\Utils\Profiler::init('twig');
+
+				return static::render("Katu/Blocks/profilerStart");
+			}
+		}));
+
+		$twig->addFunction(new \Twig_SimpleFunction('stop', function() {
+			if (\Katu\Utils\Profiler::isOn()) {
+				$profiler = \Katu\Utils\Profiler::get('twig');
+
+				$res = static::render("Katu/Blocks/profilerEnd", [
+					'profiler' => $profiler,
+				]);
+
+				$profiler->reset('twig');
+
+				return $res;
+			}
+		}));
+
 		// Extend Twig.
 
 		if (class_exists('\App\Extensions\View') && method_exists('\App\Extensions\View', 'extendTwig')) {
