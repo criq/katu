@@ -26,7 +26,7 @@ class ErrorHandler {
 			try {
 				throw new \ErrorException($message, 0, $level, $file, $line);
 			} catch (\Exception $e) {
-				var_dump(func_get_args());
+				var_dump([$message]);
 			}
 		});
 
