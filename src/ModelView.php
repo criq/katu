@@ -4,7 +4,9 @@ namespace Katu;
 
 class ModelView extends ReadOnlyModel {
 
-	const CACHE = 86400;
+	const CACHE                   = true;
+	const CACHE_TIMEOUT           = 86400;
+	const CACHE_REFRESH_ON_UPDATE = true;
 
 	static function isCached() {
 		return defined('static::CACHE') && static::CACHE;
@@ -15,6 +17,11 @@ class ModelView extends ReadOnlyModel {
 			return false;
 		}
 
+		// Cached table doesn't exist.
+		if (!in_array(static::getTableName(), static::getPdo()->getTableNames())) {
+			return true;
+		}
+
 		$lastCachedTime = static::getLastCachedTime();
 
 		// No cached time.
@@ -23,16 +30,19 @@ class ModelView extends ReadOnlyModel {
 		}
 
 		// Expired.
-		if (!is_null($lastCachedTime) && $lastCachedTime < time() - static::CACHE) {
+		if (!is_null($lastCachedTime) && $lastCachedTime < time() - static::CACHE_TIMEOUT) {
 			return true;
 		}
 
-		foreach (static::getSourceTables() as $sourceTable) {
-			$table = new \Katu\Pdo\Table(static::getPdo(), $sourceTable);
-			$lastUpdatedTime = $table->getLastUpdatedTime();
+		// Expired data in tables.
+		if (static::CACHE_REFRESH_ON_UPDATE) {
+			foreach (static::getSourceTables() as $sourceTable) {
+				$table = new \Katu\Pdo\Table(static::getPdo(), $sourceTable);
+				$lastUpdatedTime = $table->getLastUpdatedTime();
 
-			if (!is_null($lastUpdatedTime) && $lastUpdatedTime > $lastCachedTime) {
-				return true;
+				if (!is_null($lastUpdatedTime) && $lastUpdatedTime > $lastCachedTime) {
+					return true;
+				}
 			}
 		}
 
