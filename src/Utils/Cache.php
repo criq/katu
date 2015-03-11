@@ -107,7 +107,6 @@ class Cache {
 	}
 
 	static function getFromMemory($name, $callback = null) {
-
 		$cacheName = sha1(serialize($name));
 
 		// APC supported.
@@ -129,9 +128,6 @@ class Cache {
 			return static::$memory[$cacheName];
 
 		}
-	} catch (\Exception $e) {
-		var_dump($e); die;
 	}
-}
 
 }
