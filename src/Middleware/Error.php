@@ -2,7 +2,7 @@
 
 namespace Katu\Middleware;
 
-class ErrorMiddleware extends \Slim\Middleware {
+class Error extends \Slim\Middleware {
 
 	public function call() {
 		$app = $this->app;

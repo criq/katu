@@ -86,10 +86,10 @@ class App {
 			$app = new \Slim\Slim($config);
 
 			// Add error middleware.
-			$app->add(new Middleware\ErrorMiddleware());
+			$app->add(new Middleware\Error());
 
 			// Add profiler middleware.
-			$app->add(new Middleware\ProfilerMiddleware());
+			$app->add(new Middleware\Profiler());
 
 			// Default content-type header for debugging, will be probably overwritten by app.
 			header('Content-Type: text/html; charset=UTF-8');

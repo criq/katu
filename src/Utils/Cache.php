@@ -4,6 +4,8 @@ namespace Katu\Utils;
 
 class Cache {
 
+	static $runtime = [];
+
 	static function get() {
 		if (is_callable(func_get_arg(0))) {
 			$name = [];
@@ -87,22 +89,17 @@ class Cache {
 	}
 
 	static function getRuntime($name, $callback = null) {
-		// Init global runtime cache.
-		if (!isset($GLOBALS['katu.cache.runtime'])) {
-			$GLOBALS['katu.cache.runtime'] = [];
-		}
-
 		$cacheName = static::getPath($name);
 
 		// There's something cached.
-		if (isset($GLOBALS['katu.cache.runtime'][$cacheName]) && !is_null($GLOBALS['katu.cache.runtime'][$cacheName])) {
-			return $GLOBALS['katu.cache.runtime'][$cacheName];
+		if (isset(static::$runtime[$cacheName]) && !is_null(static::$runtime[$cacheName])) {
+			return static::$runtime[$cacheName];
 		}
 
 		// There is callback.
 		if (!is_null($callback)) {
-			$GLOBALS['katu.cache.runtime'][$cacheName] = call_user_func($callback);
-			return $GLOBALS['katu.cache.runtime'][$cacheName];
+			static::$runtime[$cacheName] = call_user_func($callback);
+			return static::$runtime[$cacheName];
 		}
 
 		return null;

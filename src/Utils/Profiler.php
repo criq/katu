@@ -4,6 +4,7 @@ namespace Katu\Utils;
 
 class Profiler {
 
+	//static $profilers = [];
 	static $queries = [];
 
 	static function isOn() {
@@ -11,10 +12,10 @@ class Profiler {
 	}
 
 	static function addQuery() {
-		if (@func_get_arg(0) instanceof ProfilerQuery) {
+		if (@func_get_arg(0) instanceof Profiler\Query) {
 			return static::$queries[] = func_get_arg(0);
 		} else {
-			return static::$queries[] = new ProfilerQuery(func_get_arg(0), func_get_arg(1));
+			return static::$queries[] = new Profiler\Query(func_get_arg(0), func_get_arg(1));
 		}
 	}
 

@@ -78,7 +78,7 @@ class Query {
 		}
 
 		if (\Katu\Utils\Profiler::isOn()) {
-			\Katu\Utils\Profiler::addQuery(new \Katu\Utils\ProfilerQuery($this->getStatement()->queryString, $stopwatch->getMilliDuration()));
+			\Katu\Utils\Profiler::addQuery(new \Katu\Utils\Profiler\Query($this->getStatement()->queryString, $stopwatch->getMicroDuration()));
 		}
 
 		return $result;
