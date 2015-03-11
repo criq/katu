@@ -5,8 +5,17 @@ namespace Katu\Utils\Profiler;
 class Query {
 
 	public function __construct($query, $duration) {
-		$this->query    = (string) (trim($query));
-		$this->duration = (float)  ($duration);
+		if ($query instanceof \Katu\Pdo\Query) {
+			$this->query = $query->getStatement()->queryString;
+		} else {
+			$this->query = (string) (trim($query));
+		}
+
+		if ($duration instanceof \Katu\Utils\Stopwatch) {
+			$this->duration = (float) ($duration->getMicroDuration());
+		} else {
+			$this->duration = (float) ($duration);
+		}
 	}
 
 }

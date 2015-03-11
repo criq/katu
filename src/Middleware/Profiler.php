@@ -5,11 +5,11 @@ namespace Katu\Middleware;
 class Profiler extends \Slim\Middleware {
 
 	public function call() {
-		$app = $this->app;
+		\Katu\Utils\Profiler::initGlobal();
 
 		$this->next->call();
 
-		\Katu\Utils\Profiler::dump();
+		\Katu\Utils\Profiler::dumpGlobal();
 	}
 
 }

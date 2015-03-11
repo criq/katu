@@ -65,9 +65,7 @@ class Query {
 	public function getResult() {
 		#var_dump($this->getStatement());
 
-		if (\Katu\Utils\Profiler::isOn()) {
-			$stopwatch = new \Katu\Utils\Stopwatch();
-		}
+		$stopwatch = new \Katu\Utils\Stopwatch();
 
 		if ($this->class) {
 			$result = new Results\ClassResult($this->pdo, $this->getStatement(), $this->page, $this->class);
@@ -77,9 +75,7 @@ class Query {
 			$result = new Results\Result($this->pdo, $this->getStatement());
 		}
 
-		if (\Katu\Utils\Profiler::isOn()) {
-			\Katu\Utils\Profiler::addQuery(new \Katu\Utils\Profiler\Query($this->getStatement()->queryString, $stopwatch->getMicroDuration()));
-		}
+		\Katu\Utils\Profiler::add(new \Katu\Utils\Profiler\Query($this, $stopwatch));
 
 		return $result;
 	}
