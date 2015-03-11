@@ -93,13 +93,17 @@ class ModelView extends ReadOnlyModel {
 	static function getTable() {
 		// Do we want to materialize?
 		if (static::isExpired()) {
-			$sourceTable      = new \Katu\Pdo\Table(new \Katu\Pdo\Connection(static::DATABASE), static::TABLE);
-			$destinationTable = new \Katu\Pdo\Table(static::getPdo(), static::getTableName());
-
-			static::refresh($sourceTable, $destinationTable);
+			static::refreshCache();
 		}
 
 		return parent::getTable();
+	}
+
+	static function refreshCache() {
+		$sourceTable      = new \Katu\Pdo\Table(new \Katu\Pdo\Connection(static::DATABASE), static::TABLE);
+		$destinationTable = new \Katu\Pdo\Table(static::getPdo(), static::getTableName());
+
+		return static::refresh($sourceTable, $destinationTable);
 	}
 
 	static function refresh($sourceTable, $destinationTable) {
