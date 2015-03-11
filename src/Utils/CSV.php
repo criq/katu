@@ -60,8 +60,8 @@ class CSV {
 		return $rows;
 	}
 
-	static function setFromAssoc($array) {
-		$csv = new self();
+	static function setFromAssoc($array, $options = []) {
+		$csv = new self(null, $options);
 		$line = 0;
 
 		foreach ($array as $row) {

@@ -56,17 +56,19 @@ class Connection {
 	}
 
 	public function getTableNames() {
-		$tables = [];
+		return \Katu\Utils\Cache::getRuntime(['pdo', $this->name, 'tables'], function() {
+			$tables = [];
 
-		$sql = " SHOW TABLES ";
-		$res = $this->createQuery($sql)->getResult()->getArray();
+			$sql = " SHOW TABLES ";
+			$res = $this->createQuery($sql)->getResult()->getArray();
 
-		$pdo = $this;
+			$pdo = $this;
 
-		return array_map(function($i) use($pdo) {
-			$names = array_values($i);
-			return $names[0];
-		}, $res);
+			return array_map(function($i) use($pdo) {
+				$names = array_values($i);
+				return $names[0];
+			}, $res);
+		});
 	}
 
 	public function tableExists($tableName) {

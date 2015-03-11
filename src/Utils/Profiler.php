@@ -24,7 +24,9 @@ class Profiler {
 
 	static function dump() {
 		if (static::isOn()) {
-			$csv = CSV::setFromAssoc(static::getQueriesAsArray());
+			$csv = CSV::setFromAssoc(static::getQueriesAsArray(), [
+				'delimiter' => ';',
+			]);
 			$csv->save(static::getPath());
 
 			return true;
