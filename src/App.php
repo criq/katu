@@ -56,7 +56,6 @@ class App {
 	static function isProfilerOn() {
 		return \Katu\Utils\Cache::getRuntime('profiler.on', function() {
 			try {
-				var_dump("A");
 				return \Katu\Config::get('app', 'profiler');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				return false;
