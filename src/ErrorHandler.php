@@ -23,7 +23,11 @@ class ErrorHandler {
 		ini_set('error_log', ERROR_LOG);
 
 		set_error_handler(function ($message, $level = 0, $file = null, $line = null) {
-			throw new \ErrorException($message, 0, $level, $file, $line);
+			try {
+				throw new \ErrorException($message, 0, $level, $file, $line);
+			} catch (\Exception $e) {
+				var_dump(func_get_args());
+			}
 		});
 
 		set_exception_handler(function ($exception) {
