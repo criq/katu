@@ -107,26 +107,30 @@ class Cache {
 	}
 
 	static function getFromMemory($name, $callback = null) {
-		$cacheName = sha1(serialize($name));
+		try {
+			$cacheName = sha1(serialize($name));
 
-		// APC supported.
-		if (function_exists('apc_add')) {
+			// APC supported.
+			if (function_exists('apc_add')) {
 
-			if (!apc_exists($cacheName)) {
-				apc_add($cacheName, call_user_func_array($callback, array_slice(func_get_args(), 2)));
+				if (!apc_exists($cacheName)) {
+					apc_add($cacheName, call_user_func_array($callback, array_slice(func_get_args(), 2)));
+				}
+
+				return apc_fetch($cacheName);
+
+			// APC not supported, just use runtime memory.
+			} else {
+
+				if (!isset(static::$memory[$cacheName])) {
+					static::$memory['cacheName'] = call_user_func_array($callback, array_slice(func_get_args(), 2));
+				}
+
+				return static::$memory[$cacheName];
+
 			}
-
-			return apc_fetch($cacheName);
-
-		// APC not supported, just use runtime memory.
-		} else {
-
-			if (!isset(static::$memory[$cacheName])) {
-				static::$memory['cacheName'] = call_user_func_array($callback, array_slice(func_get_args(), 2));
-			}
-
-			return static::$memory[$cacheName];
-
+		} catch (\Exception $e) {
+			var_dump($e); die;
 		}
 	}
 
