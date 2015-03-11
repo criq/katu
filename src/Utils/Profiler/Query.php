@@ -12,9 +12,9 @@ class Query {
 		}
 
 		if ($duration instanceof \Katu\Utils\Stopwatch) {
-			$this->duration = (float) ($duration->getMicroDuration());
+			$this->duration = (int) ($duration->getMicroDuration());
 		} else {
-			$this->duration = (float) ($duration);
+			$this->duration = (int) ($duration);
 		}
 	}
 

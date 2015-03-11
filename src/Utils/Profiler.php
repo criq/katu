@@ -29,7 +29,7 @@ class Profiler {
 	}
 
 	public function addQuery($query) {
-
+		return $this->queries[] = $query;
 	}
 
 	public function getPath() {
