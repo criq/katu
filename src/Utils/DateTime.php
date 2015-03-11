@@ -70,4 +70,10 @@ class DateTime extends \DateTime {
 		return (float) $micro;
 	}
 
+	static function getMicrotime() {
+		list($micro, $timestamp) = explode(' ', microtime(false));
+
+		return (float) ($timestamp + $micro);
+	}
+
 }

@@ -53,6 +53,14 @@ class App {
 		return Config::get('app', 'slim', 'mode') == 'production';
 	}
 
+	static function isProfilerOn() {
+		try {
+			return \Katu\Config::get('app', 'profiler');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return false;
+		}
+	}
+
 	static function get() {
 		$app = \Slim\Slim::getInstance();
 		if (!$app) {
@@ -77,6 +85,9 @@ class App {
 
 			// Add error middleware.
 			$app->add(new Middleware\ErrorMiddleware());
+
+			// Add profiler middleware.
+			$app->add(new Middleware\ProfilerMiddleware());
 
 			// Default content-type header for debugging, will be probably overwritten by app.
 			header('Content-Type: text/html; charset=UTF-8');
@@ -166,18 +177,10 @@ class App {
 							$_route->name($route->name);
 						}
 
-					} catch (\Exception $e) {
-
-						throw new Exceptions\ErrorException("A route error occured.");
-
-					}
+					} catch (\Exception $e) { throw new Exceptions\ErrorException("A route error occured."); }
 				}
 
-			} catch (\Exception $e) {
-
-				// Nothing to do, no custom routes defined.
-
-			}
+			} catch (\Exception $e) { /* Nothing to do, no custom routes defined. */ }
 
 			// Catch-all.
 			$app->map('.+', $catchAll)->via('GET', 'POST');
@@ -185,11 +188,7 @@ class App {
 			// Run the app.
 			$app->run();
 
-		} catch (\Exception $e) {
-
-			throw $e;
-
-		}
+		} catch (\Exception $e) { throw $e; }
 
 	}
 

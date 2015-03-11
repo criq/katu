@@ -78,6 +78,12 @@ class CSV {
 		return $this->writer->writeRow(is_array(@func_get_arg(0)) ? func_get_arg(0) : func_get_args());
 	}
 
+	public function save($saveAs) {
+		FileSystem::touch($saveAs);
+
+		return file_put_contents($saveAs, file_get_contents($this->path));
+	}
+
 	public function respond($saveAs) {
 		$app = \Katu\App::get();
 

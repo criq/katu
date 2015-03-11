@@ -65,13 +65,23 @@ class Query {
 	public function getResult() {
 		#var_dump($this->getStatement());
 
-		if ($this->class) {
-			return new Results\ClassResult($this->pdo, $this->getStatement(), $this->page, $this->class);
-		} elseif ($this->page) {
-			return new Results\PaginatedResult($this->pdo, $this->getStatement(), $this->page);
-		} else {
-			return new Results\Result($this->pdo, $this->getStatement());
+		if (\Katu\App::isProfilerOn()) {
+			$stopwatch = new \Katu\Utils\Stopwatch();
 		}
+
+		if ($this->class) {
+			$result = new Results\ClassResult($this->pdo, $this->getStatement(), $this->page, $this->class);
+		} elseif ($this->page) {
+			$result = new Results\PaginatedResult($this->pdo, $this->getStatement(), $this->page);
+		} else {
+			$result = new Results\Result($this->pdo, $this->getStatement());
+		}
+
+		if (\Katu\App::isProfilerOn()) {
+			\Katu\Utils\Profiler::addQuery(new \Katu\Utils\ProfilerQuery($this->getStatement()->queryString, $stopwatch->getMilliDuration()));
+		}
+
+		return $result;
 	}
 
 }
