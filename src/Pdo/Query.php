@@ -65,7 +65,7 @@ class Query {
 	public function getResult() {
 		#var_dump($this->getStatement());
 
-		if (\Katu\App::isProfilerOn()) {
+		if (\Katu\Utils\Profiler::isOn()) {
 			$stopwatch = new \Katu\Utils\Stopwatch();
 		}
 
@@ -77,7 +77,7 @@ class Query {
 			$result = new Results\Result($this->pdo, $this->getStatement());
 		}
 
-		if (\Katu\App::isProfilerOn()) {
+		if (\Katu\Utils\Profiler::isOn()) {
 			\Katu\Utils\Profiler::addQuery(new \Katu\Utils\ProfilerQuery($this->getStatement()->queryString, $stopwatch->getMilliDuration()));
 		}
 
