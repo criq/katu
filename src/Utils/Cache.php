@@ -122,7 +122,7 @@ class Cache {
 		} else {
 
 			if (!isset(static::$memory[$cacheName])) {
-				static::$memory['cacheName'] = call_user_func_array($callback, array_slice(func_get_args(), 2));
+				static::$memory[$cacheName] = call_user_func_array($callback, array_slice(func_get_args(), 2));
 			}
 
 			return static::$memory[$cacheName];
