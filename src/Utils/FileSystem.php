@@ -46,8 +46,7 @@ class FileSystem {
 	}
 
 	static function getPathForName($nameParts) {
-		$nameKey = sha1(serialize($nameParts));
-		if (!isset(static::$names[$nameKey])) {
+		return Cache::getFromMemory(['fileSystemName', $nameParts], function($nameParts) {
 
 			$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
 			$nameParts = array_values(array_filter($nameParts));
@@ -77,11 +76,9 @@ class FileSystem {
 			// Attach hashed hidden file name at the end.
 			$segments[] = '.' . sha1(serialize($segments));
 
-			static::$names[$nameKey] = implode('/', $segments);
+			return implode('/', $segments);
 
-		}
-
-		return static::$names[$nameKey];
+		}, $nameParts);
 	}
 
 	static function touch($path) {
