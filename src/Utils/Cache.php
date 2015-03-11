@@ -112,8 +112,6 @@ class Cache {
 		// APC supported.
 		if (function_exists('apc_add')) {
 
-			var_dump("A");
-
 			if (!apc_exists($cacheName)) {
 				apc_add($cacheName, call_user_func_array($callback, array_slice(func_get_args(), 2)));
 			}
