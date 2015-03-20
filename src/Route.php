@@ -29,7 +29,7 @@ class Route {
 
 	public function getCallable() {
 		return [
-			"\App\Controllers\\" . $this->controller,
+			"\App\Controllers\\" . strtr($this->controller, '/', '\\'),
 			$this->method,
 		];
 	}
