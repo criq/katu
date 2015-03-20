@@ -76,4 +76,14 @@ class DateTime extends \DateTime {
 		return (float) ($timestamp + $micro);
 	}
 
+	public function getClosestWeekday($dayNumber) {
+		$dateTime = clone $this;
+
+		while ($dateTime->format('N') != $dayNumber) {
+			$dateTime->modify('+ 1 day');
+		}
+
+		return $dateTime;
+	}
+
 }
