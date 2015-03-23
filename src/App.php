@@ -170,19 +170,32 @@ class App {
 
 				// Set up routes.
 				foreach ((array) Config::get('routes') as $name => $route) {
-					try {
 
-						$_route = $app->map($route->getPattern(), $route->getCallable())->via('GET', 'POST');
-						if (is_string($name) && trim($name)) {
-							$_route->name($name);
-						} elseif ($route->name) {
-							$_route->name($route->name);
-						}
+					$pattern  = $route->getPattern();
+					$callable = $route->getCallable();
 
-					} catch (\Exception $e) { throw new Exceptions\ErrorException("A route error occured."); }
+					if (!$pattern) {
+						throw new Exceptions\RouteException("Invalid pattern for route " . $name . ".");
+					}
+
+					if (!$callable || !is_callable($callable)) {
+						throw new Exceptions\RouteException("Invalid callable for route " . $name . ".");
+					}
+
+					$slimRoute = $app->map($pattern, $callable)->via('GET', 'POST');
+					if (is_string($name) && trim($name)) {
+						$slimRoute->name($name);
+					} elseif ($route->name) {
+						$slimRoute->name($route->name);
+					}
+
 				}
 
-			} catch (\Exception $e) { /* Nothing to do, no custom routes defined. */ }
+			} catch (Exceptions\RouteException $e) {
+				throw $e;
+			} catch (\Exception $e) {
+				 /* Nothing to do, no custom routes defined. */
+			}
 
 			// Catch-all.
 			$app->map('.+', $catchAll)->via('GET', 'POST');
