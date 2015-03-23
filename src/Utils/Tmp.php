@@ -9,7 +9,7 @@ class Tmp extends FileStorage {
 	}
 
 	static function debug($var) {
-		return static::set(implode('.', ['debug', time(), Random::getFileName(8)]), serialize($var));
+		return static::set(['!debug', '!' . time(), '!' . Random::getFileName(8)]), serialize($var));
 	}
 
 }
