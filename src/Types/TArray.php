@@ -2,24 +2,61 @@
 
 namespace Katu\Types;
 
-class TArray {
+class TArray implements \ArrayAccess, \IteratorAggregate {
 
-	public $value;
+	public $position = 0;
+	public $container;
 
-	public function __construct($value) {
+	public function __construct($value = []) {
 		if (!self::isValid($value)) {
 			throw new \Exception("Invalid array.");
 		}
 
-		$this->value = $value;
+		$this->container = $value;
 	}
+
+	/*************************************************************************
+	 * ArrayAccess.
+	 */
+
+	public function offsetSet($offset, $value) {
+		if (is_null($offset)) {
+			$this->container[] = $value;
+		} else {
+			$this->container[$offset] = $value;
+		}
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->container[$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->container[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return isset($this->container[$offset]) ? $this->container[$offset] : null;
+	}
+
+	/*************************************************************************
+	 * IteratorAggregate.
+	 */
+
+	public function getIterator() {
+		return new \ArrayIterator($this->container);
+	}
+
+	/*************************************************************************
+	 * TArray.
+	 */
 
 	static function isValid($value) {
 		return is_array($value);
 	}
 
 	public function getValueByArgs() {
-		$value = $this->value;
+		$value = $this->container;
 
 		foreach (func_get_args() as $key) {
 			if (isset($value[$key])) {
@@ -35,7 +72,7 @@ class TArray {
 	public function getWithoutKeys() {
 		$res = array();
 
-		foreach ($this->value as $key => $value) {
+		foreach ($this->container as $key => $value) {
 			if (!in_array($key, func_get_args())) {
 				$res[$key] = $value;
 			}
@@ -45,8 +82,8 @@ class TArray {
 	}
 
 	public function implodeInSentence($delimiter, $lastDelimiter) {
-		$arrayList = (array) array_slice($this->value, 0, -1);
-		$arrayLast = (array) array_slice($this->value, -1, 1);
+		$arrayList = (array) array_slice($this->container, 0, -1);
+		$arrayLast = (array) array_slice($this->container, -1, 1);
 
 		return implode($lastDelimiter, array_filter([implode($delimiter, $arrayList), $arrayLast[0]]));
 	}
@@ -57,7 +94,7 @@ class TArray {
 		}
 
 		$items = [];
-		foreach ($this->value as $key => $value) {
+		foreach ($this->container as $key => $value) {
 			$items[] = implode($keyValueDelimiter, [$key, $value]);
 		}
 
@@ -67,7 +104,7 @@ class TArray {
 	public function getRandomItems($n) {
 		$array = [];
 		for ($i = 0; $i < $n; $i++) {
-			$res[] = $this->value[array_rand($this->value)];
+			$res[] = $this->container[array_rand($this->container)];
 		}
 		return $res;
 	}

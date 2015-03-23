@@ -10,12 +10,14 @@ class Cache {
 	static function get() {
 		if (is_callable(func_get_arg(0))) {
 			$name = [];
-			@list($callback, $timeout, $options) = func_get_args();
+			@list($callback, $timeout) = func_get_args();
+			$args = array_slice(func_get_args(), 2);
 		} else {
-			@list($name, $callback, $timeout, $options) = func_get_args();
+			@list($name, $callback, $timeout) = func_get_args();
+			$args = array_slice(func_get_args(), 3);
 		}
 
-		$path = static::getPath($name);
+		$path = static::getPath(array_merge($name, $args));
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
@@ -26,8 +28,8 @@ class Cache {
 			$opts['max-age'] = $timeout;
 		}
 
-		$callback = function() use($callback) {
-			return gzcompress(serialize(call_user_func($callback)), 9);
+		$callback = function() use($callback, $args) {
+			return gzcompress(serialize(call_user_func_array($callback, $args)), 9);
 		};
 
 		try {
@@ -62,7 +64,6 @@ class Cache {
 						'!anonymous',
 						'!' . $backtrace['file'],
 						'!' . $backtrace['line'],
-						$options,
 					];
 					break;
 				}
@@ -72,7 +73,7 @@ class Cache {
 		return FileSystem::getPathForName(array_merge(['!cache'], is_array($name) ? $name : [$name]));
 	}
 
-	static function getUrl($url, $timeout = null, $options = []) {
+	static function getUrl($url, $timeout = null) {
 		return \Katu\Utils\Cache::get($url, function() use($url) {
 
 			$response = (new \Katu\Types\TUrl((string) $url))->get($curl);
@@ -86,7 +87,7 @@ class Cache {
 
 			return $response;
 
-		}, $timeout, $options);
+		}, $timeout);
 	}
 
 	static function getRuntime($name, $callback = null) {
