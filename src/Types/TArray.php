@@ -15,6 +15,10 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		$this->container = $value;
 	}
 
+	public function getArray() {
+		return $this->container;
+	}
+
 	/*************************************************************************
 	 * ArrayAccess.
 	 */
