@@ -114,6 +114,10 @@ class ReadOnlyModel {
 		return $query;
 	}
 
+	static function transaction($callback) {
+		return call_user_func_array([static::getPdo(), 'transaction'], func_get_args());
+	}
+
 	static function getIdColumn() {
 		return static::getColumn(static::getIdColumnName());
 	}
