@@ -17,7 +17,7 @@ class Cache {
 			$args = array_slice(func_get_args(), 3);
 		}
 
-		$path = static::getPath(array_merge($name, $args));
+		$path = static::getPath(array_merge((array) $name, (array) $args));
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
