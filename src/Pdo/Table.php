@@ -84,7 +84,8 @@ class Table extends \Sexy\Expression {
 
 		}
 
-		if (isset($options['createIndices']) && $options['createIndices']) {
+		// Create automatic indices.
+		if (isset($options['autoIndices']) && $options['autoIndices']) {
 			$indexableColumns = [];
 
 			foreach ($destinationTable->getColumns() as $column) {
@@ -113,6 +114,16 @@ class Table extends \Sexy\Expression {
 				} catch (\Exception $e) {
 
 				}
+			}
+		}
+
+		// Create custom indices.
+		foreach ($options['customIndices'] as $customIndex) {
+			try {
+				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
+				$destinationTable->pdo->createQuery($sql)->getResult();
+			} catch (\Exception $e) {
+
 			}
 		}
 

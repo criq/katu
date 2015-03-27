@@ -8,6 +8,9 @@ class ModelView extends ReadOnlyModel {
 	const CACHE_TIMEOUT           = 86400;
 	const CACHE_REFRESH_ON_UPDATE = true;
 
+	static $autoIndices   = true;
+	static $customIndices = [];
+
 	static function isCached() {
 		return defined('static::CACHE') && static::CACHE;
 	}
@@ -116,7 +119,8 @@ class ModelView extends ReadOnlyModel {
 		// Copy into temporary table view.
 		$sourceTable->copy($temporaryTable, [
 			'disableNull'   => true,
-			'createIndices' => true,
+			'autoIndices'   => static::$autoIndices,
+			'customIndices' => static::$customIndices,
 		]);
 
 		// Drop the original table.
