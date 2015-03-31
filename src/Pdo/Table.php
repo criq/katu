@@ -55,6 +55,10 @@ class Table extends \Sexy\Expression {
 		}, $this->getColumnDescriptions()));
 	}
 
+	public function exists() {
+		return $this->pdo->tableExists($this->name);
+	}
+
 	public function rename($name) {
 		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
 

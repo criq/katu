@@ -39,14 +39,22 @@ class ModelView extends ReadOnlyModel {
 
 		// Expired data in tables.
 		if (static::CACHE_REFRESH_ON_UPDATE) {
-			foreach (static::getSourceTables() as $sourceTable) {
-				$table = new \Katu\Pdo\Table(static::getPdo(), $sourceTable);
-				$lastUpdatedTime = $table->getLastUpdatedTime();
 
+			$sourceTables = static::getSourceTables();
+			foreach ($sourceTables as $sourceTable) {
+
+				$table = new \Katu\Pdo\Table(static::getPdo(), $sourceTable);
+				if (!$table->exists()) {
+					continue;
+				}
+
+				$lastUpdatedTime = $table->getLastUpdatedTime();
 				if (!is_null($lastUpdatedTime) && $lastUpdatedTime > $lastCachedTime) {
 					return true;
 				}
+
 			}
+
 		}
 
 		return false;
