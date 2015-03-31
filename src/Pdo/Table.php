@@ -56,7 +56,7 @@ class Table extends \Sexy\Expression {
 	}
 
 	public function exists() {
-		return $this->pdo->tableExists($this->name);
+		return $this->pdo->tableExists($this->name->name);
 	}
 
 	public function rename($name) {
