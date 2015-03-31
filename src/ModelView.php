@@ -141,6 +141,7 @@ class ModelView extends ReadOnlyModel {
 		// Rename the temporary table.
 		$temporaryTable->rename($destinationTable->name);
 
+		// Save the last cached time.
 		static::updateLastCachedTime();
 
 		return true;

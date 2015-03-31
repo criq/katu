@@ -107,6 +107,19 @@ class Cache {
 		return null;
 	}
 
+	static function resetRuntime($name = null) {
+		if ($name) {
+			$cacheName = static::getPath($name);
+			if (isset(static::$runtime[$cacheName])) {
+				unset(static::$runtime[$cacheName]);
+			}
+		} else {
+			static::$runtime = null;
+		}
+
+		return true;
+	}
+
 	static function getFromMemory($name, $callback = null) {
 		$cacheName = sha1(serialize($name));
 

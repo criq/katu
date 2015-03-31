@@ -2,6 +2,8 @@
 
 namespace Katu\Pdo;
 
+use \Katu\Utils\Cache;
+
 class Table extends \Sexy\Expression {
 
 	public $pdo;
@@ -33,7 +35,7 @@ class Table extends \Sexy\Expression {
 	public function getColumnDescriptions() {
 		$table = $this;
 
-		return \Katu\Utils\Cache::getRuntime(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], function() use($table) {
+		return Cache::getRuntime(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], function() use($table) {
 			$columns = [];
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $properties) {
 				$columns[$properties['Field']] = $properties;
@@ -61,14 +63,20 @@ class Table extends \Sexy\Expression {
 
 	public function rename($name) {
 		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
+		$res = $this->pdo->createQuery($sql)->getResult();
 
-		return $this->pdo->createQuery($sql)->getResult();
+		Cache::resetRuntime();
+
+		return $res;
 	}
 
 	public function delete() {
 		$sql = " DROP TABLE " . $this->name;
+		$res = $this->pdo->createQuery($sql)->getResult();
 
-		return $this->pdo->createQuery($sql)->getResult();
+		Cache::resetRuntime();
+
+		return $res;
 	}
 
 	public function copy($destinationTable, $options = []) {
@@ -130,6 +138,8 @@ class Table extends \Sexy\Expression {
 
 			}
 		}
+
+		Cache::resetRuntime();
 
 		return true;
 	}
