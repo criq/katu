@@ -91,7 +91,8 @@ class Cache {
 	}
 
 	static function getRuntime($name, $callback = null) {
-		$cacheName = static::getPath($name);
+		$args = array_slice(func_get_args(), 2);
+		$cacheName = static::getPath(array_merge((array) $name, (array) $args));
 
 		// There's something cached.
 		if (isset(static::$runtime[$cacheName]) && !is_null(static::$runtime[$cacheName])) {
@@ -121,13 +122,14 @@ class Cache {
 	}
 
 	static function getFromMemory($name, $callback = null) {
-		$cacheName = sha1(var_export($name, true));
+		$args = array_slice(func_get_args(), 2);
+		$cacheName = sha1(var_export(array_merge((array) $name, (array) $args), true));
 
 		// APC supported.
 		if (function_exists('apc_add')) {
 
 			if (!apc_exists($cacheName)) {
-				apc_add($cacheName, call_user_func_array($callback, array_slice(func_get_args(), 2)));
+				apc_add($cacheName, call_user_func_array($callback, $args));
 			}
 
 			return apc_fetch($cacheName);
@@ -136,7 +138,7 @@ class Cache {
 		} else {
 
 			if (!isset(static::$memory[$cacheName])) {
-				static::$memory[$cacheName] = call_user_func_array($callback, array_slice(func_get_args(), 2));
+				static::$memory[$cacheName] = call_user_func_array($callback, $args);
 			}
 
 			return static::$memory[$cacheName];
