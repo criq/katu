@@ -121,7 +121,7 @@ class Cache {
 	}
 
 	static function getFromMemory($name, $callback = null) {
-		$cacheName = sha1(serialize($name));
+		$cacheName = sha1(var_export($name, true));
 
 		// APC supported.
 		if (function_exists('apc_add')) {

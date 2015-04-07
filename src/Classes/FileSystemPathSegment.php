@@ -39,7 +39,7 @@ class FileSystemPathSegment {
 		if ($name instanceof FileSystemPathSegments) {
 			$name = $name->getPathSegments();
 		} elseif (!is_string($name)) {
-			$name = sha1(serialize($name));
+			$name = sha1(var_export($name, true));
 		}
 
 		// Sanitize.
