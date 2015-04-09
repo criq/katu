@@ -106,7 +106,11 @@ class Controller {
 	}
 
 	static function addError($error) {
-		if ($error instanceof \Katu\Exceptions\ArgumentErrorException) {
+		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
+			foreach ($error as $exception) {
+				static::addError($exception);
+			}
+		} elseif ($error instanceof \Katu\Exceptions\ArgumentErrorException) {
 			static::$data['_namedArgumentsInError'][] = $error->getName();
 			static::$data['_errors'][$error->getName()][] = $error->getMessage();
 		} elseif ($error instanceof \Exception) {
