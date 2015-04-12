@@ -146,6 +146,16 @@ class Connection {
 			$dumpOptions['add-drop-table'] = true;
 		}
 
+		$dumpOptions['exclude-tables'] = [];
+
+		if (isset($options['skipCache']) && $options['skipCache']) {
+			foreach ($this->getTableNames() as $tableName) {
+				if (preg_match('#^_cache_#', $tableName)) {
+					$dumpOptions['exclude-tables'][] = $tableName;
+				}
+			}
+		}
+
 		try {
 
 			\Katu\Utils\FileSystem::touch($fileName);
