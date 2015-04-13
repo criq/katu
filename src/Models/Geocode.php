@@ -8,20 +8,23 @@ class Geocode extends \Katu\Model {
 
 	const TABLE = 'geocodes';
 
-	static function make() {
-		return static::getOrCreateFromAddress(call_user_func_array('\Katu\Utils\Google\Geocode::geocode', func_get_args()));
+	static function make($language, $address, $components = null, $extra = null) {
+		return static::getOrCreateFromAddress(call_user_func_array('\Katu\Utils\Google\Geocode::geocode', [$language, $address, $components]), $extra);
 	}
 
-	static function getOrCreateFromAddress($geocodeAddress) {
+	static function getOrCreateFromAddress($geocodeAddress, $extra = null) {
 		if (!$geocodeAddress || !($geocodeAddress instanceof \Katu\Utils\Google\GeocodeAddress)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid geocode address.");
 		}
 
-		$hash = static::getHashByGeocodeAddress($geocodeAddress);
+		$hash = static::getHashByGeocodeAddress($geocodeAddress, $extra);
 
-		$geocode = static::getOneBy(array('hash' => $hash));
+		$geocode = static::getOneBy([
+			'hash' => $hash,
+		]);
 		if (!$geocode) {
-			$geocode = static::insert(array(
+
+			$params = [
 				'timeCreated'  => (string) \Katu\Utils\DateTime::get()->getDbDatetimeFormat(),
 				'hash'         => (string) $hash,
 				'language'     => (string) $geocodeAddress->language,
@@ -40,18 +43,23 @@ class Geocode extends \Katu\Model {
 				'lng'          => (float)  $geocodeAddress->latlng->lng->getDeg(),
 				'latRad'       => (float)  $geocodeAddress->latlng->lat->getRad(),
 				'lngRad'       => (float)  $geocodeAddress->latlng->lng->getRad(),
-			));
+			];
+
+			$params = array_merge($params, $extra);
+
+			$geocode = static::insert($params);
+
 		}
 
 		return $geocode;
 	}
 
-	static function getHashByGeocodeAddress($geocodeAddress) {
+	static function getHashByGeocodeAddress($geocodeAddress, $extra = null) {
 		if (!$geocodeAddress || !($geocodeAddress instanceof \Katu\Utils\Google\GeocodeAddress)) {
 			throw new \Exception("Invalid geocode address.");
 		}
 
-		return static::getHashByArray(array(
+		$params = [
 			'language'     => (string) $geocodeAddress->language,
 			'number'       => (string) $geocodeAddress->number,
 			'premise'      => (string) $geocodeAddress->premise,
@@ -66,7 +74,11 @@ class Geocode extends \Katu\Model {
 			'formatted'    => (string) $geocodeAddress->formatted,
 			'lat'          => (string) $geocodeAddress->latlng->lat,
 			'lng'          => (string) $geocodeAddress->latlng->lng,
-		));
+		];
+
+		$params = array_merge($params, $extra);
+
+		return static::getHashByArray($params);
 	}
 
 	static function getHashByArray($array) {
