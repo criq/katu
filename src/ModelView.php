@@ -125,11 +125,12 @@ class ModelView extends ReadOnlyModel {
 		$temporaryTable = new \Katu\Pdo\Table($destinationTable->pdo, $temporaryTableName);
 
 		// Copy into temporary table view.
-		$sourceTable->copy($temporaryTable, [
+		$params = [
 			'disableNull'   => true,
 			'autoIndices'   => static::$autoIndices,
 			'customIndices' => static::$customIndices,
-		]);
+		];
+		$sourceTable->copy($temporaryTable, $params);
 
 		// Drop the original table.
 		try {
