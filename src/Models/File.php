@@ -139,8 +139,20 @@ class File extends \Katu\Model {
 		return \Katu\Utils\Image::getThumbnailUrl($this->getPath(), $size, $quality, $options);
 	}
 
+	public function getSquareThumbnailUrl($size = 640, $quality = 100, $options = []) {
+		$options['format'] = 'square';
+
+		return $this->getThumbnailUrl($size, $quality, $options);
+	}
+
 	public function getThumbnailPath($size = 640, $quality = 100, $options = []) {
 		return \Katu\Utils\Image::getThumbnailPath($this->getPath(), $size, $quality, $options);
+	}
+
+	public function getSquareThumbnailPath($size = 640, $quality = 100, $options = []) {
+		$options['format'] = 'square';
+
+		return $this->getSquareThumbnailPath($size, $quality, $options);
 	}
 
 }

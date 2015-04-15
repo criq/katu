@@ -28,6 +28,24 @@ class ReadOnlyModel {
 		trigger_error('Undeclared class method ' . $name . '.');
 	}
 
+	public function getTransmittableId() {
+		return base64_encode(\Katu\Utils\JSON::encodeStandard([
+			'class' => $this->getClass(),
+			'id'    => $this->getId(),
+		]));
+	}
+
+	static function getFromTransmittableId($transmittableId) {
+		try {
+			$array = Utils\JSON::decodeAsArray(base64_decode($transmittableId));
+			$class = '\\' . ltrim($array['class'], '\\');
+
+			return $class::get($array['id']);
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
 	static function getAppModels() {
 		$dir = BASE_DIR . '/app/Models/';
 		$ns = '\\App\\Models';
