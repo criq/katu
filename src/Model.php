@@ -36,7 +36,7 @@ class Model extends ReadOnlyModel {
 		$query->setBindValues($bindValues);
 		$query->getResult();
 
-		static::getTable()->touch();
+		static::change();
 
 		return static::get(static::getPdo()->getLastInsertId());
 	}
@@ -57,7 +57,7 @@ class Model extends ReadOnlyModel {
 				$this->__updated = true;
 			}
 
-			static::getTable()->touch();
+			static::change();
 
 			return true;
 		}
@@ -65,8 +65,30 @@ class Model extends ReadOnlyModel {
 		return false;
 	}
 
+	public function delete() {
+		$query = static::getPdo()->createQuery();
+
+		// Delete file attachments.
+		if (class_exists('\App\Models\FileAttachment')) {
+			foreach ($this->getFileAttachments() as $fileAttachment) {
+				$fileAttachment->delete();
+			}
+		}
+
+		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIdColumnName() . " = :" . static::getIdColumnName();
+
+		$query->setSql($sql);
+		$query->setBindValue(static::getIdColumnName(), $this->getId());
+
+		$res = $query->getResult();
+
+		static::change();
+
+		return $res;
+	}
+
 	public function save() {
-		if ($this->__updated) {
+		if ($this->isUpdated()) {
 
 			$columns = static::getTable()->getColumnNames();
 
@@ -95,7 +117,7 @@ class Model extends ReadOnlyModel {
 
 			}
 
-			static::getTable()->touch();
+			static::change();
 
 			$this->__updated = false;
 		}
@@ -103,26 +125,14 @@ class Model extends ReadOnlyModel {
 		return true;
 	}
 
-	public function delete() {
-		$query = static::getPdo()->createQuery();
-
-		// Delete file attachments.
-		if (class_exists('\App\Models\FileAttachment')) {
-			foreach ($this->getFileAttachments() as $fileAttachment) {
-				$fileAttachment->delete();
-			}
-		}
-
-		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIdColumnName() . " = :" . static::getIdColumnName();
-
-		$query->setSql($sql);
-		$query->setBindValue(static::getIdColumnName(), $this->getId());
-
-		$res = $query->getResult();
-
+	static function change() {
 		static::getTable()->touch();
 
-		return $res;
+		return null;
+	}
+
+	public function isUpdated() {
+		return (bool) $this->__updated;
 	}
 
 	public function setUniqueColumnValue($column, $chars = null, $length = null) {

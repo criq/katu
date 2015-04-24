@@ -101,6 +101,13 @@ class ModelView extends ReadOnlyModel {
 		return parent::getTableName();
 	}
 
+	static function getMaterializedTableName() {
+		return implode('_', [
+			'_materialized',
+			parent::getTableName(),
+		]);
+	}
+
 	static function getTable() {
 		// Do we want to materialize?
 		if (static::isExpired()) {
@@ -113,6 +120,13 @@ class ModelView extends ReadOnlyModel {
 	static function refreshCache() {
 		$sourceTable      = new \Katu\Pdo\Table(new \Katu\Pdo\Connection(static::DATABASE), static::TABLE);
 		$destinationTable = new \Katu\Pdo\Table(static::getPdo(), static::getTableName());
+
+		return static::refresh($sourceTable, $destinationTable);
+	}
+
+	static function refreshMaterialized() {
+		$sourceTable      = new \Katu\Pdo\Table(new \Katu\Pdo\Connection(static::DATABASE), static::TABLE);
+		$destinationTable = new \Katu\Pdo\Table(static::getPdo(), static::getMaterializedTableName());
 
 		return static::refresh($sourceTable, $destinationTable);
 	}
