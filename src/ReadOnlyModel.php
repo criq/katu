@@ -328,7 +328,11 @@ class ReadOnlyModel {
 		$sql = (new Select(FileAttachment::getTable()))
 			->from(FileAttachment::getTable())
 			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
-			->whereIn(File::getColumn('type'), ['image/jpeg', 'image/png', 'image/gif'])
+			->whereIn(File::getColumn('type'), [
+				'image/jpeg',
+				'image/png',
+				'image/gif',
+			])
 			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
 			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
 			->orderBy([
