@@ -30,16 +30,27 @@ class Email {
 	}
 
 	static function resolveEmailAddress($emailAddress) {
+		if ($emailAddress instanceof \Katu\Models\EmailAddress) {
+			$originalEmailAddress = $emailAddress->emailAddress;
+		} else {
+			$originalEmailAddress = $emailAddress;
+		}
+
 		try {
+
 			$fakeEmailAddresses = (array) \Katu\Config::get('app', 'email', 'useFakeEmailAddress');
 			$emailAddresses = [];
 			foreach ($fakeEmailAddresses as $fakeEmailAddress) {
 				list($username, $domain) = explode('@', $fakeEmailAddress);
-				$emailAddresses[] = $username . '+' . substr(md5($emailAddress), 0, 8) . '@' . $domain;
+				$emailAddresses[] = $username . '+' . substr(md5($originalEmailAddress), 0, 8) . '@' . $domain;
 			}
+
 			return $emailAddresses;
+
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return [$emailAddress];
+
+			return [$originalEmailAddress];
+
 		}
 	}
 
