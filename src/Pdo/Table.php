@@ -148,12 +148,42 @@ class Table extends \Sexy\Expression {
 		return \Katu\Utils\Tmp::set(static::getLastUpdatedTmpName(), microtime(true));
 	}
 
+	public function getSourceTables() {
+		$table = $this;
+
+		return \Katu\Utils\Cache::get($this->getSourceTablesCacheName(), function() use($table) {
+			$tables = [];
+
+			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
+			$res = $table->pdo->createQuery($sql)->getResult()->getArray();
+			foreach ($res as $row) {
+				if (!preg_match('#^<.+>$#', $row['table'])) {
+					$tables[] = $row['table'];
+				}
+			}
+
+			return array_values(array_filter(array_unique($tables)));
+		});
+	}
+
+	public function getSourceTablesCacheName() {
+		return ['!databases', '!' . $this->pdo->name, '!tables', '!sourceTables', '!' . trim($this->name, '`')];
+	}
+
 	public function getUsedInViews() {
-		var_dump($this->pdo->getViews());
+		$views = [];
+		foreach ($this->pdo->getViewNames() as $viewName) {
+			$view = new static($this->pdo, $viewName);
+			if (in_array($this->name->name, $view->getSourceTables())) {
+				$views[] = $viewName;
+			}
+		}
+
+		return $views;
 	}
 
 	public function getLastUpdatedTmpName() {
-		return ['!databases', '!' . $this->pdo->name, '!tables', '!updated', '!' . $this->name];
+		return ['!databases', '!' . $this->pdo->name, '!tables', '!updated', trim($this->name, '`')];
 	}
 
 	public function getLastUpdatedTime() {

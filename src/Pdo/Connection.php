@@ -60,25 +60,19 @@ class Connection {
 			$sql = " SHOW TABLES ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 
-			$pdo = $this;
-
-			return array_map(function($i) use($pdo) {
+			return array_map(function($i) {
 				$names = array_values($i);
 				return $names[0];
 			}, $res);
 		});
 	}
 
-	public function getViews() {
+	public function getViewNames() {
 		return \Katu\Utils\Cache::getRuntime(['pdo', $this->name, 'views'], function() {
 			$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 
-			var_dump($res); die;
-
-			$pdo = $this;
-
-			return array_map(function($i) use($pdo) {
+			return array_map(function($i) {
 				$names = array_values($i);
 				return $names[0];
 			}, $res);

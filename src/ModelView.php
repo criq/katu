@@ -61,25 +61,7 @@ class ModelView extends ReadOnlyModel {
 	}
 
 	static function getSourceTables() {
-		$table = new \Katu\Pdo\Table(static::getPdo(), static::TABLE);
-
-		return \Katu\Utils\Cache::get(static::getSourceTablesCacheName(), function() use($table) {
-			$tables = [];
-
-			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
-			$res = $table->pdo->createQuery($sql)->getResult()->getArray();
-			foreach ($res as $row) {
-				if (!preg_match('#^<.+>$#', $row['table'])) {
-					$tables[] = $row['table'];
-				}
-			}
-
-			return array_values(array_unique($tables));
-		});
-	}
-
-	static function getSourceTablesCacheName() {
-		return ['!databases', '!' . parent::getTable()->pdo->name, '!views', '!sourceTables', '!' . static::TABLE];
+		return (new \Katu\Pdo\Table(static::getPdo(), static::TABLE))->getSourceTables();
 	}
 
 	static function getCachedName() {
