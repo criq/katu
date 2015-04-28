@@ -71,6 +71,10 @@ class Connection {
 		});
 	}
 
+	public function getViews() {
+		//SHOW FULL TABLES IN database_name WHERE TABLE_TYPE LIKE 'VIEW';
+	}
+
 	public function tableExists($tableName) {
 		return in_array($tableName, $this->getTableNames());
 	}

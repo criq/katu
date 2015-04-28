@@ -144,16 +144,20 @@ class Table extends \Sexy\Expression {
 		return true;
 	}
 
+	public function touch() {
+		return \Katu\Utils\Tmp::set(static::getLastUpdatedTmpName(), microtime(true));
+	}
+
+	public function getUsedInViews() {
+		var_dump($this->pdo->getViews());
+	}
+
 	public function getLastUpdatedTmpName() {
 		return ['!databases', '!' . $this->pdo->name, '!tables', '!updated', '!' . $this->name];
 	}
 
 	public function getLastUpdatedTime() {
 		return \Katu\Utils\Tmp::get(static::getLastUpdatedTmpName());
-	}
-
-	public function touch() {
-		return \Katu\Utils\Tmp::set(static::getLastUpdatedTmpName(), microtime(true));
 	}
 
 }
