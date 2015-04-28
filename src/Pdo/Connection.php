@@ -57,8 +57,6 @@ class Connection {
 
 	public function getTableNames() {
 		return \Katu\Utils\Cache::getRuntime(['pdo', $this->name, 'tables'], function() {
-			$tables = [];
-
 			$sql = " SHOW TABLES ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 
@@ -72,7 +70,19 @@ class Connection {
 	}
 
 	public function getViews() {
-		//SHOW FULL TABLES IN database_name WHERE TABLE_TYPE LIKE 'VIEW';
+		return \Katu\Utils\Cache::getRuntime(['pdo', $this->name, 'views'], function() {
+			$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
+			$res = $this->createQuery($sql)->getResult()->getArray();
+
+			var_dump($res); die;
+
+			$pdo = $this;
+
+			return array_map(function($i) use($pdo) {
+				$names = array_values($i);
+				return $names[0];
+			}, $res);
+		});
 	}
 
 	public function tableExists($tableName) {
