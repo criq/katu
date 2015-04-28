@@ -172,4 +172,12 @@ class Connection {
 		}
 	}
 
+	public function backup() {
+		return $this->dump([
+			'skipCache' => true,
+			'addDropTable' => true,
+			'compress' => 'gzip',
+		]);
+	}
+
 }
