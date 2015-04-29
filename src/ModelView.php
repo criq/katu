@@ -86,12 +86,12 @@ class ModelView extends ReadOnlyModel {
 	static function getMaterializedTableName() {
 		return implode('_', [
 			'_materialized',
-			parent::getTableName(),
+			preg_replace('#^view_#', null, parent::getTableName()),
 		]);
 	}
 
 	static function getTable() {
-		// Do we want to materialize?
+		// Do we want to cache?
 		if (static::isExpired()) {
 			static::refreshCache();
 		}
