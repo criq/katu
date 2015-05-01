@@ -149,9 +149,8 @@ class Table extends \Sexy\Expression {
 	}
 
 	public function getSourceTables() {
-		$table = $this;
+		return \Katu\Utils\Cache::get($this->getSourceTablesCacheName(), function($table) {
 
-		return \Katu\Utils\Cache::get($this->getSourceTablesCacheName(), function() use($table) {
 			$tables = [];
 
 			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
@@ -163,7 +162,8 @@ class Table extends \Sexy\Expression {
 			}
 
 			return array_values(array_filter(array_unique($tables)));
-		});
+
+		}, null, $this);
 	}
 
 	public function getSourceTablesCacheName() {
@@ -171,15 +171,24 @@ class Table extends \Sexy\Expression {
 	}
 
 	public function getUsedInViews() {
-		$views = [];
-		foreach ($this->pdo->getViewNames() as $viewName) {
-			$view = new static($this->pdo, $viewName);
-			if (in_array($this->name->name, $view->getSourceTables())) {
-				$views[] = $viewName;
-			}
-		}
+		return \Katu\Utils\Cache::get($this->getUsedInViewsCacheName(), function($table) {
 
-		return $views;
+			$views = [];
+
+			foreach ($this->pdo->getViewNames() as $viewName) {
+				$view = new static($this->pdo, $viewName);
+				if (in_array($this->name->name, $view->getSourceTables())) {
+					$views[] = $viewName;
+				}
+			}
+
+			return $views;
+
+		}, null, $this);
+	}
+
+	public function getUsedInViewsCacheName() {
+		return ['!databases', '!' . $this->pdo->name, '!tables', '!usedInViews', '!' . trim($this->name, '`')];
 	}
 
 	public function getLastUpdatedTmpName() {

@@ -79,6 +79,14 @@ class Connection {
 		});
 	}
 
+	public function getViewUsage() {
+		foreach ($this->getViewNames() as $viewName) {
+			$table = new Table($this, $viewName);
+			var_dump($table->getUsedInViews()); die;
+			#var_dump($viewName); die;
+		}
+	}
+
 	public function tableExists($tableName) {
 		return in_array($tableName, $this->getTableNames());
 	}
