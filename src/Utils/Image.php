@@ -215,7 +215,8 @@ class Image {
 	}
 
 	static function getColorAtCoords($path, \Katu\Types\TCoordsRectangle $coordsRectangle = null) {
-		return Cache::get(['image', 'color', $path], function() use($path, $coordsRectangle) {
+		return Cache::get(['image', 'color'], function($path, $coordsRectangle) {
+
 			$createFunctionName = static::getImageCreateFunctionName($path);
 			if (!$createFunctionName) {
 				throw new \Exception("Invalid image type.");
@@ -231,7 +232,26 @@ class Image {
 			imagecopyresampled($pixel, $image, 0, 0, $coordsRectangle->xa, $coordsRectangle->ya, 1, 1, $coordsRectangle->xb - $coordsRectangle->xa, $coordsRectangle->yb - $coordsRectangle->ya);
 
 			return static::getColorRgb(imagecolorat($pixel, 0, 0));
-		});
+
+		}, null, $path, $coordsRectangle);
+	}
+
+	static function getColors($path) {
+		return \Katu\Utils\Cache::get(['image', 'colors'], function($path) {
+
+			$colors = [];
+
+			$image = new \Intervention\Image\Image(\Katu\Utils\Cache::getUrl($path));
+
+			for ($x = 0; $x < $image->width; $x++) {
+				for ($y = 0; $y < $image->height; $y++) {
+					$colors[] = $image->pickColor($x, $y, 'hex');
+				}
+			}
+
+			return $colors;
+
+		}, null, $path);
 	}
 
 }
