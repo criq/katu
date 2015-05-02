@@ -64,6 +64,10 @@ class Result implements \Iterator, \ArrayAccess {
 		return count($this->_array);
 	}
 
+	public function getTotal() {
+		return $this->getCount();
+	}
+
 	public function setArray() {
 		if (is_null($this->_array)) {
 			$this->_array = $this->statement->fetchAll(PDO::FETCH_ASSOC);
