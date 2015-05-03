@@ -61,7 +61,7 @@ class ViewModel extends ModelBase {
 
 	static function getTable() {
 		if (static::isExpired()) {
-			static::refreshCache();
+			static::cache();
 		}
 
 		return static::isCached() ? static::getCachedTable() : static::getView();
@@ -137,14 +137,14 @@ class ViewModel extends ModelBase {
 		return true;
 	}
 
-	static function refreshCache() {
+	static function cache() {
 		static::copy(static::getView(), static::getCachedTable());
 		static::updateLastCachedTime();
 
 		return true;
 	}
 
-	static function refreshMaterialized() {
+	static function materialize() {
 		static::copy(static::getView(), static::getMaterializedTable());
 		static::updateLastMaterializedTime();
 
