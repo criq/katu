@@ -80,11 +80,15 @@ class Connection {
 	}
 
 	public function getViewUsage() {
+		$views = [];
+
 		foreach ($this->getViewNames() as $viewName) {
-			$table = new Table($this, $viewName);
-			var_dump($table->getUsedInViews()); die;
-			#var_dump($viewName); die;
+			$view = new Table($this, $viewName);
+			$views[$viewName]['usedIn'] = $view->getUsedInViews();
+			$views[$viewName]['rows'] = $view->getTotalRows();
 		}
+
+		return $views;
 	}
 
 	public function tableExists($tableName) {

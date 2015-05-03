@@ -148,6 +148,13 @@ class Table extends \Sexy\Expression {
 		return \Katu\Utils\Tmp::set(static::getLastUpdatedTmpName(), microtime(true));
 	}
 
+	public function getCreateQuery() {
+		$sql = " SHOW CREATE TABLE " . $this->name;
+		$res = $this->pdo->createQuery($sql)->getResult();
+
+		return $res[0]['Create View'];
+	}
+
 	public function getSourceTables() {
 		return \Katu\Utils\Cache::get($this->getSourceTablesCacheName(), function($table) {
 
@@ -177,7 +184,7 @@ class Table extends \Sexy\Expression {
 
 			foreach ($this->pdo->getViewNames() as $viewName) {
 				$view = new static($this->pdo, $viewName);
-				if (in_array($this->name->name, $view->getSourceTables())) {
+				if (strpos($view->getCreateQuery(), (string) $this->name) !== false) {
 					$views[] = $viewName;
 				}
 			}
@@ -189,6 +196,13 @@ class Table extends \Sexy\Expression {
 
 	public function getUsedInViewsCacheName() {
 		return ['!databases', '!' . $this->pdo->name, '!tables', '!usedInViews', '!' . trim($this->name, '`')];
+	}
+
+	public function getTotalRows() {
+		$sql = " SELECT COUNT(1) AS total FROM " . $this->name;
+		$res = $this->pdo->createQuery($sql)->getResult()->getArray();
+
+		return (int) $res[0]['total'];
 	}
 
 	public function getLastUpdatedTmpName() {
