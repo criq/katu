@@ -2,7 +2,10 @@
 
 namespace Katu;
 
-class Model extends ReadOnlyModel {
+use \App\Models\File;
+use \App\Models\FileAttachment;
+
+class Model extends ModelBase {
 
 	protected $__updated = false;
 
@@ -24,7 +27,7 @@ class Model extends ReadOnlyModel {
 		$query = static::getPdo()->createQuery();
 
 		$columns = array_map(function($i) {
-			return new \Katu\Pdo\Name($i);
+			return new Pdo\Name($i);
 		}, array_keys($bindValues));
 		$values  = array_map(function($i) {
 			return ':' . $i;
@@ -101,7 +104,7 @@ class Model extends ReadOnlyModel {
 
 			$set = [];
 			foreach ($bindValues as $name => $value) {
-				$set[] = (new \Katu\Pdo\Name($name)) . " = :" . $name;
+				$set[] = (new Pdo\Name($name)) . " = :" . $name;
 			}
 
 			if ($set) {
@@ -133,6 +136,78 @@ class Model extends ReadOnlyModel {
 
 	public function isUpdated() {
 		return (bool) $this->__updated;
+	}
+
+	static function getAppModels() {
+		$dir = BASE_DIR . '/app/Models/';
+		$ns = '\\App\\Models';
+
+		$models = [];
+
+		foreach (scandir($dir) as $file) {
+			$path = $dir . $file;
+			if (is_file($path)) {
+				$pathinfo = pathinfo($file);
+				$model = $ns . '\\' . $pathinfo['filename'];
+				if (class_exists($model)) {
+					$models[] = ltrim($model, '\\');
+				}
+			}
+		}
+
+		natsort($models);
+
+		return $models;
+	}
+
+	static function getIdColumn() {
+		return static::getColumn(static::getIdColumnName());
+	}
+
+	static function getIdColumnName() {
+		$table = static::getTable();
+
+		return \Katu\Utils\Cache::getRuntime(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name], function() use($table) {
+			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
+				if (isset($row['Key']) && $row['Key'] == 'PRI') {
+					return $row['Field'];
+				}
+			}
+
+			return false;
+		});
+	}
+
+	public function getId() {
+		return $this->{static::getIdColumnName()};
+	}
+
+	public function getTransmittableId() {
+		return base64_encode(\Katu\Utils\JSON::encodeStandard([
+			'class' => $this->getClass(),
+			'id'    => $this->getId(),
+		]));
+	}
+
+	static function getFromTransmittableId($transmittableId) {
+		try {
+			$array = Utils\JSON::decodeAsArray(base64_decode($transmittableId));
+			$class = '\\' . ltrim($array['class'], '\\');
+
+			return $class::get($array['id']);
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	static function get($primaryKey) {
+		return static::getOneBy([
+			static::getIdColumnName() => $primaryKey,
+		]);
+	}
+
+	public function exists() {
+		return (bool) static::get($this->getId());
 	}
 
 	public function setUniqueColumnValue($column, $chars = null, $length = null) {
@@ -237,6 +312,88 @@ class Model extends ReadOnlyModel {
 		}
 
 		return !static::createQuery($sql)->getResult()->getTotal();
+	}
+
+	public function getFileAttachments($params = [], $expressions = []) {
+		$params['objectModel'] = $this->getClass();
+		$params['objectId']    = $this->getId();
+
+		if (!isset($expressions['orderBy'])) {
+			$expressions['orderBy'] = FileAttachment::getColumn('position');
+		}
+
+		return FileAttachment::getBy($params, $expressions);
+	}
+
+	public function refreshFileAttachmentPositions() {
+		$position = 0;
+
+		// Refresh the ones with position.
+		foreach ($this->getFileAttachments([
+			new CmpNotEq(FileAttachment::getColumn('position'), 0),
+		], [
+			'orderBy' => FileAttachment::getColumn('position'),
+		]) as $fileAttachment) {
+			$fileAttachment->setPosition(++$position);
+			$fileAttachment->save();
+		}
+
+		// Refresh the ones without position.
+		foreach ($this->getFileAttachments([
+			new CmpEq(FileAttachment::getColumn('position'), 0),
+		], [
+			'orderBy' => FileAttachment::getColumn('timeCreated'),
+		]) as $fileAttachment) {
+			$fileAttachment->setPosition(++$position);
+			$fileAttachment->save();
+		}
+
+		return true;
+	}
+
+	public function getImageFileAttachments($expressions = []) {
+		$sql = (new Select(FileAttachment::getTable()))
+			->from(FileAttachment::getTable())
+			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
+			->whereIn(File::getColumn('type'), [
+				'image/jpeg',
+				'image/png',
+				'image/gif',
+			])
+			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
+			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
+			->orderBy([
+				new OrderBy(FileAttachment::getColumn('position')),
+				new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('desc')),
+			])
+			->addExpressions($expressions)
+			;
+
+		return FileAttachment::createQuery($sql)->getResult();
+	}
+
+	public function getImageFile() {
+		$imageAttachments = $this->getImageFileAttachments();
+		if ($imageAttachments->getTotal()) {
+			return $imageAttachments[0]->getFile();
+		}
+
+		return false;
+	}
+
+	public function getImagePath() {
+		$file = $this->getImageFile();
+		if ($file) {
+			return $file->getPath();
+		}
+
+		return false;
+	}
+
+	public function hasImage() {
+		$path = $this->getImagePath();
+
+		return $path && file_exists($path);
 	}
 
 }

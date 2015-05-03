@@ -2,8 +2,6 @@
 
 namespace Katu;
 
-use \App\Models\File;
-use \App\Models\FileAttachment;
 use \Sexy\Select;
 use \Sexy\CmpEq;
 use \Sexy\CmpNotEq;
@@ -13,7 +11,7 @@ use \Sexy\Page;
 use \Sexy\Keyword;
 use \Sexy\Expression;
 
-class ReadOnlyModel {
+class ModelBase {
 
 	public function __toString() {
 		return (string) $this->getId();
@@ -26,46 +24,6 @@ class ReadOnlyModel {
 		}
 
 		trigger_error('Undeclared class method ' . $name . '.');
-	}
-
-	public function getTransmittableId() {
-		return base64_encode(\Katu\Utils\JSON::encodeStandard([
-			'class' => $this->getClass(),
-			'id'    => $this->getId(),
-		]));
-	}
-
-	static function getFromTransmittableId($transmittableId) {
-		try {
-			$array = Utils\JSON::decodeAsArray(base64_decode($transmittableId));
-			$class = '\\' . ltrim($array['class'], '\\');
-
-			return $class::get($array['id']);
-		} catch (\Exception $e) {
-			return false;
-		}
-	}
-
-	static function getAppModels() {
-		$dir = BASE_DIR . '/app/Models/';
-		$ns = '\\App\\Models';
-
-		$models = [];
-
-		foreach (scandir($dir) as $file) {
-			$path = $dir . $file;
-			if (is_file($path)) {
-				$pathinfo = pathinfo($file);
-				$model = $ns . '\\' . $pathinfo['filename'];
-				if (class_exists($model)) {
-					$models[] = ltrim($model, '\\');
-				}
-			}
-		}
-
-		natsort($models);
-
-		return $models;
 	}
 
 	static function getClass() {
@@ -136,32 +94,6 @@ class ReadOnlyModel {
 		return call_user_func_array([static::getPdo(), 'transaction'], func_get_args());
 	}
 
-	static function getIdColumn() {
-		return static::getColumn(static::getIdColumnName());
-	}
-
-	static function getIdColumnName() {
-		$table = static::getTable();
-
-		return \Katu\Utils\Cache::getRuntime(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name], function() use($table) {
-			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
-				if (isset($row['Key']) && $row['Key'] == 'PRI') {
-					return $row['Field'];
-				}
-			}
-
-			return false;
-		});
-	}
-
-	public function getId() {
-		return $this->{static::getIdColumnName()};
-	}
-
-	public function exists() {
-		return (bool) static::get($this->getId());
-	}
-
 	static function filterParams($params) {
 		$_params = [];
 
@@ -198,12 +130,6 @@ class ReadOnlyModel {
 		$query->setFromSql($sql);
 
 		return $query->getResult();
-	}
-
-	static function get($primaryKey) {
-		return static::getOneBy([
-			static::getIdColumnName() => $primaryKey,
-		]);
 	}
 
 	static function getOneBy() {
@@ -285,88 +211,6 @@ class ReadOnlyModel {
 		}
 
 		return false;
-	}
-
-	public function getFileAttachments($params = [], $expressions = []) {
-		$params['objectModel'] = $this->getClass();
-		$params['objectId']    = $this->getId();
-
-		if (!isset($expressions['orderBy'])) {
-			$expressions['orderBy'] = FileAttachment::getColumn('position');
-		}
-
-		return FileAttachment::getBy($params, $expressions);
-	}
-
-	public function refreshFileAttachmentPositions() {
-		$position = 0;
-
-		// Refresh the ones with position.
-		foreach ($this->getFileAttachments([
-			new CmpNotEq(FileAttachment::getColumn('position'), 0),
-		], [
-			'orderBy' => FileAttachment::getColumn('position'),
-		]) as $fileAttachment) {
-			$fileAttachment->setPosition(++$position);
-			$fileAttachment->save();
-		}
-
-		// Refresh the ones without position.
-		foreach ($this->getFileAttachments([
-			new CmpEq(FileAttachment::getColumn('position'), 0),
-		], [
-			'orderBy' => FileAttachment::getColumn('timeCreated'),
-		]) as $fileAttachment) {
-			$fileAttachment->setPosition(++$position);
-			$fileAttachment->save();
-		}
-
-		return true;
-	}
-
-	public function getImageFileAttachments($expressions = []) {
-		$sql = (new Select(FileAttachment::getTable()))
-			->from(FileAttachment::getTable())
-			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
-			->whereIn(File::getColumn('type'), [
-				'image/jpeg',
-				'image/png',
-				'image/gif',
-			])
-			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
-			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
-			->orderBy([
-				new OrderBy(FileAttachment::getColumn('position')),
-				new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('desc')),
-			])
-			->addExpressions($expressions)
-			;
-
-		return FileAttachment::createQuery($sql)->getResult();
-	}
-
-	public function getImageFile() {
-		$imageAttachments = $this->getImageFileAttachments();
-		if ($imageAttachments->getTotal()) {
-			return $imageAttachments[0]->getFile();
-		}
-
-		return false;
-	}
-
-	public function getImagePath() {
-		$file = $this->getImageFile();
-		if ($file) {
-			return $file->getPath();
-		}
-
-		return false;
-	}
-
-	public function hasImage() {
-		$path = $this->getImagePath();
-
-		return $path && file_exists($path);
 	}
 
 }

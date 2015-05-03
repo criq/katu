@@ -11,7 +11,7 @@ class Image {
 			$source = $source->getPath();
 		} elseif ($source instanceof \App\Models\FileAttachment) {
 			$source = $source->getFile()->getPath();
-		} elseif ($source instanceof \Katu\ReadOnlyModel) {
+		} elseif ($source instanceof \Katu\ModelBase) {
 			$source = $source->getImagePath();
 		}
 

@@ -67,8 +67,17 @@ class Connection {
 		});
 	}
 
+	public function getViews() {
+		$pdo = $this;
+
+		return array_map(function($i) use($pdo) {
+			return new View($pdo, $i);
+		}, $this->getViewNames());
+	}
+
 	public function getViewNames() {
 		return \Katu\Utils\Cache::getRuntime(['pdo', $this->name, 'views'], function() {
+
 			$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 
@@ -76,17 +85,19 @@ class Connection {
 				$names = array_values($i);
 				return $names[0];
 			}, $res);
+
 		});
 	}
 
-	public function getViewUsage() {
+	public function getViewReport() {
 		$views = [];
 
-		foreach ($this->getViewNames() as $viewName) {
-			$view = new Table($this, $viewName);
-			$views[$viewName]['usedIn'] = $view->getUsedInViews();
-			$views[$viewName]['rows'] = $view->getTotalRows();
+		foreach ($this->getViews() as $view) {
+			$views[$view->name->name]['usedIn'] = $view->getUsedInViews();
+			$views[$view->name->name]['rows'] = $view->getTotalRows();
 		}
+
+		var_dump($views); die;
 
 		return $views;
 	}
