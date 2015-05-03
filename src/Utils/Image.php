@@ -145,7 +145,7 @@ class Image {
 				$image->resize($size, $size, true);
 			}
 
-			$image->save($destination);
+			$image->save($destination, $quality);
 
 		}
 
