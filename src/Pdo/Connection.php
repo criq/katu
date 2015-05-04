@@ -94,7 +94,7 @@ class Connection {
 
 		foreach ($this->getViews() as $view) {
 			$views[$view->name->name]['usedIn'] = $view->getUsedInViews();
-			$views[$view->name->name]['rows'] = $view->getTotalRows();
+			$views[$view->name->name]['usage'] = $view->getTotalUsage();
 		}
 
 		var_dump($views); die;

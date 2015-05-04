@@ -165,18 +165,23 @@ class TableBase extends \Sexy\Expression {
 		return ['!databases', '!' . $this->pdo->name, '!tables', '!usedInViews', '!' . trim($this->name, '`')];
 	}
 
-	public function getTotalRows($timeout = null) {
-		return \Katu\Utils\Cache::get($this->getTotalRowsCacheName(), function($table) {
+	public function getTotalUsage($timeout = null) {
+		return \Katu\Utils\Cache::get($this->getTotalUsageCacheName(), function($table) {
+
+			$stopwatch = new \Katu\Utils\Stopwatch();
 
 			$sql = " SELECT COUNT(1) AS total FROM " . $table->name;
 			$res = $table->pdo->createQuery($sql)->getResult()->getArray();
 
-			return (int) $res[0]['total'];
+			return [
+				'rows' => (int) $res[0]['total'],
+				'duration' => $stopwatch->getMilliDuration(),
+			];
 
 		}, $timeout, $this);
 	}
 
-	public function getTotalRowsCacheName() {
+	public function getTotalUsageCacheName() {
 		return ['!databases', '!' . $this->pdo->name, '!tables', '!totalRows', '!' . trim($this->name, '`')];
 	}
 
