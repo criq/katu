@@ -104,7 +104,7 @@ class ViewModel extends ModelBase {
 
 	static function getMaterializedTableName() {
 		return implode('_', [
-			'_materialized',
+			'mv',
 			preg_replace('#^view_#', null, static::getViewName()),
 		]);
 	}

@@ -151,7 +151,7 @@ class TableBase extends \Sexy\Expression {
 
 			foreach ($this->pdo->getViewNames() as $viewName) {
 				$view = new static($this->pdo, $viewName);
-				if (strpos($view->getCreateSyntax(), (string) $this->name) !== false) {
+				if (strpos($view->getCreateSyntax(), (string) $this->name) !== false && $viewName != $this->name->name) {
 					$views[] = $viewName;
 				}
 			}
