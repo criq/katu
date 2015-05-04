@@ -4,6 +4,9 @@ namespace Katu;
 
 use \App\Models\File;
 use \App\Models\FileAttachment;
+use \Sexy\Select;
+use \Sexy\OrderBy;
+use \Sexy\Keyword;
 
 class Model extends ModelBase {
 
