@@ -175,7 +175,7 @@ class TableBase extends \Sexy\Expression {
 
 			return [
 				'rows' => (int) $res[0]['total'],
-				'duration' => $stopwatch->getMilliDuration(),
+				'duration' => $stopwatch->getDuration(),
 			];
 
 		}, $timeout, $this);
