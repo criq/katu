@@ -254,4 +254,26 @@ class Image {
 		}, null, $path);
 	}
 
+	static function getColorSums($path) {
+		return \Katu\Utils\Cache::get(['image', 'colorSums'], function($path) {
+
+			$colors = [];
+
+			$image = new \Intervention\Image\Image(\Katu\Utils\Cache::getUrl($path));
+
+			for ($x = 0; $x < $image->width; $x++) {
+				for ($y = 0; $y < $image->height; $y++) {
+					$color = $image->pickColor($x, $y, 'hex');
+					if (!isset($colors[$color])) {
+						$colors[$color] = 0;
+					}
+					$colors[$color]++;
+				}
+			}
+
+			return $colors;
+
+		}, null, $path);
+	}
+
 }
