@@ -47,6 +47,44 @@ class Model extends ModelBase {
 		return static::get(static::getPdo()->getLastInsertId());
 	}
 
+	static function insertMultiple($items = []) {
+		$items = array_values($items);
+
+		$query = static::getPdo()->createQuery();
+
+		$columns = array_map(function($i) {
+			return new Pdo\Name($i);
+		}, array_keys($items[0]));
+
+		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ";
+
+		$bindValues = [];
+		$sqlRows = [];
+		foreach ($items as $row => $values) {
+			$sqlRowParams = [];
+			foreach ($values as $key => $value) {
+				$bindValueKey = implode('_', [
+					'row',
+					$row,
+					$key,
+				]);
+				$bindValues[$bindValueKey] = $value;
+				$sqlRowParams[] = ":" . $bindValueKey;
+			}
+			$sqlRows[] = " ( " . implode(', ', $sqlRowParams) . " ) ";
+		}
+
+		$sql .= implode(", ", $sqlRows);
+
+		$query->setSql($sql);
+		$query->setBindValues($bindValues);
+		$query->getResult();
+
+		static::change();
+
+		return static::get(static::getPdo()->getLastInsertId());
+	}
+
 	static function upsert($bindValues) {
 		$object = static::getOneBy($bindValues);
 		if (!$object) {
