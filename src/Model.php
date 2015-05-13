@@ -352,7 +352,7 @@ class Model extends ModelBase {
 			$sql->where(new \Sexy\CmpNotEq(static::getIdColumn(), $excludeObject->getId()));
 		}
 
-		return !static::createQuery($sql)->getResult()->getTotal();
+		return !static::getBySql($sql)->getTotal();
 	}
 
 	public function getFileAttachments($params = [], $expressions = []) {
@@ -410,7 +410,7 @@ class Model extends ModelBase {
 			->addExpressions($expressions)
 			;
 
-		return FileAttachment::createQuery($sql)->getResult();
+		return FileAttachment::getBySql($sql);
 	}
 
 	public function getImageFile() {
