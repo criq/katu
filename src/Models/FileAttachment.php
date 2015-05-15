@@ -12,7 +12,7 @@ class FileAttachment extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
 			'creatorId'   => (int)    ($creator ? $creator->id : null),
 			'objectModel' => (string) ($object->getClass()),
 			'objectId'    => (int)    ($object->getId()),

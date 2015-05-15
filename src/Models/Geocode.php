@@ -25,7 +25,7 @@ class Geocode extends \Katu\Model {
 		if (!$geocode) {
 
 			$params = [
-				'timeCreated'  => (string) \Katu\Utils\DateTime::get()->getDbDatetimeFormat(),
+				'timeCreated'  => (string) \Katu\Utils\DateTime::get()->getDbDateTimeFormat(),
 				'hash'         => (string) $hash,
 				'language'     => (string) $geocodeAddress->language,
 				'number'       => (string) $geocodeAddress->number,

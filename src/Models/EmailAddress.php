@@ -14,7 +14,7 @@ class EmailAddress extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated'  => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
+			'timeCreated'  => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
 			'emailAddress' => (string) (trim($emailAddress)),
 		));
 	}

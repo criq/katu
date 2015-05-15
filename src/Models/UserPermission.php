@@ -12,7 +12,7 @@ class UserPermission extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
 			'userId'      => (int)    ($user->id),
 			'permission'  => (string) (trim($permission)),
 		));

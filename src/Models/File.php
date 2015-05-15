@@ -28,7 +28,7 @@ class File extends \Katu\Model {
 		$path = static::copyUpload($upload, static::generatePath($upload->fileName));
 
 		return static::insert([
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
 			'creatorId'   => (int)    ($creator ? $creator->id : null),
 			'path'        => (string) ($path),
 			'name'        => (string) ($upload->fileName),

@@ -11,7 +11,7 @@ class User extends \Katu\Model {
 
 	static function create() {
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDatetimeFormat()),
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
 		));
 	}
 
@@ -36,6 +36,10 @@ class User extends \Katu\Model {
 
 	static function getCurrent() {
 		return static::get(\Katu\Session::get('katu.user.id'));
+	}
+
+	public function getValidAccessToken() {
+		return \App\Models\AccessToken::makeValidForUser($this);
 	}
 
 	public function addUserService($serviceName, $serviceUserId) {
