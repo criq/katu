@@ -14,7 +14,7 @@ class AccessToken extends \Katu\Model {
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
 			'timeExpires' => (string) (\Katu\Utils\DateTime::get('+ ' . static::EXPIRES . ' seconds')->getDbDateTimeFormat()),
 			'userId'      => (int)    ($user->getId()),
-			'accessToken' => (string) (\Katu\Utils\Random::getString(static::LENGTH)),
+			'token'       => (string) (\Katu\Utils\Random::getString(static::LENGTH)),
 		]);
 	}
 

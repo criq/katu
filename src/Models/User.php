@@ -38,6 +38,10 @@ class User extends \Katu\Model {
 		return static::get(\Katu\Session::get('katu.user.id'));
 	}
 
+	static function getByAccessToken($accessToken) {
+
+	}
+
 	public function getValidAccessToken() {
 		return \App\Models\AccessToken::makeValidForUser($this);
 	}

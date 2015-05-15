@@ -3,9 +3,9 @@ CREATE TABLE `access_tokens` (
   `timeCreated` datetime NOT NULL,
   `timeExpires` datetime NOT NULL,
   `userId` int(11) unsigned NOT NULL,
-  `accessToken` varchar(255) COLLATE utf8_czech_ci NOT NULL DEFAULT '',
+  `token` varchar(255) COLLATE utf8_czech_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
+  KEY `timeExpires` (`timeExpires`),
   KEY `userId` (`userId`),
-  KEY `accessToken` (`accessToken`),
-  KEY `timeExpires` (`timeExpires`)
+  KEY `token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
