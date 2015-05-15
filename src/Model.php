@@ -5,6 +5,8 @@ namespace Katu;
 use \App\Models\File;
 use \App\Models\FileAttachment;
 use \Sexy\Select;
+use \Sexy\CmpEq;
+use \Sexy\CmpNotEq;
 use \Sexy\OrderBy;
 use \Sexy\Keyword;
 
