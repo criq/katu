@@ -3,7 +3,7 @@ CREATE TABLE `access_tokens` (
   `timeCreated` datetime NOT NULL,
   `timeExpires` datetime NOT NULL,
   `userId` int(11) unsigned NOT NULL,
-  `token` varchar(255) COLLATE utf8_czech_ci NOT NULL DEFAULT '',
+  `token` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `timeExpires` (`timeExpires`),
   KEY `userId` (`userId`),

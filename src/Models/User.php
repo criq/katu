@@ -38,8 +38,17 @@ class User extends \Katu\Model {
 		return static::get(\Katu\Session::get('katu.user.id'));
 	}
 
-	static function getByAccessToken($accessToken) {
+	static function getByAccessToken($token) {
+		$accessToken = \App\Models\AccessToken::getOneBy([
+			'token' => $token,
+			new \Sexy\CmpGreaterThanOrEqual(\App\Models\AccessToken::getColumn('timeExpires'), (new \Katu\Utils\DateTime())->getDbDateTimeFormat()),
+		]);
 
+		if ($accessToken) {
+			return static::get($accessToken->userId);
+		}
+
+		return false;
 	}
 
 	public function getValidAccessToken() {
