@@ -136,6 +136,10 @@ class ModelBase {
 		return static::createQuery($sql)->getResult();
 	}
 
+	static function getOneBySql($sql) {
+		return static::getBySql($sql)->getOne();
+	}
+
 	static function getOneBy() {
 		$args = array_merge(func_get_args(), [['page' => new Page(1, 1)]], [['setOptGetTotalRows' => false]]);
 
