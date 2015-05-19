@@ -210,7 +210,7 @@ class Model extends ModelBase {
 	static function getIdColumnName() {
 		$table = static::getTable();
 
-		return \Katu\Utils\Cache::getRuntime(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name], function() use($table) {
+		return \Katu\Utils\Cache::getRuntime(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name->name], function() use($table) {
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
 				if (isset($row['Key']) && $row['Key'] == 'PRI') {
 					return $row['Field'];
@@ -268,8 +268,8 @@ class Model extends ModelBase {
 
 		while (true) {
 			$string = \Katu\Utils\Random::getFromChars($chars, $length);
-			if (!static::getBy([$column->name => $string])->getTotal()) {
-				$this->update($column->name, $string);
+			if (!static::getBy([$column->name->name => $string])->getTotal()) {
+				$this->update($column->name->name, $string);
 				$this->save();
 
 				return true;
