@@ -101,7 +101,7 @@ class Cache {
 
 		// There is callback.
 		if (!is_null($callback)) {
-			static::$runtime[$cacheName] = call_user_func($callback);
+			static::$runtime[$cacheName] = call_user_func_array($callback, $args);
 			return static::$runtime[$cacheName];
 		}
 
