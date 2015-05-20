@@ -117,6 +117,14 @@ class View {
 			return (new \Katu\Types\TArray($list))->implodeInSentence($delimiter, $lastDelimiter);
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('isValidDateTime', function($date) {
+			try {
+				return (new Utils\DateTime($date))->isValid();
+			} catch (\Exception $e) {
+				return false;
+			}
+		}));
+
 		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
