@@ -6,6 +6,31 @@ class File extends \Katu\Model {
 
 	const TABLE = 'files';
 
+	static function create($creator, $path, $fileName, $fileType, $fileSize) {
+		return static::insert([
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			'creatorId'   => (int)    ($creator ? $creator->id : null),
+			'path'        => (string) ($path),
+			'name'        => (string) ($fileName),
+			'type'        => (string) ($fileType),
+			'size'        => (string) ($fileSize),
+		]);
+	}
+
+	static function createFromFile($creator, $path) {
+		$fileName = basename($path);
+
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$fileType = finfo_file($finfo, $path);
+		finfo_close($finfo);
+
+		$fileSize = filesize($path);
+
+		$path = static::copy($path, static::generatePath($fileName));
+
+		return static::create($creator, $path, $fileName, $fileType, $fileSize);
+	}
+
 	static function createFromUpload($creator, $upload) {
 		if (!static::checkCrudParams($creator)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
@@ -25,16 +50,9 @@ class File extends \Katu\Model {
 		}
 
 		// Get a new file name.
-		$path = static::copyUpload($upload, static::generatePath($upload->fileName));
+		$path = static::copy($upload->path, static::generatePath($upload->fileName));
 
-		return static::insert([
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'creatorId'   => (int)    ($creator ? $creator->id : null),
-			'path'        => (string) ($path),
-			'name'        => (string) ($upload->fileName),
-			'type'        => (string) ($upload->fileType),
-			'size'        => (string) ($upload->fileSize),
-		]);
+		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
 	}
 
 	static function checkCrudParams($creator) {
@@ -113,18 +131,17 @@ class File extends \Katu\Model {
 		}
 	}
 
-	static function copyUpload($upload, $path) {
-		$srcPath = $upload->path;
-		$dstPath = static::getDirPath() . '/' . $path;
-		$dstDirPath = dirname($dstPath);
+	static function copy($sourcePath, $destination) {
+		$destinationPath = static::getDirPath() . '/' . $destination;
+		$destinationDirPath = dirname($destinationPath);
 
-		@mkdir($dstDirPath, 0777, true);
+		@mkdir($destinationDirPath, 0777, true);
 
-		if (!copy($srcPath, $dstPath)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Error occured during copying the upload.");
+		if (!copy($sourcePath, $destinationPath)) {
+			throw new \Katu\Exceptions\ArgumentErrorException("Error occured during copying the file.");
 		}
 
-		return $path;
+		return $destination;
 	}
 
 	public function attachTo($creator, $object) {
