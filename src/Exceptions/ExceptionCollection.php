@@ -16,6 +16,10 @@ class ExceptionCollection extends Exception implements \Iterator {
 		$this->message = $message;
 	}
 
+	public function add() {
+		return call_user_func_array(['static', 'addException'], func_get_args());
+	}
+
 	public function addException(\Exception $exception) {
 		$this->exceptionCollection[] = $exception;
 	}
