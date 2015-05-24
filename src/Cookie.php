@@ -33,20 +33,20 @@ class Cookie {
 	}
 
 	static function getDefaultConfig() {
-		return array(
+		return [
 			'lifetime' => self::DEFAULT_LIFETIME,
 			'path'     => self::DEFAULT_PATH,
 			'domain'   => self::getDefautDomain(),
 			'secure'   => self::DEFAULT_SECURE,
 			'httponly' => self::DEFAULT_HTTPONLY,
-		);
+		];
 	}
 
 	static function getConfig() {
 		try {
 			$config = \Katu\Config::getApp('cookie');
 		} catch (\Exception $e) {
-			$config = array();
+			$config = [];
 		}
 
 		return array_merge(self::getDefaultConfig(), $config);

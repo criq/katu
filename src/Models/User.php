@@ -105,7 +105,10 @@ class User extends \Katu\Model {
 	}
 
 	public function login() {
-		return \Katu\Session::set('katu.user.id', (int) $this->getId());
+
+		\Katu\Session::set('katu.user.id', (int) $this->getId());
+
+		return true;
 	}
 
 	static function logout() {

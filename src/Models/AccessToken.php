@@ -37,4 +37,8 @@ class AccessToken extends \Katu\Model {
 		return true;
 	}
 
+	public function getRemainingTime() {
+		return (new \Katu\Utils\DateTime($this->timeExpires))->getTimestamp() - (new \Katu\Utils\DateTime())->getTimestamp();
+	}
+
 }
