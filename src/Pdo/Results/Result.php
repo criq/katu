@@ -154,4 +154,13 @@ class Result implements \Iterator, \ArrayAccess {
 		return isset($this->_iteratorArray[$offset]) ? $this->_iteratorArray[$offset] : null;
 	}
 
+	public function each($callback) {
+		$res = [];
+		foreach ($this as $item) {
+			$res[] = call_user_func_array($callback, [$item]);
+		}
+
+		return $res;
+	}
+
 }
