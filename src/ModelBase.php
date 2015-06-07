@@ -150,25 +150,6 @@ class ModelBase {
 		return static::getBy([], $expressions);
 	}
 
-	static function getOneOrCreateWithArray($getBy, $array = []) {
-		$object = static::getOneBy($getBy);
-		if (!$object) {
-			$properties = array_merge($getBy, $array);
-			$object = static::create($properties);
-		}
-
-		return $object;
-	}
-
-	static function getOneOrCreateWithList($getBy) {
-		$object = static::getOneBy($getBy);
-		if (!$object) {
-			$object = call_user_func_array(['static', 'create'], array_slice(func_get_args(), 1));
-		}
-
-		return $object;
-	}
-
 	static function getFromAssoc($array) {
 		if (!$array) {
 			return false;
@@ -219,6 +200,13 @@ class ModelBase {
 		}
 
 		return false;
+	}
+
+	public function getProperties() {
+		var_dump(static::$properties);
+		foreach ($this->getTable()->getColumns() as $column) {
+			var_dump($column->getProperties());
+		}
 	}
 
 }
