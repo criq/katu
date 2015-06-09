@@ -45,6 +45,14 @@ class FileSystem {
 		return filesize($path);
 	}
 
+	static function getMime($path) {
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$mime = finfo_file($finfo, $path);
+		finfo_close($finfo);
+
+		return $mime;
+	}
+
 	static function getPathForName($nameParts) {
 		return Cache::getFromMemory(['fileSystemName', $nameParts], function($nameParts) {
 

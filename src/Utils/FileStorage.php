@@ -32,4 +32,8 @@ class FileStorage {
 		return FILE_PATH . FileSystem::getPathForName($name);
 	}
 
+	static function getSafeName($name) {
+		return preg_replace('#_+#', '_', preg_replace('#[^a-zA-Z0-9\-\_\.]#', '_', trim(\URLify::downcode($name))));
+	}
+
 }

@@ -31,10 +31,10 @@ class TString {
 	}
 
 	public function getForUrl($options = []) {
-		$options = array_merge([
+		$options = $options + [
 			'delimiter' => '-',
 			'lowercase' => true,
-		], $options);
+		];
 
 		\URLify::$remove_list = [];
 
