@@ -95,6 +95,21 @@ class FileSystem {
 		return touch($path);
 	}
 
+	static function getDirs($parentDir) {
+		$dirs = [];
+
+		foreach (scandir($parentDir) as $file) {
+			if (!in_array($file, ['.', '..'])) {
+				$path = static::joinPaths($parentDir, $file);
+				if (is_dir($path)) {
+					$dirs[] = $path;
+				}
+			}
+		}
+
+		return $dirs;
+	}
+
 	static function deleteDir($dir) {
 		$it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
 		$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);

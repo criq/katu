@@ -17,7 +17,11 @@ class Controller {
 		foreach ($urls as $url) {
 			$url = (string) $url;
 			if (\Katu\Types\TUrl::isValid($url)) {
-				return $app->redirect($url, $code); die;
+				try {
+					return $app->redirect($url, $code);
+				} catch (\Slim\Exception\Stop $e) {
+					return;
+				}
 			}
 		}
 
