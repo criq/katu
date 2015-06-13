@@ -77,7 +77,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		$res = array();
 
 		foreach ($this->container as $key => $value) {
-			if (!in_array($key, func_get_args())) {
+			if (in_array($key, func_get_args()) === false) {
 				$res[$key] = $value;
 			}
 		}
