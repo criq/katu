@@ -61,16 +61,16 @@ class Session {
 		return true;
 	}
 
-	static function reset($key = null) {
+	static function reset() {
 		static::init();
 
-		if (!$key) {
+		if (func_get_args()) {
+			foreach (func_get_args() as $key) {
+				static::set($key, null);
+			}
+		} else {
 			$_SESSION[static::KEY] = null;
-
-			return true;
 		}
-
-		static::set($key, null);
 
 		return true;
 	}

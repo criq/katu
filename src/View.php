@@ -145,6 +145,10 @@ class View {
 			return call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('makeUrl', function() {
+			return call_user_func_array(['\Katu\Types\TUrl', 'make'], func_get_args());
+		}));
+
 		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {
 			return call_user_func_array(['\Katu\Config', 'get'], func_get_args());
 		}));
