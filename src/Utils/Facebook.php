@@ -106,11 +106,9 @@ class Facebook {
 					$session = $helper->getSessionFromRedirect();
 					if ($session) {
 						\Katu\Utils\Facebook::setToken($session->getToken());
-					} else {
-						throw new \Exception();
-					}
 
-					return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
+						return static::redirectToScenarioReturnUrl($scenarioReturnUrl);
+					}
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
@@ -160,6 +158,10 @@ class Facebook {
 		Session::add(static::SCENARIO_RETURN_URLS_KEY, (string) $scenarioReturnUrl, $state);
 
 		header('Location: ' . $redirectUrl, true, 302); die;
+	}
+
+	static function redirectToScenarioReturnUrl($scenarioReturnUrl) {
+		header('Location: ' . $scenarioReturnUrl, true, 302); die;
 	}
 
 	static function getRedirectUrl($state) {

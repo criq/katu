@@ -5,7 +5,10 @@ namespace Katu\Utils;
 class Tmp extends FileStorage {
 
 	static function getPath($name) {
-		return FileSystem::joinPaths(TMP_PATH, FileSystem::getPathForName($name));
+		$path = FileSystem::joinPaths(TMP_PATH, FileSystem::getPathForName($name));
+		@mkdir(dirname($path), 0777, true);
+
+		return $path;
 	}
 
 	static function debug($var) {
@@ -13,6 +16,10 @@ class Tmp extends FileStorage {
 	}
 
 	static function save($fileName, $data) {
+		if (!$fileName) {
+			$fileName = Random::getFileName();
+		}
+
 		$path = FileSystem::joinPaths(TMP_PATH, 'files', $fileName);
 		@mkdir(dirname($path), 0777, true);
 
