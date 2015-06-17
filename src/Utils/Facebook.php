@@ -83,14 +83,10 @@ class Facebook {
 		// Redirect to login.
 		} catch (\Facebook\FacebookAuthorizationException $e) {
 
-			static::resetToken();
-
 			return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 		// Redirect to login.
 		} catch (\Facebook\FacebookSDKException $e) {
-
-			static::resetToken();
 
 			return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
@@ -130,8 +126,6 @@ class Facebook {
 			// Redirect to login.
 			} else {
 
-				static::resetToken();
-
 				return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 			}
@@ -151,6 +145,8 @@ class Facebook {
 	}
 
 	static function redirectToLoginUrl($redirectUrl, $scenarioReturnUrl) {
+		static::resetToken();
+
 		$state = (new TUrl($redirectUrl))->getQueryParam('state');
 
 		Session::add(static::REDIRECT_URLS_KEY, (string) $redirectUrl, $state);
