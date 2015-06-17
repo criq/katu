@@ -5,7 +5,6 @@ namespace Katu\Utils;
 use \Katu\App;
 use \Katu\Config;
 use \Katu\Session;
-use \Katu\Utils\Facebook;
 use \Katu\Utils\Url;
 use \Katu\Types\TUrl;
 use \Facebook\FacebookSession;
@@ -105,7 +104,7 @@ class Facebook {
 
 					$session = $helper->getSessionFromRedirect();
 					if ($session) {
-						\Katu\Utils\Facebook::setToken($session->getToken());
+						static::setToken($session->getToken());
 
 						return static::redirectToScenarioReturnUrl($scenarioReturnUrl);
 					}
@@ -218,6 +217,16 @@ class Facebook {
 
 	static function getUser($userId) {
 		return Session::get('facebook.userId');
+	}
+
+	static function getScopes() {
+		try {
+			return (new \Facebook\FacebookRequest(static::getSession(), 'GET', '/debug_token', [
+				'input_token' => static::getToken(),
+			]))->execute()->getGraphObject()->getProperty('scopes')->asArray();
+		} catch (\Exception $e) {
+			return false;
+		}
 	}
 
 }
