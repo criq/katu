@@ -126,12 +126,11 @@ class Facebook {
 			// Redirect to login.
 			} else {
 
-				die;
 				if ($callbackCollection && $callbackCollection->exists('error')) {
-					return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
+					#return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
 				}
 
-				return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
+				#return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 			}
 
