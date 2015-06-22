@@ -33,6 +33,7 @@ class Facebook {
 					$sessionScopes = $session->getSessionInfo()->getScopes();
 				}
 				if (!in_array($scope, $sessionScopes)) {
+					var_dump("A"); die;
 					return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 				}
 			}
@@ -82,12 +83,12 @@ class Facebook {
 
 		// Redirect to login.
 		} catch (\Facebook\FacebookAuthorizationException $e) {
-
+			var_dump("B"); die;
 			return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 		// Redirect to login.
 		} catch (\Facebook\FacebookSDKException $e) {
-
+			var_dump("C"); die;
 			return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 		// Invalid token, login.
@@ -126,6 +127,11 @@ class Facebook {
 			// Redirect to login.
 			} else {
 
+				if ($callbackCollection && $callbackCollection->exists('error')) {
+					return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
+				}
+
+				var_dump("D"); die;
 				return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 			}
