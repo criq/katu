@@ -99,10 +99,9 @@ class Facebook {
 				try {
 
 					$session = $helper->getSessionFromRedirect();
-					var_dump($session);die;
 					if ($session) {
 						static::setToken($session->getToken());
-
+						var_dump("A"); die;
 						return static::redirectToScenarioReturnUrl($scenarioReturnUrl);
 					}
 
