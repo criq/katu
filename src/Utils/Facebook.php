@@ -33,7 +33,7 @@ class Facebook {
 					$sessionScopes = $session->getSessionInfo()->getScopes();
 				}
 				if (!in_array($scope, $sessionScopes)) {
-					var_dump("A");
+					var_dump("A"); die;
 					return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 				}
 			}
