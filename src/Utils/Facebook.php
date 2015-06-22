@@ -33,9 +33,6 @@ class Facebook {
 					$sessionScopes = $session->getSessionInfo()->getScopes();
 				}
 				if (!in_array($scope, $sessionScopes)) {
-					if ($callbackCollection && $callbackCollection->exists('error')) {
-						return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
-					}
 					return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 				}
 			}
