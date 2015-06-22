@@ -33,7 +33,7 @@ class Facebook {
 					$sessionScopes = $session->getSessionInfo()->getScopes();
 				}
 				if (!in_array($scope, $sessionScopes)) {
-					#return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
+					return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 				}
 			}
 
@@ -95,6 +95,8 @@ class Facebook {
 
 			// Redirected back.
 			if ($app->request->params('code') && $app->request->params('state')) {
+
+				die;
 
 				try {
 
