@@ -107,7 +107,7 @@ class Facebook {
 					}
 
 				} catch (\Facebook\FacebookSDKException $e) {
-
+					var_dump("E"); die;
 					if ($callbackCollection && $callbackCollection->exists('error')) {
 						return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
 					}
@@ -115,7 +115,7 @@ class Facebook {
 					throw $e;
 
 				} catch (\Exception $e) {
-
+					var_dump("F"); die;
 					if ($callbackCollection && $callbackCollection->exists('error')) {
 						return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
 					}
@@ -126,7 +126,7 @@ class Facebook {
 
 			// Redirect to login.
 			} else {
-
+				var_dump("G"); die;
 				if ($callbackCollection && $callbackCollection->exists('error')) {
 					return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
 				}
