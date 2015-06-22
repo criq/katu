@@ -96,11 +96,10 @@ class Facebook {
 			// Redirected back.
 			if ($app->request->params('code') && $app->request->params('state')) {
 
-				die;
-
 				try {
 
 					$session = $helper->getSessionFromRedirect();
+					var_dump($session);die;
 					if ($session) {
 						static::setToken($session->getToken());
 
