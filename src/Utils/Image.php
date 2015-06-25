@@ -86,14 +86,26 @@ class Image {
 
 	static function getThumbnailUrl($uri, $size, $quality = 100, $options = []) {
 		$thumbnailPath = static::getThumbnailPath($uri, $size, $quality, $options);
-		static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
+		try {
+			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
+		} catch (\Exception $e) {
+			\Katu\ErrorHandler::handle($e);
+
+			return false;
+		}
 
 		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), \Katu\Config::get('app', 'tmp', 'publicUrl'), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
 	}
 
 	static function getThumbnailPath($uri, $size, $quality = 100, $options = []) {
 		$thumbnailPath = \Katu\Utils\FileSystem::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
-		static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
+		try {
+			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
+		} catch (\Exception $e) {
+			\Katu\ErrorHandler::handle($e);
+
+			return false;
+		}
 
 		return $thumbnailPath;
 	}
