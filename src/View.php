@@ -244,6 +244,7 @@ class View {
 			$data['_user'] = \App\Models\User::getCurrent();
 		}
 
+		$data['_platform'] = Env::getPlatform();
 		$data['_config']   = Config::get();
 		$data['_session']  = Session::get();
 		$data['_flash']    = Flash::get();
