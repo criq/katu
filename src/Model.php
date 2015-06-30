@@ -12,6 +12,8 @@ use \Sexy\Keyword;
 
 class Model extends ModelBase {
 
+	const CACHE_IN_MEMORY_BY_PRIMARY_KEY = true;
+
 	protected $__updated = false;
 
 	public function __call($name, $args) {
@@ -210,7 +212,8 @@ class Model extends ModelBase {
 	static function getIdColumnName() {
 		$table = static::getTable();
 
-		return \Katu\Utils\Cache::getRuntime(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name->name], function() use($table) {
+		return \Katu\Utils\Cache::getFromMemory(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name->name], function() use($table) {
+
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
 				if (isset($row['Key']) && $row['Key'] == 'PRI') {
 					return $row['Field'];
@@ -218,6 +221,7 @@ class Model extends ModelBase {
 			}
 
 			return false;
+
 		});
 	}
 
@@ -244,9 +248,19 @@ class Model extends ModelBase {
 	}
 
 	static function get($primaryKey) {
-		return static::getOneBy([
-			static::getIdColumnName() => $primaryKey,
-		]);
+		$callback = function($class, $primaryKey) {
+
+			return $class::getOneBy([
+				$class::getIdColumnName() => $primaryKey,
+			]);
+
+		};
+
+		if (static::CACHE_IN_MEMORY_BY_PRIMARY_KEY) {
+			return \Katu\Utils\Cache::getFromMemory(['model', 'get'], $callback, static::getClass(), $primaryKey);
+		} else {
+			return call_user_func_array($callback, [static::getClass(), $primaryKey]);
+		}
 	}
 
 	public function exists() {

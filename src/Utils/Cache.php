@@ -122,14 +122,18 @@ class Cache {
 	}
 
 	static function getFromMemory($name, $callback = null) {
-		$args = array_slice(func_get_args(), 2);
+		return call_user_func_array(['static', 'getFromMemoryWithTtl'], array_merge([$name], [null], [$callback], array_slice(func_get_args(), 2)));
+	}
+
+	static function getFromMemoryWithTtl($name, $ttl, $callback = null) {
+		$args = array_slice(func_get_args(), 3);
 		$cacheName = sha1(var_export(array_merge((array) $name, (array) $args), true));
 
 		// APC supported.
 		if (function_exists('apc_add')) {
 
 			if (!apc_exists($cacheName)) {
-				apc_add($cacheName, call_user_func_array($callback, $args));
+				apc_add($cacheName, call_user_func_array($callback, $args), (int) $ttl);
 			}
 
 			return apc_fetch($cacheName);

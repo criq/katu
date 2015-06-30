@@ -35,13 +35,15 @@ class TableBase extends \Sexy\Expression {
 	public function getColumnDescriptions() {
 		$table = $this;
 
-		return Cache::getRuntime(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], function() use($table) {
+		return Cache::getFromMemory(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], function() use($table) {
+
 			$columns = [];
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $properties) {
 				$columns[$properties['Field']] = $properties;
 			}
 
 			return $columns;
+
 		});
 	}
 
