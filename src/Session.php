@@ -39,10 +39,10 @@ class Session {
 		return $_SESSION[static::KEY][$key];
 	}
 
-	static function set($key, $value) {
+	static function set() {
 		static::init();
 
-		$_SESSION[static::KEY][$key] = $value;
+		$_SESSION[static::KEY][func_get_arg(0)] = func_get_arg(1);
 
 		return true;
 	}
