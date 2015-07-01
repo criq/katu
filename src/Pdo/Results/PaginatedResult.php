@@ -13,7 +13,7 @@ class PaginatedResult extends Result {
 		if (strpos($this->statement->queryString, 'SQL_CALC_FOUND_ROWS')) {
 			$total = $this->pdo->createQuery("SELECT FOUND_ROWS() AS total")->getResult()->statement->fetchColumn();
 		} else {
-			$total = count($this->statement);
+			$total = $this->statement->rowCount();
 		}
 
 		// Set default page if empty.
