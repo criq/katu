@@ -113,4 +113,15 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return $res;
 	}
 
+	public function flatten() {
+		$iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($this));
+		$values = [];
+
+		foreach ($iterator as $value) {
+			$values[] = $value;
+		}
+
+		return $values;
+	}
+
 }
