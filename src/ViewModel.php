@@ -8,8 +8,9 @@ class ViewModel extends ModelBase {
 	const CACHE_TIMEOUT           = 86400;
 	const CACHE_REFRESH_ON_UPDATE = true;
 
-	static $autoIndices   = true;
-	static $customIndices = [];
+	static $autoIndices    = true;
+	static $compositeIndex = true;
+	static $customIndices  = [];
 
 	static function isCached() {
 		return defined('static::CACHE') && static::CACHE;
@@ -118,9 +119,10 @@ class ViewModel extends ModelBase {
 
 		// Copy into temporary table view.
 		$params = [
-			'disableNull'   => true,
-			'autoIndices'   => static::$autoIndices,
-			'customIndices' => static::$customIndices,
+			'disableNull'    => true,
+			'autoIndices'    => static::$autoIndices,
+			'compositeIndex' => static::$compositeIndex,
+			'customIndices'  => static::$customIndices,
 		];
 		$sourceTable->copy($temporaryTable, $params);
 

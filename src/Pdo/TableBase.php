@@ -108,7 +108,8 @@ class TableBase extends \Sexy\Expression {
 				}
 			}
 
-			if ($indexableColumns) {
+			// Composite index.
+			if ($indexableColumns && $options['compositeIndex']) {
 				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', array_map(function($i) {
 					return $i->name;
 				}, $indexableColumns)) . "); ";
