@@ -48,8 +48,16 @@ class DateTime extends \DateTime {
 		return ($this->getTimestamp() + $timeout) >= time();
 	}
 
+	public function isYesterday() {
+		return (new static('- 1 day', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
+	}
+
 	public function isToday() {
 		return (new static('now', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
+	}
+
+	public function isTomorrow() {
+		return (new static('+ 1 day', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
 	public function isInFuture() {
