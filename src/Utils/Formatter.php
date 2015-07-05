@@ -38,4 +38,10 @@ class Formatter {
 		return $numberFormatter->format($number);
 	}
 
+	static function getLocalCurrency($locale, $number, $currency) {
+		$numberFormatter = new \NumberFormatter(static::getLocale($locale), \NumberFormatter::CURRENCY);
+
+		return $numberFormatter->formatCurrency($number, $currency);
+	}
+
 }
