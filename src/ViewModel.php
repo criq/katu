@@ -85,10 +85,16 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getCachedTableName() {
-		return implode('_', [
+		$name = implode('_', [
 			'_cache',
 			static::getViewName(),
 		]);
+
+		if (strlen($name) > 64) {
+			return substr($name, 0, 60) . substr(sha1($name), 0, 4);
+		}
+
+		return $name;
 	}
 
 	static function getCachedTableCacheName() {
