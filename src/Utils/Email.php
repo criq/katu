@@ -23,6 +23,8 @@ class Email {
 	public $variables = [];
 	public $recipientVariables = [];
 
+	public $async = false;
+
 	public function __construct($subject = null) {
 		$this->setSubject($subject);
 
@@ -169,6 +171,12 @@ class Email {
 		return $this;
 	}
 
+	public function setAsync($async = true) {
+		$this->async = (bool) $async;
+
+		return $this;
+	}
+
 	public function getMessageForMandrill($message) {
 		$message['subject']    = $this->subject;
 		$message['html']       = $this->html;
@@ -197,6 +205,8 @@ class Email {
 
 		$message['global_merge_vars'] = $this->getVariablesForMandrill();
 		$message['merge_vars'] = $this->getRecipientVariablesForMandrill();
+
+		$message['async'] = $this->async;
 
 		return $message;
 	}
