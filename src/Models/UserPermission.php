@@ -13,18 +13,14 @@ class UserPermission extends \Katu\Model {
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'userId'      => (int)    ($user->id),
+			'userId'      => (int)    ($user->getId()),
 			'permission'  => (string) (trim($permission)),
 		));
 	}
 
 	static function make($user, $permission) {
-		if (!static::checkCrudParams($user, $permission)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
-		}
-
 		return static::getOneOrCreateWithList(array(
-			'userId'     => (int)    ($user->id),
+			'userId'     => (int)    ($user->getId()),
 			'permission' => (string) (trim($permission)),
 		), $user, $permission);
 	}

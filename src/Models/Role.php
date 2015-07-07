@@ -25,13 +25,13 @@ class Role extends \Katu\Model {
 
 	public function delete() {
 		foreach (\App\Models\RolePermission::getBy(array(
-			'roleId' => $this->id,
+			'roleId' => $this->getId(),
 		)) as $rolePermission) {
 			$rolePermission->delete();
 		}
 
 		foreach (\App\Models\UserRole::getBy(array(
-			'roleId' => $this->id,
+			'roleId' => $this->getId(),
 		)) as $userRole) {
 			$userRole->delete();
 		}
@@ -55,7 +55,7 @@ class Role extends \Katu\Model {
 		// Look for another role with this name.
 		$getBy['name'] = trim($name);
 		if ($object) {
-			$getBy[] = new \Sexy\CmpNotEq(static::getColumn('id'), $object->id);
+			$getBy[] = new \Sexy\CmpNotEq(static::getColumn('id'), $object->getId());
 		}
 
 		if (static::getBy($getBy)->getTotal()) {
@@ -89,14 +89,14 @@ class Role extends \Katu\Model {
 
 	public function hasPermission($permission) {
 		return (bool) \App\Models\RolePermission::getOneBy(array(
-			'roleId'     => (int)    ($this->id),
+			'roleId'     => (int)    ($this->getId()),
 			'permission' => (string) (trim($permission)),
 		));
 	}
 
 	public function deleteAllPermissions() {
 		foreach (\App\Models\RolePermission::getBy(array(
-			'roleId' => $this->id,
+			'roleId' => $this->getId(),
 		)) as $rolePermission) {
 			$rolePermission->delete();
 		}

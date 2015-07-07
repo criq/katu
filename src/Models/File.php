@@ -9,7 +9,7 @@ class File extends \Katu\Model {
 	static function create($creator, $path, $fileName, $fileType, $fileSize) {
 		return static::insert([
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'creatorId'   => (int)    ($creator ? $creator->id : null),
+			'creatorId'   => (int)    ($creator ? $creator->getId() : null),
 			'path'        => (string) ($path),
 			'name'        => (string) ($fileName),
 			'type'        => (string) ($fileType),

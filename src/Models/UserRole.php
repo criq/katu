@@ -13,19 +13,15 @@ class UserRole extends \Katu\Model {
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'userId'      => (int)    ($user->id),
-			'roleId'      => (int)    ($role->id),
+			'userId'      => (int)    ($user->getId()),
+			'roleId'      => (int)    ($role->getId()),
 		));
 	}
 
 	static function make($user, $role) {
-		if (!static::checkCrudParams($user, $role)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
-		}
-
 		return static::getOneOrCreateWithList(array(
-			'userId' => (int) ($user->id),
-			'roleId' => (int) ($role->id),
+			'userId' => (int) ($user->getId()),
+			'roleId' => (int) ($role->getId()),
 		), $user, $role);
 	}
 

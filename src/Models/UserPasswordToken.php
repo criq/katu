@@ -14,7 +14,7 @@ class UserPasswordToken extends \Katu\Model {
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
 			'timeExpires' => (string) (\Katu\Utils\DateTime::get('+ 1 hour')->getDbDateTimeFormat()),
-			'userId'      => (int)    ($user->id),
+			'userId'      => (int)    ($user->getId()),
 			'token'       => (string) (\Katu\Utils\Random::getString(static::getColumn('token')->getProperties()->length)),
 		));
 	}

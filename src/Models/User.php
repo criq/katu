@@ -232,4 +232,12 @@ class User extends \Katu\Model {
 		return in_array($permission, $this->getUserPermissions());
 	}
 
+	public function setUserSetting($name, $value) {
+		$userSetting = \App\Models\UserSetting::make($this, $name);
+		$userSetting->setValue($value);
+		$userSetting->save();
+
+		return true;
+	}
+
 }

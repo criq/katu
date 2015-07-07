@@ -13,10 +13,10 @@ class FileAttachment extends \Katu\Model {
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'creatorId'   => (int)    ($creator ? $creator->id : null),
+			'creatorId'   => (int)    ($creator ? $creator->getId() : null),
 			'objectModel' => (string) ($object->getClass()),
 			'objectId'    => (int)    ($object->getId()),
-			'fileId'      => (int)    ($file->id),
+			'fileId'      => (int)    ($file->getId()),
 		));
 	}
 
@@ -28,7 +28,7 @@ class FileAttachment extends \Katu\Model {
 		return static::getOneOrCreateWithList(array(
 			'objectModel' => (string) ($object->getClass()),
 			'objectId'    => (int)    ($object->getId()),
-			'fileId'      => (int)    ($file->id),
+			'fileId'      => (int)    ($file->getId()),
 		), $creator, $object, $file);
 	}
 

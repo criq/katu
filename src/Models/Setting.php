@@ -15,7 +15,7 @@ class Setting extends \Katu\Model {
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'creatorId'   => (int)    ($creator->id),
+			'creatorId'   => (int)    ($creator->getId()),
 			'name'        => (string) (trim($name)),
 			'value'       => (string) (trim($value)),
 			'isSystem'    => (string) ($isSystem ? '1' : '0'),
@@ -41,7 +41,7 @@ class Setting extends \Katu\Model {
 
 		$expressions['name'] = trim($name);
 		if ($object) {
-			$expressions[] = new \Sexy\CmpNotEq(static::getIdColumn(), $object->id);
+			$expressions[] = new \Sexy\CmpNotEq(static::getIdColumn(), $object->getId());
 		}
 
 		if (static::getBy($expressions)->getTotal()) {

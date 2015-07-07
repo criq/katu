@@ -13,7 +13,7 @@ class RolePermission extends \Katu\Model {
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'roleId'      => (int)    ($role->id),
+			'roleId'      => (int)    ($role->getId()),
 			'permission'  => (string) (trim($permission)),
 		));
 	}
@@ -24,7 +24,7 @@ class RolePermission extends \Katu\Model {
 		}
 
 		return static::getOneOrCreateWithList(array(
-			'roleId'     => (int)    ($role->id),
+			'roleId'     => (int)    ($role->getId()),
 			'permission' => (string) (trim($permission)),
 		), $role, $permission);
 	}
