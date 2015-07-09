@@ -4,9 +4,14 @@ namespace Katu;
 
 class ViewModel extends ModelBase {
 
-	const CACHE                   = true;
-	const CACHE_TIMEOUT           = 86400;
-	const CACHE_REFRESH_ON_UPDATE = true;
+	const CACHE                    = true;
+	const CACHE_TIMEOUT            = 86400;
+	const CACHE_REFRESH_ON_UPDATE  = true;
+	const CACHE_REFRESH_IN_ADVANCE = .5;
+
+	const MATERIALIZE              = false;
+	const MATERIALIZE_TIMEOUT      = 86400;
+	const MATERIALIZE_IN_ADVANCE   = 1;
 
 	static $autoIndices    = true;
 	static $compositeIndex = true;
@@ -172,7 +177,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getLastMaterializedTmpName() {
-		return ['!databases', '!' . static::getPdo()->name, '!views', '!cached', '!' . static::TABLE];
+		return ['!databases', '!' . static::getPdo()->name, '!views', '!materialized', '!' . static::TABLE];
 	}
 
 	static function updateLastMaterializedTime() {
@@ -197,16 +202,36 @@ class ViewModel extends ModelBase {
 		foreach (static::getAllViewModelNames() as $viewModelName) {
 			$class = '\\' . $viewModelName;
 
-			$properties[$viewModelName] = [
-				'cache' => $class::CACHE,
-				'cacheTimeout' => $class::CACHE_TIMEOUT,
-				'cacheRefreshOnUpdate' => $class::CACHE_REFRESH_ON_UPDATE,
-				'lastCachedDateTime' => $class::getLastCachedTime(),
-				'lastMaterializedTime' => $class::getLastMaterializedTime(),
+			$property = [
+				'cache' => [
+					'on' => $class::CACHE,
+					'onUpdate' => $class::CACHE_REFRESH_ON_UPDATE,
+					'timeout' => $class::CACHE_TIMEOUT,
+					'time' => $class::getLastCachedTime(),
+				],
+				'materialize' => [
+					'on' => $class::MATERIALIZE,
+					'timeout' => $class::MATERIALIZE_TIMEOUT,
+					'time' => $class::getLastMaterializedTime(),
+				],
 			];
+
+			$property['cache']['age'] = time() - $property['cache']['time'];
+			$property['cache']['ratio'] = $property['cache']['age'] / $property['cache']['timeout'];
+			$property['cache']['expired'] = $property['cache']['ratio'] > 1;
+
+			$property['materialize']['age'] = time() - $property['materialize']['time'];
+			$property['materialize']['ratio'] = $property['materialize']['age'] / $property['materialize']['timeout'];
+			$property['materialize']['expired'] = $property['materialize']['ratio'] > 1;
+
+			$properties[$viewModelName] = $property;
 		}
 
 		return $properties;
+	}
+
+	static function getAllExpiredCache() {
+		var_dump(static::getAllViewModelCacheInfo());
 	}
 
 }
