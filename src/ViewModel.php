@@ -191,7 +191,7 @@ class ViewModel extends ModelBase {
 		})));
 	}
 
-	static function getAllViewModelProperties() {
+	static function getAllViewModelCacheInfo() {
 		$properties = [];
 
 		foreach (static::getAllViewModelNames() as $viewModelName) {
@@ -201,6 +201,8 @@ class ViewModel extends ModelBase {
 				'cache' => $class::CACHE,
 				'cacheTimeout' => $class::CACHE_TIMEOUT,
 				'cacheRefreshOnUpdate' => $class::CACHE_REFRESH_ON_UPDATE,
+				'lastCachedDateTime' => $class::getLastCachedTime(),
+				'lastMaterializedTime' => $class::getLastMaterializedTime(),
 			];
 		}
 
