@@ -192,10 +192,19 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getAllViewModelProperties() {
-		return array_map(function($i), {
+		$properties = [];
 
-		}, static::getAllViewModelNames());
+		foreach (static::getAllViewModelNames() as $viewModelName) {
+			$class = '\\' . $viewModelName;
 
+			$properties[$viewModelName] = [
+				'cache' => $class::CACHE,
+				'cacheTimeout' => $class::CACHE_TIMEOUT,
+				'cacheRefreshOnUpdate' => $class::CACHE_REFRESH_ON_UPDATE,
+			];
+		}
+
+		return $properties;
 	}
 
 }
