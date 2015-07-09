@@ -8,6 +8,7 @@ class ViewModel extends ModelBase {
 	const CACHE_TIMEOUT       = 86400;
 	const CACHE_ON_UPDATE     = true;
 	const CACHE_ADVANCE       = .75;
+
 	const MATERIALIZE         = false;
 	const MATERIALIZE_TIMEOUT = 86400;
 	const MATERIALIZE_ADVANCE = 1;
