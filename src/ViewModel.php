@@ -4,14 +4,13 @@ namespace Katu;
 
 class ViewModel extends ModelBase {
 
-	const CACHE                    = true;
-	const CACHE_TIMEOUT            = 86400;
-	const CACHE_REFRESH_ON_UPDATE  = true;
-	const CACHE_REFRESH_IN_ADVANCE = .5;
-
-	const MATERIALIZE              = false;
-	const MATERIALIZE_TIMEOUT      = 86400;
-	const MATERIALIZE_IN_ADVANCE   = 1;
+	const CACHE               = true;
+	const CACHE_TIMEOUT       = 86400;
+	const CACHE_ON_UPDATE     = true;
+	const CACHE_ADVANCE       = .75;
+	const MATERIALIZE         = false;
+	const MATERIALIZE_TIMEOUT = 86400;
+	const MATERIALIZE_ADVANCE = 1;
 
 	static $autoIndices    = true;
 	static $compositeIndex = true;
@@ -44,7 +43,7 @@ class ViewModel extends ModelBase {
 		}
 
 		// Expired data in tables.
-		if (static::CACHE_REFRESH_ON_UPDATE) {
+		if (static::CACHE_ON_UPDATE) {
 
 			$sourceTables = static::getView()->getSourceTables();
 			foreach ($sourceTables as $sourceTable) {
@@ -196,22 +195,25 @@ class ViewModel extends ModelBase {
 		})));
 	}
 
-	static function getAllViewModelCacheInfo() {
-		$properties = [];
+	static function getAllViewModelInfo() {
+		$res = [];
 
 		foreach (static::getAllViewModelNames() as $viewModelName) {
 			$class = '\\' . $viewModelName;
 
 			$property = [
+				'class' => $viewModelName,
 				'cache' => [
 					'on' => $class::CACHE,
-					'onUpdate' => $class::CACHE_REFRESH_ON_UPDATE,
 					'timeout' => $class::CACHE_TIMEOUT,
+					'advance' => $class::CACHE_ADVANCE,
+					'onUpdate' => $class::CACHE_ON_UPDATE,
 					'time' => $class::getLastCachedTime(),
 				],
 				'materialize' => [
 					'on' => $class::MATERIALIZE,
 					'timeout' => $class::MATERIALIZE_TIMEOUT,
+					'advance' => $class::MATERIALIZE_ADVANCE,
 					'time' => $class::getLastMaterializedTime(),
 				],
 			];
@@ -219,19 +221,41 @@ class ViewModel extends ModelBase {
 			$property['cache']['age'] = time() - $property['cache']['time'];
 			$property['cache']['ratio'] = $property['cache']['age'] / $property['cache']['timeout'];
 			$property['cache']['expired'] = $property['cache']['ratio'] > 1;
+			$property['cache']['expiredAdvance'] = $property['cache']['ratio'] > $property['cache']['advance'];
 
 			$property['materialize']['age'] = time() - $property['materialize']['time'];
 			$property['materialize']['ratio'] = $property['materialize']['age'] / $property['materialize']['timeout'];
 			$property['materialize']['expired'] = $property['materialize']['ratio'] > 1;
+			$property['materialize']['expiredAdvance'] = $property['materialize']['ratio'] > $property['materialize']['advance'];
 
-			$properties[$viewModelName] = $property;
+			$res[] = $property;
 		}
 
-		return $properties;
+		return $res;
 	}
 
-	static function getAllExpiredCache() {
-		var_dump(static::getAllViewModelCacheInfo());
+	static function getAllCacheExpired() {
+		return array_values(array_filter(static::getAllViewModelInfo(), function($i) {
+			return $i['cache']['on'] && $i['cache']['expired'];
+		}));
+	}
+
+	static function getAllCacheExpiredAdvance() {
+		return array_values(array_filter(static::getAllViewModelInfo(), function($i) {
+			return $i['cache']['on'] && $i['cache']['expiredAdvance'];
+		}));
+	}
+
+	static function getAllMaterializeExpired() {
+		return array_values(array_filter(static::getAllViewModelInfo(), function($i) {
+			return $i['materialize']['on'] && $i['materialize']['expired'];
+		}));
+	}
+
+	static function getAllMaterializeExpiredAdvance() {
+		return array_values(array_filter(static::getAllViewModelInfo(), function($i) {
+			return $i['materialize']['on'] && $i['materialize']['expiredAdvance'];
+		}));
 	}
 
 }
