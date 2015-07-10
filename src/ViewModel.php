@@ -155,6 +155,14 @@ class ViewModel extends ModelBase {
 		return static::isMaterializeExpired(static::$_materializeAdvance);
 	}
 
+	static function isMaterializable() {
+		if (!static::$_materializeHours) {
+			return true;
+		}
+
+		return in_array((int) (new \Katu\Utils\DateTime)->format('h'), static::$_materializeHours);
+	}
+
 	static function resetCache() {
 		return \Katu\Utils\Cache::reset(static::getCachedTableCacheName());
 	}
