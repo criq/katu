@@ -16,56 +16,8 @@ class ViewModel extends ModelBase {
 	static $_compositeIndex     = true;
 	static $_customIndices      = [];
 
-	static function isCached() {
-		return static::$_cache;
-	}
-
-	static function isExpired() {
-		if (!static::isCached()) {
-			return false;
-		}
-
-		// Cached table doesn't exist.
-		if (!in_array(static::getTableName(), static::getPdo()->getTableNames())) {
-			return true;
-		}
-
-		$lastCachedTime = static::getLastCachedTime();
-
-		// No cached time.
-		if (!$lastCachedTime) {
-			return true;
-		}
-
-		// Expired.
-		if (!is_null($lastCachedTime) && $lastCachedTime < time() - static::$_cacheTimeout) {
-			return true;
-		}
-
-		// Expired data in tables.
-		if (static::$_cacheOnUpdate) {
-
-			$sourceTables = static::getView()->getSourceTables();
-			foreach ($sourceTables as $sourceTable) {
-
-				if (!$sourceTable->exists()) {
-					continue;
-				}
-
-				$lastUpdatedTime = $sourceTable->getLastUpdatedTime();
-				if (!is_null($lastUpdatedTime) && $lastUpdatedTime > $lastCachedTime) {
-					return true;
-				}
-
-			}
-
-		}
-
-		return false;
-	}
-
 	static function getTable() {
-		if (static::isExpired()) {
+		if (static::isCacheExpired()) {
 			static::cache();
 		}
 
@@ -103,6 +55,104 @@ class ViewModel extends ModelBase {
 
 	static function getCachedTableCacheName() {
 		return ['!databases', '!' . static::getView()->pdo->name, '!views', '!cachedView', '!' . static::TABLE];
+	}
+
+	static function isCached() {
+		return static::$_cache;
+	}
+
+	static function isMaterialized() {
+		return static::$_materialize;
+	}
+
+	static function cachedTableExists() {
+		return in_array(static::getCachedTableName(), static::getPdo()->getTableNames());
+	}
+
+	static function materializedTableExists() {
+		return in_array(static::getMaterializedTableName(), static::getPdo()->getTableNames());
+	}
+
+	static function cacheHasUpdatedTables() {
+		if (static::$_cacheOnUpdate) {
+
+			$sourceTables = static::getView()->getSourceTables();
+			foreach ($sourceTables as $sourceTable) {
+
+				if (!$sourceTable->exists()) {
+					continue;
+				}
+
+				$lastUpdatedTime = $sourceTable->getLastUpdatedTime();
+				if (!is_null($lastUpdatedTime) && $lastUpdatedTime > static::getLastCachedTime()) {
+					return true;
+				}
+
+			}
+
+		}
+
+		return false;
+	}
+
+	static function getCacheAge() {
+		return time() - static::getLastCachedTime();
+	}
+
+	static function getMaterializeAge() {
+		return time() - static::getLastMaterializedTime();
+	}
+
+	static function getCacheExpiryRatio() {
+		return static::getCacheAge() / static::$_cacheTimeout;
+	}
+
+	static function getMaterializeExpiryRatio() {
+		return static::getMaterializeAge() / static::$_materializeTimeout;
+	}
+
+	static function isCacheExpired($expiryRatio = 1) {
+		if (!static::isCached()) {
+			return false;
+		}
+
+		if (!static::cachedTableExists()) {
+			return true;
+		}
+
+		if (static::getCacheExpiryRatio() >= $expiryRatio) {
+			return true;
+		}
+
+		if (static::cacheHasUpdatedTables()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	static function isCacheExpiredAdvance() {
+		return static::isCacheExpired(static::$_cacheAdvance);
+	}
+
+	static function isMaterializeExpired($expiryRatio = 1) {
+		if (!static::isMaterialized()) {
+			return false;
+		}
+
+		if (!static::materializedTableExists()) {
+			return true;
+		}
+
+		if (static::getMaterializeExpiryRatio() >= $expiryRatio) {
+			return true;
+		}
+
+		return false;
+	}
+
+	static function isMaterializeExpiredAdvance($expiryRatio = 1) {
+		return static::isMaterializeExpired(static::$_materializeAdvance);
 	}
 
 	static function resetCache() {
@@ -172,7 +222,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getLastCachedTime() {
-		return \Katu\Utils\Tmp::get(static::getLastCachedTmpName());
+		return (float) \Katu\Utils\Tmp::get(static::getLastCachedTmpName());
 	}
 
 	static function getLastMaterializedTmpName() {
@@ -180,7 +230,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function updateLastMaterializedTime() {
-		return \Katu\Utils\Tmp::set(static::getLastMaterializedTmpName(), microtime(true));
+		return (float) \Katu\Utils\Tmp::set(static::getLastMaterializedTmpName(), microtime(true));
 	}
 
 	static function getLastMaterializedTime() {
@@ -193,69 +243,6 @@ class ViewModel extends ModelBase {
 		return array_values(array_filter(array_filter(get_declared_classes(), function($i) {
 			return strpos($i, 'App\\Models\\Views\\') === 0;
 		})));
-	}
-
-	static function getAllViewModelInfo() {
-		$res = [];
-
-		foreach (static::getAllViewModelNames() as $viewModelName) {
-			$class = '\\' . $viewModelName;
-
-			$property = [
-				'class' => $viewModelName,
-				'cache' => [
-					'on' => $class::$_cache,
-					'timeout' => $class::$_cacheTimeout,
-					'advance' => $class::$_cacheAdvance,
-					'onUpdate' => $class::$_cacheOnUpdate,
-					'time' => $class::getLastCachedTime(),
-				],
-				'materialize' => [
-					'on' => $class::$_materialize,
-					'timeout' => $class::$_materializeTimeout,
-					'advance' => $class::$_materializeAdvance,
-					'time' => $class::getLastMaterializedTime(),
-				],
-			];
-
-			$property['cache']['age'] = time() - $property['cache']['time'];
-			$property['cache']['ratio'] = $property['cache']['age'] / $property['cache']['timeout'];
-			$property['cache']['expired'] = $property['cache']['ratio'] > 1;
-			$property['cache']['expiredAdvance'] = $property['cache']['ratio'] > $property['cache']['advance'];
-
-			$property['materialize']['age'] = time() - $property['materialize']['time'];
-			$property['materialize']['ratio'] = $property['materialize']['age'] / $property['materialize']['timeout'];
-			$property['materialize']['expired'] = $property['materialize']['ratio'] > 1;
-			$property['materialize']['expiredAdvance'] = $property['materialize']['ratio'] > $property['materialize']['advance'];
-
-			$res[] = $property;
-		}
-
-		return $res;
-	}
-
-	static function getAllCacheExpired() {
-		return array_values(array_filter(static::getAllViewModelInfo(), function($i) {
-			return $i['cache']['on'] && $i['cache']['expired'];
-		}));
-	}
-
-	static function getAllCacheExpiredAdvance() {
-		return array_values(array_filter(static::getAllViewModelInfo(), function($i) {
-			return $i['cache']['on'] && $i['cache']['expiredAdvance'];
-		}));
-	}
-
-	static function getAllMaterializeExpired() {
-		return array_values(array_filter(static::getAllViewModelInfo(), function($i) {
-			return $i['materialize']['on'] && $i['materialize']['expired'];
-		}));
-	}
-
-	static function getAllMaterializeExpiredAdvance() {
-		return array_values(array_filter(static::getAllViewModelInfo(), function($i) {
-			return $i['materialize']['on'] && $i['materialize']['expiredAdvance'];
-		}));
 	}
 
 }
