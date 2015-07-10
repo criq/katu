@@ -12,6 +12,10 @@ class Api {
 	}
 
 	static function error($error = null, $code = null) {
+		if ($error instanceof \Exception) {
+			$error = $error->getMessage();
+		}
+
 		$res = [
 			'error' => [
 				'message' => $error,
