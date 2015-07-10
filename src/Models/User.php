@@ -10,9 +10,9 @@ class User extends \Katu\Model {
 	const TABLE = 'users';
 
 	static function create() {
-		return static::insert(array(
+		return static::insert([
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-		));
+		]);
 	}
 
 	static function createWithEmailAddress($emailAddress) {
@@ -21,17 +21,16 @@ class User extends \Katu\Model {
 		}
 
 		// Look for another user with this e-mail address.
-		if (static::getBy(array(
+		if (static::getBy([
 			'emailAddressId' => $emailAddress->getId(),
-		))->getTotal()) {
+		])->getTotal()) {
 			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is already in use.", 'emailAddress');
 		}
 
-		$object = static::create();
-		$object->setEmailAddress($emailAddress);
-		$object->save();
-
-		return $object;
+		return static::insert([
+			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			'emailAddressId' => (int) ($emailAddress->getId()),
+		]);
 	}
 
 	static function getCurrent() {
@@ -60,10 +59,10 @@ class User extends \Katu\Model {
 	}
 
 	public function getDefaultUserServiceByName($serviceName) {
-		return \App\Models\UserService::getOneBy(array(
+		return \App\Models\UserService::getOneBy([
 			'userId'      => (int)    ($this->getId()),
 			'serviceName' => (string) ($serviceName),
-		));
+		]);
 	}
 
 	public function hasPassword() {
@@ -80,10 +79,10 @@ class User extends \Katu\Model {
 		}
 
 		// Look for another user with this e-mail address.
-		if (static::getBy(array(
+		if (static::getBy([
 			'emailAddressId' => $emailAddress->getId(),
-			new CmpNotEq(static::getColumn('id'), $this->getId()),
-		))->getTotal()) {
+			new CmpNotEq(static::getIdColumn(), $this->getId()),
+		])->getTotal()) {
 			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is used by another user.", 'emailAddress');
 		}
 
@@ -124,7 +123,7 @@ class User extends \Katu\Model {
 	}
 
 	public function addRolesByIds($roleIds) {
-		$roles = array();
+		$roles = [];
 
 		foreach ((array) $roleIds as $roleId) {
 			$role = \App\Models\Role::get($roleId);
@@ -143,16 +142,16 @@ class User extends \Katu\Model {
 	}
 
 	public function hasRole($role) {
-		return (bool) \App\Models\UserRole::getOneBy(array(
+		return (bool) \App\Models\UserRole::getOneBy([
 			'userId' => (int) ($this->getId()),
 			'roleId' => (int) ($role->getId()),
-		));
+		]);
 	}
 
 	public function deleteAllRoles() {
-		foreach (\App\Models\UserRole::getBy(array(
+		foreach (\App\Models\UserRole::getBy([
 			'userId' => $this->getId(),
-		)) as $userRole) {
+		]) as $userRole) {
 			$userRole->delete();
 		}
 
@@ -172,9 +171,9 @@ class User extends \Katu\Model {
 	}
 
 	public function deleteAllUserPermissions() {
-		foreach (\App\Models\UserPermission::getBy(array(
+		foreach (\App\Models\UserPermission::getBy([
 			'userId' => $this->getId(),
-		)) as $userPermission) {
+		]) as $userPermission) {
 			$userPermission->delete();
 		}
 
@@ -206,9 +205,9 @@ class User extends \Katu\Model {
 
 	public function getUserPermissions() {
 		if (class_exists('\App\Models\UserPermission')) {
-			return \App\Models\UserPermission::getBy(array(
+			return \App\Models\UserPermission::getBy([
 				'userId' => (int) ($this->getId()),
-			))->getPropertyValues('permission');
+			])->getPropertyValues('permission');
 		}
 
 		return false;
