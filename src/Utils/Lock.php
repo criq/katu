@@ -35,7 +35,7 @@ class Lock {
 
 	public function unlock() {
 		if (file_exists($this->getPath())) {
-			unlink($this->getPath());
+			@unlink($this->getPath());
 		}
 
 		return true;
