@@ -4,21 +4,20 @@ namespace Katu;
 
 class ViewModel extends ModelBase {
 
-	const CACHE               = true;
-	const CACHE_TIMEOUT       = 86400;
-	const CACHE_ON_UPDATE     = true;
-	const CACHE_ADVANCE       = .75;
-
-	const MATERIALIZE         = false;
-	const MATERIALIZE_TIMEOUT = 86400;
-	const MATERIALIZE_ADVANCE = 1;
-
-	static $autoIndices    = true;
-	static $compositeIndex = true;
-	static $customIndices  = [];
+	static $_cache              = true;
+	static $_cacheTimeout       = 86400;
+	static $_cacheOnUpdate      = true;
+	static $_cacheAdvance       = .75;
+	static $_materialize        = false;
+	static $_materializeTimeout = 86400;
+	static $_materializeAdvance = 1;
+	static $_materializeHours   = [];
+	static $_autoIndices        = true;
+	static $_compositeIndex     = true;
+	static $_customIndices      = [];
 
 	static function isCached() {
-		return defined('static::CACHE') && static::CACHE;
+		return static::$_cache;
 	}
 
 	static function isExpired() {
@@ -39,12 +38,12 @@ class ViewModel extends ModelBase {
 		}
 
 		// Expired.
-		if (!is_null($lastCachedTime) && $lastCachedTime < time() - static::CACHE_TIMEOUT) {
+		if (!is_null($lastCachedTime) && $lastCachedTime < time() - static::$_cacheTimeout) {
 			return true;
 		}
 
 		// Expired data in tables.
-		if (static::CACHE_ON_UPDATE) {
+		if (static::$_cacheOnUpdate) {
 
 			$sourceTables = static::getView()->getSourceTables();
 			foreach ($sourceTables as $sourceTable) {
@@ -131,9 +130,9 @@ class ViewModel extends ModelBase {
 		// Copy into temporary table view.
 		$params = [
 			'disableNull'    => true,
-			'autoIndices'    => static::$autoIndices,
-			'compositeIndex' => static::$compositeIndex,
-			'customIndices'  => static::$customIndices,
+			'autoIndices'    => static::$_autoIndices,
+			'compositeIndex' => static::$_compositeIndex,
+			'customIndices'  => static::$_customIndices,
 		];
 		$sourceTable->copy($temporaryTable, $params);
 
@@ -205,16 +204,16 @@ class ViewModel extends ModelBase {
 			$property = [
 				'class' => $viewModelName,
 				'cache' => [
-					'on' => $class::CACHE,
-					'timeout' => $class::CACHE_TIMEOUT,
-					'advance' => $class::CACHE_ADVANCE,
-					'onUpdate' => $class::CACHE_ON_UPDATE,
+					'on' => $class::$_cache,
+					'timeout' => $class::$_cacheTimeout,
+					'advance' => $class::$_cacheAdvance,
+					'onUpdate' => $class::$_cacheOnUpdate,
 					'time' => $class::getLastCachedTime(),
 				],
 				'materialize' => [
-					'on' => $class::MATERIALIZE,
-					'timeout' => $class::MATERIALIZE_TIMEOUT,
-					'advance' => $class::MATERIALIZE_ADVANCE,
+					'on' => $class::$_materialize,
+					'timeout' => $class::$_materializeTimeout,
+					'advance' => $class::$_materializeAdvance,
 					'time' => $class::getLastMaterializedTime(),
 				],
 			];
