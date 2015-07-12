@@ -8,7 +8,7 @@
 		"ext-json": "*",
 		"slim/slim": "@stable",
 		"slim/extras": "@stable",
-		"flynsarmy/slim-monolog": "@stable",
+		"flynsarmy/slim-monolog": "1.14.*",
 		"php-curl-class/php-curl-class": "@stable",
 		"twig/twig": "@stable",
 		"twig/extensions": "@stable",
