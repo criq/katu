@@ -83,7 +83,7 @@ class Result implements \Iterator, \ArrayAccess {
 	}
 
 	public function getColumnValues($column) {
-		$values = array();
+		$values = [];
 
 		foreach ($this as $row) {
 			if (is_object($row)) {
@@ -94,6 +94,10 @@ class Result implements \Iterator, \ArrayAccess {
 		}
 
 		return $values;
+	}
+
+	public function getIds() {
+		return $this->getColumnValues('id');
 	}
 
 	public function setIteratorArray() {
