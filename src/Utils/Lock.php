@@ -9,19 +9,19 @@ class Lock {
 
 	public function __construct() {
 		if (!func_get_arg(0)) {
-			throw new \Exception("Misisng lock timeout.");
+			throw new \Katu\Exceptions\LockException("Missing lock timeout.");
 		}
 
 		$this->timeout = func_get_arg(0);
 
 		if (!func_get_arg(1)) {
-			throw new \Exception("Misisng lock name.");
+			throw new \Katu\Exceptions\LockException("Missing lock name.");
 		}
 
 		$this->name = array_slice(func_get_args(), 1);
 
 		if (file_exists($this->getPath()) && filectime($this->getPath()) > (time() - $this->timeout)) {
-			throw new \Exception("Lock exists.");
+			throw new \Katu\Exceptions\LockException("Lock exists.");
 		}
 
 		FileSystem::touch($this->getPath());
