@@ -56,7 +56,7 @@ class File extends \Katu\Model {
 	}
 
 	static function checkCrudParams($creator) {
-		if ($creator && !($creator instanceof \App\Models\Creator)) {
+		if ($creator && !($creator instanceof \App\Models\User)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file creator.", 'file');
 		}
 

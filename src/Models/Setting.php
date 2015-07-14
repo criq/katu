@@ -24,7 +24,7 @@ class Setting extends \Katu\Model {
 	}
 
 	static function checkCrudParams($creator, $name, $value, $isSystem) {
-		if (!$creator || !($creator instanceof \App\Models\Creator)) {
+		if (!$creator || !($creator instanceof \App\Models\User)) {
 			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting creator.", 'creator');
 		}
 		if (!static::checkName($name)) {
