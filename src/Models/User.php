@@ -239,4 +239,11 @@ class User extends \Katu\Model {
 		return true;
 	}
 
+	public function getUserSetting($name) {
+		return \App\Models\UserSetting::getOneBy([
+			'userId' => $this->getId(),
+			'name' => $name,
+		]);
+	}
+
 }
