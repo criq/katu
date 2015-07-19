@@ -31,10 +31,6 @@ class View {
 
 		// Filters.
 
-		$twig->addFilter(new \Twig_SimpleFilter('url', function($string) {
-			return Utils\Url::getSite($string);
-		}));
-
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnail', function($uri, $size = 640, $quality = 100) {
 			try {
 				return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality);
@@ -137,7 +133,12 @@ class View {
 			return BASE_DIR;
 		}));
 
+		// Deprecated.
 		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
+			return call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+		}));
+
+		$twig->addFunction(new \Twig_SimpleFunction('url', function() {
 			return call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
 		}));
 

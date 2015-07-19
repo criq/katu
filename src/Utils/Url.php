@@ -20,10 +20,6 @@ class Url {
 		return new TUrl(Config::getApp('baseUrl'));
 	}
 
-	static function getSite($uri) {
-		return new TUrl(self::joinPaths(self::getBase(), $uri));
-	}
-
 	static function getFor($handle, $args = [], $params = []) {
 		$app = App::get();
 
