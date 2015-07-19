@@ -98,7 +98,7 @@ class Model extends ModelBase {
 		return $object;
 	}
 
-	public function update($property, $value) {
+	public function update($property, $value = null) {
 		if (property_exists($this, $property)) {
 			if ($this->$property !== $value) {
 				$this->$property = $value;
