@@ -459,8 +459,14 @@ class Model extends ModelBase {
 
 	public function getImagePath() {
 		$file = $this->getImageFile();
-		if ($file) {
+
+		// Is file.
+		if ($file instanceof \App\Models\File) {
 			return $file->getPath();
+
+		// Is URL.
+		} elseif (Types\TUrl::isValid($file)) {
+			return $file;
 		}
 
 		return false;
