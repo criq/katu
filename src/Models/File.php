@@ -152,6 +152,14 @@ class File extends \Katu\Model {
 		return static::getDirPath() . '/' . $this->path;
 	}
 
+	public function isSupportedImage() {
+		return in_array($this->type, [
+			'image/jpeg',
+			'image/png',
+			'image/gif',
+		]);
+	}
+
 	public function getThumbnailUrl($size = 640, $quality = 100, $options = []) {
 		return \Katu\Utils\Image::getThumbnailUrl($this->getPath(), $size, $quality, $options);
 	}
