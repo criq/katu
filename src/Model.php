@@ -307,7 +307,7 @@ class Model extends ModelBase {
 				$this->update($column->name->name, $string);
 				$this->save();
 
-				return true;
+				return $string;
 			}
 		}
 	}
