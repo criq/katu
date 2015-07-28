@@ -30,7 +30,7 @@ class Lock {
 	}
 
 	public function getPath() {
-		return FileSystem::joinPaths(TMP_PATH, call_user_func(['\Katu\Utils\FileSystem', 'getPathForName'], array_merge(['locks'], $this->name)));
+		return FileSystem::joinPaths(TMP_PATH, call_user_func(['\Katu\Utils\FileSystem', 'getPathForName'], array_merge(['!locks'], $this->name)));
 	}
 
 	public function unlock() {
