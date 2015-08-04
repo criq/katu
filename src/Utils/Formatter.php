@@ -44,4 +44,12 @@ class Formatter {
 		return $numberFormatter->formatCurrency($number, $currency);
 	}
 
+	static function getLocalWholeCurrency($locale, $number, $currency) {
+		$numberFormatter = new \NumberFormatter(static::getLocale($locale), \NumberFormatter::CURRENCY);
+		$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
+		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
+
+		return $numberFormatter->format($number);
+	}
+
 }
