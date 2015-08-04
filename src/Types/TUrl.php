@@ -170,8 +170,8 @@ class TUrl {
 		// Bypass disabled CURLOPT_FOLLOWLOCATION.
 		while ($url) {
 			$response = $curl->get($url);
-			if (in_array($curl->http_status_code, [301, 302]) && isset($curl->response_headers['Location'])) {
-				$url = new static($curl->response_headers['Location']);
+			if (in_array($curl->httpStatusCode, [301, 302]) && isset($curl->responseHeaders['Location'])) {
+				$url = new static($curl->responseHeaders['Location']);
 			} else {
 				return $response;
 			}
