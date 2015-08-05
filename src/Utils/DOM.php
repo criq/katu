@@ -13,4 +13,8 @@ class DOM {
 		return $crawler;
 	}
 
+	static function crawlUrl($url, $timeout = null) {
+		return static::crawlHtml(Cache::getUrl($url, $timeout));
+	}
+
 }
