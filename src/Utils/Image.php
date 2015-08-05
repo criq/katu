@@ -113,6 +113,12 @@ class Image {
 	static function makeThumbnail($source, $destination, $size, $quality = 100, $options = []) {
 		if (!file_exists($destination)) {
 
+			// Get valid source.
+			$source = static::getValidSource($source);
+			if (!$source) {
+				throw new \Katu\Exceptions\ImageErrorException;
+			}
+
 			// See if there's already been a failure.
 			$sourceHash = sha1(serialize($source));
 			if (Tmp::get(['image', 'failure', $sourceHash])) {
@@ -120,8 +126,6 @@ class Image {
 			}
 
 			@mkdir(dirname($destination), 0777, true);
-
-			$source = static::getValidSource($source);
 
 			// Try a URL as a source.
 			try {
