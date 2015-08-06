@@ -14,7 +14,7 @@ class Model extends ModelBase {
 
 	const DATABASE = 'app';
 
-	const CACHE_IN_MEMORY_BY_PRIMARY_KEY = true;
+	const CACHE_IN_MEMORY_BY_PRIMARY_KEY = false;
 
 	protected $__updated = false;
 
