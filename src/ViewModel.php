@@ -222,7 +222,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getLastCachedTmpName() {
-		return ['!databases', '!' . static::getPdo()->name, '!views', '!cached', '!' . static::TABLE];
+		return ['!databases', '!' . static::getPdo()->config->database, '!views', '!cached', '!' . static::TABLE];
 	}
 
 	static function updateLastCachedTime() {
@@ -234,7 +234,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getLastMaterializedTmpName() {
-		return ['!databases', '!' . static::getPdo()->name, '!views', '!materialized', '!' . static::TABLE];
+		return ['!databases', '!' . static::getPdo()->config->database, '!views', '!materialized', '!' . static::TABLE];
 	}
 
 	static function updateLastMaterializedTime() {
