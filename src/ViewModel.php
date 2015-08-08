@@ -156,7 +156,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function isMaterializable() {
-		if (!static::$_materializeHours) {
+		if (!static::$_materializeHours || \Katu\Env::getPlatform() == 'dev') {
 			return true;
 		}
 
@@ -208,17 +208,37 @@ class ViewModel extends ModelBase {
 	}
 
 	static function cache() {
-		static::copy(static::getView(), static::getCachedTable());
-		static::updateLastCachedTime();
+		try {
 
-		return true;
+			// Lock.
+			$lock = new \Katu\Utils\Lock(600, 'databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE);
+
+			// Cache.
+			static::copy(static::getView(), static::getCachedTable());
+			static::updateLastCachedTime();
+
+			$lock->unlock();
+
+			return true;
+
+		} catch (\Katu\Exceptions\LockException $e) { /* Nothing to do. */ }
 	}
 
 	static function materialize() {
-		static::copy(static::getView(), static::getMaterializedTable());
-		static::updateLastMaterializedTime();
+		try {
 
-		return true;
+			// Lock.
+			$lock = new \Katu\Utils\Lock(600, 'databases', static::getPdo()->config->database, 'views', 'materialize', static::TABLE);
+
+			// Materialize.
+			static::copy(static::getView(), static::getMaterializedTable());
+			static::updateLastMaterializedTime();
+
+			$lock->unlock();
+
+			return true;
+
+		} catch (\Katu\Exceptions\LockException $e) { /* Nothing to do. */ }
 	}
 
 	static function getLastCachedTmpName() {
