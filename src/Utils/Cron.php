@@ -11,12 +11,20 @@ class Cron {
 
 		foreach (\Katu\Config::get('cron', 'paths') as $path => $spec) {
 			$expression = \Cron\CronExpression::factory($spec);
-			if ($expression->getNextRunDate()->format('Y-m-d H:i') > $time) {
+			if ($expression->getNextRunDate()->format('Y-m-d H:i') == $time) {
 				$crons[] = new CronPath($path);
 			}
 		}
 
 		return $crons;
+	}
+
+	static function runCurrent() {
+		foreach (static::getCurrent() as $cron) {
+			$cron->run();
+		}
+
+		return true;
 	}
 
 }

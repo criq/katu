@@ -185,7 +185,6 @@ class TUrl {
 	public function ping() {
 		$curl = new \Curl\Curl;
 		$curl->setOpt(CURLOPT_TIMEOUT, 1);
-		$curl->setOpt(CURLOPT_TIMEOUT_MS, 200);
 
 		return $this->get($curl);
 	}
