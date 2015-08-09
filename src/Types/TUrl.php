@@ -160,7 +160,10 @@ class TUrl {
 	public function get(&$curl = null) {
 		$url = $this;
 
-		$curl = new \Curl\Curl;
+		if (is_null($curl)) {
+			$curl = new \Curl\Curl;
+		}
+
 		try {
 			$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
 		} catch (\ErrorException $e) {
@@ -177,6 +180,14 @@ class TUrl {
 			}
 		}
 
+	}
+
+	public function ping() {
+		$curl = new \Curl\Curl;
+		$curl->setOpt(CURLOPT_TIMEOUT, 1);
+		$curl->setOpt(CURLOPT_TIMEOUT_MS, 200);
+
+		return $this->get($curl);
 	}
 
 }
