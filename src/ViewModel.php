@@ -213,7 +213,7 @@ class ViewModel extends ModelBase {
 			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
 
 				$class = '\\' . ltrim($class, '\\');
-				$class::copy(static::getView(), $class::getCachedTable());
+				$class::copy($class::getView(), $class::getCachedTable());
 				$class::updateLastCachedTime();
 
 				return true;
