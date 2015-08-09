@@ -42,7 +42,7 @@ class TString {
 	}
 
 	public function getAsFloat() {
-		return (float) floatval(trim(strtr(preg_replace('#\s#', null, $this->value), ',', '.')));
+		return (float) floatval(trim(strtr(preg_replace('#[\s]#u', null, $this->value), ',', '.')));
 	}
 
 	public function getAsArray() {
