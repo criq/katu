@@ -210,16 +210,14 @@ class ViewModel extends ModelBase {
 	static function cache() {
 		try {
 
-			// Lock.
-			$lock = new \Katu\Utils\Lock(600, 'databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE);
+			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function() {
 
-			// Cache.
-			static::copy(static::getView(), static::getCachedTable());
-			static::updateLastCachedTime();
+				static::copy(static::getView(), static::getCachedTable());
+				static::updateLastCachedTime();
 
-			$lock->unlock();
+				return true;
 
-			return true;
+			});
 
 		} catch (\Katu\Exceptions\LockException $e) { /* Nothing to do. */ }
 	}
@@ -227,16 +225,16 @@ class ViewModel extends ModelBase {
 	static function materialize() {
 		try {
 
-			// Lock.
-			$lock = new \Katu\Utils\Lock(600, 'databases', static::getPdo()->config->database, 'views', 'materialize', static::TABLE);
+			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'materialize', static::TABLE], 600, function() {
 
-			// Materialize.
-			static::copy(static::getView(), static::getMaterializedTable());
-			static::updateLastMaterializedTime();
+				static::copy(static::getView(), static::getMaterializedTable());
+				static::updateLastMaterializedTime();
 
-			$lock->unlock();
+				$lock->unlock();
 
-			return true;
+				return true;
+
+			});
 
 		} catch (\Katu\Exceptions\LockException $e) { /* Nothing to do. */ }
 	}
@@ -271,6 +269,28 @@ class ViewModel extends ModelBase {
 		return array_values(array_filter(array_filter(get_declared_classes(), function($i) {
 			return strpos($i, 'App\\Models\\Views\\') === 0;
 		})));
+	}
+
+	static function cacheAndMaterializeAll() {
+		foreach (\Katu\ViewModel::getAllViewModelNames() as $modelView) {
+			$class = '\\' . $modelView;
+
+			if ($class::isCacheExpiredAdvance()) {
+				try {
+					$class::cache();
+				} catch (\Exception $e) {
+					\Katu\ErrorHandler::log($e);
+				}
+			}
+
+			if ($class::isMaterializable() && $class::isMaterializeExpiredAdvance()) {
+				try {
+					$class::materialize();
+				} catch (\Exception $e) {
+					\Katu\ErrorHandler::log($e);
+				}
+			}
+		}
 	}
 
 }
