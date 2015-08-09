@@ -29,8 +29,18 @@ class Lock {
 
 		$lock = new static($name, $timeout);
 
-		$args = array_slice(func_get_args(), 3);
-		$res = call_user_func_array($callback, $args);
+		try {
+
+			$args = array_slice(func_get_args(), 3);
+			$res = call_user_func_array($callback, $args);
+
+		} catch (\Exception $e) {
+
+			$lock->unlock();
+
+			throw $e;
+
+		}
 
 		$lock->unlock();
 

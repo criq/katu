@@ -210,14 +210,15 @@ class ViewModel extends ModelBase {
 	static function cache() {
 		try {
 
-			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function() {
+			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
 
-				static::copy(static::getView(), static::getCachedTable());
-				static::updateLastCachedTime();
+				$class = '\\' . ltrim($class, '\\');
+				$class::copy(static::getView(), $class::getCachedTable());
+				$class::updateLastCachedTime();
 
 				return true;
 
-			});
+			}, static::getClass());
 
 		} catch (\Katu\Exceptions\LockException $e) { /* Nothing to do. */ }
 	}
@@ -225,16 +226,15 @@ class ViewModel extends ModelBase {
 	static function materialize() {
 		try {
 
-			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'materialize', static::TABLE], 600, function() {
+			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'materialize', static::TABLE], 600, function($class) {
 
-				static::copy(static::getView(), static::getMaterializedTable());
-				static::updateLastMaterializedTime();
-
-				$lock->unlock();
+				$class = '\\' . ltrim($class, '\\');
+				$class::copy($class::getView(), $class::getMaterializedTable());
+				$class::updateLastMaterializedTime();
 
 				return true;
 
-			});
+			}, static::getClass());
 
 		} catch (\Katu\Exceptions\LockException $e) { /* Nothing to do. */ }
 	}
@@ -272,7 +272,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function cacheAndMaterializeAll() {
-		foreach (\Katu\ViewModel::getAllViewModelNames() as $modelView) {
+		foreach (static::getAllViewModelNames() as $modelView) {
 			$class = '\\' . $modelView;
 
 			if ($class::isCacheExpiredAdvance()) {
