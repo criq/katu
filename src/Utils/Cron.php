@@ -21,6 +21,7 @@ class Cron {
 
 	static function runCurrent() {
 		foreach (static::getCurrent() as $cron) {
+			var_dump($cron);
 			$cron->run();
 		}
 
