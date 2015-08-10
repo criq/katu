@@ -7,13 +7,12 @@ class Cron {
 	static function getCurrent() {
 		$crons = [];
 
-		$time = (new DateTime)->format('Y-m-d H:i');
-		var_dump($time);
+		$time = (new DateTime);
+		$time->setTime($time->format('H'), $time->format('i'), -1);
 
 		foreach (\Katu\Config::get('cron', 'paths') as $path => $spec) {
 			$expression = \Cron\CronExpression::factory($spec);
-			var_dump($expression->getNextRunDate()->format('Y-m-d H:i'));
-			if ($expression->getNextRunDate()->format('Y-m-d H:i') == $time) {
+			if ($expression->getNextRunDate($time)->format('Y-m-d H:i:s') == $time) {
 				$crons[] = new CronPath($path);
 			}
 		}
