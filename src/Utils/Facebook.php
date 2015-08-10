@@ -137,6 +137,8 @@ class Facebook {
 			throw $e;
 
 		}
+
+		return false;
 	}
 
 	static function redirectToFacebookLoginUrl($redirectUrl, $resetToken) {
