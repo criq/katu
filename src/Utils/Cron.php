@@ -20,8 +20,10 @@ class Cron {
 	}
 
 	static function runCurrent() {
+		var_dump(static::getCurrent());
+
+
 		foreach (static::getCurrent() as $cron) {
-			var_dump($cron);
 			$cron->run();
 		}
 
