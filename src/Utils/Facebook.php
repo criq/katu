@@ -83,15 +83,21 @@ class Facebook {
 		// Redirect to login.
 		} catch (\Facebook\FacebookAuthorizationException $e) {
 
+			#var_dump($e); die;
+
 			return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 		// Redirect to login.
 		} catch (\Facebook\FacebookSDKException $e) {
 
+			#var_dump($e); die;
+
 			return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
 
 		// Invalid token, login.
 		} catch (\ErrorException $e) {
+
+			var_dump($e); die;
 
 			// Redirected back.
 			if ($app->request->params('code') && $app->request->params('state')) {
@@ -132,6 +138,8 @@ class Facebook {
 
 		// Other error.
 		} catch (\Exception $e) {
+
+			#var_dump($e); die;
 
 			if ($callbackCollection && $callbackCollection->exists('error')) {
 				return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
