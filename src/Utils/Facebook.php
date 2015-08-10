@@ -12,10 +12,7 @@ use \Facebook\FacebookRedirectLoginHelper;
 
 class Facebook {
 
-	const REDIRECT_URLS_KEY = 'facebook.redirectUrls';
-	const SCENARIO_RETURN_URLS_KEY = 'facebook.scenarioReturnUrls';
-
-	static function login(TUrl $oAuthRedirectUrl, TUrl $scenarioReturnUrl, CallbackCollection $callbackCollection = null, $scopes = []) {
+	static function login($loginUrl, CallbackCollection $callbackCollection = null, $scopes = []) {
 		try {
 
 			$app = App::get();
@@ -23,7 +20,7 @@ class Facebook {
 
 			$session = static::getSession();
 
-			$helper = new FacebookRedirectLoginHelper((string) $oAuthRedirectUrl);
+			$helper = new FacebookRedirectLoginHelper((string) $loginUrl);
 
 			// Check the Facebook user.
 			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
@@ -33,7 +30,7 @@ class Facebook {
 					$sessionScopes = $session->getSessionInfo()->getScopes();
 				}
 				if (!in_array($scope, $sessionScopes)) {
-					return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
+					return static::redirectToFacebookLoginUrl($helper->getLoginUrl($scopes), true);
 				}
 			}
 
@@ -75,7 +72,7 @@ class Facebook {
 			}
 
 			if ($callbackCollection && $callbackCollection->exists('success')) {
-				return $callbackCollection->call('success', [static::getScenarioReturnUrl($app->request->params('state')), $facebookUser, $user]);
+				return $callbackCollection->call('success', [$facebookUser, $user]);
 			}
 
 			return true;
@@ -83,21 +80,15 @@ class Facebook {
 		// Redirect to login.
 		} catch (\Facebook\FacebookAuthorizationException $e) {
 
-			#var_dump($e); die;
-
-			return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
+			return static::redirectToFacebookLoginUrl($helper->getLoginUrl($scopes), true);
 
 		// Redirect to login.
 		} catch (\Facebook\FacebookSDKException $e) {
 
-			#var_dump($e); die;
-
-			return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
+			return static::redirectToFacebookLoginUrl($helper->getLoginUrl($scopes), true);
 
 		// Invalid token, login.
 		} catch (\ErrorException $e) {
-
-			var_dump($e); die;
 
 			// Redirected back.
 			if ($app->request->params('code') && $app->request->params('state')) {
@@ -108,13 +99,13 @@ class Facebook {
 					if ($session) {
 						static::setToken($session->getToken());
 
-						return static::redirectToScenarioReturnUrl($scenarioReturnUrl);
+						return static::redirectToFacebookLoginUrl($loginUrl, false);
 					}
 
 				} catch (\Facebook\FacebookSDKException $e) {
 
 					if ($callbackCollection && $callbackCollection->exists('error')) {
-						return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
+						return $callbackCollection->call('error', [$e]);
 					}
 
 					throw $e;
@@ -122,7 +113,7 @@ class Facebook {
 				} catch (\Exception $e) {
 
 					if ($callbackCollection && $callbackCollection->exists('error')) {
-						return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
+						return $callbackCollection->call('error', [$e]);
 					}
 
 					throw $e;
@@ -132,57 +123,36 @@ class Facebook {
 			// Redirect to login.
 			} else {
 
-				return static::redirectToLoginUrl($helper->getLoginUrl($scopes), $scenarioReturnUrl);
+				return static::redirectToFacebookLoginUrl($helper->getLoginUrl($scopes), true);
 
 			}
 
 		// Other error.
 		} catch (\Exception $e) {
 
-			#var_dump($e); die;
-
 			if ($callbackCollection && $callbackCollection->exists('error')) {
-				return $callbackCollection->call('error', [static::getScenarioReturnUrl($app->request->params('state')), $e]);
+				return $callbackCollection->call('error', [$e]);
 			}
 
 			throw $e;
 
 		}
-
-		return self::render("Login/facebook");
 	}
 
-	static function redirectToLoginUrl($redirectUrl, $scenarioReturnUrl) {
-		static::resetToken();
+	static function redirectToFacebookLoginUrl($redirectUrl, $resetToken) {
+		if ($resetToken) {
+			static::resetToken();
+		}
 
 		$state = (new TUrl($redirectUrl))->getQueryParam('state');
 
-		Session::add(static::REDIRECT_URLS_KEY, (string) $redirectUrl, $state);
-		Session::add(static::SCENARIO_RETURN_URLS_KEY, (string) $scenarioReturnUrl, $state);
-
-		header('Location: ' . $redirectUrl, true, 302); die;
+		header('Location: ' . $redirectUrl, true, 302);
+		die;
 	}
 
-	static function redirectToScenarioReturnUrl($scenarioReturnUrl) {
-		header('Location: ' . $scenarioReturnUrl, true, 302); die;
-	}
-
-	static function getRedirectUrl($state) {
-		$redirectUrls = Session::get(static::REDIRECT_URLS_KEY);
-		if (isset($redirectUrls[$state])) {
-			return $redirectUrls[$state];
-		}
-
-		return null;
-	}
-
-	static function getScenarioReturnUrl($state) {
-		$scenarioReturnUrls = Session::get(static::SCENARIO_RETURN_URLS_KEY);
-		if (isset($scenarioReturnUrls[$state])) {
-			return $scenarioReturnUrls[$state];
-		}
-
-		return null;
+	static function redirectToReturnUrl($returnUrl) {
+		header('Location: ' . $returnUrl, true, 302);
+		die;
 	}
 
 	static function startAppSession() {
