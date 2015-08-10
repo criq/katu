@@ -8,9 +8,11 @@ class Cron {
 		$crons = [];
 
 		$time = (new DateTime)->format('Y-m-d H:i');
+		var_dump($time);
 
 		foreach (\Katu\Config::get('cron', 'paths') as $path => $spec) {
 			$expression = \Cron\CronExpression::factory($spec);
+			var_dump($expression->getNextRunDate()->format('Y-m-d H:i'));
 			if ($expression->getNextRunDate()->format('Y-m-d H:i') == $time) {
 				$crons[] = new CronPath($path);
 			}
@@ -20,9 +22,6 @@ class Cron {
 	}
 
 	static function runCurrent() {
-		var_dump(static::getCurrent());
-
-
 		foreach (static::getCurrent() as $cron) {
 			$cron->run();
 		}
