@@ -8,11 +8,12 @@ class Cron {
 		$crons = [];
 
 		$time = (new DateTime);
-		$time->setTime($time->format('H'), $time->format('i'), -1);
+		$time->setTime($time->format('H'), $time->format('i'), 0);
 
 		foreach (\Katu\Config::get('cron', 'paths') as $path => $spec) {
 			$expression = \Cron\CronExpression::factory($spec);
-			if ($expression->getNextRunDate($time)->format('Y-m-d H:i:s') == $time) {
+			$nextRunTime = $expression->getNextRunDate($time, 0, true);
+			if ($time == $nextRunTime) {
 				$crons[] = new CronPath($path);
 			}
 		}
