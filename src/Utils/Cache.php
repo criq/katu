@@ -30,18 +30,19 @@ class Cache {
 
 		$callback = function() use($callback, $args) {
 
-			var_dump("A"); die;
-
 			$data = call_user_func_array($callback, $args);
 			$serializedData = serialize($data);
 
 			try {
-				$compressLevel = \Katu\Config::get('app', 'cache', 'cosmpress');
-			} catch (\Exception $e) {
-				var_dump($e);
-			}
 
-			//return gzcompress(, 9);
+				return gzcompress($serializedData, \Katu\Config::get('app', 'cache', 'cosmpress'));
+
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
+
+				// Do not commpress.
+				return $serializedData;
+
+			}
 
 		};
 
