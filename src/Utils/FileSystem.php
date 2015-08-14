@@ -10,8 +10,10 @@ class FileSystem {
 	static $names = [];
 
 	static function joinPaths() {
-		return implode('/', array_map(function($i){
-			return rtrim($i, '/');
+		return implode('/', array_map(function($i) {
+
+			return rtrim(implode('.', (array) $i), '/');
+
 		}, func_get_args()));
 	}
 

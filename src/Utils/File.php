@@ -9,8 +9,8 @@ class File {
 	const TYPE_FILE = 'file';
 	const TYPE_DIR  = 'dir';
 
-	public function __construct($path) {
-		$this->path = $path;
+	public function __construct() {
+		$this->path = call_user_func_array(['\Katu\Utils\FileSystem', 'joinPaths'], func_get_args());
 
 		return $this;
 	}
@@ -72,6 +72,48 @@ class File {
 		return false;
 	}
 
+	public function getDir() {
+		return new static(dirname($this));
+	}
+
+	public function getBasename() {
+		return basename($this);
+	}
+
+	public function getFiles($filters = []) {
+		$files = [];
+
+		foreach (scandir($this) as $file) {
+			$file = new static($this, $file);
+			if ($file->isFile()) {
+				$files[] = $file;
+			}
+		}
+
+		if (isset($filters['regexp'])) {
+			$files = array_filter($files, function($i) use($filters) {
+				return preg_match($filters['regexp'], $i);
+			});
+		}
+
+		return $files;
+	}
+
+	public function getDirs() {
+		$files = [];
+
+		foreach (scandir($this) as $file) {
+			if ($file != '.' && $file != '..') {
+				$file = new static($this, $file);
+				if ($file->isDir()) {
+					$files[] = $file;
+				}
+			}
+		}
+
+		return $files;
+	}
+
 	public function isFile() {
 		return $this->getType() == static::TYPE_FILE;
 	}
@@ -82,6 +124,19 @@ class File {
 
 	public function isPhpFile() {
 		return $this->isFile() && ($this->getMime() == 'text/x-c++' || $this->getExtension() == 'php');
+	}
+
+	public function makeDir($permissions = 0777, $recursive = true) {
+		@mkdir($this, $permissions, $recursive);
+
+		return $this;
+	}
+
+	public function touch() {
+		$dir = $this->getDir();
+		$dir->makeDir();
+
+		return touch($this);
 	}
 
 	public function eachRecursive($callback) {
