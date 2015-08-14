@@ -21,7 +21,17 @@ class ExceptionCollection extends Exception implements \Iterator {
 	}
 
 	public function addException(\Exception $exception) {
-		$this->exceptionCollection[] = $exception;
+		if ($exception instanceof ExceptionCollection) {
+			foreach ($exception as $e) {
+				$this->exceptionCollection[] = $e;
+			}
+		} else {
+			$this->exceptionCollection[] = $exception;
+		}
+	}
+
+	public function has() {
+		return $this->hasExceptions();
 	}
 
 	public function hasExceptions() {

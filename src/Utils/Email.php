@@ -31,6 +31,10 @@ class Email {
 		return $this;
 	}
 
+	public function __toString() {
+		return $this->html;
+	}
+
 	static function resolveEmailAddress($emailAddress) {
 		if ($emailAddress instanceof \Katu\Models\EmailAddress) {
 			$originalEmailAddress = $emailAddress->emailAddress;
