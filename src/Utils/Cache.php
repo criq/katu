@@ -35,28 +35,41 @@ class Cache {
 		try {
 
 			$cacheFile = new File($cache->getCacheDirectory(), static::getCacheFile($path));
-			var_dump(gzopen($cacheFile, 'rb')); die;
-
-
 			$rawData = $cache->getOrCreate(static::getCacheFile($path), $opts, $callback);
 
-
-			var_dump(zlib_get_coding_type($rawData)); die;
-
+			// Try unserialize.
 			try {
 
-				$uncompressedData = gzuncompress($rawData);
+				$unserializedData = unserialize($rawData);
 
 			} catch (\Exception $e) {
 
-				// Delete the corrupted file.
-				$cacheFile->delete();
+				// It's probably compresses. Try uncompress first.
 
-				// Try again.
-				$rawData = $cache->getOrCreate(static::getCacheFile($path), $opts, $callback);
-				$uncompressedData = gzuncompress($rawData);
+				try {
+
+					$uncompressedData = gzuncompress($rawData);
+
+				} catch (\Exception $e) {
+
+					// Delete the corrupted file.
+					$cacheFile->delete();
+
+					// Try again.
+					$rawData = $cache->getOrCreate(static::getCacheFile($path), $opts, $callback);
+					$uncompressedData = gzuncompress($rawData);
+
+				}
+
 
 			}
+
+
+
+
+			#var_dump(zlib_get_coding_type($rawData)); die;
+
+
 
 			return unserialize($uncompressedData);
 
