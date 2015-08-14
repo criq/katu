@@ -35,7 +35,7 @@ class Cache {
 
 			try {
 
-				return gzcompress($serializedData, \Katu\Config::get('app', 'cache', 'cosmpress'));
+				return gzcompress($serializedData, \Katu\Config::get('app', 'cache', 'compress'));
 
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 
