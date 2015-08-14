@@ -29,7 +29,20 @@ class Cache {
 		}
 
 		$callback = function() use($callback, $args) {
-			return gzcompress(serialize(call_user_func_array($callback, $args)), 9);
+
+			var_dump("A"); die;
+
+			$data = call_user_func_array($callback, $args);
+			$serializedData = serialize($data);
+
+			try {
+				$compressLevel = \Katu\Config::get('app', 'cache', 'cosmpress');
+			} catch (\Exception $e) {
+				var_dump($e);
+			}
+
+			//return gzcompress(, 9);
+
 		};
 
 		try {
@@ -44,11 +57,11 @@ class Cache {
 
 			} catch (\Exception $e) {
 
-				// It's probably compresses. Try uncompress first.
-
+				// It's probably compressed. Try uncompress first.
 				try {
 
 					$uncompressedData = gzuncompress($rawData);
+					$unserializedData = unserialize($uncompressedData);
 
 				} catch (\Exception $e) {
 
@@ -57,24 +70,31 @@ class Cache {
 
 					// Try again.
 					$rawData = $cache->getOrCreate(static::getCacheFile($path), $opts, $callback);
-					$uncompressedData = gzuncompress($rawData);
+
+					// Try unserialize.
+					try {
+
+						$unserializedData = unserialize($rawData);
+
+					} catch (\Exception $e) {
+
+						// It's probably compressed. Try uncompress first.
+						$uncompressedData = gzuncompress($rawData);
+						$unserializedData = unserialize($uncompressedData);
+
+					}
 
 				}
 
 
 			}
 
-
-
-
-			#var_dump(zlib_get_coding_type($rawData)); die;
-
-
-
-			return unserialize($uncompressedData);
+			return $unserializedData;
 
 		} catch (\Katu\Exceptions\DoNotCacheException $e) {
+
 			return $e->data;
+
 		}
 	}
 
