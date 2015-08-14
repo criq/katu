@@ -33,7 +33,33 @@ class Cache {
 		};
 
 		try {
-			return unserialize(gzuncompress($cache->getOrCreate(static::getCacheFile($path), $opts, $callback)));
+
+			$cacheFile = new File($cache->getCacheDirectory(), static::getCacheFile($path));
+			var_dump(gzopen($cacheFile, 'rb')); die;
+
+
+			$rawData = $cache->getOrCreate(static::getCacheFile($path), $opts, $callback);
+
+
+			var_dump(zlib_get_coding_type($rawData)); die;
+
+			try {
+
+				$uncompressedData = gzuncompress($rawData);
+
+			} catch (\Exception $e) {
+
+				// Delete the corrupted file.
+				$cacheFile->delete();
+
+				// Try again.
+				$rawData = $cache->getOrCreate(static::getCacheFile($path), $opts, $callback);
+				$uncompressedData = gzuncompress($rawData);
+
+			}
+
+			return unserialize($uncompressedData);
+
 		} catch (\Katu\Exceptions\DoNotCacheException $e) {
 			return $e->data;
 		}

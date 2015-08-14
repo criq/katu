@@ -139,6 +139,10 @@ class File {
 		return touch($this);
 	}
 
+	public function delete() {
+		return unlink($this);
+	}
+
 	public function eachRecursive($callback) {
 		$iterator = new \RecursiveDirectoryIterator($this, \RecursiveDirectoryIterator::SKIP_DOTS);
 		$files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
