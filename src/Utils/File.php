@@ -50,6 +50,10 @@ class File {
 		return false;
 	}
 
+	public function getSize() {
+		return new FileSize(filesize($this));
+	}
+
 	public function getMime() {
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
 		$mime = finfo_file($finfo, $this->getPath());

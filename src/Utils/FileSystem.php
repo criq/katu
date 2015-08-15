@@ -127,8 +127,20 @@ class FileSystem {
 		rmdir($dir);
 	}
 
+	static function getDiskSpace() {
+		return new FileSize(disk_total_space(BASE_DIR));
+	}
+
+	static function getFreeDiskSpace() {
+		return new FileSize(disk_free_space(BASE_DIR));
+	}
+
 	static function getDiskUsage() {
-		return 1 - (disk_free_space(BASE_DIR) / disk_total_space(BASE_DIR));
+		return 1 - (static::getFreeDiskSpace()->size / static::getDiskSpace()->size);
+	}
+
+	static function getSpaceAboveFreeTreshold($treshold) {
+		return new FileSize(static::getDiskSpace()->size - (static::getDiskSpace()->size * $treshold) - static::getFreeDiskSpace()->size);
 	}
 
 }
