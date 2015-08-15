@@ -98,6 +98,8 @@ class DumpCollection implements \Iterator, \ArrayAccess {
 	}
 
 	public function cleanup() {
+		var_dump(\Katu\Utils\FileSystem::getDiskUsage()); die;
+
 		$weeks = $this->getByWeek();
 		foreach ($weeks as $week) {
 			$week->cleanup();
