@@ -127,4 +127,8 @@ class FileSystem {
 		rmdir($dir);
 	}
 
+	static function getDiskUsage() {
+		return 1 - (disk_free_space(BASE_DIR) / disk_total_space(BASE_DIR));
+	}
+
 }
