@@ -4,7 +4,6 @@ namespace Katu\Types;
 
 class TArray implements \ArrayAccess, \IteratorAggregate {
 
-	public $position = 0;
 	public $container;
 
 	public function __construct($value = []) {
@@ -122,6 +121,21 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		}
 
 		return $values;
+	}
+
+	public function unique() {
+		return new static(array_unique($this->container));
+	}
+
+	public function values() {
+		return new static(array_values($this->container));
+	}
+
+	public function natsort() {
+		$array = $this->container;
+		natsort($array);
+
+		return new static($array);
 	}
 
 }
