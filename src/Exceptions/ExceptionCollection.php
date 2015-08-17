@@ -8,7 +8,7 @@ class ExceptionCollection extends Exception implements \Iterator {
 
 	private $position = 0;
 
-	public function __construct($message = null, $code = 0, $context = array(), $previous = null) {
+	public function __construct($message = null, $code = 0, $context = [], $previous = null) {
 		parent::__construct($message, $code, $context, $previous);
 	}
 

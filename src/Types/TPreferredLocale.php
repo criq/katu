@@ -2,19 +2,23 @@
 
 namespace Katu\Types;
 
-class TAcceptedLocale {
+class TPreferredLocale {
 
-	public $locale     = null;
+	public $locale = null;
 	public $preference = 1;
 
 	public function __construct(TLocale $locale, $preference = null) {
-		$this->locale     =          $locale;
-		$this->preference = (float)  $preference;
+		$this->locale = $locale;
+		$this->preference = (float) $preference;
+	}
+
+	public function __toString() {
+		return (string) $this->locale;
 	}
 
 	static function getFromRequestHeader($src) {
-		$language   = null;
-		$country    = null;
+		$language = null;
+		$country = null;
 		$preference = 1;
 
 		foreach (explode(';', $src) as $key => $part) {
@@ -34,7 +38,7 @@ class TAcceptedLocale {
 			}
 		}
 
-		return new self(new TLocale($language, $country), $preference);
+		return new static(new TLocale($language, $country), $preference);
 	}
 
 }

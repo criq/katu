@@ -116,7 +116,9 @@ class Controller {
 			}
 		} elseif ($error instanceof \Katu\Exceptions\ArgumentErrorException) {
 			static::$data['_namedArgumentsInError'][] = $error->getName();
-			static::$data['_errors'][$error->getName()][] = $error->getMessage();
+			static::$data['_errors'][$error->getName()][] = $error->getTranslatedMessage();
+		} elseif ($error instanceof \Katu\Exceptions\Exception) {
+			static::$data['_errors'][$error->getName()][] = $error->getTranslatedMessage();
 		} elseif ($error instanceof \Exception) {
 			static::$data['_errors'][] = $error->getMessage();
 		} else {
