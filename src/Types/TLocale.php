@@ -8,6 +8,7 @@ class TLocale {
 	public $country;
 
 	public function __construct() {
+		var_dump(func_get_args()); die;
 		if (count(func_get_args()) == 1) {
 			list($this->language, $this->country) = explode('_', func_get_arg(0));
 		} elseif (count(func_get_args()) == 2) {
