@@ -6,9 +6,9 @@ class NamedErrorException extends ErrorException {
 
 	public $name;
 
-	public function __construct($message, $name = null, $code = 0, $context = [], $previous = null) {
-		parent::__construct($message, $code, $context, $previous);
-		$this->name = $name;
+	public function __construct($message, $name = null, $code = 0, $previous = null) {
+		parent::__construct($message, $code, $previous);
+
 	}
 
 	public function getName() {
