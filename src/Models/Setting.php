@@ -10,7 +10,7 @@ class Setting extends \Katu\Model {
 
 	static function create($creator, $name, $value, $isSystem, $description = null) {
 		if (!static::checkCrudParams($creator, $name, $value, $isSystem)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
@@ -25,10 +25,14 @@ class Setting extends \Katu\Model {
 
 	static function checkCrudParams($creator, $name, $value, $isSystem) {
 		if (!$creator || !($creator instanceof \App\Models\User)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting creator.", 'creator');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid setting creator."))
+				->addErrorName('creator')
+				;
 		}
 		if (!static::checkName($name)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting name.", 'name');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid setting name."))
+				->addErrorName('name')
+				;
 		}
 
 		return true;
@@ -36,7 +40,9 @@ class Setting extends \Katu\Model {
 
 	static function checkName($name, $object = null) {
 		if (!trim($name)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Missing setting name.", 'name');
+			throw (new \Katu\Exceptions\InputErrorException("Missing setting name."))
+				->addErrorName('name')
+				;
 		}
 
 		$expressions['name'] = trim($name);
@@ -45,7 +51,9 @@ class Setting extends \Katu\Model {
 		}
 
 		if (static::getBy($expressions)->getTotal()) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Setting already exists.", 'name');
+			throw (new \Katu\Exceptions\InputErrorException("Setting already exists."))
+				->addErrorName('name')
+				;
 		}
 
 		return true;
@@ -53,7 +61,9 @@ class Setting extends \Katu\Model {
 
 	public function setName($name) {
 		if (!static::checkName($name, $this)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid setting name.", 'name');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid setting name."))
+				->addErrorName('name')
+				;
 		}
 
 		$this->update('name', trim($name));

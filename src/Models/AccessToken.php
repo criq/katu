@@ -20,7 +20,7 @@ class AccessToken extends \Katu\Model {
 
 	static function makeValidForUser($user) {
 		if (!static::checkCrudParams($user)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::getOneOrCreateWithList([
@@ -31,7 +31,9 @@ class AccessToken extends \Katu\Model {
 
 	static function checkCrudParams($user) {
 		if (!$user || !($user instanceof User)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid user.", 'user');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid user."))
+				->addErrorName('user')
+				;
 		}
 
 		return true;

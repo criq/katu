@@ -8,7 +8,7 @@ class Role extends \Katu\Model {
 
 	static function create($name) {
 		if (!static::checkCrudParams($name)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
@@ -41,7 +41,9 @@ class Role extends \Katu\Model {
 
 	static function checkCrudParams($name) {
 		if (!static::checkName($name)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid name.", 'name');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid name."))
+				->addErrorName('name')
+				;
 		}
 
 		return true;
@@ -49,7 +51,9 @@ class Role extends \Katu\Model {
 
 	static function checkName($name, $object = null) {
 		if (!trim($name)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Missing name.", 'name');
+			throw (new \Katu\Exceptions\InputErrorException("Missing name."))
+				->addErrorName('name')
+				;
 		}
 
 		// Look for another role with this name.
@@ -59,7 +63,9 @@ class Role extends \Katu\Model {
 		}
 
 		if (static::getBy($getBy)->getTotal()) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Another role with this name already exists.", 'name');
+			throw (new \Katu\Exceptions\InputErrorException("Another role with this name already exists."))
+				->addErrorName('name')
+				;
 		}
 
 		return true;
@@ -67,7 +73,9 @@ class Role extends \Katu\Model {
 
 	public function setName($name) {
 		if (!static::checkName($name, $this)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid name.", 'name');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid name."))
+				->addErrorName('name')
+				;
 		}
 
 		$this->update('name', trim($name));

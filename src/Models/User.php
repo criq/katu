@@ -17,14 +17,18 @@ class User extends \Katu\Model {
 
 	static function createWithEmailAddress($emailAddress) {
 		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->addErrorName('emailAddress')
+				;
 		}
 
 		// Look for another user with this e-mail address.
 		if (static::getBy([
 			'emailAddressId' => $emailAddress->getId(),
 		])->getTotal()) {
-			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is already in use.", 'emailAddress');
+			throw (new \Katu\Exceptions\InputErrorException("E-mail address is already in use."))
+				->addErrorName('emailAddress')
+				;
 		}
 
 		return static::insert([
@@ -75,7 +79,9 @@ class User extends \Katu\Model {
 
 	public function setEmailAddress($emailAddress) {
 		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->addErrorName('emailAddress')
+				;
 		}
 
 		// Look for another user with this e-mail address.
@@ -83,7 +89,9 @@ class User extends \Katu\Model {
 			'emailAddressId' => $emailAddress->getId(),
 			new CmpNotEq(static::getIdColumn(), $this->getId()),
 		])->getTotal()) {
-			throw new \Katu\Exceptions\ArgumentErrorException("E-mail address is used by another user.", 'emailAddress');
+			throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
+				->addErrorName('emailAddress')
+				;
 		}
 
 		$this->update('emailAddressId', $emailAddress->getId());

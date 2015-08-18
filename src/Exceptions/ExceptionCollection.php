@@ -4,9 +4,9 @@ namespace Katu\Exceptions;
 
 class ExceptionCollection extends Exception implements \Iterator {
 
-	public $exceptionCollection = array();
+	public $collection = [];
 
-	private $position = 0;
+	private $iteratorPosition = 0;
 
 	public function __construct($message = null, $code = 0, $previous = null) {
 		parent::__construct($message, $code, $previous);
@@ -23,10 +23,10 @@ class ExceptionCollection extends Exception implements \Iterator {
 	public function addException(\Exception $exception) {
 		if ($exception instanceof ExceptionCollection) {
 			foreach ($exception as $e) {
-				$this->exceptionCollection[] = $e;
+				$this->collection[] = $e;
 			}
 		} else {
-			$this->exceptionCollection[] = $exception;
+			$this->collection[] = $exception;
 		}
 	}
 
@@ -39,27 +39,29 @@ class ExceptionCollection extends Exception implements \Iterator {
 	}
 
 	public function countExceptions() {
-		return (int) (count($this->exceptionCollection));
+		return (int) (count($this->collection));
 	}
 
+	/* Iterator **************************************************************/
+
 	public function rewind() {
-		$this->position = 0;
+		$this->iteratorPosition = 0;
 	}
 
 	public function current() {
-		return $this->exceptionCollection[$this->position];
+		return $this->collection[$this->iteratorPosition];
 	}
 
 	public function key() {
-		return $this->position;
+		return $this->iteratorPosition;
 	}
 
 	public function next() {
-		++$this->position;
+		++$this->iteratorPosition;
 	}
 
 	public function valid() {
-		return isset($this->exceptionCollection[$this->position]);
+		return isset($this->collection[$this->iteratorPosition]);
 	}
 
 }

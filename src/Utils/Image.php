@@ -78,7 +78,7 @@ class Image {
 
 		// Check the writability of the folder.
 		if (!is_writable($path)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Public tmp folder isn't writable.");
+			throw new \Katu\Exceptions\ErrorException("Public tmp folder isn't writable.");
 		}
 
 		return realpath($path);

@@ -8,7 +8,7 @@ class UserPermission extends \Katu\Model {
 
 	static function create($user, $permission) {
 		if (!static::checkCrudParams($user, $permission)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
@@ -27,13 +27,19 @@ class UserPermission extends \Katu\Model {
 
 	static function checkCrudParams($user, $permission) {
 		if (!$user || !($user instanceof User)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid user.", 'user');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid user."))
+				->addErrorName('user')
+				;
 		}
 		if (!trim($permission)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Missing permission.", 'permission');
+			throw (new \Katu\Exceptions\InputErrorException("Missing permission."))
+				->addErrorName('permission')
+				;
 		}
 		if (!static::isValidPermission($permission)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid permission.", 'permission');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid permission."))
+				->addErrorName('permission')
+				;
 		}
 
 		return true;

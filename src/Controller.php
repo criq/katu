@@ -110,15 +110,16 @@ class Controller {
 	}
 
 	static function addError($error) {
+		if (!isset(static::$data['_errors'])) {
+			static::$data['_errors'] = [];
+		}
+
 		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
 			foreach ($error as $exception) {
 				static::addError($exception);
 			}
-		} elseif ($error instanceof \Katu\Exceptions\ArgumentErrorException) {
-			static::$data['_namedArgumentsInError'][] = $error->getName();
-			static::$data['_errors'][$error->getName()][] = $error->getTranslatedMessage();
 		} elseif ($error instanceof \Katu\Exceptions\Exception) {
-			static::$data['_errors'][$error->getName()][] = $error->getTranslatedMessage();
+			static::$data['_errors'] = array_merge(static::$data['_errors'], $error->getErrors());
 		} elseif ($error instanceof \Exception) {
 			static::$data['_errors'][] = $error->getMessage();
 		} else {

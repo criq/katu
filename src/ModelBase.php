@@ -83,7 +83,7 @@ class ModelBase {
 
 		} else {
 
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments passed to query.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments passed to query.");
 
 		}
 

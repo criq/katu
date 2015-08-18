@@ -8,7 +8,7 @@ class RolePermission extends \Katu\Model {
 
 	static function create($role, $permission) {
 		if (!static::checkCrudParams($role, $permission)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
@@ -20,7 +20,7 @@ class RolePermission extends \Katu\Model {
 
 	static function make($role, $permission) {
 		if (!static::checkCrudParams($role, $permission)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::getOneOrCreateWithList(array(
@@ -31,13 +31,19 @@ class RolePermission extends \Katu\Model {
 
 	static function checkCrudParams($role, $permission) {
 		if (!$role || !($role instanceof Role)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid role.", 'role');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid role."))
+				->addErrorName('role')
+				;
 		}
 		if (!trim($permission)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Missing permission.", 'permission');
+			throw (new \Katu\Exceptions\InputErrorException("Missing permission."))
+				->addErrorName('permission')
+				;
 		}
 		if (!static::isValidPermission($permission)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid permission.", 'permission');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid permission."))
+				->addErrorName('permission')
+				;
 		}
 
 		return true;

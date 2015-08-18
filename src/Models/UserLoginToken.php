@@ -8,7 +8,7 @@ class UserLoginToken extends \Katu\Model {
 
 	static function create($user, $timeout = 86400) {
 		if (!static::checkCrudParams($user)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
@@ -21,7 +21,9 @@ class UserLoginToken extends \Katu\Model {
 
 	static function checkCrudParams($user) {
 		if (!$user || !($user instanceof User)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid user.", 'user');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid user."))
+				->addErrorName('user')
+				;
 		}
 
 		return true;

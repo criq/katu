@@ -33,20 +33,20 @@ class File extends \Katu\Model {
 
 	static function createFromUpload($creator, $upload) {
 		if (!static::checkCrudParams($creator)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 		if (!$upload || !($upload instanceof \Katu\Upload)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid upload.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
 		}
 
 		// Check source file.
 		if (!file_exists($upload->path)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Source file doesn't exist.");
+			throw new \Katu\Exceptions\InputErrorException("Source file doesn't exist.");
 		}
 
 		// Check the writability of files folder.
 		if (!is_writable(static::getDirPath())) {
-			throw new \Katu\Exceptions\ArgumentErrorException("File folder isn't writable.");
+			throw new \Katu\Exceptions\InputErrorException("File folder isn't writable.");
 		}
 
 		// Get a new file name.
@@ -57,7 +57,9 @@ class File extends \Katu\Model {
 
 	static function checkCrudParams($creator) {
 		if ($creator && !($creator instanceof \App\Models\User)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file creator.", 'file');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid file creator."))
+				->addErrorName('file')
+				;
 		}
 
 		return true;
@@ -138,7 +140,7 @@ class File extends \Katu\Model {
 		@mkdir($destinationDirPath, 0777, true);
 
 		if (!copy($sourcePath, $destinationPath)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Error occured during copying the file.");
+			throw new \Katu\Exceptions\InputErrorException("Error occured during copying the file.");
 		}
 
 		return $destination;

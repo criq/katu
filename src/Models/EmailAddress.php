@@ -10,7 +10,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function create($emailAddress) {
 		if (!static::checkCrudParams($emailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
@@ -21,7 +21,7 @@ class EmailAddress extends \Katu\Model {
 
 	static function make($emailAddress) {
 		if (!static::checkCrudParams($emailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::getOneOrCreateWithList(array(
@@ -31,7 +31,9 @@ class EmailAddress extends \Katu\Model {
 
 	static function checkCrudParams($emailAddress) {
 		if (!static::checkEmailAddress($emailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->addErrorName('emailAddress')
+				;
 		}
 
 		return true;
@@ -39,11 +41,15 @@ class EmailAddress extends \Katu\Model {
 
 	static function checkEmailAddress($emailAddress) {
 		if (!trim($emailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Missing e-mail address.", 'emailAddress');
+			throw (new \Katu\Exceptions\InputErrorException("Missing e-mail address."))
+				->addErrorName('emailAddress')
+				;
 		}
 
 		if (!static::isValid($emailAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid e-mail address.", 'emailAddress');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->addErrorName('emailAddress')
+				;
 		}
 
 		return true;

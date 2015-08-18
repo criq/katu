@@ -8,7 +8,7 @@ class FileAttachment extends \Katu\Model {
 
 	static function create($creator, $object, $file) {
 		if (!static::checkCrudParams($creator, $object, $file)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
@@ -22,7 +22,7 @@ class FileAttachment extends \Katu\Model {
 
 	static function make($creator, $object, $file) {
 		if (!static::checkCrudParams($creator, $object, $file)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::getOneOrCreateWithList(array(
@@ -34,13 +34,19 @@ class FileAttachment extends \Katu\Model {
 
 	static function checkCrudParams($creator, $object, $file) {
 		if ($creator && !($creator instanceof \App\Models\User)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file attachment creator.", 'file');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid file attachment creator."))
+				->addErrorName('file')
+				;
 		}
 		if (!is_a($object, '\Katu\Model')) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Object is not a model.", 'object');
+			throw (new \Katu\Exceptions\InputErrorException("Object is not a model."))
+				->addErrorName('object')
+				;
 		}
 		if (!$file || !($file instanceof \App\Models\File)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid file.", 'file');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid file."))
+				->addErrorName('file')
+				;
 		}
 
 		return true;

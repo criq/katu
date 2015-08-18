@@ -8,7 +8,7 @@ class UserRole extends \Katu\Model {
 
 	static function create($user, $role) {
 		if (!static::checkCrudParams($user, $role)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid arguments.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
@@ -27,10 +27,14 @@ class UserRole extends \Katu\Model {
 
 	static function checkCrudParams($user, $role) {
 		if (!$user || !($user instanceof User)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid user.", 'user');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid user."))
+				->addErrorName('user')
+				;
 		}
 		if (!$role || !($role instanceof Role)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid role.", 'role');
+			throw (new \Katu\Exceptions\InputErrorException("Invalid role."))
+				->addErrorName('role')
+				;
 		}
 
 		return true;

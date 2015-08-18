@@ -14,7 +14,7 @@ class Geocode extends \Katu\Model {
 
 	static function getOrCreateFromAddress($geocodeAddress, $extra = null) {
 		if (!$geocodeAddress || !($geocodeAddress instanceof \Katu\Utils\Google\GeocodeAddress)) {
-			throw new \Katu\Exceptions\ArgumentErrorException("Invalid geocode address.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid geocode address.");
 		}
 
 		$hash = static::getHashByGeocodeAddress($geocodeAddress, $extra);
