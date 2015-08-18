@@ -54,20 +54,6 @@ class Exception extends \Exception {
 		return $this->errorNames;
 	}
 
-	public function getArray() {
-		$errors = [];
-
-		if ($this->errorNames) {
-			foreach ($this->errorNames as $errorName) {
-				$errors[$errorName] = $this->getTranslatedMessage();
-			}
-		} else {
-			$errors[] = $this->getTranslatedMessage();
-		}
-
-		return $errors;
-	}
-
 	public function addTranslation($locale, $message) {
 		if (is_string($locale)) {
 			$locale = new \Katu\Types\TLocale($locale);

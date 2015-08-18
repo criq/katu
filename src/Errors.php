@@ -20,12 +20,28 @@ class Errors implements \Iterator, \ArrayAccess {
 		return true;
 	}
 
-	public function getArray() {
+	public function getNamedArray() {
 		$array = [];
 
 		foreach ($this->errors as $error) {
+
+			// Katu Exception.
 			if ($error instanceof \Katu\Exceptions\Exception) {
-				$array = array_merge($array, $error->getArray());
+
+				// Has error names.
+				if ($error->getErrorNames()) {
+					foreach ($error->getErrorNames() as $errorName) {
+						if (!isset($array[$errorName])) {
+							$array[$errorName] = new static;
+						}
+						$array[$errorName]->addError($error);
+					}
+
+				// Has no error names.
+				} else {
+					$array[] = $error;
+				}
+
 			} elseif ($error instanceof \Exception) {
 				$array[] = $error->getMessage();
 			} else {
@@ -38,7 +54,7 @@ class Errors implements \Iterator, \ArrayAccess {
 
 	public function getNamed($errorName) {
 		$name = \Katu\Exceptions\Exception::getErrorName($errorName);
-		$array = $this->getArray();
+		$array = $this->getNamedArray();
 
 		if (isset($array[$name])) {
 			return $array[$name];
