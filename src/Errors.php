@@ -96,7 +96,9 @@ class Errors implements \Iterator, \ArrayAccess {
 	}
 
 	public function offsetExists($offset) {
-		return isset($this->errors[$offset]);
+		$array = $this->getNamedArray();
+
+		return isset($array[$offset]);
 	}
 
 	public function offsetUnset($offset) {
@@ -104,7 +106,9 @@ class Errors implements \Iterator, \ArrayAccess {
 	}
 
 	public function offsetGet($offset) {
-		return isset($this->errors[$offset]) ? $this->errors[$offset] : null;
+		$array = $this->getNamedArray();
+
+		return isset($array[$offset]) ? $array[$offset] : null;
 	}
 
 }
