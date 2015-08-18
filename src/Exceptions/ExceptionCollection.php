@@ -6,7 +6,7 @@ class ExceptionCollection extends Exception implements \Iterator {
 
 	public $collection = [];
 
-	private $iteratorPosition = 0;
+	protected $iteratorPosition = 0;
 
 	public function __construct($message = null, $code = 0, $previous = null) {
 		parent::__construct($message, $code, $previous);
@@ -40,6 +40,14 @@ class ExceptionCollection extends Exception implements \Iterator {
 
 	public function countExceptions() {
 		return (int) (count($this->collection));
+	}
+
+	public function replaceErrorName($errorName, $replacement) {
+		foreach ($this->collection as $exception) {
+			$exception->replaceErrorName($errorName, $replacement);
+		}
+
+		return $this;
 	}
 
 	/* Iterator **************************************************************/

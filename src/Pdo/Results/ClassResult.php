@@ -12,12 +12,6 @@ class ClassResult extends PaginatedResult {
 		$this->class = $class;
 	}
 
-	public function setIteratorArray() {
-		if (is_null($this->_iteratorArray)) {
-			$this->_iteratorArray = $this->getObjects();
-		}
-	}
-
 	public function getObjects($class = null) {
 		if (!$class && $this->class) {
 			$class = $this->class;
@@ -52,6 +46,14 @@ class ClassResult extends PaginatedResult {
 		}
 
 		return $values;
+	}
+
+	/* ArrayAccess ***********************************************************/
+
+	public function setIteratorArray() {
+		if (is_null($this->iteratorArray)) {
+			$this->iteratorArray = $this->getObjects();
+		}
 	}
 
 }

@@ -6,50 +6,10 @@ class DumpCollection implements \Iterator, \ArrayAccess {
 
 	public $dumps = [];
 
-	protected $_position = 0;
+	protected $iteratorPosition = 0;
 
 	public function __construct($dumps = []) {
 		$this->dumps = $dumps;
-	}
-
-	public function rewind() {
-		$this->_position = 0;
-	}
-
-	public function current() {
-		return $this->dumps[$this->_position];
-	}
-
-	public function key() {
-		return $this->_position;
-	}
-
-	public function next() {
-		++$this->_position;
-	}
-
-	public function valid() {
-		return isset($this->dumps[$this->_position]);
-	}
-
-	public function offsetSet($offset, $value) {
-		if (is_null($offset)) {
-			$this->dumps[] = $value;
-		} else {
-			$this->dumps[$offset] = $value;
-		}
-	}
-
-	public function offsetExists($offset) {
-		return isset($this->dumps[$offset]);
-	}
-
-	public function offsetUnset($offset) {
-		unset($this->dumps[$offset]);
-	}
-
-	public function offsetGet($offset) {
-		return isset($this->dumps[$offset]) ? $this->dumps[$offset] : null;
 	}
 
 	static function getAll() {
@@ -107,6 +67,50 @@ class DumpCollection implements \Iterator, \ArrayAccess {
 		}
 
 		return true;
+	}
+
+	/* Iterator **************************************************************/
+
+	public function rewind() {
+		$this->iteratorPosition = 0;
+	}
+
+	public function current() {
+		return $this->dumps[$this->iteratorPosition];
+	}
+
+	public function key() {
+		return $this->iteratorPosition;
+	}
+
+	public function next() {
+		++$this->iteratorPosition;
+	}
+
+	public function valid() {
+		return isset($this->dumps[$this->iteratorPosition]);
+	}
+
+	/* ArrayAccess ***********************************************************/
+
+	public function offsetSet($offset, $value) {
+		if (is_null($offset)) {
+			$this->dumps[] = $value;
+		} else {
+			$this->dumps[$offset] = $value;
+		}
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->dumps[$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->dumps[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return isset($this->dumps[$offset]) ? $this->dumps[$offset] : null;
 	}
 
 }

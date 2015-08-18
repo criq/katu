@@ -9,12 +9,12 @@ class Result implements \Iterator, \ArrayAccess {
 	public $pdo;
 	public $statement;
 
-	protected $_position      = 0;
-	protected $_iteratorArray = null;
-	protected $_array         = null;
+	protected $iteratorPosition = 0;
+	protected $iteratorArray = null;
+	protected $array = null;
 
 	public function __construct($pdo, $statement) {
-		$this->pdo       = $pdo;
+		$this->pdo = $pdo;
 		$this->statement = $statement;
 
 		try {
@@ -61,7 +61,7 @@ class Result implements \Iterator, \ArrayAccess {
 	public function getCount() {
 		$this->setArray();
 
-		return count($this->_array);
+		return count($this->array);
 	}
 
 	public function getTotal() {
@@ -69,17 +69,17 @@ class Result implements \Iterator, \ArrayAccess {
 	}
 
 	public function setArray() {
-		if (is_null($this->_array)) {
-			$this->_array = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+		if (is_null($this->array)) {
+			$this->array = $this->statement->fetchAll(PDO::FETCH_ASSOC);
 		}
 
-		return $this->_array;
+		return $this->array;
 	}
 
 	public function getArray() {
 		$this->setArray();
 
-		return $this->_array;
+		return $this->array;
 	}
 
 	public function getColumnValues($column) {
@@ -100,64 +100,6 @@ class Result implements \Iterator, \ArrayAccess {
 		return $this->getColumnValues('id');
 	}
 
-	public function setIteratorArray() {
-		if (is_null($this->_iteratorArray)) {
-			$this->_iteratorArray = $this->getArray();
-		}
-	}
-
-	public function rewind() {
-		$this->_position = 0;
-	}
-
-	public function current() {
-		$this->setIteratorArray();
-
-		return $this->_iteratorArray[$this->_position];
-	}
-
-	public function key() {
-		return $this->_position;
-	}
-
-	public function next() {
-		++$this->_position;
-	}
-
-	public function valid() {
-		$this->setIteratorArray();
-
-		return isset($this->_iteratorArray[$this->_position]);
-	}
-
-	public function offsetSet($offset, $value) {
-		$this->setIteratorArray();
-
-		if (is_null($offset)) {
-			$this->_iteratorArray[] = $value;
-		} else {
-			$this->_iteratorArray[$offset] = $value;
-		}
-	}
-
-	public function offsetExists($offset) {
-		$this->setIteratorArray();
-
-		return isset($this->_iteratorArray[$offset]);
-	}
-
-	public function offsetUnset($offset) {
-		$this->setIteratorArray();
-
-		unset($this->_iteratorArray[$offset]);
-	}
-
-	public function offsetGet($offset) {
-		$this->setIteratorArray();
-
-		return isset($this->_iteratorArray[$offset]) ? $this->_iteratorArray[$offset] : null;
-	}
-
 	public function each($callback) {
 		$res = [];
 		foreach ($this as $item) {
@@ -165,6 +107,68 @@ class Result implements \Iterator, \ArrayAccess {
 		}
 
 		return $res;
+	}
+
+	/* Iterator **************************************************************/
+
+	public function rewind() {
+		$this->iteratorPosition = 0;
+	}
+
+	public function current() {
+		$this->setIteratorArray();
+
+		return $this->iteratorArray[$this->iteratorPosition];
+	}
+
+	public function key() {
+		return $this->iteratorPosition;
+	}
+
+	public function next() {
+		++$this->iteratorPosition;
+	}
+
+	public function valid() {
+		$this->setIteratorArray();
+
+		return isset($this->iteratorArray[$this->iteratorPosition]);
+	}
+
+	/* ArrayAccess ***********************************************************/
+
+	public function setIteratorArray() {
+		if (is_null($this->iteratorArray)) {
+			$this->iteratorArray = $this->getArray();
+		}
+	}
+
+	public function offsetSet($offset, $value) {
+		$this->setIteratorArray();
+
+		if (is_null($offset)) {
+			$this->iteratorArray[] = $value;
+		} else {
+			$this->iteratorArray[$offset] = $value;
+		}
+	}
+
+	public function offsetExists($offset) {
+		$this->setIteratorArray();
+
+		return isset($this->iteratorArray[$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		$this->setIteratorArray();
+
+		unset($this->iteratorArray[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		$this->setIteratorArray();
+
+		return isset($this->iteratorArray[$offset]) ? $this->iteratorArray[$offset] : null;
 	}
 
 }

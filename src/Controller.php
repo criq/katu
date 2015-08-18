@@ -111,20 +111,10 @@ class Controller {
 
 	static function addError($error) {
 		if (!isset(static::$data['_errors'])) {
-			static::$data['_errors'] = [];
+			static::$data['_errors'] = new Errors;
 		}
 
-		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
-			foreach ($error as $exception) {
-				static::addError($exception);
-			}
-		} elseif ($error instanceof \Katu\Exceptions\Exception) {
-			static::$data['_errors'] = array_merge(static::$data['_errors'], $error->getErrors());
-		} elseif ($error instanceof \Exception) {
-			static::$data['_errors'][] = $error->getMessage();
-		} else {
-			static::$data['_errors'][] = $error;
-		}
+		static::$data['_errors']->addError($error);
 
 		return true;
 	}

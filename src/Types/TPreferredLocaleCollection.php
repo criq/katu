@@ -6,7 +6,7 @@ class TPreferredLocaleCollection implements \Iterator, \ArrayAccess {
 
 	public $acceptedLocales = [];
 
-	private $iteratorPosition;
+	protected $iteratorPosition = 0;
 
 	public function add(TPreferredLocale $acceptedLocale) {
 		$this->acceptedLocales[] = $acceptedLocale;

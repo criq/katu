@@ -13,33 +13,30 @@ class Exception extends \Exception {
 		$this->translations = new \Katu\Types\TLocaleStrings;
 	}
 
+	public function __toString() {
+		return (string) $this->getTranslatedMessage();
+	}
+
 	public function addErrorName($errorName) {
-		$this->errorNames[] = $errorName;
+		$this->errorNames[] = static::getErrorName($errorName);
 
 		$this->maintainErrorNames();
 
 		return $this;
+	}
+
+	static function getErrorName($errorName) {
+		return implode('.', array_filter((array) $errorName));
 	}
 
 	public function getErrorNameIndex($errorName) {
-		return array_search($errorName, $this->errorNames);
-	}
-
-	public function removeErrorName($errorName) {
-		$index = $this->getErrorNameIndex($errorName);
-		if ($index !== false && isset($this->errorNames[$index])) {
-			unset($this->errorNames[$index]);
-		}
-
-		$this->maintainErrorNames();
-
-		return $this;
+		return array_search(static::getErrorName($errorName), $this->errorNames);
 	}
 
 	public function replaceErrorName($errorName, $replacement) {
 		$index = $this->getErrorNameIndex($errorName);
 		if ($index !== false && isset($this->errorNames[$index])) {
-			$this->errorName[$index] = $replacement;
+			$this->errorNames[$index] = static::getErrorName($replacement);
 		}
 
 		$this->maintainErrorNames();
@@ -57,7 +54,7 @@ class Exception extends \Exception {
 		return $this->errorNames;
 	}
 
-	public function getErrors() {
+	public function getArray() {
 		$errors = [];
 
 		if ($this->errorNames) {

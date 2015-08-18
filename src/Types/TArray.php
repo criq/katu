@@ -4,62 +4,26 @@ namespace Katu\Types;
 
 class TArray implements \ArrayAccess, \IteratorAggregate {
 
-	public $container;
+	public $array;
 
 	public function __construct($value = []) {
 		if (!self::isValid($value)) {
 			throw new \Exception("Invalid array.");
 		}
 
-		$this->container = $value;
+		$this->array = $value;
 	}
 
 	public function getArray() {
-		return $this->container;
+		return $this->array;
 	}
-
-	/*************************************************************************
-	 * ArrayAccess.
-	 */
-
-	public function offsetSet($offset, $value) {
-		if (is_null($offset)) {
-			$this->container[] = $value;
-		} else {
-			$this->container[$offset] = $value;
-		}
-	}
-
-	public function offsetExists($offset) {
-		return isset($this->container[$offset]);
-	}
-
-	public function offsetUnset($offset) {
-		unset($this->container[$offset]);
-	}
-
-	public function offsetGet($offset) {
-		return isset($this->container[$offset]) ? $this->container[$offset] : null;
-	}
-
-	/*************************************************************************
-	 * IteratorAggregate.
-	 */
-
-	public function getIterator() {
-		return new \ArrayIterator($this->container);
-	}
-
-	/*************************************************************************
-	 * TArray.
-	 */
 
 	static function isValid($value) {
 		return is_array($value);
 	}
 
 	public function getValueByArgs() {
-		$value = $this->container;
+		$value = $this->array;
 
 		foreach (func_get_args() as $key) {
 			if (isset($value[$key])) {
@@ -75,7 +39,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 	public function getWithoutKeys() {
 		$res = array();
 
-		foreach ($this->container as $key => $value) {
+		foreach ($this->array as $key => $value) {
 			if (in_array($key, func_get_args()) === false) {
 				$res[$key] = $value;
 			}
@@ -85,8 +49,8 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 	}
 
 	public function implodeInSentence($delimiter, $lastDelimiter) {
-		$arrayList = (array) array_slice($this->container, 0, -1);
-		$arrayLast = (array) array_slice($this->container, -1, 1);
+		$arrayList = (array) array_slice($this->array, 0, -1);
+		$arrayLast = (array) array_slice($this->array, -1, 1);
 
 		return implode($lastDelimiter, array_filter([implode($delimiter, $arrayList), $arrayLast[0]]));
 	}
@@ -97,7 +61,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		}
 
 		$items = [];
-		foreach ($this->container as $key => $value) {
+		foreach ($this->array as $key => $value) {
 			$items[] = implode($keyValueDelimiter, [$key, $value]);
 		}
 
@@ -107,7 +71,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 	public function getRandomItems($n) {
 		$array = [];
 		for ($i = 0; $i < $n; $i++) {
-			$res[] = $this->container[array_rand($this->container)];
+			$res[] = $this->array[array_rand($this->array)];
 		}
 		return $res;
 	}
@@ -124,18 +88,46 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 	}
 
 	public function unique() {
-		return new static(array_unique($this->container));
+		return new static(array_unique($this->array));
 	}
 
 	public function values() {
-		return new static(array_values($this->container));
+		return new static(array_values($this->array));
 	}
 
 	public function natsort() {
-		$array = $this->container;
+		$array = $this->array;
 		natsort($array);
 
 		return new static($array);
+	}
+
+	/* ArrayAccess ***********************************************************/
+
+	public function offsetSet($offset, $value) {
+		if (is_null($offset)) {
+			$this->array[] = $value;
+		} else {
+			$this->array[$offset] = $value;
+		}
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->array[$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->array[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return isset($this->array[$offset]) ? $this->array[$offset] : null;
+	}
+
+	/* IteratorAggregate *****************************************************/
+
+	public function getIterator() {
+		return new \ArrayIterator($this->array);
 	}
 
 }

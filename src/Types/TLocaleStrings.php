@@ -6,7 +6,7 @@ class TLocaleStrings implements \Iterator, \ArrayAccess {
 
 	public $strings = [];
 
-	private $iteratorPosition;
+	protected $iteratorPosition = 0;
 
 	public function add(TPreferredLocale $acceptedLocale) {
 		$this->strings[] = $acceptedLocale;
