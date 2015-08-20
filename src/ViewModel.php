@@ -272,7 +272,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function cacheAndMaterializeAll() {
-		foreach ($modelViews as $modelView) {
+		foreach (static::getAllViewModelNames() as $modelView) {
 			$class = '\\' . $modelView;
 
 			if ($class::isCacheExpiredAdvance()) {
