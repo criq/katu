@@ -312,7 +312,7 @@ class Model extends ModelBase {
 		}
 	}
 
-	public function setUniqueColumnSlug($column, $source, $force = false) {
+	public function setUniqueColumnSlug($column, $source, $force = false, $constraints = []) {
 		// Generate slug.
 		$slug = (new \Katu\Types\TString($source))->getForUrl([
 			'maxLength' => 245,
@@ -335,6 +335,7 @@ class Model extends ModelBase {
 			->from(static::getTable())
 			->where(new \Sexy\CmpNotEq(static::getIdColumn(), $this->getId()))
 			->where(new \Sexy\CmpRegexp(static::getColumn($column), $preg))
+			->addExpressions($constraints)
 			;
 		$res = static::getPdo()->createQueryFromSql($sql)->getResult();
 
