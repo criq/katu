@@ -271,11 +271,7 @@ class ViewModel extends ModelBase {
 		})));
 	}
 
-	static function cacheAndMaterializeAll($timeout = 0) {
-		$modelViews = \Katu\Utils\Cache::get(function() {
-			return static::getAllViewModelNames();
-		}, $timeout);
-
+	static function cacheAndMaterializeAll() {
 		foreach ($modelViews as $modelView) {
 			$class = '\\' . $modelView;
 
