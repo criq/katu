@@ -4,6 +4,7 @@ namespace Katu\Models;
 
 class UserLoginToken extends \Katu\Model {
 
+	const DATABASE = 'app';
 	const TABLE = 'user_login_tokens';
 
 	static function create($user, $timeout = 86400) {

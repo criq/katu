@@ -7,6 +7,7 @@ use \Sexy\CmpNotEq;
 
 class User extends \Katu\Model {
 
+	const DATABASE = 'app';
 	const TABLE = 'users';
 
 	static function create() {

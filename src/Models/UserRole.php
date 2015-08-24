@@ -4,6 +4,7 @@ namespace Katu\Models;
 
 class UserRole extends \Katu\Model {
 
+	const DATABASE = 'app';
 	const TABLE = 'user_roles';
 
 	static function create($user, $role) {

@@ -6,6 +6,7 @@ use \Katu\Exception;
 
 class Geocode extends \Katu\Model {
 
+	const DATABASE = 'app';
 	const TABLE = 'geocodes';
 
 	static function make($language, $address, $components = null, $extra = null) {

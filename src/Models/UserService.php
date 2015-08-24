@@ -6,6 +6,7 @@ use \Katu\Exception;
 
 class UserService extends \Katu\Model {
 
+	const DATABASE = 'app';
 	const TABLE = 'user_services';
 
 	static function create($user, $serviceName, $serviceUserId) {

@@ -4,6 +4,7 @@ namespace Katu\Models;
 
 class UserPasswordToken extends \Katu\Model {
 
+	const DATABASE = 'app';
 	const TABLE = 'user_password_tokens';
 
 	static function create($user) {

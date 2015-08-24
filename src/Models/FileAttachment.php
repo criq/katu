@@ -4,6 +4,7 @@ namespace Katu\Models;
 
 class FileAttachment extends \Katu\Model {
 
+	const DATABASE = 'app';
 	const TABLE = 'file_attachments';
 
 	static function create($creator, $object, $file) {

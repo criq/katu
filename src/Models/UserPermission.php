@@ -4,6 +4,7 @@ namespace Katu\Models;
 
 class UserPermission extends \Katu\Model {
 
+	const DATABASE = 'app';
 	const TABLE = 'user_permissions';
 
 	static function create($user, $permission) {
