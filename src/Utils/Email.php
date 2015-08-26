@@ -139,7 +139,12 @@ class Email {
 		return $this;
 	}
 
-	public function addAttachment($name, $type, $content) {
+	public function addAttachment() {
+		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof File) {
+			var_dump(func_get_arg(0)); die;
+		}
+		var_dump(func_get_args()); die;
+
 		$this->attachments[] = [
 			'name'    => $name,
 			'type'    => $type,
