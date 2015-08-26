@@ -140,18 +140,31 @@ class Email {
 	}
 
 	public function addAttachment() {
+		// File.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof File) {
-			var_dump(func_get_arg(0)); die;
+
+			$file = func_get_arg(0);
+			$this->attachments[] = [
+				'name'    => $file->getBasename(),
+				'type'    => $file->getMime(),
+				'content' => base64_encode(file_get_contents($file)),
+			];
+
+			return $this;
+
+		} elseif (count(func_get_args()) == 3) {
+
+			$this->attachments[] = [
+				'name'    => func_get_arg(0),
+				'type'    => func_get_arg(1),
+				'content' => base64_encode(func_get_arg(2)),
+			];
+
+			return $this;
+
 		}
-		var_dump(func_get_args()); die;
 
-		$this->attachments[] = [
-			'name'    => $name,
-			'type'    => $type,
-			'content' => base64_encode($content),
-		];
-
-		return $this;
+		throw new \Katu\Exceptions\InputErrorException("Invalid attachment arguments.");
 	}
 
 	public function setTemplate($template) {
