@@ -146,6 +146,7 @@ class App {
 
 		// Catch all.
 		$catchAll = function() {
+
 			$app = self::get();
 
 			// Map URL to controller method.
@@ -161,6 +162,7 @@ class App {
 					throw new Exceptions\ControllerMethodNotFoundException("Invalid controller method.");
 				}
 			}
+
 		};
 
 		try {
