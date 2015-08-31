@@ -44,12 +44,14 @@ class EmailAddress extends \Katu\Model {
 		if (!trim($emailAddress)) {
 			throw (new \Katu\Exceptions\InputErrorException("Missing e-mail address."))
 				->addErrorName('emailAddress')
+				->addTranslation('cs', "Chybějící e-mailová adresa.")
 				;
 		}
 
 		if (!static::isValid($emailAddress)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
 				->addErrorName('emailAddress')
+				->addTranslation('cs', "Neplatná e-mailová adresa.")
 				;
 		}
 
