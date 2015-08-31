@@ -36,6 +36,36 @@ class File {
 		return file_exists($this->getPath());
 	}
 
+	public function get() {
+		try {
+
+			return file_get_contents($this);
+
+		} catch (\Exception $e) {
+
+			\Katu\ErrorHandler::log($e);
+
+			return false;
+
+		}
+	}
+
+	public function set($data) {
+		try {
+
+			$this->getDir()->makeDir();
+
+			return file_put_contents($this, $data, LOCK_EX);
+
+		} catch (\Exception $e) {
+
+			\Katu\ErrorHandler::log($e);
+
+			return false;
+
+		}
+	}
+
 	public function getType() {
 		if (!$this->exists()) {
 			throw new \Katu\Exceptions\FileNotFoundException;
