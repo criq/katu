@@ -41,7 +41,7 @@ class DateTime extends \DateTime {
 	}
 
 	public function isValid() {
-		return $this->getTimestamp() >= 0;
+		return $this->getTimestamp() > 0;
 	}
 
 	public function isInTimeout($timeout) {
