@@ -4,6 +4,10 @@ namespace Katu\Utils;
 
 class DateTime extends \DateTime {
 
+	public function __toString() {
+		return $this->getDbDateTimeFormat();
+	}
+
 	static function get($string = null) {
 		if (is_int($string)) {
 			return new DateTime('@' . $string);
