@@ -4,7 +4,6 @@ namespace Katu\Models;
 
 class AccessToken extends \Katu\Model {
 
-	const DATABASE = 'app';
 	const TABLE = 'access_tokens';
 
 	const EXPIRES = 86400;

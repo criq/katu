@@ -16,8 +16,11 @@ CREATE TABLE `geocodes` (
   `formatted` varchar(255) NOT NULL DEFAULT '',
   `lat` double(10,7) NOT NULL,
   `lng` double(10,7) NOT NULL,
+  `latRad` double(13,12) NOT NULL,
+  `lngRad` double(13,12) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `hash` (`hash`),
   KEY `language` (`language`),
-  KEY `latlng` (`lat`,`lng`)
+  KEY `latlng` (`lat`,`lng`),
+  KEY `latLngRad` (`latRad`,`lngRad`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

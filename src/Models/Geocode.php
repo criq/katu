@@ -6,14 +6,13 @@ use \Katu\Exception;
 
 class Geocode extends \Katu\Model {
 
-	const DATABASE = 'app';
 	const TABLE = 'geocodes';
 
-	static function make($language, $address, $components = null, $extra = null) {
+	static function make($language, $address, $components = [], $extra = []) {
 		return static::getOrCreateFromAddress(call_user_func_array('\Katu\Utils\Google\Geocode::geocode', [$language, $address, $components]), $extra);
 	}
 
-	static function getOrCreateFromAddress($geocodeAddress, $extra = null) {
+	static function getOrCreateFromAddress($geocodeAddress, $extra = []) {
 		if (!$geocodeAddress || !($geocodeAddress instanceof \Katu\Utils\Google\GeocodeAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid geocode address.");
 		}
@@ -55,7 +54,7 @@ class Geocode extends \Katu\Model {
 		return $geocode;
 	}
 
-	static function getHashByGeocodeAddress($geocodeAddress, $extra = null) {
+	static function getHashByGeocodeAddress($geocodeAddress, $extra = []) {
 		if (!$geocodeAddress || !($geocodeAddress instanceof \Katu\Utils\Google\GeocodeAddress)) {
 			throw new \Exception("Invalid geocode address.");
 		}

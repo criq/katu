@@ -4,7 +4,6 @@ namespace Katu\Models;
 
 class File extends \Katu\Model {
 
-	const DATABASE = 'app';
 	const TABLE = 'files';
 
 	static function create($creator, $path, $fileName, $fileType, $fileSize) {

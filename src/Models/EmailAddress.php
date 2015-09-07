@@ -6,7 +6,6 @@ use \Katu\Exception;
 
 class EmailAddress extends \Katu\Model {
 
-	const DATABASE = 'app';
 	const TABLE = 'email_addresses';
 
 	static function create($emailAddress) {

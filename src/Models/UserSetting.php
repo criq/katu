@@ -6,7 +6,6 @@ use \Katu\Exception;
 
 class UserSetting extends \Katu\Model {
 
-	const DATABASE = 'app';
 	const TABLE = 'user_settings';
 
 	static function create($user, $name) {

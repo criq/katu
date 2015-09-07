@@ -13,6 +13,8 @@ use \Sexy\Expression;
 
 class ModelBase {
 
+	const DATABASE = 'app';
+
 	public function __toString() {
 		return (string) $this->getId();
 	}
