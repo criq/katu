@@ -248,6 +248,7 @@ class View {
 		$data['_platform'] = Env::getPlatform();
 		$data['_config']   = Config::get();
 		$data['_session']  = Session::get();
+		$data['_cookies']  = Cookie::get();
 		$data['_flash']    = Flash::get();
 
 		if (class_exists('\App\Models\Setting')) {
