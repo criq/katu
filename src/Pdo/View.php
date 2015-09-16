@@ -38,8 +38,39 @@ class View extends Table {
 		return $tables;
 	}
 
+	public function getSourceMaterializedViewNames() {
+		if (preg_match_all('#`(mv_[a-z0-9_]+)`#', $this->getCreateSyntax(), $matches)) {
+			return array_values(array_unique($matches[1]));
+		}
+
+		return false;
+	}
+
+	public function getSourceViewsInMaterializedViews() {
+		$views = [];
+
+		foreach (array_filter((array) $this->getSourceMaterializedViewNames()) as $tableName) {
+			$views[] = new static($this->pdo, preg_replace('#^mv_#', 'view_', $tableName));
+		}
+
+		return $views;
+	}
+
 	public function getSourceTablesCacheName() {
 		return ['!databases', '!' . $this->pdo->name, '!views', '!sourceTables', '!' . trim($this->name, '`')];
+	}
+
+	public function getModelNames() {
+		$modelNames = [];
+
+		foreach (\Katu\ViewModel::getAllViewModelNames() as $class) {
+			$class = '\\' . ltrim($class, '\\');
+			if ($class::TABLE == $this->name->name) {
+				$modelNames[] = $class;
+			}
+		}
+
+		return $modelNames;
 	}
 
 }

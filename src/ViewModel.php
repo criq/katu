@@ -17,9 +17,7 @@ class ViewModel extends ModelBase {
 	static $_customIndices      = [];
 
 	static function getTable() {
-		if (static::isCacheExpired()) {
-			static::cache();
-		}
+		static::cacheIfExpired();
 
 		return static::isCached() ? static::getCachedTable() : static::getView();
 	}
@@ -212,6 +210,8 @@ class ViewModel extends ModelBase {
 
 			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
 
+				$class::materializeSourceViews();
+
 				$class = '\\' . ltrim($class, '\\');
 				$class::copy($class::getView(), $class::getCachedTable());
 				$class::updateLastCachedTime();
@@ -220,13 +220,27 @@ class ViewModel extends ModelBase {
 
 			}, static::getClass());
 
-		} catch (\Katu\Exceptions\LockException $e) { /* Nothing to do. */ }
+		} catch (\Katu\Exceptions\LockException $e) {
+			\Katu\ErrorHandler::log($e);
+		}
+	}
+
+	static function cacheIfExpired() {
+		if (static::isCacheExpiredAdvance()) {
+			try {
+				return static::cache();
+			} catch (\Exception $e) {
+				\Katu\ErrorHandler::log($e);
+			}
+		}
 	}
 
 	static function materialize() {
 		try {
 
 			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'materialize', static::TABLE], 600, function($class) {
+
+				$class::materializeSourceViews();
 
 				$class = '\\' . ltrim($class, '\\');
 				$class::copy($class::getView(), $class::getMaterializedTable());
@@ -236,7 +250,32 @@ class ViewModel extends ModelBase {
 
 			}, static::getClass());
 
-		} catch (\Katu\Exceptions\LockException $e) { /* Nothing to do. */ }
+		} catch (\Katu\Exceptions\LockException $e) {
+			\Katu\ErrorHandler::log($e);
+		}
+	}
+
+	static function materializeIfExpired() {
+		if (static::isMaterializeExpiredAdvance()) {
+			try {
+				return static::materialize();
+			} catch (\Exception $e) {
+				\Katu\ErrorHandler::log($e);
+			}
+		}
+	}
+
+	static function materializeSourceViews() {
+		foreach (static::getView()->getSourceViewsInMaterializedViews() as $view) {
+			foreach ($view->getModelNames() as $class) {
+
+				$class = '\\' . ltrim($class, '\\');
+				$class::materializeIfExpired();
+
+			}
+		}
+
+		return true;
 	}
 
 	static function getLastCachedTmpName() {
@@ -273,23 +312,15 @@ class ViewModel extends ModelBase {
 
 	static function cacheAndMaterializeAll() {
 		foreach (static::getAllViewModelNames() as $modelView) {
+
 			$class = '\\' . $modelView;
 
-			if ($class::isCacheExpiredAdvance()) {
-				try {
-					$class::cache();
-				} catch (\Exception $e) {
-					\Katu\ErrorHandler::log($e);
-				}
+			$class::cacheIfExpired();
+
+			if ($class::isMaterializable()) {
+				$class::materializeIfExpired();
 			}
 
-			if ($class::isMaterializable() && $class::isMaterializeExpiredAdvance()) {
-				try {
-					$class::materialize();
-				} catch (\Exception $e) {
-					\Katu\ErrorHandler::log($e);
-				}
-			}
 		}
 	}
 
