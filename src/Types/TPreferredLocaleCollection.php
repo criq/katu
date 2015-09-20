@@ -31,22 +31,29 @@ class TPreferredLocaleCollection implements \Iterator, \ArrayAccess {
 			$fallback = [];
 		}
 
+		// Get preferred languages.
 		$preferredLanguages = $this->getPreferredLanguages();
 
 		foreach ($preferredLanguages as $preferredLanguage) {
 
+			// We support the language.
 			if (in_array($preferredLanguage, $supported)) {
 				return $preferredLanguage;
 			}
 
+			// There is fallback.
 			if (isset($fallback[$preferredLanguage])) {
 				return $fallback[$preferredLanguage];
 			}
 
 		}
 
-		if (isset($preferredLanguages[0])) {
-			return $preferredLanguages[0];
+		try {
+			return \Katu\Config::get('locales', 'default');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			if (isset($preferredLanguages[0])) {
+				return $preferredLanguages[0];
+			}
 		}
 
 		return false;

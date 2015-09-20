@@ -8,6 +8,12 @@ class Errors implements \Iterator, \ArrayAccess {
 
 	protected $iteratorPosition = 0;
 
+	public function __construct($error = null) {
+		if ($error) {
+			$this->errors[] = $error;
+		}
+	}
+
 	public function addError($error) {
 		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
 			foreach ($error as $exception) {
