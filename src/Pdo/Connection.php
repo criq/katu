@@ -203,12 +203,12 @@ class Connection {
 		}
 	}
 
-	public function backup() {
-		return $this->dump([
+	public function backup($options = []) {
+		return $this->dump(array_merge([
 			'skipCache' => true,
 			'addDropTable' => true,
 			'compress' => 'gzip',
-		]);
+		], $options));
 	}
 
 }
