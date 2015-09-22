@@ -63,11 +63,18 @@ class Controller {
 		return static::renderError($code);
 	}
 
-	static function isSubmittedWithToken($name = null) {
+	static function isSubmitted($name = null) {
 		$app = App::get();
 
 		return $app->request->params('formSubmitted')
 			&& $app->request->params('formName') == $name
+			;
+	}
+
+	static function isSubmittedWithToken($name = null) {
+		$app = App::get();
+
+		return static::isSubmitted($name)
 			&& Utils\CSRF::isValidToken($app->request->params('formToken'))
 			;
 	}
