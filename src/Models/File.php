@@ -159,6 +159,7 @@ class File extends \Katu\Model {
 			'image/jpeg',
 			'image/png',
 			'image/gif',
+			'image/bmp',
 		]);
 	}
 

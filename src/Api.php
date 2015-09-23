@@ -12,6 +12,7 @@ class Api {
 	}
 
 	static function error($error = null, $code = null) {
+
 		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
 			$errors = [];
 			foreach ($error as $_error) {
