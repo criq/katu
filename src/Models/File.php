@@ -154,13 +154,16 @@ class File extends \Katu\Model {
 		return static::getDirPath() . '/' . $this->path;
 	}
 
-	public function isSupportedImage() {
-		return in_array($this->type, [
+	static function getSupportedImageTypes() {
+		return [
 			'image/jpeg',
 			'image/png',
 			'image/gif',
-			'image/bmp',
-		]);
+		];
+	}
+
+	public function isSupportedImage() {
+		return in_array($this->type, static::getSupportedImageTypes());
 	}
 
 	public function getThumbnailUrl($size = 640, $quality = 100, $options = []) {

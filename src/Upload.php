@@ -45,20 +45,8 @@ class Upload {
 		return in_array($this->fileType, (array) $types);
 	}
 
-	public function isJpegImage() {
-		return $this->fileType == 'image/jpeg';
-	}
-
-	public function isPngImage() {
-		return $this->fileType == 'image/png';
-	}
-
-	public function isGifImage() {
-		return $this->fileType == 'image/gif';
-	}
-
 	public function isSupportedImage() {
-		return $this->isJpegImage() || $this->isPngImage() || $this->isGifImage();
+		return in_array($this->fileType, Models\File::getSupportedImageTypes());
 	}
 
 	public function getErrorNumber() {
