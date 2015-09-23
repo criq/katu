@@ -12,7 +12,6 @@ class Api {
 	}
 
 	static function error($error = null, $code = null) {
-
 		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
 			$errors = [];
 			foreach ($error as $_error) {
@@ -33,7 +32,7 @@ class Api {
 
 		$res = [
 			'error' => [
-				'message' => $error,
+				'message' => $errors,
 			],
 		];
 
