@@ -4,20 +4,24 @@ namespace Katu\Utils;
 
 class CSV {
 
-	public $path;
+	public $file;
 	public $writer;
 	public $reader;
 
-	public function __construct($path = null, $options = []) {
-		if ($path) {
+	public function __construct($file = null, $options = []) {
+		if ($file) {
 
-			FileSystem::touch($path);
+			if (is_string($file)) {
+				$file = new File($file);
+			}
 
-			if ((!isset($options['readOnly']) || (isset($options['readOnly']) && !$options['readOnly'])) && !is_writable($path)) {
+			$file->touch();
+
+			if ((!isset($options['readOnly']) || (isset($options['readOnly']) && !$options['readOnly'])) && !$file->isWritable()) {
 				throw new \Exception("Unable to write into specified file.");
 			}
 
-			$this->path = $path;
+			$this->file = $file;
 
 		} else {
 
@@ -25,22 +29,19 @@ class CSV {
 				throw new \Exception("Undefined TMP_PATH.");
 			}
 
-			$path = FileSystem::joinPaths(TMP_PATH, FileSystem::getPathForName([
-				'!csv',
-				Random::getFileName(),
-			]));
-			FileSystem::touch($path);
+			$file = new File(TMP_PATH, 'csv', [Random::getFileName(), 'csv']);
+			$file->touch();
 
-			if (!is_writable($path)) {
+			if (!$file->isWritable()) {
 				throw new \Exception("Unable to write into a temporary file.");
 			}
 
-			$this->path = $path;
+			$this->file = $file;
 
 		}
 
-		$this->writer = new \EasyCSV\Writer($this->path);
-		$this->reader = new \EasyCSV\Reader($this->path);
+		$this->writer = new \EasyCSV\Writer($this->file);
+		$this->reader = new \EasyCSV\Reader($this->file);
 
 		if (isset($options['delimiter'])) {
 			$this->writer->setDelimiter($options['delimiter']);
@@ -48,9 +49,9 @@ class CSV {
 		}
 	}
 
-	static function readToArray($path, $options = []) {
+	static function readToArray($file, $options = []) {
 		$options['readOnly'] = true;
-		$csv = new self($path, $options);
+		$csv = new self($file, $options);
 		$rows = [];
 
 		while ($row = $csv->reader->getRow()) {
@@ -81,19 +82,18 @@ class CSV {
 	public function save($saveAs) {
 		FileSystem::touch($saveAs);
 
-		return file_put_contents($saveAs, file_get_contents($this->path));
+		return file_put_contents($saveAs, file_get_contents($this->file));
 	}
 
-	public function respond($saveAs) {
+	public function respond($saveAs, $disposition = 'inline') {
 		$app = \Katu\App::get();
-
 		$app->response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
 
-		return Download::respond($this->path, $saveAs, 'inline');
+		return Download::respond($this->file, $saveAs, $disposition);
 	}
 
 	public function delete() {
-		return @unlink($this->path);
+		return @unlink($this->file);
 	}
 
 }

@@ -55,8 +55,8 @@ class FileSystem {
 		return $mime;
 	}
 
-	static function getPathForName($nameParts) {
-		return Cache::getFromMemory(['fileSystemName', $nameParts], function($nameParts) {
+	static function getPathForName($nameParts, $options = []) {
+		return Cache::getFromMemory(['fileSystemName', $nameParts], function($nameParts, $options) {
 
 			$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
 			$nameParts = array_values(array_filter($nameParts));
@@ -88,7 +88,7 @@ class FileSystem {
 
 			return implode('/', $segments);
 
-		}, $nameParts);
+		}, $nameParts, $options);
 	}
 
 	static function touch($path) {

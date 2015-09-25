@@ -67,6 +67,8 @@ class File {
 	}
 
 	public function getType() {
+		clearstatcache();
+
 		if (!$this->exists()) {
 			throw new \Katu\Exceptions\FileNotFoundException;
 		}
@@ -81,10 +83,14 @@ class File {
 	}
 
 	public function getSize() {
+		clearstatcache();
+
 		return new FileSize(filesize($this));
 	}
 
 	public function getMime() {
+		clearstatcache();
+
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
 		$mime = finfo_file($finfo, $this->getPath());
 		finfo_close($finfo);
@@ -158,6 +164,10 @@ class File {
 
 	public function isPhpFile() {
 		return $this->isFile() && ($this->getMime() == 'text/x-c++' || $this->getExtension() == 'php');
+	}
+
+	public function isWritable() {
+		return is_writable($this);
 	}
 
 	public function makeDir($permissions = 0777, $recursive = true) {
