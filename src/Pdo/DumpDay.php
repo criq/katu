@@ -7,8 +7,8 @@ class DumpDay extends DumpDateCollection {
 	public $datetime;
 
 	public function getObsoleteDumps() {
-		// Older than a month, keep newest backup from every day.
-		if ($this->getAgeInWeeks() > 2) {
+		// Older than a week, keep newest backup from every day.
+		if ($this->getAgeInWeeks() > 1) {
 
 			$this->sortDumpsByTime();
 

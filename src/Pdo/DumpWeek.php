@@ -14,15 +14,15 @@ class DumpWeek extends DumpDateCollection {
 	}
 
 	public function getObsoleteDumps() {
-		// Older than 3 months, keep the newest backup.
-		if ($this->getAgeInWeeks() > 8) {
+		// Older than 1 month, keep the newest backup.
+		if ($this->getAgeInWeeks() > 4) {
 
 			$this->sortDumpsByTime();
 
 			return new DumpCollection(array_slice($this->dumps, 0, -1));
 
-		// Older than a month, keep newest backup from every day.
-		} elseif ($this->getAgeInWeeks() > 4) {
+		// Older than two weeks, keep newest backup from every day.
+		} elseif ($this->getAgeInWeeks() > 2) {
 
 			$dumps = new DumpCollection;
 			foreach ($this->getByDay() as $day) {
