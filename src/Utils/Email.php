@@ -32,7 +32,7 @@ class Email {
 	}
 
 	public function __toString() {
-		return $this->html;
+		return (string) $this->html;
 	}
 
 	static function resolveEmailAddress($emailAddress) {
