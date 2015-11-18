@@ -4,7 +4,7 @@ namespace Katu\Types;
 
 class TArray implements \ArrayAccess, \IteratorAggregate {
 
-	public $array;
+	private $array;
 
 	public function __construct($value = []) {
 		if (!self::isValid($value)) {
@@ -85,6 +85,10 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		}
 
 		return $values;
+	}
+
+	public function reverse() {
+		return new static(array_reverse($this->array));
 	}
 
 	public function unique() {
