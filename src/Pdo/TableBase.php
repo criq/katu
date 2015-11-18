@@ -103,7 +103,12 @@ class TableBase extends \Sexy\Expression {
 			$indexableColumns = [];
 
 			foreach ($destinationTable->getColumns() as $column) {
-				if (in_array($column->getProperties()->type, ['int', 'double', 'char', 'varchar'])) {
+				if (in_array($column->getProperties()->type, [
+					'date', 'datetime', 'timestamp', 'year',
+					'tinyint', 'smallint', 'mediumint', 'int', 'bigint',
+					'float', 'double', 'real', 'decimal',
+					'char', 'varchar',
+				])) {
 					$indexableColumns[] = $column;
 				}
 			}

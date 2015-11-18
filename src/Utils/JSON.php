@@ -26,8 +26,19 @@ class JSON {
 		;
 	}
 
+	static function getInlineEncodeBitmask() {
+		return
+			  (defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : null)
+			| (defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : null)
+		;
+	}
+
 	static function encode($var) {
 		return json_encode($var, self::getEncodeBitmask());
+	}
+
+	static function encodeInline($var) {
+		return json_encode($var, self::getInlineEncodeBitmask());
 	}
 
 	static function encodeStandard($var) {
