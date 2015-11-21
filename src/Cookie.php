@@ -7,7 +7,7 @@ class Cookie {
 	const DEFAULT_LIFETIME = 86400;
 	const DEFAULT_PATH     = '/';
 	const DEFAULT_SECURE   = false;
-	const DEFAULT_HTTPONLY = false;
+	const DEFAULT_HTTPONLY = true;
 
 	static function set($name, $value = null, $lifetime = null) {
 		$config = self::getConfig();
