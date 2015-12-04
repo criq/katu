@@ -41,7 +41,7 @@ class CSV {
 		}
 
 		$this->writer = new \EasyCSV\Writer($this->file);
-		$this->reader = new \EasyCSV\Reader($this->file);
+		$this->reader = new \EasyCSV\Reader($this->file, 'r+', isset($options['headersInFirstRow']) ? (bool) $options['headersInFirstRow'] : true);
 
 		if (isset($options['delimiter'])) {
 			$this->writer->setDelimiter($options['delimiter']);
