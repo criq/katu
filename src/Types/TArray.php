@@ -68,6 +68,14 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return implode($itemDelimiter, $items);
 	}
 
+	public function mapToValue($value, $default = null) {
+		if (isset($this[$value])) {
+			return $this[$value];
+		}
+
+		return $default;
+	}
+
 	public function getRandomItems($n) {
 		$array = [];
 		for ($i = 0; $i < $n; $i++) {
