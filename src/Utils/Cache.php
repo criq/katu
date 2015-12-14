@@ -115,7 +115,7 @@ class Cache {
 		return basename($path);
 	}
 
-	static function getPath($name, $args = []) {
+	static function getPath($name = [], $args = []) {
 		// No name, generate it from position in code.
 		if (!$name) {
 			foreach (debug_backtrace() as $backtrace) {

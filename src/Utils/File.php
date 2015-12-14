@@ -184,7 +184,22 @@ class File {
 	}
 
 	public function delete() {
-		return unlink($this);
+		if ($this->isDir()) {
+			$it = new \RecursiveDirectoryIterator((string) $this, \RecursiveDirectoryIterator::SKIP_DOTS);
+			$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
+
+			foreach ($files as $file) {
+				if ($file->isDir()) {
+					rmdir($file->getRealPath());
+				} else {
+					unlink($file->getRealPath());
+				}
+			}
+
+			return rmdir((string) $this);
+		} else {
+			return unlink((string) $this);
+		}
 	}
 
 	public function eachRecursive($callback) {
