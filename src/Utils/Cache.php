@@ -17,7 +17,7 @@ class Cache {
 			$args = array_slice(func_get_args(), 3);
 		}
 
-		$path = static::getPath(array_merge((array) $name, (array) $args));
+		$path = static::getPath((array) $name, (array) $args);
 
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
@@ -115,22 +115,22 @@ class Cache {
 		return basename($path);
 	}
 
-	static function getPath($name) {
+	static function getPath($name, $args = []) {
 		// No name, generate it from position in code.
 		if (!$name) {
 			foreach (debug_backtrace() as $backtrace) {
 				if ($backtrace['file'] != __FILE__) {
-					$name = [
+					$name = array_merge([
 						'!anonymous',
 						'!' . $backtrace['file'],
 						'!' . $backtrace['line'],
-					];
+					], $args);
 					break;
 				}
 			}
 		}
 
-		return FileSystem::getPathForName(array_merge(['!cache'], is_array($name) ? $name : [$name]));
+		return FileSystem::getPathForName(array_merge(['!cache'], is_array($name) ? $name : [$name], $args));
 	}
 
 	static function getUrl($url, $timeout = null) {
@@ -152,7 +152,7 @@ class Cache {
 
 	static function getRuntime($name, $callback = null) {
 		$args = array_slice(func_get_args(), 2);
-		$cacheName = static::getPath(array_merge((array) $name, (array) $args));
+		$cacheName = static::getPath((array) $name, (array) $args);
 
 		// There's something cached.
 		if (isset(static::$runtime[$cacheName]) && !is_null(static::$runtime[$cacheName])) {
