@@ -184,6 +184,8 @@ class File {
 	}
 
 	public function delete() {
+		clearstatcache();
+
 		if ($this->isDir()) {
 			$it = new \RecursiveDirectoryIterator((string) $this, \RecursiveDirectoryIterator::SKIP_DOTS);
 			$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
