@@ -36,6 +36,10 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return $value;
 	}
 
+	public function getIndex($index) {
+		return $this[$index];
+	}
+
 	public function getWithoutKeys() {
 		$res = array();
 
