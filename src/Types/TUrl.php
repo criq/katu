@@ -183,15 +183,11 @@ class TUrl {
 	}
 
 	public function ping() {
-		$res = (new \GuzzleHttp\Client)
-			->get('https://api.github.com/user', [
+		return (new \Guzzle\Http\Client)
+			->get($this, [
 				'timeout' => 1,
 			])
 			;
-
-		$curl->setOpt(CURLOPT_TIMEOUT, 1);
-
-		return $this->get($curl);
 	}
 
 }
