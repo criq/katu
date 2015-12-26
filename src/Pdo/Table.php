@@ -18,6 +18,10 @@ class Table extends TableBase {
 		$sql = " SHOW CREATE TABLE " . $this->name;
 		$res = $this->pdo->createQuery($sql)->getResult();
 
+		if (isset($res[0]['View'])) {
+			return $res[0]['Create View'];
+		}
+
 		return $res[0]['Create Table'];
 	}
 
