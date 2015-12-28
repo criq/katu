@@ -12,8 +12,9 @@ class Api {
 	}
 
 	static function error($error = null, $code = null) {
+		$errors = [];
+
 		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
-			$errors = [];
 			foreach ($error as $_error) {
 				if ($_error instanceof \Katu\Exceptions\Exception) {
 					$errors[] = (string) $_error->getTranslatedMessage();
