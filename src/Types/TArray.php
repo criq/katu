@@ -89,7 +89,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 	}
 
 	public function flatten() {
-		$iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($this));
+		$iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($this->array));
 		$values = [];
 
 		foreach ($iterator as $value) {
