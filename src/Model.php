@@ -89,10 +89,15 @@ class Model extends ModelBase {
 		return static::get(static::getPdo()->getLastInsertId());
 	}
 
-	static function upsert($bindValues) {
-		$object = static::getOneBy($bindValues);
-		if (!$object) {
-			$object = static::insert($bindValues);
+	static function upsert($getByParams, $updateParams = []) {
+		$object = static::getOneBy($getByParams);
+		if ($object) {
+			foreach ($updateParams as $name => $value) {
+				$object->update($name, $value);
+			}
+			$object->save();
+		} else {
+			$object = static::insert(array_merge($getByParams, $updateParams));
 		}
 
 		return $object;
