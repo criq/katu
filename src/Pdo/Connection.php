@@ -97,8 +97,6 @@ class Connection {
 			$views[$view->name->name]['usage'] = $view->getTotalUsage();
 		}
 
-		var_dump($views); die;
-
 		return $views;
 	}
 

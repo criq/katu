@@ -19,8 +19,6 @@ class Cache {
 
 		$path = static::getPath((array) $name, (array) $args);
 
-		var_dump($path); die;
-
 		$cache = new \Gregwar\Cache\Cache;
 		$cache->setCacheDirectory(static::getCacheDir($path));
 		$cache->setPrefixSize(0);

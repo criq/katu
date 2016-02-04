@@ -204,14 +204,4 @@ class ModelBase {
 		return false;
 	}
 
-	/*
-	public function getProperties() {
-		foreach ($this->getTable()->getColumns() as $column) {
-			var_dump($column->getProperties());
-		}
-
-		var_dump(static::$properties);
-	}
-	*/
-
 }

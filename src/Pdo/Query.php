@@ -63,8 +63,6 @@ class Query {
 	}
 
 	public function getResult() {
-		#var_dump($this->getStatement());
-
 		$stopwatch = new \Katu\Utils\Stopwatch();
 
 		if ($this->class) {
