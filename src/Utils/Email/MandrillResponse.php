@@ -13,6 +13,10 @@ class MandrillResponse {
 	}
 
 	public function isSuccessful() {
+		if (!$this->statuses) {
+			return false;
+		}
+
 		foreach ($this->statuses as $status) {
 			if (!$status->isSuccessful()) {
 				return false;
