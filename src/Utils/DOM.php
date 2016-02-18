@@ -13,6 +13,13 @@ class DOM {
 		return $crawler;
 	}
 
+	static function crawlXml($src) {
+		$crawler = new Crawler();
+		$crawler->addXmlContent($src);
+
+		return $crawler;
+	}
+
 	static function crawlUrl($url, $timeout = null) {
 		return static::crawlHtml(Cache::getUrl($url, $timeout));
 	}
