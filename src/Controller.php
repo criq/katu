@@ -8,6 +8,10 @@ class Controller {
 
 	static $data = [];
 
+	static function init() {
+		return true;
+	}
+
 	static function redirect($urls, $code = 302) {
 		$app = App::get();
 

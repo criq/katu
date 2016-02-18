@@ -89,7 +89,7 @@ class Model extends ModelBase {
 		return static::get(static::getPdo()->getLastInsertId());
 	}
 
-	static function upsert($getByParams, $updateParams = []) {
+	static function upsert($getByParams, $insertParams = [], $updateParams = []) {
 		$object = static::getOneBy($getByParams);
 		if ($object) {
 			foreach ($updateParams as $name => $value) {
@@ -97,7 +97,7 @@ class Model extends ModelBase {
 			}
 			$object->save();
 		} else {
-			$object = static::insert(array_merge($getByParams, $updateParams));
+			$object = static::insert(array_merge($getByParams, $insertParams, $updateParams));
 		}
 
 		return $object;

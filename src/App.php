@@ -197,7 +197,7 @@ class App {
 			} catch (Exceptions\RouteException $e) {
 				throw $e;
 			} catch (\Exception $e) {
-				 /* Nothing to do, no custom routes defined. */
+				/* Nothing to do, no custom routes defined. */
 			}
 
 			// Catch-all.
