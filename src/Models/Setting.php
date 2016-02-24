@@ -84,7 +84,7 @@ class Setting extends \Katu\Model {
 	static function getByName($name) {
 		$setting = static::getObject($name);
 		if (!$setting) {
-			throw new \Katu\Exceptions\MissingSettingException("Missing setting " . $name . ".", 'name');
+			throw new \Katu\Exceptions\MissingSettingException("Missing setting " . $name . ".");
 		}
 
 		return $setting->getValue();
