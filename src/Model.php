@@ -18,9 +18,16 @@ class Model extends ModelBase {
 
 	public function __call($name, $args) {
 		// Setter.
-		if (preg_match('#^set(?<property>[a-z]+)$#i', $name, $match) && count($args) == 1) {
+		if (preg_match('#^set(?<property>[a-z0-9]+)$#i', $name, $match) && count($args) == 1) {
 			$property = $this->getPropertyName($match['property']);
-			$value    = $args[0];
+
+			// Not found, maybe just added.
+			if (!$property) {
+				\Katu\Utils\Cache::clearMemory();
+				$property = $this->getPropertyName($match['property']);
+			}
+
+			$value = $args[0];
 
 			if ($property && $this->update($property, $value)) {
 				return true;
@@ -97,7 +104,7 @@ class Model extends ModelBase {
 			}
 			$object->save();
 		} else {
-			$object = static::insert(array_merge($getByParams, $insertParams, $updateParams));
+			$object = static::insert(array_merge((array) $getByParams, (array) $insertParams, (array) $updateParams));
 		}
 
 		return $object;

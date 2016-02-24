@@ -210,4 +210,17 @@ class Cache {
 		}
 	}
 
+	static function clearMemory() {
+		if (function_exists('apc_clear_cache')) {
+
+			apc_clear_cache();
+			apc_clear_cache('user');
+
+			return true;
+
+		}
+
+		return false;
+	}
+
 }
