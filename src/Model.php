@@ -324,7 +324,7 @@ class Model extends ModelBase {
 
 	public function setUniqueColumnSlug($column, $source, $force = false, $constraints = []) {
 		// Generate slug.
-		$slug = (new \Katu\Types\TString($source))->getForUrl([
+		$slug = (new \Katu\Types\TString(trim(implode(' ', (array) $source))))->getForUrl([
 			'maxLength' => 245,
 		]);
 

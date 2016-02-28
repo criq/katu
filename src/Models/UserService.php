@@ -24,6 +24,10 @@ class UserService extends \Katu\Model {
 		));
 	}
 
+	static function getOneByServiceAndId($serviceName, $serviceUserId) {
+		return static::getByServiceAndId($serviceName, $serviceUserId)->getOne();
+	}
+
 	public function getUser() {
 		return \App\Models\User::get($this->userId);
 	}

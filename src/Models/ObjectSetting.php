@@ -2,10 +2,10 @@
 
 namespace Katu\Models;
 
-class ObjectSetting extends \Katu\Model {
+abstract class ObjectSetting extends \Katu\Model {
 
-	static function create($creator, $object, $basket, $name) {
-		if (!static::checkCrudParams($creator, $object, $basket, $name)) {
+	static function create($creator, $object, $name) {
+		if (!static::checkCrudParams($creator, $object, $name)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
@@ -17,14 +17,14 @@ class ObjectSetting extends \Katu\Model {
 		]);
 	}
 
-	static function make($creator, $object, $basket, $name) {
+	static function make($creator, $object, $name) {
 		return static::getOneOrCreateWithList([
 			static::OBJECT_COLUMN_ID_NAME => (int)    ($object->getId()),
 			'name'                        => (string) (trim($name)),
-		], $creator, $object, $basket, $name);
+		], $creator, $object, $name);
 	}
 
-	static function checkCrudParams($creator, $object, $basket, $name) {
+	static function checkCrudParams($creator, $object, $name) {
 		if (!$creator || !($creator instanceof User)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid creator."))
 				->addErrorName('creator')

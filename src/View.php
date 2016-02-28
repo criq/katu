@@ -135,19 +135,19 @@ class View {
 
 		// Deprecated.
 		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
-			return call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('url', function() {
-			return call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCurrentUrl', function() {
-			return call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('makeUrl', function() {
-			return call_user_func_array(['\Katu\Types\TUrl', 'make'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Types\TUrl', 'make'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {
