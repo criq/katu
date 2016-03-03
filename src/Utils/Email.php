@@ -199,6 +199,10 @@ class Email {
 		return $this;
 	}
 
+	/**************************************************************************
+	 * Mandrill.
+	 */
+
 	public function getMessageForMandrill($message) {
 		$message['subject']    = $this->subject;
 		$message['html']       = $this->html;
@@ -285,6 +289,42 @@ class Email {
 		} else {
 			return $mandrillApi->messages->send($this->getMessageForMandrill($message));
 		}
+	}
+
+	/**************************************************************************
+	 * SendGrid.
+	 */
+
+	public function sendWithSendGridThroughApi($sendGridApi, $message = []) {
+		return $sendGridApi->send($this->getMessageForSendGrid($message));
+	}
+
+	public function getMessageForSendGrid($message = []) {
+		$email = new \SendGrid\Email;
+
+		var_dump($this); die;
+
+		$email->setSubject($this->subject);
+		$email->setHtml($this->html);
+		$email->setText($this->text);
+		$email->setFrom($this->fromEmailAddress);
+		$email->setFromName($this->fromName);
+		$email->setHeaders($this->headers);
+
+		foreach ($this->to as $toEmailAddress => $toName) {
+			$email->addTo($toEmailAddress, $toName);
+		}
+
+		foreach ($this->cc as $toEmailAddress => $toName) {
+			$email->addCc($toEmailAddress, $toName);
+		}
+
+		#$message['attachments'] = $this->attachments;
+
+		#$message['global_merge_vars'] = $this->getVariablesForMandrill();
+		#$message['merge_vars'] = $this->getRecipientVariablesForMandrill();
+
+		return $email;
 	}
 
 }
