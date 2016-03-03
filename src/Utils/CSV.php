@@ -86,10 +86,11 @@ class CSV {
 	}
 
 	public function respond($saveAs, $disposition = 'inline') {
-		$app = \Katu\App::get();
-		$app->response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
-
-		return Download::respond($this->file, $saveAs, $disposition);
+		return (new \Katu\Utils\Download($this->file))
+			->setMime('text/csv')
+			->setCharset('utf-8')
+			->respond($saveAs, $disposition)
+			;
 	}
 
 	public function delete() {
