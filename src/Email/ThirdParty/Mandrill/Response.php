@@ -1,14 +1,14 @@
 <?php
 
-namespace Katu\Utils\Email;
+namespace Katu\Email\ThirdParty\Mandrill;
 
-class MandrillResponse {
+class Response {
 
 	private $statuses = [];
 
 	public function __construct($response = []) {
 		foreach ($response as $status) {
-			$this->statuses[] = new MandrillStatus($status);
+			$this->statuses[] = new Status($status);
 		}
 	}
 
