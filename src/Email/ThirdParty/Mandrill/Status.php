@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Utils\Email;
+namespace Katu\Email\ThirdParty\Mandrill;
 
-class MandrillStatus {
+class Status {
 
 	private $id;
 	private $emailAddress;

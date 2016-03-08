@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Utils\Email;
+namespace Katu\Email\ThirdParty\Mandrill;
 
-class MandrillThroughSwift extends \Swift_Message {
+class ThroughSwift extends \Swift_Message {
 
 	private $transport;
 	private $mailer;
