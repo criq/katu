@@ -32,6 +32,26 @@ class File {
 		return $this->path;
 	}
 
+	public function getUrl() {
+		try {
+			$publicRoot = \Katu\Config::get('app', 'publicRoot');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			$publicRoot = './';
+		}
+
+		$publicPath = realpath(new \Katu\Utils\File(BASE_DIR, $publicRoot));
+		if (preg_match('#^' . $publicPath . '(.*)$#', $this->getPath(), $match)) {
+			return implode('/', array_map(function($i) {
+				return trim($i, '/');
+			}, [
+				\Katu\Config::get('app', 'baseUrl'),
+				$match[1],
+			]));
+		}
+
+		return null;
+	}
+
 	public function exists() {
 		return file_exists($this->getPath());
 	}
