@@ -4,6 +4,8 @@ namespace Katu\Email\ThirdParty;
 
 class SendGrid extends \Katu\Email\ThirdParty {
 
+	public $attachments = [];
+
 	static function getDefaultApi() {
 		$app = \Katu\App::get();
 
@@ -85,8 +87,9 @@ class SendGrid extends \Katu\Email\ThirdParty {
 		 * Attachments.
 		 */
 
-		#@todo
-		#$message['attachments'] = $this->attachments;
+		foreach ($this->attachments as $attachment) {
+			$email->addAttachment($attachment['file'], $attachment['name'], $attachment['cid']);
+		}
 
 		return $email;
 	}

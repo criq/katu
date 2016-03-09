@@ -4,9 +4,8 @@ namespace Katu\Email\ThirdParty;
 
 class Mandrill extends \Katu\Email\ThirdParty {
 
-	public $template;
-
 	public $content = [];
+	public $attachments = [];
 
 	public $async = false;
 
@@ -58,7 +57,13 @@ class Mandrill extends \Katu\Email\ThirdParty {
 			];
 		}
 
-		$message['attachments'] = $this->attachments;
+		foreach ($this->attachments as $attachment) {
+			$message['attachments'][] = [
+				'name'    => (string) $attachment['file'],
+				'type'    => $attachment['file']->getMime(),
+				'content' => base64_encode($attachment['file']->get()),
+			];
+		}
 
 		$message['global_merge_vars'] = $this->getVariables();
 		$message['merge_vars'] = $this->getRecipientVariables();

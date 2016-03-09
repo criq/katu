@@ -182,6 +182,14 @@ class TUrl {
 
 	}
 
+	public function getAsTemporaryFile() {
+		$basename = (new \Katu\Utils\File($this))->getBasename();
+		$tmpFile = new \Katu\Utils\File(TMP_PATH, 'url', \Katu\Utils\Random::getFileName(), $basename);
+		$tmpFile->set($this->get());
+
+		return $tmpFile;
+	}
+
 	public function ping() {
 		return (new \Guzzle\Http\Client)
 			->get($this, [

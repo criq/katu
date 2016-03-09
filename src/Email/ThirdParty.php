@@ -17,6 +17,16 @@ abstract class ThirdParty extends \Katu\Email {
 		return $this;
 	}
 
+	public function addAttachment($file, $params = []) {
+		$this->attachments[] = [
+			'file' => new \Katu\Utils\File($file),
+			'name' => isset($params['name']) ? $params['name'] : null,
+			'cid'  => isset($params['cid']) ? $params['cid'] : null,
+		];
+
+		return $this;
+	}
+
 	public function setVariable($name, $value) {
 		$this->variables[$name] = $value;
 
