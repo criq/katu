@@ -50,7 +50,9 @@ class RolePermission extends \Katu\Model {
 	}
 
 	static function isValidPermission($permission) {
-		return in_array($permission, \App\Models\UserPermission::getAvailable());
+		$userPermissionClass = class_exists('\\App\\Models\\UserPermission') ? '\\App\\Models\\UserPermission' : '\\Katu\\Models\\UserPermission';
+
+		return in_array($permission, $userPermissionClass::getAvailable());
 	}
 
 }
