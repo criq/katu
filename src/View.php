@@ -35,7 +35,7 @@ class View {
 			try {
 				return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality);
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
-				return false;
+				var_dump($e); die;
 			}
 		}));
 
@@ -43,7 +43,7 @@ class View {
 			try {
 				return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality, ['format' => 'square']);
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
-				return false;
+				var_dump($e); die;
 			}
 		}));
 
