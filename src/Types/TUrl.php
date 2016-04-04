@@ -10,7 +10,7 @@ class TUrl {
 
 	public function __construct($value) {
 		if (!self::isValid($value)) {
-			throw new \Exception("Invalid URL.");
+			throw new \Exception("Invalid URL '" . $value . "'.");
 		}
 
 		$this->value = (string) (trim($value));
