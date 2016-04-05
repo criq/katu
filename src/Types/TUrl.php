@@ -9,6 +9,9 @@ class TUrl {
 	public $value;
 
 	public function __construct($value) {
+		// Remove invalid characters.
+		$value = iconv(mb_detect_encoding($value), 'ASCII//IGNORE', $value);
+
 		if (!self::isValid($value)) {
 			throw new \Exception("Invalid URL '" . $value . "'.");
 		}
