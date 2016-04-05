@@ -73,6 +73,10 @@ class User extends \Katu\Model {
 		return (bool) $this->password;
 	}
 
+	public function getEmailAddress() {
+		return \App\Models\EmailAddress::get($this->emailAddressId);
+	}
+
 	public function hasEmailAddress() {
 		return (bool) $this->emailAddressId;
 	}
