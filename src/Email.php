@@ -5,8 +5,8 @@ namespace Katu;
 class Email {
 
 	public $subject;
-	public $text;
-	public $html;
+	public $text = '';
+	public $html = '';
 
 	public $fromEmailAddress;
 	public $fromName;
