@@ -193,12 +193,12 @@ class TUrl {
 		return $tmpFile;
 	}
 
-	public function ping() {
-		return (new \Guzzle\Http\Client)
-			->get($this, [
-				'timeout' => 1,
-			])
-			;
+	public function ping($timeout = 1) {
+		$curl = new \Curl\Curl;
+		$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+		$curl->setOpt(CURLOPT_TIMEOUT, $timeout);
+
+		return $curl->get((string) $this);
 	}
 
 }
