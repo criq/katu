@@ -195,7 +195,13 @@ class TUrl {
 
 	public function ping($timeout = 1) {
 		$curl = new \Curl\Curl;
-		$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+
+		try {
+			$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+		} catch (\ErrorException $e) {
+			// Nothing to do, open_basedir is probably set.
+		}
+
 		$curl->setOpt(CURLOPT_TIMEOUT, $timeout);
 
 		return $curl->get((string) $this);
