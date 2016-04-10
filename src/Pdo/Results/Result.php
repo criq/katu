@@ -11,7 +11,6 @@ class Result implements \Iterator, \ArrayAccess {
 
 	protected $iteratorPosition = 0;
 	protected $iteratorArray = null;
-	protected $array = null;
 
 	public function __construct($pdo, $statement) {
 		$this->pdo = $pdo;
@@ -61,7 +60,7 @@ class Result implements \Iterator, \ArrayAccess {
 	public function getCount() {
 		$this->setArray();
 
-		return count($this->array);
+		return count($this->iteratorArray);
 	}
 
 	public function getTotal() {
@@ -69,17 +68,17 @@ class Result implements \Iterator, \ArrayAccess {
 	}
 
 	public function setArray() {
-		if (is_null($this->array)) {
-			$this->array = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+		if (is_null($this->iteratorArray)) {
+			$this->iteratorArray = $this->statement->fetchAll(PDO::FETCH_ASSOC);
 		}
 
-		return $this->array;
+		return $this->iteratorArray;
 	}
 
 	public function getArray() {
 		$this->setArray();
 
-		return $this->array;
+		return $this->iteratorArray;
 	}
 
 	public function getColumnValues($column) {

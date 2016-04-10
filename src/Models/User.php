@@ -18,6 +18,7 @@ class User extends \Katu\Model {
 	static function createWithEmailAddress($emailAddress) {
 		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->setAbbr('invalidEmailAddress')
 				->addErrorName('emailAddress')
 				;
 		}
@@ -27,6 +28,7 @@ class User extends \Katu\Model {
 			'emailAddressId' => $emailAddress->getId(),
 		])->getTotal()) {
 			throw (new \Katu\Exceptions\InputErrorException("E-mail address is already in use."))
+				->setAbbr('emailAddressInUse')
 				->addErrorName('emailAddress')
 				;
 		}
@@ -84,6 +86,7 @@ class User extends \Katu\Model {
 	public function setEmailAddress($emailAddress) {
 		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->setAbbr('invalidEmailAddress')
 				->addErrorName('emailAddress')
 				;
 		}
@@ -94,6 +97,7 @@ class User extends \Katu\Model {
 			new CmpNotEq(static::getIdColumn(), $this->getId()),
 		])->getTotal()) {
 			throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
+				->setAbbr('emailAddressInUse')
 				->addErrorName('emailAddress')
 				;
 		}
@@ -140,7 +144,9 @@ class User extends \Katu\Model {
 		foreach ((array) $roleIds as $roleId) {
 			$role = \App\Models\Role::get($roleId);
 			if (!$role) {
-				throw new \Katu\Exceptions\InputErrorException("Invalid role ID.");
+				throw (new \Katu\Exceptions\InputErrorException("Invalid role ID."))
+					->setAbbr('invalidRoleId')
+					;
 			}
 
 			$roles[] = $role;

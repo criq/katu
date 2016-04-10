@@ -32,6 +32,7 @@ class EmailAddress extends \Katu\Model {
 	static function checkCrudParams($emailAddress) {
 		if (!static::checkEmailAddress($emailAddress)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->setAbbr('invalidEmailAddress')
 				->addErrorName('emailAddress')
 				;
 		}
@@ -42,6 +43,7 @@ class EmailAddress extends \Katu\Model {
 	static function checkEmailAddress($emailAddress) {
 		if (!trim($emailAddress)) {
 			throw (new \Katu\Exceptions\InputErrorException("Missing e-mail address."))
+				->setAbbr('missingEmailAddress')
 				->addErrorName('emailAddress')
 				->addTranslation('cs', "Chybějící e-mailová adresa.")
 				;
@@ -49,6 +51,7 @@ class EmailAddress extends \Katu\Model {
 
 		if (!static::isValid($emailAddress)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->setAbbr('invalidEmailAddress')
 				->addErrorName('emailAddress')
 				->addTranslation('cs', "Neplatná e-mailová adresa.")
 				;

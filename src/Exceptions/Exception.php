@@ -5,7 +5,8 @@ namespace Katu\Exceptions;
 class Exception extends \Exception {
 
 	private $errorNames = [];
-	private $translations = null;
+	private $abbr;
+	private $translations;
 
 	public function __construct($message = null, $code = 0, $previous = null) {
 		parent::__construct($message, $code, $previous);
@@ -15,6 +16,16 @@ class Exception extends \Exception {
 
 	public function __toString() {
 		return (string) $this->getTranslatedMessage();
+	}
+
+	public function setAbbr($abbr) {
+		$this->abbr = trim($abbr);
+
+		return $this;
+	}
+
+	public function getAbbr() {
+		return $this->abbr;
 	}
 
 	public function addErrorName($errorName) {
