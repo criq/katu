@@ -107,6 +107,10 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return new static(array_unique($this->array));
 	}
 
+	public function keys() {
+		return new static(array_keys($this->array));
+	}
+
 	public function values() {
 		return new static(array_values($this->array));
 	}
