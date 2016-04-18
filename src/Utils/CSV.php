@@ -15,7 +15,7 @@ class CSV {
 				$file = new File($file);
 			}
 
-			$file->touch();
+			@$file->touch();
 
 			if ((!isset($options['readOnly']) || (isset($options['readOnly']) && !$options['readOnly'])) && !$file->isWritable()) {
 				throw new \Exception("Unable to write into specified file.");
