@@ -122,6 +122,16 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return new static($array);
 	}
 
+	public function orderBy($key, $flags = 0) {
+		$array = $this->array;
+
+		array_multisort(array_map(function($i) use($key) {
+			return $i[$key];
+		}, $array), $array, $flags);
+
+		return new static($array);
+	}
+
 	/* ArrayAccess ***********************************************************/
 
 	public function offsetSet($offset, $value) {
