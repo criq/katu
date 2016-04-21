@@ -49,6 +49,10 @@ class Upload {
 		return in_array($this->fileType, Models\File::getSupportedImageTypes());
 	}
 
+	public function getHash() {
+		return sha1(file_get_contents($this->path));
+	}
+
 	public function getErrorNumber() {
 		return $this->error;
 	}
