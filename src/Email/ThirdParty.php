@@ -28,14 +28,18 @@ abstract class ThirdParty extends \Katu\Email {
 	}
 
 	public function setVariable($name, $value) {
-		$this->variables[$name] = $value;
+		if (trim($name)) {
+			$this->variables[$name] = $value;
+		}
 
 		return $this;
 	}
 
 	public function setRecipientVariable($emailAddress, $name, $value) {
 		foreach (static::resolveEmailAddress($emailAddress) as $emailAddress) {
-			$this->recipientVariables[$emailAddress][$name] = $value;
+			if (trim($name)) {
+				$this->recipientVariables[$emailAddress][$name] = $value;
+			}
 		}
 
 		return $this;
