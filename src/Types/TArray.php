@@ -128,6 +128,8 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		array_multisort(array_map(function($i) use($key) {
 			if (is_object($i) && is_callable([$i, $key])) {
 				return call_user_func_array([$i, $key], []);
+			} elseif (is_object($i) && isset($i->$key)) {
+				return $i->$key;
 			} else {
 				return $i[$key];
 			}
