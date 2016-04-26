@@ -239,6 +239,7 @@ class View {
 		$data['_request']['route']  = (array)  ([
 			'pattern' => $app->router()->getCurrentRoute()->getPattern(),
 			'name'    => $app->router()->getCurrentRoute()->getName(),
+			'params'  => $app->router()->getCurrentRoute()->getParams(),
 		]);
 
 		if (class_exists('\App\Models\User')) {

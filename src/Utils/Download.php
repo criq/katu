@@ -60,7 +60,7 @@ class Download {
 		if (is_null($this->contentDisposition) && is_null($fileName) && $this->content instanceof File) {
 			$fileName = basename($this->content);
 		}
-		$app->response->headers->set('Content-Disposition', $disposition . '; filename=' . $fileName);
+		$app->response->headers->set('Content-Disposition', $disposition . '; filename="' . str_replace('"', '\\"', $fileName) . '"');
 
 		/**********************************************************************
 		 * Content-Length.
