@@ -29,6 +29,8 @@ class Api {
 			} else {
 				$errors[] = $error->getMessage();
 			}
+		} else {
+			$errors[] = $error;
 		}
 
 		$res = [
