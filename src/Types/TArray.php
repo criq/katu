@@ -138,6 +138,10 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return new static($array);
 	}
 
+	public function count() {
+		return count($this->array);
+	}
+
 	/* ArrayAccess ***********************************************************/
 
 	public function offsetSet($offset, $value) {
