@@ -9,13 +9,15 @@ class Cookie {
 	const DEFAULT_SECURE   = false;
 	const DEFAULT_HTTPONLY = true;
 
-	static function set($name, $value = null, $lifetime = null) {
+	static function set($name, $value = null, $lifetime = null, $path = null, $domain = null) {
 		$config = self::getConfig();
 
 		$name = strtr($name, '.', '_');
 		$lifetime = !is_null($lifetime) ? (time() + (int) $lifetime) : (time() + $config['lifetime']);
+		$path     = !is_null($path) ? $path : $config['path'];
+		$domain   = !is_null($domain) ? $domain : $config['domain'];
 
-		return setcookie($name, $value, $lifetime, $config['path'], $config['domain']);
+		return setcookie($name, $value, $lifetime, $path, $domain);
 	}
 
 	static function get($name = null) {
