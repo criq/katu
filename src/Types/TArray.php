@@ -142,6 +142,14 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return count($this->array);
 	}
 
+	public function pushArray($array) {
+		foreach ($array as $item) {
+			array_push($this->array, $item);
+		}
+
+		return true;
+	}
+
 	/* ArrayAccess ***********************************************************/
 
 	public function offsetSet($offset, $value) {
