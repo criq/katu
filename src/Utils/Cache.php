@@ -28,28 +28,36 @@ class Cache {
 			$opts['max-age'] = $timeout;
 		}
 
-		$callback = function() use($callback, $args) {
+		if ($callback) {
 
-			$data = call_user_func_array($callback, $args);
-			$serializedData = serialize($data);
+			$callback = function() use($callback, $args) {
 
-			try {
+				$data = call_user_func_array($callback, $args);
+				$serializedData = serialize($data);
 
-				return gzcompress($serializedData, \Katu\Config::get('app', 'cache', 'compress'));
+				try {
 
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
+					return gzcompress($serializedData, \Katu\Config::get('app', 'cache', 'compress'));
 
-				// Do not commpress.
-				return $serializedData;
+				} catch (\Katu\Exceptions\MissingConfigException $e) {
 
-			}
+					// Do not commpress.
+					return $serializedData;
 
-		};
+				}
+
+			};
+
+		}
 
 		try {
 
 			$cacheFile = new File($cache->getCacheDirectory(), static::getCacheFile($path));
-			$rawData = $cache->getOrCreate(static::getCacheFile($path), $opts, $callback);
+			if ($callback) {
+				$rawData = $cache->getOrCreate(static::getCacheFile($path), $opts, $callback);
+			} else {
+				$rawData = $cache->get(static::getCacheFile($path), $opts);
+			}
 
 			// Try unserialize.
 			try {
@@ -93,9 +101,7 @@ class Cache {
 			return $unserializedData;
 
 		} catch (\Katu\Exceptions\DoNotCacheException $e) {
-
 			return $e->data;
-
 		}
 	}
 
