@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 <?php
 
 namespace Katu\Types;
@@ -181,4 +179,3 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 	}
 
 }
->>>>>>> 39cbca5164b74ab10f982a318bfaca8eb7f05efd
