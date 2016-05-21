@@ -6,8 +6,22 @@ class Session {
 
 	const KEY = 'katu.session';
 
+	static function getPath() {
+		return new Utils\File(TMP_PATH, 'session');
+	}
+
+	static function makePath() {
+		try {
+			return static::getPath()->makeDir();
+		} catch (\Exception $e) {
+
+		}
+	}
+
 	static function start() {
 		if (!session_id()) {
+			static::makePath();
+			session_save_path(static::getPath());
 			session_start();
 		}
 	}
@@ -15,7 +29,7 @@ class Session {
 	static function init() {
 		if (!session_id()) {
 			static::setCookieParams();
-			session_start();
+			static::start();
 		}
 
 		if (!isset($_SESSION[static::KEY])) {

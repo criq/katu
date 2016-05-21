@@ -194,10 +194,8 @@ class File {
 		return is_writable($this);
 	}
 
-	public function makeDir($permissions = 0777, $recursive = true) {
-		@mkdir($this, $permissions, $recursive);
-
-		return $this;
+	public function makeDir($mode = 0777, $recursive = true) {
+		return mkdir($this, $mode, $recursive);
 	}
 
 	public function touch() {
