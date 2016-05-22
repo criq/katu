@@ -195,7 +195,7 @@ class File {
 	}
 
 	public function makeDir($mode = 0777, $recursive = true) {
-		return mkdir($this, $mode, $recursive);
+		return @mkdir($this, $mode, $recursive);
 	}
 
 	public function touch() {
