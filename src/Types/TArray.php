@@ -150,6 +150,14 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return true;
 	}
 
+	public function getTotal() {
+		return $this->count();
+	}
+
+	public function getCount() {
+		return $this->count();
+	}
+
 	/* ArrayAccess ***********************************************************/
 
 	public function offsetSet($offset, $value) {
