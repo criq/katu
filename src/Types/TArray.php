@@ -130,7 +130,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 				return call_user_func_array([$i, $key], []);
 			} elseif (is_object($i) && isset($i->$key)) {
 				return $i->$key;
-			} else {
+			} elseif (is_array($i)) {
 				return $i[$key];
 			}
 		}, $array), $array, $flags);
