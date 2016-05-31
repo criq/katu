@@ -17,25 +17,37 @@ class ClassResult extends PaginatedResult {
 			$class = $this->class;
 		}
 
-		return $this->statement->fetchAll(PDO::FETCH_CLASS, $class);
+		if (is_null($this->iteratorArray)) {
+			$this->iteratorArray = $this->statement->fetchAll(PDO::FETCH_CLASS, $class);
+		}
+
+		return $this->iteratorArray;
 	}
 
-	public function getOne($class = null) {
+	public function getOne($class = null, $offset = 0) {
 		if (!$class && $this->class) {
 			$class = $this->class;
 		}
 
 		$objects = $this->getObjects();
-		if (!isset($objects[0])) {
+		if (!isset($objects[$offset])) {
 			return false;
 		}
 
-		$object = $objects[0];
+		$object = $objects[$offset];
 		if ($object && method_exists($object, 'save')) {
 			$object->save();
 		}
 
 		return $object;
+	}
+
+	public function getRandomOne($class = null) {
+		if ($this->getCount()) {
+			return $this->getOne($class, rand(0, $this->getCount() - 1));
+		}
+
+		return false;
 	}
 
 	public function getPropertyValues($property) {
