@@ -58,7 +58,7 @@ class Result implements \Iterator, \ArrayAccess {
 	}
 
 	public function getCount() {
-		$this->setArray();
+		$this->setIteratorArray();
 
 		return count($this->iteratorArray);
 	}
@@ -67,16 +67,8 @@ class Result implements \Iterator, \ArrayAccess {
 		return $this->getCount();
 	}
 
-	public function setArray() {
-		if (is_null($this->iteratorArray)) {
-			$this->iteratorArray = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-		}
-
-		return $this->iteratorArray;
-	}
-
 	public function getArray() {
-		$this->setArray();
+		$this->setIteratorArray();
 
 		return $this->iteratorArray;
 	}
@@ -138,7 +130,7 @@ class Result implements \Iterator, \ArrayAccess {
 
 	public function setIteratorArray() {
 		if (is_null($this->iteratorArray)) {
-			$this->iteratorArray = $this->getArray();
+			$this->iteratorArray = $this->statement->fetchAll(PDO::FETCH_ASSOC);
 		}
 	}
 

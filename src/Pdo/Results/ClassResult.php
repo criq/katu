@@ -17,9 +17,7 @@ class ClassResult extends PaginatedResult {
 			$class = $this->class;
 		}
 
-		if (is_null($this->iteratorArray)) {
-			$this->iteratorArray = $this->statement->fetchAll(PDO::FETCH_CLASS, $class);
-		}
+		$this->setIteratorArray($class);
 
 		return $this->iteratorArray;
 	}
@@ -43,10 +41,6 @@ class ClassResult extends PaginatedResult {
 	}
 
 	public function getRandomOne($class = null) {
-		var_dump($this);
-		var_dump($this->getCount());
-		var_dump($this);
-		die;
 		if ($this->getCount()) {
 			return $this->getOne($class, rand(0, $this->getCount() - 1));
 		}
@@ -66,9 +60,13 @@ class ClassResult extends PaginatedResult {
 
 	/* ArrayAccess ***********************************************************/
 
-	public function setIteratorArray() {
+	public function setIteratorArray($class = null) {
 		if (is_null($this->iteratorArray)) {
-			$this->iteratorArray = $this->getObjects();
+			if (!$class && $this->class) {
+				$class = $this->class;
+			}
+
+			$this->iteratorArray = $this->statement->fetchAll(PDO::FETCH_CLASS, $class);
 		}
 	}
 
