@@ -43,6 +43,10 @@ class ClassResult extends PaginatedResult {
 	}
 
 	public function getRandomOne($class = null) {
+		var_dump($this);
+		var_dump($this->getCount());
+		var_dump($this);
+		die;
 		if ($this->getCount()) {
 			return $this->getOne($class, rand(0, $this->getCount() - 1));
 		}
