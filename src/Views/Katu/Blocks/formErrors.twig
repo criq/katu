@@ -1,6 +1,5 @@
 {% if errors %}
-	<div class="alert alert-danger alert-dismissable">
-		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<div class="alert alert-danger">
 		<strong>{% block errorsTitle %}Error!{% endblock errorsTitle %}</strong>
 		{% for error in errors %}
 			{% if error is iterable %}
