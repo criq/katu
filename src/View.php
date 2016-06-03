@@ -35,7 +35,7 @@ class View {
 			try {
 				return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality);
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
-				var_dump($e); die;
+				//var_dump($e); die;
 			}
 		}));
 
@@ -43,7 +43,7 @@ class View {
 			try {
 				return \Katu\Utils\Image::getThumbnailUrl($uri, $size, $quality, ['format' => 'square']);
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
-				var_dump($e); die;
+				//var_dump($e); die;
 			}
 		}));
 
@@ -254,14 +254,6 @@ class View {
 
 		if (class_exists('\App\Models\Setting')) {
 			$data['_settings'] = \App\Models\Setting::getAllAsAssoc();
-		}
-
-		try {
-			if (Config::getApp('css', 'implode')) {
-				\Katu\Utils\CSS::implode();
-			}
-		} catch (\Exception $e) {
-
 		}
 
 		return trim($twig->render($template . '.twig', $data));

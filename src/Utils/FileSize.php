@@ -26,4 +26,12 @@ class FileSize {
 		return $this->inMB() / 1024;
 	}
 
+	static function createFromIni($string) {
+		if (preg_match('#([0-9]+)M#', $string, $match)) {
+			return new static($match[1] * 1024 * 1024);
+		}
+
+		return new static($string);
+	}
+
 }

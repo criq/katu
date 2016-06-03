@@ -153,4 +153,8 @@ class Upload {
 		return new \Exception($this->getErrorMessage(), $this->getErrorId());
 	}
 
+	static function getMaxSize() {
+		return min(Utils\FileSize::createFromIni(ini_get('upload_max_filesize')), Utils\FileSize::createFromIni(ini_get('post_max_size')));
+	}
+
 }

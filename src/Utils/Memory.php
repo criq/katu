@@ -30,4 +30,6 @@ class Memory {
 		return self::getUsedRatio() >= self::TRESHOLD_CRITICAL;
 	}
 
+
+
 }
