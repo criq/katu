@@ -251,6 +251,9 @@ class View {
 		$data['_session']  = Session::get();
 		$data['_cookies']  = Cookie::get();
 		$data['_flash']    = Flash::get();
+		$data['_upload']   = [
+			'maxSize' => Upload::getMaxSize(),
+		];
 
 		if (class_exists('\App\Models\Setting')) {
 			$data['_settings'] = \App\Models\Setting::getAllAsAssoc();
