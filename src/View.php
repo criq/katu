@@ -226,11 +226,15 @@ class View {
 
 		$data['_site']['baseDir'] = BASE_DIR;
 		$data['_site']['baseUrl'] = Config::getApp('baseUrl');
-		$data['_site']['apiUrl']  = Config::getApp('apiUrl');
+		try {
+			$data['_site']['apiUrl']  = Config::getApp('apiUrl');
+		} catch (\Exception $e) {
+			/* Doesn't exist. */
+		}
 		try {
 			$data['_site']['timezone'] = Config::getApp('timezone');
 		} catch (\Exception $e) {
-
+			/* Doesn't exist. */
 		}
 
 		$data['_request']['uri']    = (string) ($app->request->getResourceUri());
