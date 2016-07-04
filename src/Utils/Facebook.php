@@ -71,6 +71,10 @@ class Facebook {
 				$user->login();
 			}
 
+			if (!isset($user)) {
+				$user = null;
+			}
+
 			if ($callbackCollection && $callbackCollection->exists('success')) {
 				return $callbackCollection->call('success', [$facebookUser, $user]);
 			}
