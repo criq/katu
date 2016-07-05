@@ -245,7 +245,7 @@ class Image {
 
 			$colors = [];
 
-			$image = new \Intervention\Image\Image(\Katu\Utils\Cache::getUrl($path));
+			$image = \Intervention\Image\Image::make(\Katu\Utils\Cache::getUrl($path));
 
 			for ($x = 0; $x < $image->width; $x++) {
 				for ($y = 0; $y < $image->height; $y++) {
@@ -263,7 +263,7 @@ class Image {
 
 			$colors = [];
 
-			$image = new \Intervention\Image\Image(\Katu\Utils\Cache::getUrl($path));
+			$image = \Intervention\Image\Image::make(\Katu\Utils\Cache::getUrl($path));
 
 			for ($x = 0; $x < $image->width; $x++) {
 				for ($y = 0; $y < $image->height; $y++) {
