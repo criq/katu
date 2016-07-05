@@ -135,7 +135,7 @@ class Image {
 			}
 
 			try {
-				$image = \Intervention\Image\Image::make($source);
+				$image = \Intervention\Image\ImageManagerStatic::make($source);
 			} catch (\Exception $e) {
 				// Save the failure info.
 				Tmp::set(['image', 'failure', $sourceHash], (new \Katu\Utils\DateTime())->getDbDateTimeFormat());
@@ -144,7 +144,9 @@ class Image {
 			}
 
 			if (isset($options['format']) && $options['format'] == 'square') {
-				$image->fit($size, $size);
+				$image->fit($size, $size, function ($constraint) {
+					$constraint->aspectRatio();
+				});
 			} else {
 				$image->resize($size, $size, true);
 			}
@@ -245,7 +247,7 @@ class Image {
 
 			$colors = [];
 
-			$image = \Intervention\Image\Image::make(\Katu\Utils\Cache::getUrl($path));
+			$image = \Intervention\Image\ImageManagerStatic::make(\Katu\Utils\Cache::getUrl($path));
 
 			for ($x = 0; $x < $image->width; $x++) {
 				for ($y = 0; $y < $image->height; $y++) {
@@ -263,7 +265,7 @@ class Image {
 
 			$colors = [];
 
-			$image = \Intervention\Image\Image::make(\Katu\Utils\Cache::getUrl($path));
+			$image = \Intervention\Image\ImageManagerStatic::make(\Katu\Utils\Cache::getUrl($path));
 
 			for ($x = 0; $x < $image->width; $x++) {
 				for ($y = 0; $y < $image->height; $y++) {
