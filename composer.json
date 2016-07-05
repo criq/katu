@@ -22,7 +22,7 @@
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
 		"michelf/php-markdown": "1.*",
-		"intervention/image": "1.*",
+		"intervention/image": "2.*",
 		"jbroadway/urlify": "1.0.*@dev",
 		"jabli/amiko": "0.1.*",
 		"jabli/sexy": "0.3.*",

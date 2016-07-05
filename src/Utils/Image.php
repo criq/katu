@@ -144,7 +144,7 @@ class Image {
 			}
 
 			if (isset($options['format']) && $options['format'] == 'square') {
-				$image->grab($size, $size);
+				$image->fit($size, $size);
 			} else {
 				$image->resize($size, $size, true);
 			}
