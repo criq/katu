@@ -13,6 +13,8 @@ class Image {
 			$source = $source->getFile()->getPath();
 		} elseif ($source instanceof \Katu\ModelBase) {
 			$source = $source->getImagePath();
+		} elseif ($source instanceof \Katu\Utils\File) {
+			$source = (string) $source;
 		}
 
 		return $source;
@@ -144,11 +146,13 @@ class Image {
 			}
 
 			if (isset($options['format']) && $options['format'] == 'square') {
-				$image->fit($size, $size, function ($constraint) {
+				$image->fit($size, $size, function($constraint) {
 					$constraint->aspectRatio();
 				});
 			} else {
-				$image->resize($size, $size, true);
+				$image->resize($size, $size, function($constraint) {
+					$constraint->aspectRatio();
+				});
 			}
 
 			$image->save($destination, $quality);
@@ -249,8 +253,8 @@ class Image {
 
 			$image = \Intervention\Image\ImageManagerStatic::make(\Katu\Utils\Cache::getUrl($path));
 
-			for ($x = 0; $x < $image->width; $x++) {
-				for ($y = 0; $y < $image->height; $y++) {
+			for ($x = 0; $x < $image->width(); $x++) {
+				for ($y = 0; $y < $image->height(); $y++) {
 					$colors[] = $image->pickColor($x, $y, 'hex');
 				}
 			}
@@ -267,8 +271,8 @@ class Image {
 
 			$image = \Intervention\Image\ImageManagerStatic::make(\Katu\Utils\Cache::getUrl($path));
 
-			for ($x = 0; $x < $image->width; $x++) {
-				for ($y = 0; $y < $image->height; $y++) {
+			for ($x = 0; $x < $image->width(); $x++) {
+				for ($y = 0; $y < $image->height(); $y++) {
 					$color = $image->pickColor($x, $y, 'hex');
 					if (!isset($colors[$color])) {
 						$colors[$color] = 0;
