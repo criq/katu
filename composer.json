@@ -25,7 +25,7 @@
 		"intervention/image": "2.*",
 		"jbroadway/urlify": "1.0.*@dev",
 		"jabli/amiko": "0.1.*",
-		"jabli/sexy": "0.3.*",
+		"jabli/sexy": "0.4.*",
 		"symfony/dom-crawler": "2.*",
 		"symfony/css-selector": "2.*",
 		"symfony/intl": "@stable",
