@@ -16,6 +16,10 @@ class DateTime extends \DateTime {
 		return new DateTime($string);
 	}
 
+	static function createFromTimestamp($timestamp) {
+		return new static('@' . $timestamp);
+	}
+
 	static function createFromDateTime($dateTime) {
 		if ($dateTime) {
 			return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
