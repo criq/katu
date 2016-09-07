@@ -198,13 +198,13 @@ class User extends \Katu\Model {
 		return true;
 	}
 
-	static function currentHasPermission($permission) {
+	static function currentHasPermission() {
 		$user = static::getCurrent();
 		if (!$user) {
 			return false;
 		}
 
-		return $user->hasPermission($permission);
+		return call_user_func_array([$user, 'hasPermission'], func_get_args());
 	}
 
 	public function getRolePermissions() {
@@ -237,8 +237,21 @@ class User extends \Katu\Model {
 		});
 	}
 
-	public function hasPermission($permission) {
-		return in_array($permission, $this->getAllPermissions());
+	public function hasPermission() {
+		$args = func_get_args();
+		$permissions = is_string($args[0]) ? [$args[0]] : $args[0];
+		$any = isset($args[1]) ? $args[1] : false;
+
+		$status = [];
+		foreach ($permissions as $permission) {
+			$status[$permission] = in_array($permission, $this->getAllPermissions());
+		}
+
+		if ($any) {
+			return in_array(true, $status);
+		}
+
+		return !in_array(false, $status);
 	}
 
 	public function hasRolePermission($permission) {
