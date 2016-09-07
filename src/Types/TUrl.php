@@ -128,11 +128,21 @@ class TUrl {
 		return $this;
 	}
 
-	public function getQueryParam($name) {
+	public function getQueryParams() {
 		$parts = $this->getParts();
 
-		if (isset($parts['query'][$name])) {
-			return $parts['query'][$name];
+		if (isset($parts['query'])) {
+			return $parts['query'];
+		}
+
+		return null;
+	}
+
+	public function getQueryParam($name) {
+		$params = $this->getQueryParams();
+
+		if (isset($params[$name])) {
+			return $params[$name];
 		}
 
 		return null;
