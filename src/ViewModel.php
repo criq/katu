@@ -177,7 +177,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function copy($sourceTable, $destinationTable) {
-		set_time_limit(600);
+		@set_time_limit(600);
 
 		// Get a temporary table.
 		$temporaryTableName = '_tmp_' . \Katu\Utils\Random::getIdString(8);
