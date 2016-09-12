@@ -99,7 +99,25 @@ class DateTime extends \DateTime {
 	public function getThisWeekday($weekday) {
 		$date = clone $this;
 
-		return $date->modify('this ' . $weekday);
+		$weekdays = [
+			1 => ['Monday',    'monday',    'mon'],
+			2 => ['Tuesday',   'tuesday',   'tue'],
+			3 => ['Wednesday', 'wednesday', 'wed'],
+			4 => ['Thursday',  'thursday',  'thu'],
+			5 => ['Friday',    'friday',    'fri'],
+			6 => ['Saturday',  'saturday',  'sat'],
+			7 => ['Sunday',    'sunday',    'sun'],
+		];
+
+		$monday = $date->modify('- ' . ($date->format('N') - 1) . ' days');
+
+		foreach ($weekdays as $position => $names) {
+			if (in_array($weekday, $names)) {
+				return $monday->modify('+ ' . ($position - 1) . ' days');
+			}
+		}
+
+		return false;
 	}
 
 	public function getNextWeekday($weekday) {
