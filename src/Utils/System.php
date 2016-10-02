@@ -5,43 +5,53 @@ namespace Katu\Utils;
 class System {
 
 	static function getNumberOfCpus() {
-		$numCpus = 1;
-		if (is_file('/proc/cpuinfo')) {
+		return Cache::getFromMemory('system.numberOfCpus', function() {
 
-			$cpuinfo = file_get_contents('/proc/cpuinfo');
-			preg_match_all('/^processor/m', $cpuinfo, $matches);
-			$numCpus = count($matches[0]);
+			$numCpus = 1;
+			if (is_file('/proc/cpuinfo')) {
 
-		} elseif ('WIN' == strtoupper(substr(PHP_OS, 0, 3))) {
+				$cpuinfo = file_get_contents('/proc/cpuinfo');
+				preg_match_all('/^processor/m', $cpuinfo, $matches);
+				$numCpus = count($matches[0]);
 
-			$process = @popen('wmic cpu get NumberOfCores', 'rb');
-			if (false !== $process) {
-				fgets($process);
-				$numCpus = intval(fgets($process));
-				pclose($process);
-			}
+			} elseif ('WIN' == strtoupper(substr(PHP_OS, 0, 3))) {
 
-		} else {
-
-			$process = @popen('sysctl -a', 'rb');
-			if (false !== $process) {
-
-				$output = stream_get_contents($process);
-				preg_match('/hw.ncpu: (\d+)/', $output, $matches);
-				if ($matches) {
-					$numCpus = intval($matches[1][0]);
+				$process = @popen('wmic cpu get NumberOfCores', 'rb');
+				if (false !== $process) {
+					fgets($process);
+					$numCpus = intval(fgets($process));
+					pclose($process);
 				}
-				pclose($process);
+
+			} else {
+
+				$process = @popen('sysctl -a', 'rb');
+				if (false !== $process) {
+
+					$output = stream_get_contents($process);
+					preg_match('/hw.ncpu: (\d+)/', $output, $matches);
+					if ($matches) {
+						$numCpus = intval($matches[1][0]);
+					}
+					pclose($process);
+
+				}
 
 			}
 
-		}
+			return $numCpus;
 
-		return $numCpus;
+		});
 	}
 
 	static function getLoadAverage() {
 		return sys_getloadavg();
+	}
+
+	static function getLoadAveragePerCpu() {
+		return array_map(function($i) {
+			return $i / static::getNumberOfCpus();
+		}, static::getLoadAverage());
 	}
 
 }
