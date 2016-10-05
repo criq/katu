@@ -54,4 +54,12 @@ class System {
 		}, static::getLoadAverage());
 	}
 
+	static function assertMaxLoadAverage($loadAverage) {
+		if (static::getLoadAveragePerCpu()[0] > $loadAverage) {
+			throw new \Katu\Exceptions\LoadAverageExceededException;
+		}
+
+		return true;
+	}
+
 }
