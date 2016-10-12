@@ -126,4 +126,16 @@ class DateTime extends \DateTime {
 		return $date->modify($weekday);
 	}
 
+	public function setYear($n) {
+		return $this->setDate($n, $this->format('n'), $this->format('j'));
+	}
+
+	public function setMonth($n) {
+		return $this->setDate($this->format('Y'), $n, $this->format('j'));
+	}
+
+	public function setDay($n) {
+		return $this->setDate($this->format('Y'), $this->format('n'), $n);
+	}
+
 }
