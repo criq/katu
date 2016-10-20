@@ -122,6 +122,13 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return new static($array);
 	}
 
+	public function shuffle() {
+		$array = $this->array;
+		shuffle($array);
+
+		return new static($array);
+	}
+
 	public function orderBy($key, $flags = 0) {
 		$array = $this->array;
 
