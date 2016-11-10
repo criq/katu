@@ -192,6 +192,14 @@ class View {
 			return Utils\CSRF::getFreshToken($params);
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('getFileUrlWithHash', function() {
+			$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
+			$url = new \Katu\Types\TUrl($file->getUrl());
+			$url->addQueryParam('hash', sha1($file->get()));
+
+			return $url;
+		}));
+
 		$twig->addFunction(new \Twig_SimpleFunction('blabla', function($sentences = 10) {
 			return implode(' ', (new \Katu\Types\TArray(\Katu\Utils\Blabot::getList()))->getRandomItems($sentences));
 		}));

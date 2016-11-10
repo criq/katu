@@ -21,7 +21,7 @@ class File {
 
 	public function getPath() {
 		if (file_exists($this->path)) {
-			return $this->path;
+			return realpath($this->path);
 		}
 
 		$path = FileSystem::joinPaths(BASE_DIR, $this->path);
