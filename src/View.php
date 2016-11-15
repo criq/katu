@@ -192,6 +192,10 @@ class View {
 			return Utils\CSRF::getFreshToken($params);
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('getFile', function() {
+			return new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
+		}));
+
 		$twig->addFunction(new \Twig_SimpleFunction('getFileUrlWithHash', function() {
 			$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
 			$url = new \Katu\Types\TUrl($file->getUrl());
