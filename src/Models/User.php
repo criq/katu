@@ -120,7 +120,6 @@ class User extends \Katu\Model {
 	}
 
 	public function login() {
-
 		\Katu\Session::set('katu.user.id', (int) $this->getId());
 
 		return true;

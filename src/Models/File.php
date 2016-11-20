@@ -77,6 +77,10 @@ class File extends \Katu\Model {
 		return parent::delete();
 	}
 
+	public function getFile() {
+		return new \Katu\Utils\File($this->getPath());
+	}
+
 	static function getDirName() {
 		return \Katu\Config::get('app', 'files', 'dir');
 	}
