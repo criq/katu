@@ -197,7 +197,11 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFileUrlWithHash', function() {
-			$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
+			if (func_get_arg(0) instanceof \Katu\Utils\File) {
+				$file = func_get_arg(0);
+			} else {
+				$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
+			}
 			$url = new \Katu\Types\TUrl($file->getUrl());
 			$url->addQueryParam('hash', sha1($file->get()));
 
