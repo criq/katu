@@ -136,6 +136,10 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return new static($array);
 	}
 
+	public function slice($offset, $length, $preserveKeys = false) {
+		return new static(array_slice($this->array, $offset, $length, $preserveKeys));
+	}
+
 	public function orderBy($key, $flags = 0) {
 		$array = $this->array;
 
