@@ -135,14 +135,18 @@ class Connection {
 
 	public function transaction($callback) {
 		try {
+
 			$this->begin();
 			$res = call_user_func_array($callback, array_slice(func_get_args(), 1));
 			$this->commit();
 
 			return $res;
+
 		} catch (\Exception $e) {
+
 			$this->rollback();
 			throw $e;
+
 		}
 	}
 
