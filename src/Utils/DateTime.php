@@ -138,4 +138,16 @@ class DateTime extends \DateTime {
 		return $this->setDate($this->format('Y'), $this->format('n'), $n);
 	}
 
+	public function setHour($n) {
+		return $this->setTime($n, $this->format('i'), $this->format('s'));
+	}
+
+	public function setMinute($n) {
+		return $this->setTime($this->format('H'), $n, $this->format('s'));
+	}
+
+	public function setSecond($n) {
+		return $this->setTime($this->format('H'), $this->format('i'), $n);
+	}
+
 }
