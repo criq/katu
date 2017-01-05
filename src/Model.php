@@ -55,7 +55,16 @@ class Model extends ModelBase {
 
 		static::change();
 
-		return static::get(static::getPdo()->getLastInsertId());
+		try {
+			$primaryKey = static::getPdo()->getLastInsertId();
+			if ($primaryKey) {
+				return static::get();
+			} else {
+				throw new \Katu\Exceptions\NoPrimaryKeyReturnedException;
+			}
+		} catch (\Exception $e) {
+			throw new \Katu\Exceptions\NoPrimaryKeyReturnedException;
+		}
 	}
 
 	static function insertMultiple($items = []) {
