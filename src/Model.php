@@ -55,14 +55,10 @@ class Model extends ModelBase {
 
 		static::change();
 
-		try {
-			$primaryKey = static::getPdo()->getLastInsertId();
-			if ($primaryKey) {
-				return static::get();
-			} else {
-				throw new \Katu\Exceptions\NoPrimaryKeyReturnedException;
-			}
-		} catch (\Exception $e) {
+		$primaryKey = static::getPdo()->getLastInsertId();
+		if ($primaryKey) {
+			return static::get($primaryKey);
+		} else {
 			throw new \Katu\Exceptions\NoPrimaryKeyReturnedException;
 		}
 	}
