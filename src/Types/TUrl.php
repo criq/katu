@@ -163,7 +163,7 @@ class TUrl {
 
 		if (isset($parts['path'])) {
 			$pathinfo = pathinfo($parts['path']);
-			if (preg_match('#^index\.(php|htm|html)$#', $pathinfo['basename'])) {
+			if (preg_match('/^index\.(php|htm|html)$/', $pathinfo['basename'])) {
 				$parts['path'] = $pathinfo['dirname'];
 			}
 		}
