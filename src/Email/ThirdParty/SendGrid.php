@@ -27,7 +27,7 @@ class SendGrid extends \Katu\Email\ThirdParty {
 
 		$email->setSubject($this->subject);
 		$email->setHtml($this->html);
-		$email->setText($this->text);
+		$email->setText($this->plain);
 		$email->setFrom($this->fromEmailAddress);
 		$email->setFromName($this->fromName);
 		$email->setHeaders($this->headers);

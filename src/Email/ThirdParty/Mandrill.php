@@ -36,7 +36,7 @@ class Mandrill extends \Katu\Email\ThirdParty {
 	public function getMessage($message) {
 		$message['subject']    = $this->subject;
 		$message['html']       = $this->html;
-		$message['text']       = $this->text;
+		$message['text']       = $this->plain;
 		$message['from_email'] = $this->fromEmailAddress;
 		$message['from_name']  = $this->fromName;
 		$message['headers']    = $this->headers;

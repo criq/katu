@@ -5,7 +5,7 @@ namespace Katu;
 class Email {
 
 	public $subject;
-	public $text = '';
+	public $plain = '';
 	public $html = '';
 
 	public $fromEmailAddress;
@@ -59,10 +59,14 @@ class Email {
 		return $this;
 	}
 
-	public function setText($text) {
-		$this->text = $text;
+	public function setPlain($plain) {
+		$this->plain = $plain;
 
 		return $this;
+	}
+
+	public function setText($text) {
+		return $this->setPlain($text);
 	}
 
 	public function setHtml($html) {
@@ -71,13 +75,13 @@ class Email {
 		return $this;
 	}
 
-	public function setBody($html, $text = null) {
+	public function setBody($html, $plain = null) {
 		$this->setHtml($html);
 
-		if ($text) {
-			$this->setText($text);
+		if ($plain) {
+			$this->setPlain($plain);
 		} else {
-			$this->setText(strip_tags($html));
+			$this->setPlain(strip_tags($html));
 		}
 
 		return $this;
