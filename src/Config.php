@@ -24,10 +24,13 @@ class Config {
 			$config = [];
 			foreach (self::getFiles() as $file) {
 				$pathinfo = pathinfo($file);
+				if (!isset($config[$pathinfo['filename']])) {
+					$config[$pathinfo['filename']] = [];
+				}
 				if ($pathinfo['extension'] == 'yaml') {
-					$config[$pathinfo['filename']] = \Katu\Utils\YAML::decode($file);
+					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array) \Katu\Utils\YAML::decode($file));
 				} else {
-					$config[$pathinfo['filename']] = include $file;
+					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array) include $file);
 				}
 			}
 
