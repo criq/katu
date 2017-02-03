@@ -8,14 +8,19 @@ class EmailAddress extends \Katu\Model {
 
 	const TABLE = 'email_addresses';
 
+	static $columnNames = [
+		'timeCreated' => 'timeCreated',
+		'emailAddress' => 'emailAddress',
+	];
+
 	static function create($emailAddress) {
 		if (!static::checkCrudParams($emailAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
 		return static::insert(array(
-			'timeCreated'  => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'emailAddress' => (string) (trim($emailAddress)),
+			static::$columnNames['timeCreated']  => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			static::$columnNames['emailAddress'] => (string) (trim($emailAddress)),
 		));
 	}
 
@@ -25,7 +30,7 @@ class EmailAddress extends \Katu\Model {
 		}
 
 		return static::getOneOrCreateWithList(array(
-			'emailAddress' => $emailAddress,
+			static::$columnNames['emailAddress'] => $emailAddress,
 		), $emailAddress);
 	}
 

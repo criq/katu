@@ -9,9 +9,14 @@ class User extends \Katu\Model {
 
 	const TABLE = 'users';
 
+	static $columnNames = [
+		'timeCreated' => 'timeCreated',
+		'emailAddressId' => 'emailAddressId',
+	];
+
 	static function create() {
 		return static::insert([
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			static::$columnNames['timeCreated'] => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
 		]);
 	}
 
@@ -25,7 +30,7 @@ class User extends \Katu\Model {
 
 		// Look for another user with this e-mail address.
 		if (static::getBy([
-			'emailAddressId' => $emailAddress->getId(),
+			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
 		])->getTotal()) {
 			throw (new \Katu\Exceptions\InputErrorException("E-mail address is already in use."))
 				->setAbbr('emailAddressInUse')
@@ -34,8 +39,8 @@ class User extends \Katu\Model {
 		}
 
 		return static::insert([
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'emailAddressId' => (int) ($emailAddress->getId()),
+			static::$columnNames['timeCreated'] => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			static::$columnNames['emailAddressId'] => (int) ($emailAddress->getId()),
 		]);
 	}
 
@@ -76,11 +81,11 @@ class User extends \Katu\Model {
 	}
 
 	public function getEmailAddress() {
-		return \App\Models\EmailAddress::get($this->emailAddressId);
+		return \App\Models\EmailAddress::get($this->{static::$columnNames['emailAddressId']});
 	}
 
 	public function hasEmailAddress() {
-		return (bool) $this->emailAddressId;
+		return (bool) $this->{static::$columnNames['emailAddressId']};
 	}
 
 	public function setEmailAddress($emailAddress) {
@@ -93,7 +98,7 @@ class User extends \Katu\Model {
 
 		// Look for another user with this e-mail address.
 		if (static::getBy([
-			'emailAddressId' => $emailAddress->getId(),
+			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
 			new CmpNotEq(static::getIdColumn(), $this->getId()),
 		])->getTotal()) {
 			throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
@@ -102,7 +107,7 @@ class User extends \Katu\Model {
 				;
 		}
 
-		$this->update('emailAddressId', $emailAddress->getId());
+		$this->update(static::$columnNames['emailAddressId'], $emailAddress->getId());
 
 		return true;
 	}
