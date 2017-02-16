@@ -318,8 +318,15 @@ class ViewModel extends ModelBase {
 		return \Katu\Utils\Tmp::get(static::getLastMaterializedTmpName());
 	}
 
-	static function getAllViewModelNames() {
-		(new \Katu\Utils\File('app/Models/Views'))->includeAllPhpFiles();
+	static function getAllViewModelNames($directories = []) {
+		try {
+			$dir = (new \Katu\Utils\File('app', 'Models', 'Views'));
+			if ($dir->exists()) {
+				$dir->includeAllPhpFiles();
+			}
+		} catch (\Exception $e) {
+			/* Nevermind. */
+		}
 
 		return array_values(array_filter(array_filter(get_declared_classes(), function($i) {
 			return strpos($i, 'App\\Models\\Views\\') === 0;
