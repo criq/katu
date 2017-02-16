@@ -45,13 +45,9 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getViewColumn($name, $options = []) {
-		if (isset($options['cache']) && $options['cache'] === false) {
-			$table = static::getView();
-		} else {
-			$table = static::getTable();
-		}
+		$options['cache'] = false;
 
-		return new Pdo\Column($table, $name);
+		return static::getColumn($name, $options);
 	}
 
 	static function getCachedTable() {
