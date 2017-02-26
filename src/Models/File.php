@@ -89,6 +89,10 @@ class File extends \Katu\Model {
 		return realpath(BASE_DIR . '/' . static::getDirName());
 	}
 
+	public function getName() {
+		return $this->name;
+	}
+
 	static function generatePath($srcName = null) {
 		while (true) {
 
