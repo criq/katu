@@ -94,7 +94,7 @@ class Result implements \Iterator, \ArrayAccess {
 	public function each($callback) {
 		$res = [];
 		foreach ($this as $item) {
-			if (method_exists($item, $callback)) {
+			if (is_string($callback) && method_exists($item, $callback)) {
 				$res[] = call_user_func_array([$item, $callback], [$item]);
 			} else {
 				$res[] = call_user_func_array($callback, [$item]);
