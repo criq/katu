@@ -35,7 +35,6 @@ class Facebook {
 				$facebook = new \Facebook\Facebook([
 					'app_id' => static::getAppId(),
 					'app_secret' => static::getSecret(),
-					//'default_graph_version' => 'v2.2',
 				]);
 
 				var_dump($facebook); die;
