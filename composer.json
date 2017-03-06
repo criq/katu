@@ -18,7 +18,6 @@
 		"jwage/easy-csv": "0.0.2",
 		"mustangostang/spyc": "0.5.*@dev",
 		"ircmaxell/random-lib": "1.*",
-		"facebook/php-sdk-v4" : "4.0.*",
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
 		"michelf/php-markdown": "1.*",
@@ -29,7 +28,9 @@
 		"symfony/dom-crawler": "2.*",
 		"symfony/css-selector": "2.*",
 		"symfony/intl": "@stable",
-		"mtdowling/cron-expression": "1.*"
+		"mtdowling/cron-expression": "1.*",
+		"facebook/php-sdk-v4" : "4.0.*",
+		"facebook/graph-sdk" : "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
