@@ -29,7 +29,8 @@
 		"symfony/intl": "@stable",
 		"mtdowling/cron-expression": "1.*",
 		"facebook/graph-sdk" : "@stable",
-		"vlucas/phpdotenv" : "@stable"
+		"vlucas/phpdotenv" : "@stable",
+		"guzzlehttp/guzzle": "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
