@@ -12,11 +12,48 @@ use \Facebook\FacebookRedirectLoginHelper;
 
 class Facebook {
 
+	static function getAppId() {
+		try {
+			return \Katu\Config::get('facebook', 'api', 'appId');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return \Katu\Config::get('facebook', 'appId');
+		}
+	}
+
+	static function getSecret() {
+		try {
+			return \Katu\Config::get('facebook', 'api', 'secret');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return \Katu\Config::get('facebook', 'secret');
+		}
+	}
+
 	static function login($loginUrl, CallbackCollection $callbackCollection = null, $scopes = []) {
 		try {
 
+			try {
+				$facebook = new \Facebook\Facebook([
+					'app_id' => static::getAppId(),
+					'app_secret' => static::getSecret(),
+					//'default_graph_version' => 'v2.2',
+				]);
+
+				var_dump($facebook); die;
+
+				$helper = $fb->getRedirectLoginHelper();
+
+				$permissions = ['email']; // Optional permissions
+				$loginUrl = $helper->getLoginUrl('https://example.com/fb-callback.php', $permissions);
+
+				echo '<a href="' . htmlspecialchars($loginUrl) . '">Log in with Facebook!</a>';
+			} catch (\Exception $e) {
+				var_dump($e); die;
+			}
+
+
+
+
 			$app = App::get();
-			$controllerClass = \Katu\App::getControllerClass();
 
 			$session = static::getSession();
 
