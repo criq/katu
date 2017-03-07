@@ -2,15 +2,12 @@
 
 namespace Katu\Utils;
 
-use \Katu\App;
-use \Katu\Config;
-use \Katu\Session;
-use \Katu\Utils\Url;
-use \Katu\Types\TUrl;
 use \Facebook\FacebookSession;
 use \Facebook\FacebookRedirectLoginHelper;
 
 class Facebook {
+
+	const ACCESS_TOKEN_SESSION_KEY = 'facebook.accessToken';
 
 	static function getAppId() {
 		try {
@@ -28,150 +25,123 @@ class Facebook {
 		}
 	}
 
+	static function getApi() {
+		try {
+			session_start();
+		} catch (\Exception $e) {
+			/* Nevermind. */
+		}
+
+		return new \Facebook\Facebook([
+			'app_id' => static::getAppId(),
+			'app_secret' => static::getSecret(),
+		]);
+	}
+
+	static function getAccessToken() {
+		return \Katu\Session::get(static::ACCESS_TOKEN_SESSION_KEY);
+	}
+
+	static function setAccessToken($accessToken) {
+		return \Katu\Session::set(static::ACCESS_TOKEN_SESSION_KEY, $accessToken);
+	}
+
 	static function login($loginUrl, CallbackCollection $callbackCollection = null, $scopes = []) {
 		try {
 
+			$app = \Katu\App::get();
+			$api = static::getApi();
+			$helper = $api->getRedirectLoginHelper();
+			$oAuth2Client = $api->getOAuth2Client();
+
+			// Redirected back with code.
+			if ($app->request->params('code') && $app->request->params('state')) {
+
+				$accessToken = $helper->getAccessToken();
+				if (!$accessToken) {
+					throw new \Katu\Exceptions\Facebook\MissingAccessTokenException;
+				}
+
+				static::setAccessToken($accessToken);
+
+			// Redirected back with error.
+			} elseif ($app->request->params('error') && $app->request->params('state')) {
+
+				if ($callbackCollection && $callbackCollection->exists('error')) {
+					return $callbackCollection->call('error', new \Katu\Exceptions\Facebook\ErrorException($helper->getError(), $helper->getErrorCode()));
+				}
+
+			}
+
+			// Session.
+			$accessToken = static::getAccessToken();
+
+			// Get access token.
+			if (!$accessToken) {
+				throw new \Katu\Exceptions\Facebook\MissingAccessTokenException;
+			}
+
+			// Validate access token.
+			$tokenMetadata = $oAuth2Client->debugToken($accessToken);
+			if (!$tokenMetadata->getIsValid()) {
+				throw new \Katu\Exceptions\Facebook\InvalidAccessTokenException;
+			}
 			try {
-				$facebook = new \Facebook\Facebook([
-					'app_id' => static::getAppId(),
-					'app_secret' => static::getSecret(),
-				]);
-
-				var_dump($facebook); die;
-
-				$helper = $fb->getRedirectLoginHelper();
-
-				$permissions = ['email']; // Optional permissions
-				$loginUrl = $helper->getLoginUrl('https://example.com/fb-callback.php', $permissions);
-
-				echo '<a href="' . htmlspecialchars($loginUrl) . '">Log in with Facebook!</a>';
+				$tokenMetadata->validateAppId((string) static::getAppId());
+				$tokenMetadata->validateExpiration();
 			} catch (\Exception $e) {
-				var_dump($e); die;
+				throw new \Katu\Exceptions\Facebook\InvalidAccessTokenException;
 			}
 
-
-
-
-			$app = App::get();
-
-			$session = static::getSession();
-
-			$helper = new FacebookRedirectLoginHelper((string) $loginUrl);
-
-			// Check the Facebook user.
-			$facebookUser = (new \Facebook\FacebookRequest($session, 'GET', '/me'))->execute()->getGraphObject(\Facebook\GraphUser::className());
-
-			foreach ($scopes as $scope) {
-				if (!isset($sessionScopes)) {
-					$sessionScopes = $session->getSessionInfo()->getScopes();
+			// Exchange for long-lived token.
+			if (!$accessToken->isLongLived()) {
+				try {
+					$accessToken = $oAuth2Client->getLongLivedAccessToken($accessToken);
+				} catch (\Facebook\Exceptions\FacebookSDKException $e) {
+					/* Nevermind. */
 				}
-				if (!in_array($scope, $sessionScopes)) {
-					return static::redirectToFacebookLoginUrl($helper->getLoginUrl($scopes), true);
-				}
-			}
-
-			// Login the user.
-			if (class_exists('\App\Models\User') && class_exists('\App\Models\UserService')) {
-				$userService = \App\Models\UserService::getByServiceAndId('facebook', $facebookUser->getId())->getOne();
-				if (!$userService) {
-
-					// Create new user.
-					$user = \App\Models\User::create();
-
-					// Assign e-mail address.
-					if (class_exists('\App\Models\EmailAddress') && $facebookUser->getProperty('email')) {
-
-						$emailAddress = \App\Models\EmailAddress::make($facebookUser->getProperty('email'));
-
-						if (!\App\Models\User::getBy([
-							'emailAddressId' => $emailAddress->id,
-						])->getTotal()) {
-							$user->setEmailAddress($emailAddress);
-							$user->save();
-						}
-
-					}
-
-					// Assign user service.
-					$userService = $user->addUserService('facebook', $facebookUser->getId());
-
-				}
-
-				$userService->setServiceAccessToken($session->getToken());
-				$userService->save();
-
-				$user = $userService->getUser();
-				$user->setName($facebookUser->getFirstName(), $facebookUser->getLastName());
-				$user->save();
-
-				$user->login();
-			}
-
-			if (!isset($user)) {
-				$user = null;
 			}
 
 			if ($callbackCollection && $callbackCollection->exists('success')) {
-				return $callbackCollection->call('success', [$facebookUser, $user]);
+				return $callbackCollection->call('success');
 			}
 
 			return true;
 
-		// Redirect to login.
-		} catch (\Facebook\FacebookAuthorizationException $e) {
+		// No token, redirect to login.
+		} catch (\Katu\Exceptions\Facebook\MissingAccessTokenException $e) {
 
-			return static::redirectToFacebookLoginUrl($helper->getLoginUrl($scopes), true);
+			return static::redirectToFacebookLoginUrl($helper->getLoginUrl((string) $loginUrl, $scopes));
 
-		// Redirect to login.
-		} catch (\Facebook\FacebookSDKException $e) {
+		// Invalid token, redirect to login.
+		} catch (\Katu\Exceptions\Facebook\InvalidAccessTokenException $e) {
 
-			return static::redirectToFacebookLoginUrl($helper->getLoginUrl($scopes), true);
+			return static::redirectToFacebookLoginUrl($helper->getLoginUrl((string) $loginUrl, $scopes));
 
-		// Invalid token, login.
-		} catch (\ErrorException $e) {
+		// Redirect to error.
+		} catch (\Facebook\Exceptions\FacebookAuthenticationException $e) {
 
-			// Redirected back.
-			if ($app->request->params('code') && $app->request->params('state')) {
-
-				try {
-
-					$session = $helper->getSessionFromRedirect();
-					if ($session) {
-						static::setToken($session->getToken());
-
-						return static::redirectToFacebookLoginUrl($loginUrl, false);
-					}
-
-				} catch (\Facebook\FacebookSDKException $e) {
-
-					if ($callbackCollection && $callbackCollection->exists('error')) {
-						return $callbackCollection->call('error', [$e]);
-					}
-
-					throw $e;
-
-				} catch (\Exception $e) {
-
-					if ($callbackCollection && $callbackCollection->exists('error')) {
-						return $callbackCollection->call('error', [$e]);
-					}
-
-					throw $e;
-
-				}
-
-			// Redirect to login.
-			} else {
-
-				return static::redirectToFacebookLoginUrl($helper->getLoginUrl($scopes), true);
-
+			if ($callbackCollection && $callbackCollection->exists('error')) {
+				return $callbackCollection->call('error', $e);
 			}
+
+		// Redirect to error.
+		} catch (\Facebook\Exceptions\FacebookResponseException $e) {
+
+			if ($callbackCollection && $callbackCollection->exists('error')) {
+				return $callbackCollection->call('error', $e);
+			}
+
+		// Redirect to login.
+		} catch (\Facebook\Exceptions\FacebookSDKException $e) {
+
+			return static::redirectToFacebookLoginUrl($helper->getLoginUrl((string) $loginUrl, $scopes));
 
 		// Other error.
 		} catch (\Exception $e) {
 
 			if ($callbackCollection && $callbackCollection->exists('error')) {
-				return $callbackCollection->call('error', [$e]);
+				return $callbackCollection->call('error', $e);
 			}
 
 			throw $e;
@@ -181,68 +151,13 @@ class Facebook {
 		return false;
 	}
 
-	static function redirectToFacebookLoginUrl($redirectUrl, $resetToken) {
-		if ($resetToken) {
-			static::resetToken();
-		}
-
-		$state = (new TUrl($redirectUrl))->getQueryParam('state');
-
-		header('Location: ' . $redirectUrl, true, 302);
+	static function redirectToFacebookLoginUrl($redirectUrl) {
+		header('Location: ' . (string) $redirectUrl, true, 302);
 		die;
 	}
 
-	static function redirectToReturnUrl($returnUrl) {
-		header('Location: ' . $returnUrl, true, 302);
-		die;
-	}
-
-	static function startAppSession() {
-		Session::start();
-
-		return FacebookSession::setDefaultApplication(Config::get('facebook', 'appId'), Config::get('facebook', 'secret'));
-	}
-
-	static function getSession() {
-		static::startAppSession();
-
-		return new FacebookSession(static::getToken());
-	}
-
-	static function getAppSession() {
-		static::startAppSession();
-
-		return new FacebookSession(implode('|', [Config::get('facebook', 'appId'), Config::get('facebook', 'secret')]));
-	}
-
-	static function setToken($token) {
-		return Session::set('facebook.token', $token);
-	}
-
-	static function getToken() {
-		return Session::get('facebook.token');
-	}
-
-	static function resetToken() {
-		return Session::reset('facebook.token');
-	}
-
-	static function setUser($userId) {
-		return Session::set('facebook.userId', $userId);
-	}
-
-	static function getUser($userId) {
-		return Session::get('facebook.userId');
-	}
-
-	static function getScopes() {
-		try {
-			return (new \Facebook\FacebookRequest(static::getSession(), 'GET', '/debug_token', [
-				'input_token' => static::getToken(),
-			]))->execute()->getGraphObject()->getProperty('scopes')->asArray();
-		} catch (\Exception $e) {
-			return false;
-		}
+	static function getUser() {
+		return static::getApi()->get('/me?fields=id,name,email', static::getAccessToken())->getGraphUser();
 	}
 
 }
