@@ -131,8 +131,8 @@ class User extends \Katu\Model {
 	}
 
 	static function logout() {
-		\Katu\Utils\Facebook::resetToken();
 		\Katu\Session::reset('katu.user.id');
+		\Katu\Session::reset(\Katu\Utils\Facebook::ACCESS_TOKEN_SESSION_KEY);
 		\Katu\Cookie::remove('accessToken');
 
 		return true;
