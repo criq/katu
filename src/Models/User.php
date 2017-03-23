@@ -280,4 +280,10 @@ class User extends \Katu\Model {
 		]);
 	}
 
+	public function getUserSettingValue($name) {
+		$userSetting = $this->getUserSetting($name);
+
+		return $userSetting ? $userSetting->value : null;
+	}
+
 }
