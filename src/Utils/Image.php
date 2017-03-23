@@ -20,57 +20,6 @@ class Image {
 		return $source;
 	}
 
-	static function getThumbnailFilename($uri, $size, $quality = 100, $options = []) {
-		$uri = static::getValidSource($uri);
-
-		try {
-			$url = new \Katu\Types\TUrl($uri);
-			$parts = $url->getParts();
-			$pathinfo = pathinfo($parts['path']);
-
-			$fileNameHashParts = [
-				$parts['scheme'],
-				$parts['host'],
-				$parts['path'],
-				$parts['query'],
-			];
-		} catch (\Exception $e) {
-			$pathinfo = pathinfo($uri);
-
-			$fileNameHashParts = [
-				$uri,
-			];
-		}
-
-		$fileNameHash = sha1(JSON::encodeStandard($fileNameHashParts));
-
-		$fileNameSuffixes = [
-			'size'    => (int) $size,
-			'quality' => (int) $quality,
-		];
-		foreach ($options as $key => $value) {
-			$fileNameSuffixes[$key] = $value;
-		}
-
-		$fileNameSuffix = (new \Katu\Types\TArray($fileNameSuffixes))->implodeWithKeys('_');
-
-		$fileNameExtension = null;
-		if (isset($pathinfo['extension'])) {
-			$fileNameExtension = '.' . $pathinfo['extension'];
-		}
-		if (isset($options['extension'])) {
-			$fileNameExtension = '.' . ltrim($options['extension'], '.');
-		}
-
-		return implode([
-			implode('_', array_filter([
-				$fileNameHash,
-				$fileNameSuffix,
-			])),
-			$fileNameExtension,
-		]);
-	}
-
 	static function getDirName() {
 		return \Katu\Config::get('app', 'tmp', 'publicDir');
 	}
@@ -84,82 +33,6 @@ class Image {
 		}
 
 		return realpath($path);
-	}
-
-	static function getThumbnailUrl($uri, $size, $quality = 100, $options = []) {
-		$thumbnailPath = static::getThumbnailPath($uri, $size, $quality, $options);
-		try {
-			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
-		} catch (\Exception $e) {
-			\Katu\ErrorHandler::handle($e);
-
-			return false;
-		}
-
-		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), \Katu\Config::get('app', 'tmp', 'publicUrl'), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
-	}
-
-	static function getThumbnailPath($uri, $size, $quality = 100, $options = []) {
-		$thumbnailPath = \Katu\Utils\FileSystem::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getThumbnailFilename($uri, $size, $quality, $options));
-		try {
-			static::makeThumbnail($uri, $thumbnailPath, $size, $quality, $options);
-		} catch (\Exception $e) {
-			\Katu\ErrorHandler::handle($e);
-
-			return false;
-		}
-
-		return $thumbnailPath;
-	}
-
-	static function makeThumbnail($source, $destination, $size, $quality = 100, $options = []) {
-		if (!file_exists($destination)) {
-
-			// Get valid source.
-			$source = static::getValidSource($source);
-			if (!$source) {
-				throw new \Katu\Exceptions\ImageErrorException;
-			}
-
-			// See if there's already been a failure.
-			$sourceHash = sha1(serialize($source));
-			if (Tmp::get(['image', 'failure', $sourceHash])) {
-				throw new \Katu\Exceptions\ImageErrorException;
-			}
-
-			@mkdir(dirname($destination), 0777, true);
-
-			// Try a URL as a source.
-			try {
-				$source = \Katu\Utils\Cache::getUrl(new \Katu\Types\TUrl($source));
-			} catch (\Exception $e) {
-
-			}
-
-			try {
-				$image = \Intervention\Image\ImageManagerStatic::make($source);
-			} catch (\Exception $e) {
-				// Save the failure info.
-				Tmp::set(['image', 'failure', $sourceHash], (new \Katu\Utils\DateTime())->getDbDateTimeFormat());
-
-				throw $e;
-			}
-
-			if (isset($options['format']) && $options['format'] == 'square') {
-				$image->fit($size, $size, function($constraint) {
-					$constraint->aspectRatio();
-				});
-			} else {
-				$image->resize($size, $size, function($constraint) {
-					$constraint->aspectRatio();
-				});
-			}
-
-			$image->save($destination, $quality);
-
-		}
-
-		return true;
 	}
 
 	static function getMime($path) {
@@ -219,6 +92,149 @@ class Image {
 
 		return false;
 	}
+
+
+
+	static function getVersionFilename($uri, $version) {
+		$uri = static::getValidSource($uri);
+
+		try {
+			$url = new \Katu\Types\TUrl($uri);
+			$parts = $url->getParts();
+			$pathinfo = pathinfo($parts['path']);
+
+			$fileNameHashParts = [
+				$parts['scheme'],
+				$parts['host'],
+				$parts['path'],
+				$parts['query'],
+			];
+		} catch (\Exception $e) {
+			$pathinfo = pathinfo($uri);
+
+			$fileNameHashParts = [
+				$uri,
+			];
+		}
+
+		$fileNameHash = sha1(JSON::encodeStandard($fileNameHashParts));
+
+		$fileNameSuffixes = [
+			'version' => (string) sha1(JSON::encodeStandard($version)),
+		];
+
+		$fileNameSuffix = (new \Katu\Types\TArray($fileNameSuffixes))->implodeWithKeys('_');
+
+		$fileNameExtension = null;
+		if (isset($pathinfo['extension'])) {
+			$fileNameExtension = '.' . $pathinfo['extension'];
+		}
+
+		return implode([
+			implode('_', array_filter([
+				$fileNameHash,
+				$fileNameSuffix,
+			])),
+			$fileNameExtension,
+		]);
+	}
+
+	static function getVersionUrl($uri, $version) {
+		$thumbnailPath = static::getVersionPath($uri, $version);
+		try {
+			static::makeVersion($uri, $thumbnailPath, $version);
+		} catch (\Exception $e) {
+			\Katu\ErrorHandler::handle($e);
+
+			return false;
+		}
+
+		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), \Katu\Config::get('app', 'tmp', 'publicUrl'), static::THUMBNAIL_DIR, self::getVersionFilename($uri, $version));
+	}
+
+	static function getVersionPath($uri, $version) {
+		$thumbnailPath = \Katu\Utils\FileSystem::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getVersionFilename($uri, $version));
+		try {
+			static::makeVersion($uri, $thumbnailPath, $version);
+		} catch (\Exception $e) {
+			\Katu\ErrorHandler::handle($e);
+
+			return false;
+		}
+
+		return $thumbnailPath;
+	}
+
+	static function makeVersion($source, $destination, $version) {
+		if (!file_exists($destination)) {
+
+			try {
+				$versionConfig = \Katu\Config::get('image', 'versions', $version);
+			} catch (\Exception $e) {
+				$versionConfig = $version;
+			}
+
+			// Get valid source.
+			$source = static::getValidSource($source);
+			if (!$source) {
+				throw new \Katu\Exceptions\ImageErrorException;
+			}
+
+			// See if there's already been a failure.
+			$sourceHash = sha1(serialize($source));
+			if (Tmp::get(['image', 'failure', $sourceHash])) {
+				throw new \Katu\Exceptions\ImageErrorException;
+			}
+
+			@mkdir(dirname($destination), 0777, true);
+
+			// Try a URL as a source.
+			try {
+				$source = \Katu\Utils\Cache::getUrl(new \Katu\Types\TUrl($source));
+			} catch (\Exception $e) {
+
+			}
+
+			try {
+				$image = \Intervention\Image\ImageManagerStatic::make($source);
+			} catch (\Exception $e) {
+				// Save the failure info.
+				Tmp::set(['image', 'failure', $sourceHash], (new \Katu\Utils\DateTime())->getDbDateTimeFormat());
+
+				throw $e;
+			}
+
+			if (isset($versionConfig['filters'])) {
+				foreach ($versionConfig['filters'] as $filter) {
+
+					switch ($filter['filter']) {
+						case 'fit' :
+
+							$image->fit($filter['width'], $filter['height'], function($constraint) {
+								$constraint->aspectRatio();
+							});
+
+						break;
+						case 'resize' :
+
+							$image->resize($filter['width'], $filter['height'], function($constraint) {
+								$constraint->aspectRatio();
+							});
+
+						break;
+					}
+
+				}
+			}
+
+			$image->save($destination);
+
+		}
+
+		return true;
+	}
+
+
 
 	static function getColorRgb($color) {
 		return \Katu\Types\TColorRgb::getFromImageColor($color);
