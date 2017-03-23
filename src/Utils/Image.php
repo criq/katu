@@ -4,7 +4,7 @@ namespace Katu\Utils;
 
 class Image {
 
-	const THUMBNAIL_DIR = 'image/thumbnails';
+	const THUMBNAIL_DIR = 'image/versions';
 
 	static function getValidSource($source) {
 		if ($source instanceof \App\Models\File) {
