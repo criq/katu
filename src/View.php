@@ -4,32 +4,6 @@ namespace Katu;
 
 class View {
 
-	static function getThumbnailVersionConfig($size = 640, $quality = 100) {
-		return [
-			'quality' => $quality,
-			'filters' => [
-				[
-					'filter' => 'resize',
-					'width' => $size,
-					'height' => $size,
-				],
-			],
-		];
-	}
-
-	static function getSquareThumbnailVersionConfig($size = 640, $quality = 100) {
-		return [
-			'quality' => $quality,
-			'filters' => [
-				[
-					'filter' => 'fit',
-					'width' => $size,
-					'height' => $size,
-				],
-			],
-		];
-	}
-
 	static function render($template, $data = [], $options = []) {
 		$app = \Katu\App::get();
 
@@ -67,7 +41,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnail', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionUrl($uri, static::getThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionUrl($uri, \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -75,7 +49,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnailPath', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionPath($uri, static::getThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionPath($uri, \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -83,7 +57,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnail', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionUrl($uri, static::getSquareThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionUrl($uri, \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -91,7 +65,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnailPath', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionPath($uri, static::getSquareThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionPath($uri, \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}

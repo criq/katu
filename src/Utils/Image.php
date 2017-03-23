@@ -302,4 +302,30 @@ class Image {
 		}, null, $path);
 	}
 
+	static function getThumbnailVersionConfig($size = 640, $quality = 100) {
+		return [
+			'quality' => $quality,
+			'filters' => [
+				[
+					'filter' => 'resize',
+					'width' => $size,
+					'height' => $size,
+				],
+			],
+		];
+	}
+
+	static function getSquareThumbnailVersionConfig($size = 640, $quality = 100) {
+		return [
+			'quality' => $quality,
+			'filters' => [
+				[
+					'filter' => 'fit',
+					'width' => $size,
+					'height' => $size,
+				],
+			],
+		];
+	}
+
 }
