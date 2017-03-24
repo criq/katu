@@ -15,7 +15,7 @@
 		"twig/extensions": "@stable",
 		"gregwar/cache": "1.0.*",
 		"jwage/easy-csv": "0.0.2",
-		"mustangostang/spyc": "0.5.*@dev",
+		"mustangostang/spyc": "@stable",
 		"ircmaxell/random-lib": "1.*",
 		"egulias/email-validator": "1.*",
 		"swiftmailer/swiftmailer": "5.*",
