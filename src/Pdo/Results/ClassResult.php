@@ -66,7 +66,10 @@ class ClassResult extends PaginatedResult {
 				$class = $this->class;
 			}
 
-			$this->iteratorArray = $this->statement->fetchAll(PDO::FETCH_CLASS, $class);
+			$this->iteratorArray = [];
+			while ($object = $this->statement->fetchObject($class)) {
+				$this->iteratorArray[] = $object;
+			}
 		}
 	}
 

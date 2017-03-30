@@ -134,7 +134,10 @@ class Result implements \Iterator, \ArrayAccess {
 
 	public function setIteratorArray() {
 		if (is_null($this->iteratorArray)) {
-			$this->iteratorArray = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+			$this->iteratorArray = [];
+			while ($row = $this->statement->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT)) {
+				$this->iteratorArray[] = $row;
+			}
 		}
 	}
 
