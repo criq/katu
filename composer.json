@@ -30,7 +30,8 @@
 		"mtdowling/cron-expression": "1.*",
 		"facebook/graph-sdk" : "@stable",
 		"vlucas/phpdotenv" : "@stable",
-		"guzzlehttp/guzzle": "@stable"
+		"guzzlehttp/guzzle": "@stable",
+		"jenssegers/agent": "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {

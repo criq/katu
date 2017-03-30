@@ -271,6 +271,8 @@ class View {
 			'params'  => $app->router()->getCurrentRoute()->getParams(),
 		]);
 
+		$data['_agent'] = new \Jenssegers\Agent\Agent();
+
 		if (class_exists('\App\Models\User')) {
 			$data['_user'] = \App\Models\User::getCurrent();
 		}
