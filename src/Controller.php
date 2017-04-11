@@ -47,11 +47,7 @@ class Controller {
 			return true;
 
 		} catch (\Exception $e) {
-
-			ErrorHandler::log($e);
-
 			throw new Exceptions\TemplateException($e->getMessage());
-
 		}
 	}
 
