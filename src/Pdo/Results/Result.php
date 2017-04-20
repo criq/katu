@@ -104,7 +104,7 @@ class Result implements \Iterator, \ArrayAccess {
 		return $res;
 	}
 
-	/* Iterator **************************************************************/
+	/* Iterator *****************************************************************/
 
 	public function rewind() {
 		$this->iteratorPosition = 0;
@@ -130,7 +130,7 @@ class Result implements \Iterator, \ArrayAccess {
 		return isset($this->iteratorArray[$this->iteratorPosition]);
 	}
 
-	/* ArrayAccess ***********************************************************/
+	/* ArrayAccess **************************************************************/
 
 	public function setIteratorArray() {
 		if (is_null($this->iteratorArray)) {

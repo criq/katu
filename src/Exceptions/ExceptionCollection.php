@@ -2,7 +2,7 @@
 
 namespace Katu\Exceptions;
 
-class ExceptionCollection extends Exception implements \Iterator {
+class ExceptionCollection extends Exception implements \Iterator, \ArrayAccess {
 
 	public $collection = [];
 
@@ -42,6 +42,15 @@ class ExceptionCollection extends Exception implements \Iterator {
 		return (int) (count($this->collection));
 	}
 
+	public function getErrorNames() {
+		$errorNames = [];
+		foreach ($this->collection as $exception) {
+			$errorNames = array_merge($errorNames, $exception->getErrorNames());
+		}
+
+		return array_values(array_filter(array_unique($errorNames)));
+	}
+
 	public function replaceErrorName($errorName, $replacement) {
 		foreach ($this->collection as $exception) {
 			$exception->replaceErrorName($errorName, $replacement);
@@ -50,7 +59,7 @@ class ExceptionCollection extends Exception implements \Iterator {
 		return $this;
 	}
 
-	/* Iterator **************************************************************/
+	/* Iterator *****************************************************************/
 
 	public function rewind() {
 		$this->iteratorPosition = 0;
@@ -70,6 +79,28 @@ class ExceptionCollection extends Exception implements \Iterator {
 
 	public function valid() {
 		return isset($this->collection[$this->iteratorPosition]);
+	}
+
+	/* ArrayAccess **************************************************************/
+
+	public function offsetSet($offset, $value) {
+		if (is_null($offset)) {
+			$this->collection[] = $value;
+		} else {
+			$this->collection[$offset] = $value;
+		}
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->collection[$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->collection[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return isset($this->collection[$offset]) ? $this->collection[$offset] : null;
 	}
 
 }
