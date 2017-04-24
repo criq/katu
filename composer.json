@@ -31,6 +31,7 @@
 		"facebook/graph-sdk" : "@stable",
 		"vlucas/phpdotenv" : "@stable",
 		"guzzlehttp/guzzle": "@stable",
+		"illuminate/support": "v5.4.17",
 		"jenssegers/agent": "@stable"
 	},
 	"minimum-stability": "dev",
