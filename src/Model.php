@@ -419,6 +419,19 @@ class Model extends ModelBase {
 		return FileAttachment::getBy($params, $expressions);
 	}
 
+	public function refreshFileAttachmentsFromFileIds($user, $fileIds) {
+		$this->getFileAttachments()->each('delete');
+
+		foreach ((array) $fileIds as $fileId) {
+			$file = File::get($fileId);
+			if ($file) {
+				$file->attachTo($user, $this);
+			}
+		}
+
+		return true;
+	}
+
 	public function refreshFileAttachmentPositions() {
 		$position = 0;
 
