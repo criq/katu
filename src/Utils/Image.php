@@ -93,8 +93,6 @@ class Image {
 		return false;
 	}
 
-
-
 	static function getVersionFilename($uri, $version) {
 		$uri = static::getValidSource($uri);
 
@@ -125,8 +123,12 @@ class Image {
 
 		$fileNameSuffix = (new \Katu\Types\TArray($fileNameSuffixes))->implodeWithKeys('_');
 
+		$versionConfig = static::getVersionConfig($version);
+
 		$fileNameExtension = null;
-		if (isset($pathinfo['extension'])) {
+		if (isset($versionConfig['extension'])) {
+			$fileNameExtension = '.' . $versionConfig['extension'];
+		} elseif (isset($pathinfo['extension'])) {
 			$fileNameExtension = '.' . $pathinfo['extension'];
 		}
 
@@ -168,10 +170,12 @@ class Image {
 	static function makeVersion($source, $destination, $version) {
 		if (!file_exists($destination)) {
 
-			try {
-				$versionConfig = \Katu\Config::get('image', 'versions', $version);
-			} catch (\Exception $e) {
-				$versionConfig = $version;
+			$versionConfig = static::getVersionConfig($version);
+
+			if (isset($versionConfig['quality'])) {
+				$quality = $versionConfig['quality'];
+			} else {
+				$quality = 100;
 			}
 
 			// Get valid source.
@@ -227,14 +231,48 @@ class Image {
 				}
 			}
 
-			$image->save($destination);
+			$image->save($destination, $quality);
 
 		}
 
 		return true;
 	}
 
+	static function getVersionConfig($version) {
+		try {
+			return \Katu\Config::get('image', 'versions', $version);
+		} catch (\Exception $e) {
+			return $version;
+		}
+	}
 
+	static function getThumbnailVersionConfig($size = 640, $quality = 100) {
+		return [
+			'quality' => $quality,
+			'filters' => [
+				[
+					'filter' => 'resize',
+					'width' => $size,
+					'height' => $size,
+				],
+			],
+		];
+	}
+
+	static function getSquareThumbnailVersionConfig($size = 640, $quality = 100) {
+		return [
+			'quality' => $quality,
+			'filters' => [
+				[
+					'filter' => 'fit',
+					'width' => $size,
+					'height' => $size,
+				],
+			],
+		];
+	}
+
+	/* Colors *******************************************************************/
 
 	static function getColorRgb($color) {
 		return \Katu\Types\TColorRgb::getFromImageColor($color);
@@ -300,32 +338,6 @@ class Image {
 			return $colors;
 
 		}, null, $path);
-	}
-
-	static function getThumbnailVersionConfig($size = 640, $quality = 100) {
-		return [
-			'quality' => $quality,
-			'filters' => [
-				[
-					'filter' => 'resize',
-					'width' => $size,
-					'height' => $size,
-				],
-			],
-		];
-	}
-
-	static function getSquareThumbnailVersionConfig($size = 640, $quality = 100) {
-		return [
-			'quality' => $quality,
-			'filters' => [
-				[
-					'filter' => 'fit',
-					'width' => $size,
-					'height' => $size,
-				],
-			],
-		];
 	}
 
 }
