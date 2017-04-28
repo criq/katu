@@ -226,6 +226,16 @@ class Image {
 							});
 
 						break;
+						case 'contrast' :
+
+							$image->contrast($filter['level']);
+
+						break;
+						case 'sharpen' :
+
+							$image->sharpen($filter['level']);
+
+						break;
 					}
 
 				}
