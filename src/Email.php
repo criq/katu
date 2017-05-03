@@ -31,6 +31,8 @@ class Email {
 	static function resolveEmailAddress($emailAddress) {
 		if ($emailAddress instanceof \Katu\Models\EmailAddress) {
 			$originalEmailAddress = $emailAddress->emailAddress;
+		} elseif ($emailAddress instanceof \Katu\Types\TEmailAddress) {
+			$originalEmailAddress = (string) $emailAddress;
 		} else {
 			$originalEmailAddress = $emailAddress;
 		}

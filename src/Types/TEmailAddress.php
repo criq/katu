@@ -8,10 +8,14 @@ class TEmailAddress {
 
 	public function __construct($value) {
 		if (!self::isValid($value)) {
-			throw new \Exception("Invalid e-mail address.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid e-mail address.");
 		}
 
 		$this->value = (string) (trim($value));
+	}
+
+	public function __toString() {
+		return (string) $this->value;
 	}
 
 	static function isValid($value) {
