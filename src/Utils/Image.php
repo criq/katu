@@ -236,6 +236,16 @@ class Image {
 							$image->sharpen($filter['level']);
 
 						break;
+						case 'insert' :
+
+							$image->insert(
+								(new \Katu\Utils\File($filter['source']))->getPath(),
+								isset($filter['position']) ? $filter['position'] : null,
+								isset($filter['x']) ? $filter['x'] : null,
+								isset($filter['y']) ? $filter['y'] : null
+							);
+
+						break;
 					}
 
 				}
