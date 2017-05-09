@@ -209,43 +209,47 @@ class Image {
 			}
 
 			if (isset($versionConfig['filters'])) {
-				foreach ($versionConfig['filters'] as $filter) {
+				foreach ((array) $versionConfig['filters'] as $filter) {
 
-					switch ($filter['filter']) {
-						case 'fit' :
+					if (isset($filter['filter'])) {
 
-							$image->fit($filter['width'], $filter['height'], function($constraint) {
-								$constraint->aspectRatio();
-							});
+						switch ($filter['filter']) {
+							case 'fit' :
 
-						break;
-						case 'resize' :
+								$image->fit($filter['width'], $filter['height'], function($constraint) {
+									$constraint->aspectRatio();
+								});
 
-							$image->resize($filter['width'], $filter['height'], function($constraint) {
-								$constraint->aspectRatio();
-							});
+							break;
+							case 'resize' :
 
-						break;
-						case 'contrast' :
+								$image->resize($filter['width'], $filter['height'], function($constraint) {
+									$constraint->aspectRatio();
+								});
 
-							$image->contrast($filter['level']);
+							break;
+							case 'contrast' :
 
-						break;
-						case 'sharpen' :
+								$image->contrast($filter['level']);
 
-							$image->sharpen($filter['level']);
+							break;
+							case 'sharpen' :
 
-						break;
-						case 'insert' :
+								$image->sharpen($filter['level']);
 
-							$image->insert(
-								(new \Katu\Utils\File($filter['source']))->getPath(),
-								isset($filter['position']) ? $filter['position'] : null,
-								isset($filter['x']) ? $filter['x'] : null,
-								isset($filter['y']) ? $filter['y'] : null
-							);
+							break;
+							case 'insert' :
 
-						break;
+								$image->insert(
+									(new \Katu\Utils\File($filter['source']))->getPath(),
+									isset($filter['position']) ? $filter['position'] : null,
+									isset($filter['x']) ? $filter['x'] : null,
+									isset($filter['y']) ? $filter['y'] : null
+								);
+
+							break;
+						}
+
 					}
 
 				}
