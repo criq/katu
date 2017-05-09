@@ -11,21 +11,25 @@ class UrlShortener {
 	}
 
 	static function shorten($url) {
-		$apiUrl = \Katu\Types\TUrl::make('https://www.googleapis.com/urlshortener/v1/url', [
-			'key' => static::getApiKey(),
-		]);
+		return \Katu\Utils\Cache::get(function($url) {
 
-		$curl = new \Curl\Curl;
-		$curl->setHeader('Content-Type', 'application/json');
-		$res = $curl->post($apiUrl, \Katu\Utils\JSON::encode([
-			'longUrl' => (string) $url,
-		]));
+			$apiUrl = \Katu\Types\TUrl::make('https://www.googleapis.com/urlshortener/v1/url', [
+				'key' => static::getApiKey(),
+			]);
 
-		if (isset($res->id)) {
-			return $res->id;
-		}
+			$curl = new \Curl\Curl;
+			$curl->setHeader('Content-Type', 'application/json');
+			$res = $curl->post($apiUrl, \Katu\Utils\JSON::encode([
+				'longUrl' => (string) $url,
+			]));
 
-		return false;
+			if (isset($res->id)) {
+				return $res->id;
+			}
+
+			return false;
+
+		}, 86400 * 365, $url);
 	}
 
 }
