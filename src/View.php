@@ -212,7 +212,7 @@ class View {
 				$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
 			}
 			$url = new \Katu\Types\TUrl($file->getUrl());
-			$url->addQueryParam('hash', hash('crc32', $file->get()));
+			$url->addQueryParam('hash', hash('md4', $file->get()));
 
 			return $url;
 		}));
