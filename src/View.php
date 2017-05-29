@@ -211,8 +211,9 @@ class View {
 			} else {
 				$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
 			}
+
 			$url = new \Katu\Types\TUrl($file->getUrl());
-			$url->addQueryParam('hash', md5($file->get()));
+			$url->addQueryParam('hash', md5($file->getDateTimeModified()));
 
 			return $url;
 		}));

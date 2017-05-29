@@ -226,6 +226,10 @@ class File {
 		}
 	}
 
+	public function getDateTimeModified() {
+		return new \Katu\Utils\DateTime('@' . filemtime($this));
+	}
+
 	public function eachRecursive($callback) {
 		$iterator = new \RecursiveDirectoryIterator($this, \RecursiveDirectoryIterator::SKIP_DOTS);
 		$files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
