@@ -44,6 +44,10 @@ class DateTime extends \DateTime {
 		return $this->format('Y-m-d');
 	}
 
+	public function getDbTimeFormat() {
+		return $this->format('H:i:s');
+	}
+
 	public function getDbDateTimeFormat() {
 		return $this->format('Y-m-d H:i:s');
 	}
