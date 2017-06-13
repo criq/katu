@@ -18,10 +18,23 @@ class Random {
 	const IDSTRING = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
 
 	static function getFromChars($chars, $length = 32) {
-		$factory = new \RandomLib\Factory;
-		$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::LOW));
+		try {
+			$factory = new \RandomLib\Factory;
+			$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::LOW));
 
-		return $generator->generateString($length, $chars);
+			return $generator->generateString($length, $chars);
+		} catch (\Exception $e) {
+			return static::generateString($length, $chars);
+		}
+	}
+
+	static function generateString($length, $chars) {
+		$characters = [];
+		foreach (range(1, $length) as $i) {
+			$characters[] = $chars[rand(0, mb_strlen($chars) - 1)];
+		}
+
+		return implode($characters);
 	}
 
 	static function getFileName($length = 32) {

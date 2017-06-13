@@ -47,7 +47,7 @@ class Controller {
 			return true;
 
 		} catch (\Exception $e) {
-			throw new Exceptions\TemplateException($e->getMessage());
+			throw new Exceptions\TemplateException($e);
 		}
 	}
 
