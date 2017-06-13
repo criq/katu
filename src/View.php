@@ -35,7 +35,7 @@ class View {
 			try {
 				return \Katu\Utils\Image::getVersionUrl($uri, $version);
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
-
+				return false;
 			}
 		}));
 
