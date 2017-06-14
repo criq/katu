@@ -12,7 +12,7 @@ class Cron {
 			$time = (new DateTime);
 			$time->setTime($time->format('H'), $time->format('i'), 0);
 
-			$paths = \Katu\Config::get('cron', 'paths');
+			$paths = array_filter((array)\Katu\Config::get('cron', 'paths'));
 			foreach ($paths as $path => $spec) {
 				$expression = \Cron\CronExpression::factory($spec);
 				$nextRunTime = $expression->getNextRunDate($time, 0, true);
