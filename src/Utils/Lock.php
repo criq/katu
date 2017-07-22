@@ -24,10 +24,12 @@ class Lock {
 		return FileSystem::joinPaths(TMP_PATH, call_user_func(['\Katu\Utils\FileSystem', 'getPathForName'], array_merge(['!locks'], $this->name)));
 	}
 
-	static function run($name, $timeout, $callback) {
+	static function run($name, $timeout, $callback, $conditions = true) {
 		@set_time_limit($timeout);
 
-		$lock = new static($name, $timeout);
+		if ($conditions) {
+			$lock = new static($name, $timeout);
+		}
 
 		try {
 
@@ -36,13 +38,17 @@ class Lock {
 
 		} catch (\Exception $e) {
 
-			$lock->unlock();
+			if (isset($lock)) {
+				$lock->unlock();
+			}
 
 			throw $e;
 
 		}
 
-		$lock->unlock();
+		if (isset($lock)) {
+			$lock->unlock();
+		}
 
 		return $res;
 	}
