@@ -14,6 +14,25 @@ class Table extends TableBase {
 		return \Katu\Utils\Tmp::get(static::getLastUpdatedTmpName());
 	}
 
+	public function getType() {
+		$sql = " SHOW CREATE TABLE " . $this->name;
+		$res = $this->pdo->createQuery($sql)->getResult();
+
+		if (isset($res[0]['View'])) {
+			return 'view';
+		}
+
+		return 'table';
+	}
+
+	public function isTable() {
+		return $this->getType() == 'table';
+	}
+
+	public function isView() {
+		return $this->getType() == 'view';
+	}
+
 	public function getCreateSyntax() {
 		$sql = " SHOW CREATE TABLE " . $this->name;
 		$res = $this->pdo->createQuery($sql)->getResult();

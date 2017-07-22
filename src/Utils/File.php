@@ -58,31 +58,29 @@ class File {
 
 	public function get() {
 		try {
-
 			return file_get_contents($this);
-
 		} catch (\Exception $e) {
-
 			\Katu\ErrorHandler::log($e);
-
 			return false;
+		}
+	}
 
+	public function getLines() {
+		try {
+			return file($this);
+		} catch (\Exception $e) {
+			\Katu\ErrorHandler::log($e);
+			return false;
 		}
 	}
 
 	public function set($data) {
 		try {
-
 			$this->getDir()->makeDir();
-
 			return file_put_contents($this, $data, LOCK_EX);
-
 		} catch (\Exception $e) {
-
 			\Katu\ErrorHandler::log($e);
-
 			return false;
-
 		}
 	}
 
