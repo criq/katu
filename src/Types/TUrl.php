@@ -60,6 +60,15 @@ class TUrl {
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== false;
 	}
 
+	static function makeValid($value) {
+		$url = $value;
+		if (!preg_match('/^https?\:\/\//', $value)) {
+			$url = 'http://' . $value;
+		}
+
+		return $url;
+	}
+
 	public function getScheme() {
 		$parts = $this->getParts();
 
