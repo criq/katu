@@ -61,7 +61,11 @@ class TUrl {
 	}
 
 	static function makeValid($value) {
-		$url = $value;
+		$url = trim($value);
+		if (!$url) {
+			return false;
+		}
+
 		if (!preg_match('/^https?\:\/\//', $value)) {
 			$url = 'http://' . $value;
 		}
