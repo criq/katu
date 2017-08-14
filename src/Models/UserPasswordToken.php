@@ -6,6 +6,8 @@ class UserPasswordToken extends \Katu\Model {
 
 	const TABLE = 'user_password_tokens';
 
+	const EXPIRES = '1 hour';
+
 	static function create($user) {
 		if (!static::checkCrudParams($user)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
@@ -13,7 +15,7 @@ class UserPasswordToken extends \Katu\Model {
 
 		return static::insert(array(
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'timeExpires' => (string) (\Katu\Utils\DateTime::get('+ 1 hour')->getDbDateTimeFormat()),
+			'timeExpires' => (string) (\Katu\Utils\DateTime::get(static::EXPIRES)->getDbDateTimeFormat()),
 			'userId'      => (int)    ($user->getId()),
 			'token'       => (string) (\Katu\Utils\Random::getString(static::getColumn('token')->getProperties()->length)),
 		));
