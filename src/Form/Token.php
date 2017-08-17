@@ -6,7 +6,7 @@ use \Katu\Utils\DateTime;
 
 class Token {
 
-	const TOKEN_TIMEOUT = 3600;
+	const TOKEN_TIMEOUT = 86400;
 	const TOKEN_LENGTH  = 10;
 	const SECRET_LENGTH = 4;
 

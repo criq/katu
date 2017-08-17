@@ -32,7 +32,7 @@ class UserPasswordToken extends \Katu\Model {
 	}
 
 	public function isValid() {
-		return \Katu\Utils\DateTime::get($this->timeExpires)->isInFuture() && !\Katu\Utils\DateTime::get($this->timeUsed)->isValid();
+		return \Katu\Utils\DateTime::get($this->timeExpires)->isInFuture() && !$this->timeUsed;
 	}
 
 	public function expire() {
