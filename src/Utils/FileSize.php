@@ -11,7 +11,7 @@ class FileSize {
 	}
 
 	public function __toString() {
-		return (string) $this->size;
+		return (string)$this->size;
 	}
 
 	public function inKB() {

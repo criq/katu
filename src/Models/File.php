@@ -67,7 +67,7 @@ class File extends \Katu\Model {
 
 	public function delete() {
 		foreach (\App\Models\FileAttachment::getBy([
-			'fileId' => $this,
+			'fileId' => $this->getId(),
 		]) as $fileAttachment) {
 			$fileAttachment->delete();
 		}
