@@ -19,7 +19,7 @@ class TString {
 	}
 
 	static function isValid($string) {
-		return is_string($string);
+		return is_string($string) || is_int($string) || is_float($string);
 	}
 
 	public function getNumberOfWords() {
