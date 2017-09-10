@@ -7,13 +7,16 @@ class Cron {
 	static function getCurrent() {
 		$crons = [];
 
-		try {
+		$time = new DateTime;
+		$time->setTime($time->format('H'), $time->format('i'), 0);
 
-			$time = (new DateTime);
-			$time->setTime($time->format('H'), $time->format('i'), 0);
+		try {
 
 			$paths = array_filter((array)\Katu\Config::get('cron', 'paths'));
 			foreach ($paths as $path => $spec) {
+				if (is_array($spec)) {
+					list($path, $spec) = [key($spec), current($spec)];
+				}
 				$expression = \Cron\CronExpression::factory($spec);
 				$nextRunTime = $expression->getNextRunDate($time, 0, true);
 				if ($time == $nextRunTime) {
@@ -22,7 +25,25 @@ class Cron {
 			}
 
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			/* Nevermind. */
+			// Nevermind.
+		}
+
+		try {
+
+			$routes = array_filter((array)\Katu\Config::get('cron', 'routes'));
+			foreach ($routes as $route => $spec) {
+				if (is_array($spec)) {
+					list($route, $spec) = [key($spec), current($spec)];
+				}
+				$expression = \Cron\CronExpression::factory($spec);
+				$nextRunTime = $expression->getNextRunDate($time, 0, true);
+				if ($time == $nextRunTime) {
+					$crons[] = new CronRoute($route);
+				}
+			}
+
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			// Nevermind.
 		}
 
 		return $crons;
