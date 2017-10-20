@@ -224,6 +224,8 @@ class ViewModel extends ModelBase {
 	static function cache() {
 		try {
 
+			$class = static::getClass();
+
 			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
 
 				$class::materializeSourceViews();
@@ -234,7 +236,7 @@ class ViewModel extends ModelBase {
 
 				return true;
 
-			}, static::getClass());
+			}, $class);
 
 		} catch (\Katu\Exceptions\LockException $e) {
 			\Katu\ErrorHandler::log($e);

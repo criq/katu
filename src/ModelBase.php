@@ -32,6 +32,10 @@ class ModelBase {
 		return get_called_class();
 	}
 
+	static function getTopClass() {
+		return "\\" . ltrim(static::getClass(), "\\");
+	}
+
 	static function getAppClass() {
 		return implode(array_slice(explode('\\', static::getClass()), -1, 1));
 	}
