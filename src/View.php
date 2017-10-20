@@ -151,6 +151,10 @@ class View {
 			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
 		}));
 
+		$twig->addFunction(new \Twig_SimpleFunction('urlDecoded', function() {
+			return (string) call_user_func_array(['\Katu\Utils\Url', 'getDecodedFor'], func_get_args());
+		}));
+
 		$twig->addFunction(new \Twig_SimpleFunction('getCurrentUrl', function() {
 			return (string) call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
 		}));

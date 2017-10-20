@@ -16,7 +16,7 @@ class User extends \Katu\Model {
 
 	static function create() {
 		return static::insert([
-			static::$columnNames['timeCreated'] => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			static::$columnNames['timeCreated'] => new \Katu\Utils\DateTime,
 		]);
 	}
 

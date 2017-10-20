@@ -23,7 +23,13 @@ class Url {
 	static function getFor($handle, $args = [], $params = []) {
 		$app = App::get();
 
-		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', (array) $args))), $params);
+		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', (array)$args))), $params);
+	}
+
+	static function getDecodedFor($handle, $args = [], $params = []) {
+		$app = App::get();
+
+		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, $args)), $params);
 	}
 
 	static function joinPaths() {
