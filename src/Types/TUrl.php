@@ -23,8 +23,8 @@ class TUrl {
 		return $this->value;
 	}
 
-	static function make($url, $params = array()) {
-		$params = array_filter((array) $params, function($i) {
+	static function make($url, $params = []) {
+		$params = array_filter((array)$params, function($i) {
 			return !is_null($i);
 		});
 		return new self($url . ($params ? ('?' . http_build_query($params)) : null));
@@ -109,7 +109,7 @@ class TUrl {
 
 		if (isset($parts['query'])) {
 			parse_str($parts['query'], $query_params);
-			$parts['query'] = (array) $query_params;
+			$parts['query'] = (array)$query_params;
 		} else {
 			$parts['query'] = [];
 		}
