@@ -58,4 +58,12 @@ class TString {
 		return implode('<wbr />', $this->getAsArray());
 	}
 
+	public function trim() {
+		return new static(trim($this));
+	}
+
+	public function normalizeSpaces() {
+		return new static(str_replace("\xc2\xa0", "\x20", $this));
+	}
+
 }

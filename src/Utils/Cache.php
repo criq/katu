@@ -144,7 +144,9 @@ class Cache {
 
 			$response = (new \Katu\Types\TUrl((string) $url))->get($curl);
 			if ($curl->error) {
-				throw new \Katu\Exceptions\ErrorException("Error getting URL " . ((string) $url));
+				throw (new \Katu\Exceptions\ErrorException("Error getting URL " . ((string) $url)))
+					->setAbbr('urlUnavailable')
+					;
 			}
 
 			if (is_object($response) && is_a($response, 'SimpleXMLElement')) {
