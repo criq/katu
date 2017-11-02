@@ -44,8 +44,8 @@ class FileSystemPathSegment {
 
 		// Sanitize.
 		if (is_string($name)) {
-			$name = ltrim($name, '.');
-			$name = preg_replace('#[^a-z0-9\.\-_]#i', '_', $name);
+			$name = (new \Katu\Types\TString($name))->getForUrl();
+			$name = substr($name, 0, 48);
 		}
 
 		// Folder prefixes.

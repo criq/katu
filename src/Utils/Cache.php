@@ -124,6 +124,11 @@ class Cache {
 	static function getPath($name = [], $args = []) {
 		// No name, generate it from position in code.
 		if (!$name) {
+
+			$args = array_map(function($i) {
+				return is_string($i) ? strtr($i, '/', ' ') : $i;
+			}, $args);
+
 			foreach (debug_backtrace() as $backtrace) {
 				if ($backtrace['file'] != __FILE__) {
 					$name = array_merge([
@@ -136,7 +141,9 @@ class Cache {
 			}
 		}
 
-		return FileSystem::getPathForName(array_merge(['!cache'], is_array($name) ? $name : [$name], $args));
+		$path = FileSystem::getPathForName(array_merge(['!cache'], is_array($name) ? $name : [$name], $args));
+
+		return $path;
 	}
 
 	static function getUrl($url, $timeout = null) {

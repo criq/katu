@@ -61,7 +61,7 @@ class FileSystem {
 			$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
 			$nameParts = array_values(array_filter($nameParts));
 
-			$segments = new FileSystemPathSegments();
+			$segments = new FileSystemPathSegments;
 
 			// Special treatment of URLs.
 			foreach ($nameParts as $namePart) {
