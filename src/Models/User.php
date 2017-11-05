@@ -51,7 +51,7 @@ class User extends \Katu\Model {
 	static function getByAccessToken($token) {
 		$accessToken = \App\Models\AccessToken::getOneBy([
 			'token' => $token,
-			new \Sexy\CmpGreaterThanOrEqual(\App\Models\AccessToken::getColumn('timeExpires'), (new \Katu\Utils\DateTime())->getDbDateTimeFormat()),
+			new \Sexy\CmpGreaterThanOrEqual(\App\Models\AccessToken::getColumn('timeExpires'), new \Katu\Utils\DateTime),
 		]);
 
 		if ($accessToken) {
