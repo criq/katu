@@ -99,24 +99,24 @@ class File extends \Katu\Model {
 			try {
 				$subDirs = \Katu\Config::get('app', 'files', 'subDirs');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$subDirs = 3;
+				$subDirs = 4;
 			}
 
 			try {
 				$fileNameLength = \Katu\Config::get('app', 'files', 'fileNameLength');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$fileNameLength = rand(32, 64);
+				$fileNameLength = rand(32, 48);
 			}
 
 			try {
 				$fileNameChars = \Katu\Config::get('app', 'files', 'fileNameChars');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$fileNameChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+				$fileNameChars = 'abcdefghjkmnpqrstuvwxyz123456789';
 			}
 
 			$subDirNames = [];
 			for ($i = 0; $i < $subDirs; $i++) {
-				$subDirNames[] = \Katu\Utils\Random::getFromChars($fileNameChars, rand(1, 3));
+				$subDirNames[] = \Katu\Utils\Random::getFromChars($fileNameChars, 2);
 			}
 
 			$path = trim(implode('/', [
@@ -127,7 +127,7 @@ class File extends \Katu\Model {
 			if ($srcName) {
 				$srcPathinfo = pathinfo($srcName);
 				if (isset($srcPathinfo['extension'])) {
-					$path .= '.' . $srcPathinfo['extension'];
+					$path .= '.' . mb_strtolower($srcPathinfo['extension']);
 				}
 			}
 
@@ -152,6 +152,15 @@ class File extends \Katu\Model {
 		}
 
 		return $destination;
+	}
+
+	public function move(\Katu\Utils\File $destination) {
+		$this->getFile()->move($destination);
+
+		$this->update('path', ltrim($destination, FILE_PATH));
+		$this->save();
+
+		return true;
 	}
 
 	public function attachTo($creator, $object) {

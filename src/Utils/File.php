@@ -203,6 +203,30 @@ class File {
 		return touch($this);
 	}
 
+	public function copy(File $destination) {
+		if (!$this->exists()) {
+			throw (new \Katu\Exceptions\ErrorException("Source file doesn't exist."))
+				->setAbbr('sourceFileUnavailable')
+				;
+		}
+
+		$destination->touch();
+		if (!copy($this, $destination)) {
+			throw (new \Katu\Exceptions\ErrorException("Couldn't copy the file."))
+				->setAbbr('fileCopyFailed')
+				;
+		}
+
+		return true;
+	}
+
+	public function move(File $destination) {
+		$this->copy($destination);
+		$this->delete();
+
+		return true;
+	}
+
 	public function delete() {
 		clearstatcache();
 
