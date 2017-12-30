@@ -11,7 +11,7 @@ class CronRoute {
 	}
 
 	public function run() {
-		return Url::getFor($this->route)->ping(10);
+		return Url::getFor($this->route)->ping();
 	}
 
 }

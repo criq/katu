@@ -230,7 +230,7 @@ class TUrl {
 
 		$curl->setOpt(CURLOPT_TIMEOUT, $timeout);
 
-		return $curl->get((string) $this);
+		return $curl->get((string)$this);
 	}
 
 }

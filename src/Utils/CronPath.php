@@ -11,7 +11,7 @@ class CronPath {
 	}
 
 	public function run() {
-		return (new \Katu\Types\TUrl(Url::joinPaths(Url::getBase(), $this->path)))->ping(10);
+		return (new \Katu\Types\TUrl(Url::joinPaths(Url::getBase(), $this->path)))->ping();
 	}
 
 }
