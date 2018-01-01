@@ -142,6 +142,12 @@ class ModelBase {
 		return static::createQuery($sql)->getResult();
 	}
 
+	static function getCachedBySql($sql, $timeout = null) {
+		return Utils\Cache::get(function($sql) {
+			return Pdo\Results\CachedClassResult::createFromClassResult(static::getBySql($sql));
+		}, $timeout, $sql);
+	}
+
 	static function getOneBySql($sql) {
 		return static::getBySql($sql)->getOne();
 	}
