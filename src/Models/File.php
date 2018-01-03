@@ -2,6 +2,8 @@
 
 namespace Katu\Models;
 
+use \Sexy\Sexy as SX;
+
 class File extends \Katu\Model {
 
 	const TABLE = 'files';
@@ -154,10 +156,12 @@ class File extends \Katu\Model {
 		return $destination;
 	}
 
-	public function move(\Katu\Utils\File $destination) {
+	public function move(\Katu\Utils\File $destination, $dir = null) {
 		$this->getFile()->move($destination);
 
-		$this->update('path', ltrim($destination, FILE_PATH));
+		$path = ltrim($destination, $dir ?: FILE_PATH);
+
+		$this->update('path', $path);
 		$this->save();
 
 		return true;
@@ -197,6 +201,52 @@ class File extends \Katu\Model {
 
 	public function getSquareThumbnailPath($size = 640, $quality = 100) {
 		return \Katu\Utils\Image::getVersionPath($this->getPath(), \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
+	}
+
+	static function normalizePaths() {
+		@set_time_limit(600);
+
+		\Katu\Utils\Cache::clearMemory();
+
+		try {
+			$sql = " ALTER TABLE " . static::getTable() . " ADD `isNormalized` TINYINT(1)  UNSIGNED  NOT NULL  DEFAULT '0'  AFTER `size`; ";
+			$res = File::getPdo()->createQuery($sql)->getResult();
+		} catch (\Exception $e) {
+			// Nevermind.
+		}
+
+		$normalizedDir = new \Katu\Utils\File(BASE_DIR, 'files-normalized');
+
+		$sql = SX::select()
+			->setOptGetTotalRows(false)
+			->from(static::getTable())
+			->where(SX::eq(static::getColumn('isNormalized'), 0))
+			#->setPage(SX::page(1, 10))
+			;
+
+		$files = static::getBySql($sql);
+		foreach ($files as $file) {
+
+			$destination = new \Katu\Utils\File($normalizedDir, static::generatePath($file->path));
+
+			try {
+
+				$file->move($destination, $normalizedDir);
+				$file->update('isNormalized', 1);
+				$file->save();
+
+			} catch (\Katu\Exceptions\Exception $e) {
+				if ($e->getAbbr() == 'sourceFileUnavailable') {
+					var_dump($file->path);
+				} else {
+					var_dump($file);
+					var_dump($e); die;
+				}
+			}
+
+		}
+
+		echo "fin.";
 	}
 
 }
