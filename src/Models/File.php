@@ -107,7 +107,7 @@ class File extends \Katu\Model {
 			try {
 				$fileNameLength = \Katu\Config::get('app', 'files', 'fileNameLength');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$fileNameLength = rand(32, 48);
+				$fileNameLength = 32;
 			}
 
 			try {
@@ -118,7 +118,7 @@ class File extends \Katu\Model {
 
 			$subDirNames = [];
 			for ($i = 0; $i < $subDirs; $i++) {
-				$subDirNames[] = \Katu\Utils\Random::getFromChars($fileNameChars, 2);
+				$subDirNames[] = \Katu\Utils\Random::getFromChars($fileNameChars, 1);
 			}
 
 			$path = trim(implode('/', [
@@ -159,7 +159,8 @@ class File extends \Katu\Model {
 	public function move(\Katu\Utils\File $destination, $dir = null) {
 		$this->getFile()->move($destination);
 
-		$path = ltrim($destination, $dir ?: FILE_PATH);
+		$path = preg_replace('/^' . preg_quote($dir ?: FILE_PATH, '/') . '/', null, $destination);
+		$path = ltrim($path, '/');
 
 		$this->update('path', $path);
 		$this->save();
@@ -204,17 +205,22 @@ class File extends \Katu\Model {
 	}
 
 	static function normalizePaths() {
-		@set_time_limit(600);
+		@set_time_limit(3600);
 
 		\Katu\Utils\Cache::clearMemory();
 
-		$normalizedDir = new \Katu\Utils\File(BASE_DIR, 'files-normalized');
-		var_dump($normalizedDir->touch());
-		var_dump($normalizedDir->chmod(0777));
-		var_dump($normalizedDir->isWritable());
+		$filesDir = new \Katu\Utils\File(FILE_PATH);
+		$normalizedDir = new \Katu\Utils\File(BASE_DIR, FILE_DIR . '-normalized');
 
-
-		die;
+		if (!$normalizedDir->exists() && !$normalizedDir->makeDir()) {
+			throw new \Katu\Exceptions\Exception("Can't create normalized files dir.");
+		}
+		if (!$normalizedDir->chmod(0777)) {
+			throw new \Katu\Exceptions\Exception("Can't change permissions on normalized files dir.");
+		}
+		if (!$normalizedDir->isWritable()) {
+			throw new \Katu\Exceptions\Exception("Normalized dir isn't writable.");
+		}
 
 		try {
 			$sql = " ALTER TABLE " . static::getTable() . " ADD `isNormalized` TINYINT(1)  UNSIGNED  NOT NULL  DEFAULT '0'  AFTER `size`; ";
@@ -227,27 +233,31 @@ class File extends \Katu\Model {
 			->setOptGetTotalRows(false)
 			->from(static::getTable())
 			->where(SX::eq(static::getColumn('isNormalized'), 0))
-			#->setPage(SX::page(1, 10))
+			->setPage(SX::page(1, 1000))
 			;
 
 		$files = static::getBySql($sql);
-		foreach ($files as $file) {
+		if ($files->getTotal()) {
 
-			$destination = new \Katu\Utils\File($normalizedDir, static::generatePath($file->path));
+			foreach ($files as $file) {
 
-			try {
+				$destination = new \Katu\Utils\File($normalizedDir, static::generatePath($file->path));
 
-				$file->move($destination, $normalizedDir);
-				$file->update('isNormalized', 1);
-				$file->save();
+				try {
 
-			} catch (\Katu\Exceptions\Exception $e) {
-				if ($e->getAbbr() == 'sourceFileUnavailable') {
-					var_dump($file->path);
-				} else {
-					var_dump($file);
-					var_dump($e); die;
+					$file->move($destination, $normalizedDir);
+					$file->update('isNormalized', 1);
+					$file->save();
+
+				} catch (\Katu\Exceptions\Exception $e) {
+					if ($e->getAbbr() == 'sourceFileUnavailable') {
+						var_dump($file->path);
+					} else {
+						var_dump($file);
+						var_dump($e); die;
+					}
 				}
+
 			}
 
 		}

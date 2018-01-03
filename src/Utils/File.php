@@ -273,4 +273,8 @@ class File {
 		});
 	}
 
+	public function chmod($mode) {
+		return chmod($this, $mode);
+	}
+
 }
