@@ -208,14 +208,20 @@ class File extends \Katu\Model {
 
 		\Katu\Utils\Cache::clearMemory();
 
+		$normalizedDir = new \Katu\Utils\File(BASE_DIR, 'files-normalized');
+		var_dump($normalizedDir->touch());
+		var_dump($normalizedDir->chmod(0777));
+		var_dump($normalizedDir->isWritable());
+
+
+		die;
+
 		try {
 			$sql = " ALTER TABLE " . static::getTable() . " ADD `isNormalized` TINYINT(1)  UNSIGNED  NOT NULL  DEFAULT '0'  AFTER `size`; ";
 			$res = File::getPdo()->createQuery($sql)->getResult();
 		} catch (\Exception $e) {
 			// Nevermind.
 		}
-
-		$normalizedDir = new \Katu\Utils\File(BASE_DIR, 'files-normalized');
 
 		$sql = SX::select()
 			->setOptGetTotalRows(false)
