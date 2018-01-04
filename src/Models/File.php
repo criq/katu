@@ -53,8 +53,7 @@ class File extends \Katu\Model {
 
 		// Get a new file name.
 		$path = new \Katu\Utils\File(static::generatePath($upload->fileName));
-
-		(new \Katu\Utils\File($upload->path))->copy($destination);
+		(new \Katu\Utils\File($upload->path))->copy(new \Katu\Utils\File(FILE_PATH, $path));
 
 		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
 	}
