@@ -52,11 +52,11 @@ class File extends \Katu\Model {
 		}
 
 		// Get a new file name.
-		$destination = new \Katu\Utils\File(static::generatePath($upload->fileName));
-		var_dump($destination); die;
+		$path = new \Katu\Utils\File(static::generatePath($upload->fileName));
+
 		(new \Katu\Utils\File($upload->path))->copy($destination);
 
-		return static::create($creator, $destination, $upload->fileName, $upload->fileType, $upload->fileSize);
+		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
 	}
 
 	static function checkCrudParams($creator) {
