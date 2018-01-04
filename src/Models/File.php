@@ -215,6 +215,12 @@ class File extends \Katu\Model {
 			throw new \Katu\Exceptions\Exception("Normalized dir isn't writable.");
 		}
 
+		$gitignoreOriginal = new \Katu\Utils\File($filesDir, '.gitignore');
+		$gitignoreTarget = new \Katu\Utils\File($normalizedDir, '.gitignore');
+		if (!$gitignoreOriginal->copy($gitignoreTarget)) {
+			throw new \Katu\Exceptions\Exception("Can't copy .gitignore.");
+		}
+
 		try {
 			$sql = " ALTER TABLE " . static::getTable() . " ADD `isNormalized` TINYINT(1)  UNSIGNED  NOT NULL  DEFAULT '0' ";
 			$res = File::getPdo()->createQuery($sql)->getResult();
