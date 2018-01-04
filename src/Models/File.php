@@ -143,23 +143,16 @@ class File extends \Katu\Model {
 		}
 	}
 
-	static function copy($sourcePath, $destination) {
-		$destinationPath = static::getDirPath() . '/' . $destination;
-		$destinationDirPath = dirname($destinationPath);
+	public function copy($destination) {
+		$this->getFile()->copy($destination);
 
-		@mkdir($destinationDirPath, 0777, true);
-
-		if (!copy($sourcePath, $destinationPath)) {
-			throw new \Katu\Exceptions\InputErrorException("Error occured during copying the file.");
-		}
-
-		return $destination;
+		return true;
 	}
 
-	public function move(\Katu\Utils\File $destination, $dir = null) {
+	public function move(\Katu\Utils\File $destination) {
 		$this->getFile()->move($destination);
 
-		$path = preg_replace('/^' . preg_quote($dir ?: FILE_PATH, '/') . '/', null, $destination);
+		$path = preg_replace('/^' . preg_quote(FILE_PATH, '/') . '/', null, $destination);
 		$path = ltrim($path, '/');
 
 		$this->update('path', $path);
@@ -243,8 +236,6 @@ class File extends \Katu\Model {
 			;
 
 		$files = static::getBySql($sql);
-		var_dump($files->getTotal());
-
 		if ($files->getTotal()) {
 
 			foreach ($files as $file) {
@@ -256,9 +247,17 @@ class File extends \Katu\Model {
 
 				try {
 
-					$file->move($destination, $normalizedDir);
-					$file->update('isNormalized', 1);
-					$file->save();
+					$file->copy($destination);
+					if ($destination->exists()) {
+
+						$path = preg_replace('/^' . preg_quote($normalizedDir, '/') . '/', null, $destination);
+						$path = ltrim($path, '/');
+
+						$file->update('isNormalized', 1);
+						$file->update('path', $path);
+						$file->save();
+
+					}
 
 				} catch (\Katu\Exceptions\Exception $e) {
 					if ($e->getAbbr() == 'sourceFileUnavailable') {
