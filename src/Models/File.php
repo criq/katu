@@ -101,7 +101,7 @@ class File extends \Katu\Model {
 			try {
 				$subDirs = \Katu\Config::get('app', 'files', 'subDirs');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$subDirs = 4;
+				$subDirs = 3;
 			}
 
 			try {
@@ -223,23 +223,34 @@ class File extends \Katu\Model {
 		}
 
 		try {
-			$sql = " ALTER TABLE " . static::getTable() . " ADD `isNormalized` TINYINT(1)  UNSIGNED  NOT NULL  DEFAULT '0'  AFTER `size`; ";
+			$sql = " ALTER TABLE " . static::getTable() . " ADD `isNormalized` TINYINT(1)  UNSIGNED  NOT NULL  DEFAULT '0' ";
+			$res = File::getPdo()->createQuery($sql)->getResult();
+		} catch (\Exception $e) {
+			// Nevermind.
+		}
+
+		try {
+			$sql = " ALTER TABLE " . static::getTable() . " ADD `preNormalizedPath` TEXT  NULL  AFTER `isNormalized` ";
 			$res = File::getPdo()->createQuery($sql)->getResult();
 		} catch (\Exception $e) {
 			// Nevermind.
 		}
 
 		$sql = SX::select()
-			->setOptGetTotalRows(false)
 			->from(static::getTable())
 			->where(SX::eq(static::getColumn('isNormalized'), 0))
-			->setPage(SX::page(1, 1000))
+			->setPage(SX::page(1, 500))
 			;
 
 		$files = static::getBySql($sql);
+		var_dump($files->getTotal());
+
 		if ($files->getTotal()) {
 
 			foreach ($files as $file) {
+
+				$file->update('preNormalizedPath', $file->path);
+				$file->save();
 
 				$destination = new \Katu\Utils\File($normalizedDir, static::generatePath($file->path));
 
