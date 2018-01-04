@@ -208,9 +208,15 @@ class File extends \Katu\Model {
 		if (!$normalizedDir->exists() && !$normalizedDir->makeDir()) {
 			throw new \Katu\Exceptions\Exception("Can't create normalized files dir.");
 		}
-		if (!$normalizedDir->chmod(0777)) {
-			throw new \Katu\Exceptions\Exception("Can't change permissions on normalized files dir.");
+
+		try {
+			if (!$normalizedDir->chmod(0777)) {
+				throw new \Katu\Exceptions\Exception("Can't change permissions on normalized files dir.");
+			}
+		} catch (\Exception $e) {
+			// Nevermind.
 		}
+
 		if (!$normalizedDir->isWritable()) {
 			throw new \Katu\Exceptions\Exception("Normalized dir isn't writable.");
 		}
