@@ -19,6 +19,7 @@ class File extends \Katu\Model {
 		]);
 	}
 
+	/*
 	static function createFromFile($creator, $path) {
 		$fileName = basename($path);
 
@@ -32,6 +33,7 @@ class File extends \Katu\Model {
 
 		return static::create($creator, $path, $fileName, $fileType, $fileSize);
 	}
+	*/
 
 	static function createFromUpload($creator, $upload) {
 		if (!static::checkCrudParams($creator)) {
