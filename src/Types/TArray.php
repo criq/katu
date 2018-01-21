@@ -11,7 +11,11 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 			throw new \Exception("Invalid array.");
 		}
 
-		$this->array = $value;
+		if ($value instanceof static) {
+			$this->array = $value->getArray();
+		} else {
+			$this->array = (array)$value;
+		}
 	}
 
 	public function getArray() {
@@ -19,7 +23,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 	}
 
 	static function isValid($value) {
-		return is_array($value);
+		return is_array($value) || $value instanceof static;
 	}
 
 	public function getValueByArgs() {
