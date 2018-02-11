@@ -69,6 +69,16 @@ class User extends \Katu\Model {
 		return \App\Models\UserService::create($this, $serviceName, $serviceUserId);
 	}
 
+	public function makeUserService($serviceName, $serviceUserId) {
+		return \App\Models\UserService::upsert([
+			'userId'        => (int)$this->getId(),
+			'serviceName'   => (string)$serviceName,
+			'serviceUserId' => (string)$serviceUserId,
+		], [
+			'timeCreated'   => (string)(new \Katu\Utils\DateTime),
+		]);
+	}
+
 	public function getDefaultUserServiceByName($serviceName) {
 		return \App\Models\UserService::getOneBy([
 			'userId'      => (int)    ($this->getId()),
