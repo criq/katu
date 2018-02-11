@@ -235,6 +235,8 @@ class Cache {
 
 		}
 
+		static::$memory = [];
+
 		return false;
 	}
 
