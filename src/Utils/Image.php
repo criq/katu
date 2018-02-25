@@ -238,6 +238,11 @@ class Image {
 								$image->sharpen($filter['level']);
 
 							break;
+							case 'blur' :
+
+								$image->blur($filter['level']);
+
+							break;
 							case 'insert' :
 
 								$image->insert(

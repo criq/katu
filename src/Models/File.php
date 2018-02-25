@@ -19,21 +19,31 @@ class File extends \Katu\Model {
 		]);
 	}
 
-	/*
-	static function createFromFile($creator, $path) {
-		$fileName = basename($path);
+	static function createFromFile(\Katu\Models\User $creator, \Katu\Utils\File $file) {
+		if (!static::checkCrudParams($creator)) {
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
+		}
+		if (!$file->exists()) {
+			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
+		}
+
+		// Check the writability of files folder.
+		if (!is_writable(static::getDirPath())) {
+			throw new \Katu\Exceptions\InputErrorException("File folder isn't writable.");
+		}
 
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
-		$fileType = finfo_file($finfo, $path);
+		$fileType = finfo_file($finfo, $file);
 		finfo_close($finfo);
 
-		$fileSize = filesize($path);
+		$fileSize = filesize($file);
 
-		$path = static::copy($path, static::generatePath($fileName));
+		// Get a new file name.
+		$path = new \Katu\Utils\File(static::generatePath($file));
+		$file->copy(new \Katu\Utils\File(FILE_PATH, $path));
 
-		return static::create($creator, $path, $fileName, $fileType, $fileSize);
+		return static::create($creator, $path, $file->getBasename(), $fileType, $fileSize);
 	}
-	*/
 
 	static function createFromUpload($creator, $upload) {
 		if (!static::checkCrudParams($creator)) {
