@@ -126,9 +126,9 @@ class App {
 		// Redirect to canonical host.
 		try {
 			if ($app->request->getMethod() == 'GET' && Config::get('app', 'redirectToCanonicalHost')) {
-				$currentUrl    = Utils\Url::getCurrent();
-				$currentHost   = $currentUrl->getHost();
-				$canonicalUrl  = new Types\TUrl(Config::get('app', 'baseUrl'));
+				$currentUrl = Utils\Url::getCurrent();
+				$currentHost = $currentUrl->getHost();
+				$canonicalUrl = new Types\TUrl(Config::get('app', 'baseUrl'));
 				$canonicalHost = $canonicalUrl->getHost();
 
 				if ($currentHost != $canonicalHost) {
@@ -202,6 +202,13 @@ class App {
 
 			// Catch-all.
 			$app->map('.+', $catchAll)->via('GET', 'POST');
+
+			// Autoload.
+			if (class_exists('\App\Extensions\Autoload')) {
+				foreach ((array)\App\Extensions\Autoload::getRegisterFunctions() as $registerFunction) {
+					spl_autoload_register($registerFunction);
+				}
+			}
 
 			// Run the app.
 			$app->run();
