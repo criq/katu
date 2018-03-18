@@ -13,7 +13,7 @@ class Blabot {
 			'dictionary' => 1,
 		], $params);
 
-		$arr = JSON::decodeAsArray(Cache::getUrl('http://api.blabot.net?' . http_build_query($params), 3600));
+		$arr = JSON::decodeAsArray(Cache::getUrl('http://api.blabot.net?' . http_build_query($params), 86400));
 
 		return $arr['blabot']['result'];
 	}

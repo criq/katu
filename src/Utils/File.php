@@ -19,6 +19,31 @@ class File {
 		return $this->getPath();
 	}
 
+	static function createTemporaryFromSrc($src, $extension) {
+		$file = new static(TMP_PATH, 'files', [\Katu\Utils\Random::getFileName(), $extension]);
+		$file->set($src);
+
+		return $file;
+	}
+
+	static function createTemporaryFromUrl($url) {
+		$url = new \Katu\Types\TUrl($url);
+
+		$curl = new \Curl\Curl;
+		$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+
+		$src = $curl->get($url);
+
+		$info = $curl->getInfo();
+		if ($info['http_code'] != 200) {
+			return false;
+		}
+
+		$pathinfo = pathinfo($url->getParts()['path']);
+
+		return static::createTemporaryFromSrc($src, $pathinfo['extension']);
+	}
+
 	public function getPath() {
 		if (file_exists($this->path)) {
 			return realpath($this->path);
@@ -203,6 +228,10 @@ class File {
 		return touch($this);
 	}
 
+	public function chmod($mode) {
+		return chmod($this, $mode);
+	}
+
 	public function copy(File $destination) {
 		if (!$this->exists()) {
 			throw (new \Katu\Exceptions\ErrorException("Source file doesn't exist."))
@@ -271,10 +300,6 @@ class File {
 				$i->includeOnce();
 			}
 		});
-	}
-
-	public function chmod($mode) {
-		return chmod($this, $mode);
 	}
 
 }

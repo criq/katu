@@ -70,6 +70,23 @@ class File extends \Katu\Model {
 		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
 	}
 
+	static function createFromUrl($creator, $url) {
+		if (!static::checkCrudParams($creator)) {
+			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
+		}
+
+		$url = new \Katu\Types\TUrl($url);
+
+		$temporaryFile = \Katu\Utils\File::createTemporaryFromUrl($url);
+		$file = static::createFromFile($creator, $temporaryFile);
+		$temporaryFile->delete();
+
+		$file->update('name', pathinfo($url->getParts()['path'])['basename']);
+		$file->save();
+
+		return $file;
+	}
+
 	static function checkCrudParams($creator) {
 		if ($creator && !($creator instanceof \App\Models\User)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid file creator."))
