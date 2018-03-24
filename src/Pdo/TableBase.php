@@ -90,7 +90,7 @@ class TableBase extends \Sexy\Expression {
 		}
 
 		// Create table and copy the data.
-		$sql = " CREATE TABLE " . $destinationTable->name . " AS SELECT * FROM " . $this->name;
+		$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
 		$destinationTable->pdo->createQuery($sql)->getResult();
 
 		// Disable NULL.
@@ -122,7 +122,7 @@ class TableBase extends \Sexy\Expression {
 				try {
 					$destinationTable->pdo->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
-
+					// Nevermind.
 				}
 			}
 
@@ -132,18 +132,20 @@ class TableBase extends \Sexy\Expression {
 					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . $indexableColumn->name . ") ";
 					$destinationTable->pdo->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
-
+					// Nevermind.
 				}
 			}
 		}
 
 		// Create custom indices.
-		foreach ($options['customIndices'] as $customIndex) {
-			try {
-				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
-				$destinationTable->pdo->createQuery($sql)->getResult();
-			} catch (\Exception $e) {
-
+		if (isset($options['customIndices'])) {
+			foreach ($options['customIndices'] as $customIndex) {
+				try {
+					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
+					$destinationTable->pdo->createQuery($sql)->getResult();
+				} catch (\Exception $e) {
+					// Nevermind.
+				}
 			}
 		}
 
