@@ -2,7 +2,7 @@
 
 namespace Katu\Types;
 
-class TArray implements \ArrayAccess, \IteratorAggregate {
+class TArray implements \ArrayAccess, \IteratorAggregate, \Countable {
 
 	private $array;
 
@@ -151,6 +151,10 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return new static(array_slice($this->array, $offset, $length, $preserveKeys));
 	}
 
+	public function getPage($page, $perPage) {
+		return new static(array_slice($this->array, (($page - 1) * $perPage), $perPage));
+	}
+
 	public function orderBy($key, $flags = 0) {
 		$array = $this->array;
 
@@ -189,7 +193,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return $this->count();
 	}
 
-	/* ArrayAccess ***********************************************************/
+	/* ArrayAccess **************************************************************/
 
 	public function offsetSet($offset, $value) {
 		if (is_null($offset)) {
@@ -211,7 +215,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate {
 		return isset($this->array[$offset]) ? $this->array[$offset] : null;
 	}
 
-	/* IteratorAggregate *****************************************************/
+	/* IteratorAggregate ********************************************************/
 
 	public function getIterator() {
 		return new \ArrayIterator($this->array);
