@@ -154,6 +154,19 @@ class TableBase extends \Sexy\Expression {
 		return true;
 	}
 
+	public function addPrimaryKey($columnName) {
+		$sql = " ALTER TABLE " . $this . " ADD PRIMARY KEY (`" . $columnName . "`) ";
+
+		try {
+
+			$this->pdo->createQuery($sql)->getResult();
+			return true;
+
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
 	public function getUsedInViews() {
 		return \Katu\Utils\Cache::get($this->getUsedInViewsCacheName(), function($table) {
 
