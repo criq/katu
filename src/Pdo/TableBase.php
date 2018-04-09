@@ -86,11 +86,17 @@ class TableBase extends \Sexy\Expression {
 		try {
 			$destinationTable->delete();
 		} catch (\Exception $e) {
-
+			// Nevermind.
 		}
 
+		$sql = $this->getCreateSyntax();
+		$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function($i) use($destinationTable) {
+			return "CREATE TABLE `" . $destinationTable->name->name . "`";
+		}, $sql);
+		$destinationTable->pdo->createQuery($sql)->getResult();
+
 		// Create table and copy the data.
-		$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
+		$sql = " INSERT INTO " . $destinationTable . " SELECT * FROM " . $this;
 		$destinationTable->pdo->createQuery($sql)->getResult();
 
 		// Disable NULL.
@@ -152,19 +158,6 @@ class TableBase extends \Sexy\Expression {
 		Cache::resetRuntime();
 
 		return true;
-	}
-
-	public function addPrimaryKey($columnName) {
-		$sql = " ALTER TABLE " . $this . " ADD PRIMARY KEY (`" . $columnName . "`) ";
-
-		try {
-
-			$this->pdo->createQuery($sql)->getResult();
-			return true;
-
-		} catch (\Exception $e) {
-			return false;
-		}
 	}
 
 	public function getUsedInViews() {
