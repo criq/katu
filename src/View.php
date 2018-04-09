@@ -206,7 +206,7 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFile', function() {
-			return new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
+			return new \Katu\Utils\File(BASE_DIR, ltrim(func_get_arg(0), '/'));
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFileUrlWithHash', function() {
