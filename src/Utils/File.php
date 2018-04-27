@@ -26,7 +26,7 @@ class File {
 		return $file;
 	}
 
-	static function createTemporaryFromUrl($url) {
+	static function createTemporaryFromUrl($url, $extension = null) {
 		$url = new \Katu\Types\TUrl($url);
 
 		$curl = new \Curl\Curl;
@@ -39,9 +39,11 @@ class File {
 			return false;
 		}
 
-		$pathinfo = pathinfo($url->getParts()['path']);
+		if (!$extension) {
+			$extension = pathinfo($url->getParts()['path']['extension']);
+		}
 
-		return static::createTemporaryFromSrc($src, $pathinfo['extension']);
+		return static::createTemporaryFromSrc($src, $extension);
 	}
 
 	public function getPath() {
