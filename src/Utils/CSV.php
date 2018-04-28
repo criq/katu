@@ -47,11 +47,18 @@ class CSV {
 			$this->writer->setDelimiter($options['delimiter']);
 			$this->reader->setDelimiter($options['delimiter']);
 		}
+
+		if (isset($options['enclosure'])) {
+			$this->writer->setEnclosure($options['enclosure']);
+			$this->reader->setEnclosure($options['enclosure']);
+		}
+
+		var_dump($this->writer); die;
 	}
 
 	static function readToArray($file, $options = []) {
 		$options['readOnly'] = true;
-		$csv = new self($file, $options);
+		$csv = new static($file, $options);
 		$rows = [];
 
 		while ($row = $csv->reader->getRow()) {
@@ -62,7 +69,7 @@ class CSV {
 	}
 
 	static function setFromAssoc($array, $options = []) {
-		$csv = new self(null, $options);
+		$csv = new static(null, $options);
 		$line = 0;
 
 		foreach ($array as $row) {
