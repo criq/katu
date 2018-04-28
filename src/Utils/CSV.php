@@ -85,6 +85,10 @@ class CSV {
 		return file_put_contents($saveAs, file_get_contents($this->file));
 	}
 
+	public function getAsString() {
+		return $this->file->get();
+	}
+
 	public function respond($saveAs, $disposition = 'inline') {
 		return (new \Katu\Utils\Download($this->file))
 			->setMime('text/csv')
