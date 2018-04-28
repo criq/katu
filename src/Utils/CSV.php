@@ -52,8 +52,6 @@ class CSV {
 			$this->writer->setEnclosure($options['enclosure']);
 			$this->reader->setEnclosure($options['enclosure']);
 		}
-
-		var_dump($this->writer); die;
 	}
 
 	static function readToArray($file, $options = []) {
