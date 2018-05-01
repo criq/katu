@@ -90,14 +90,25 @@ class TableBase extends \Sexy\Expression {
 		}
 
 		$sql = $this->getCreateSyntax();
-		$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function($i) use($destinationTable) {
-			return "CREATE TABLE `" . $destinationTable->name->name . "`";
-		}, $sql);
-		$destinationTable->pdo->createQuery($sql)->getResult();
+		if (preg_match('/^CREATE ALGORITHM/', $sql)) {
 
-		// Create table and copy the data.
-		$sql = " INSERT INTO " . $destinationTable . " SELECT * FROM " . $this;
-		$destinationTable->pdo->createQuery($sql)->getResult();
+			// View.
+			$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
+			$destinationTable->pdo->createQuery($sql)->getResult();
+
+		} else {
+
+			// Table.
+			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function($i) use($destinationTable) {
+				return "CREATE TABLE `" . $destinationTable->name->name . "`";
+			}, $sql);
+			$destinationTable->pdo->createQuery($sql)->getResult();
+
+			// Create table and copy the data.
+			$sql = " INSERT INTO " . $destinationTable . " SELECT * FROM " . $this;
+			$destinationTable->pdo->createQuery($sql)->getResult();
+
+		}
 
 		// Disable NULL.
 		if (isset($options['disableNull']) && $options['disableNull']) {
