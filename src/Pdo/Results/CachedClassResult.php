@@ -19,7 +19,7 @@ class CachedClassResult implements \Iterator, \ArrayAccess {
 	}
 
 	public function getCount() {
-		return $this->pagination->count;
+		return count($this->iteratorArray);
 	}
 
 	public function getTotal() {
