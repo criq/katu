@@ -118,6 +118,10 @@ class View {
 			return (array) $variable;
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('unique', function($variable) {
+			return array_unique($variable);
+		}));
+
 		$twig->addFilter(new \Twig_SimpleFilter('joinInSentence', function($list, $delimiter, $lastDelimiter) {
 			return (new \Katu\Types\TArray($list))->implodeInSentence($delimiter, $lastDelimiter);
 		}));
