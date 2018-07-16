@@ -2,14 +2,7 @@
 
 namespace Katu;
 
-use \Sexy\Select;
-use \Sexy\CmpEq;
-use \Sexy\CmpNotEq;
-use \Sexy\CmpIn;
-use \Sexy\OrderBy;
-use \Sexy\Page;
-use \Sexy\Keyword;
-use \Sexy\Expression;
+use \Sexy\Sexy as SX;
 
 class ModelBase {
 
@@ -68,7 +61,7 @@ class ModelBase {
 		// Sql expression.
 		if (
 			count(func_get_args()) == 1
-			&& func_get_arg(0) instanceof Expression
+			&& func_get_arg(0) instanceof \Sexy\Expression
 		) {
 
 			$query = static::getPdo()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
@@ -117,13 +110,15 @@ class ModelBase {
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
-		$sql = new Select();
+		$sql = SX::select();
 		$sql->addExpressions($expressions);
 		$sql->from(static::getTable());
 
 		foreach ($params as $name => $value) {
-			if ($value instanceof Expression) {
+			if ($value instanceof \Sexy\Expression) {
 				$sql->where($value);
+			} elseif (is_null($value)) {
+				$sql->where(SX::cmpIsNull(static::getColumn($name)));
 			} else {
 				$sql->whereEq(static::getColumn($name), $value);
 			}
@@ -153,7 +148,7 @@ class ModelBase {
 	}
 
 	static function getOneBy() {
-		$args = array_merge(func_get_args(), [['page' => new Page(1, 1)]], [['setOptGetTotalRows' => false]]);
+		$args = array_merge(func_get_args(), [['page' => SX::page(1, 1)]], [['setOptGetTotalRows' => false]]);
 
 		return call_user_func_array(['static', 'getBy'], $args)->getOne();
 	}
