@@ -120,7 +120,7 @@ class ModelBase {
 			} elseif (is_null($value)) {
 				$sql->where(SX::cmpIsNull(static::getColumn($name)));
 			} else {
-				$sql->whereEq(static::getColumn($name), $value);
+				$sql->where(SX::eq(static::getColumn($name), $value));
 			}
 		}
 

@@ -37,6 +37,10 @@ class Connection {
 		}
 	}
 
+	public function __sleep() {
+		return ['name', 'config'];
+	}
+
 	static function getInstance($name) {
 		if (!isset(static::$connections[$name])) {
 			static::$connections[$name] = new self($name);
