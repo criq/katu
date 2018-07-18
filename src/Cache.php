@@ -130,7 +130,11 @@ class Cache {
 	}
 
 	static function isApcSupported() {
-		return function_exists('apc_exists');
+		try {
+			return \Katu\Config::get('app', 'cache', 'supported', 'apc') && function_exists('apc_exists');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return false;
+		}
 	}
 
 	static function getMaxApcSize() {
@@ -140,7 +144,11 @@ class Cache {
 	}
 
 	static function isMemcachedSupported() {
-		return class_exists('Memcached');
+		try {
+			return \Katu\Config::get('app', 'cache', 'supported', 'memcached') && class_exists('Memcached');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return false;
+		}
 	}
 
 	public function getMemcahcedInstanceName() {
