@@ -169,7 +169,11 @@ class Cache {
 		if (static::isApcSupported() && strlen(serialize($res)) <= static::getMaxApcSize()) {
 
 			// Add to memory.
-			if (!apc_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
+			try {
+				if (!apc_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
+					throw new \Exception;
+				}
+			} catch (\Exception $e) {
 				apc_delete($memoryKey);
 			}
 
