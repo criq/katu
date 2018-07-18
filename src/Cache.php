@@ -5,7 +5,6 @@ namespace Katu;
 class Cache {
 
 	const DIR_NAME = 'cache';
-	const APC__MAX_SIZE = 1024 * 1024 * .75;
 
 	private $name;
 	private $timeout;
@@ -129,7 +128,13 @@ class Cache {
 	}
 
 	static function isApcSupported() {
-		return function_exists('apc_exists') && function_exists('apc_fetch') && function_exists('apc_store') && function_exists('apc_clear_cache');
+		return function_exists('apc_exists');
+	}
+
+	static function getMaxApcSize() {
+		$size = \Katu\Utils\FileSize::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
+
+		return $size * .75;
 	}
 
 	public function getResult() {
@@ -160,21 +165,20 @@ class Cache {
 			return $e->data;
 		}
 
-		// Try to save in memory.
-		if (static::isApcSupported() && strlen(serialize($res)) <= static::APC__MAX_SIZE) {
+		// Try to save into memory.
+		if (static::isApcSupported() && strlen(serialize($res)) <= static::getMaxApcSize()) {
 
 			// Add to memory.
-			apc_store($memoryKey, $res, $this->getTimeoutInSeconds());
-			return $res;
-
-		// Try to save into file.
-		} else {
-
-			$this->getFile()->set(serialize($res));
-			return $res;
+			if (!apc_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
+				apc_delete($memoryKey);
+			}
 
 		}
 
+		// Try to save into file.
+		$this->getFile()->set(serialize($res));
+
+		return $res;
 	}
 
 	static function clearMemory() {
@@ -185,7 +189,10 @@ class Cache {
 		return null;
 	}
 
-	// Code sugar.
+	/*****************************************************************************
+	 * Code sugar.
+	 */
+
 	static function get($name, $timeout, $callback, $args = []) {
 		$object = new static($name, $timeout);
 		$object->setCallback($callback);
