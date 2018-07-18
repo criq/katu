@@ -11,7 +11,7 @@ class Cache {
 	private $callback;
 	private $args = [];
 
-	private $memcached;
+	private static $memcached;
 
 	public function __construct($name = null, $timeout = null) {
 		$this->setName($name);
@@ -156,30 +156,28 @@ class Cache {
 	}
 
 	public function getMemcached() {
-		if (!$this->memcached) {
-			$this->memcached = new \Memcached($this->getMemcahcedInstanceName());
-			$this->memcached->addServer('localhost', 11211);
+		if (!static::$memcached) {
+			static::$memcached = new \Memcached($this->getMemcahcedInstanceName());
+			static::$memcached->addServer('localhost', 11211);
 		}
 
-		return $this->memcached;
+		return static::$memcached;
 	}
 
 	public function getResult() {
 		$memoryKey = $this->getMemoryKey();
+		$memcached = $this->getMemcached();
 
 		// Try Memcached.
 		if (static::isMemcachedSupported()) {
 
-			$memcached = $this->getMemcached();
 			$res = $memcached->get($memoryKey);
-			if ($memcached->getResultCode() == \Memcached::RES_SUCCESS) {
+			if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
 				return $res;
 			}
 
-		}
-
-		// Try memory.
-		if (static::isApcSupported()) {
+		// Try APC.
+		} elseif (static::isApcSupported()) {
 
 			if (apc_exists($memoryKey)) {
 				$res = apc_fetch($memoryKey, $success);
@@ -206,10 +204,12 @@ class Cache {
 		// Try to save into Memcached.
 		if (static::isMemcachedSupported()) {
 
-			// Add to Memcached.
 			$memcached = $this->getMemcached();
+
+			// Add to Memcached.
 			try {
-				if (!$memcached->set($memoryKey, $res, time() + $this->getTimeoutInSeconds())) {
+				$timeout = $this->getTimeoutInSeconds();
+				if (!$memcached->set($memoryKey, $res, $timeout ? time() + $timeout : 0)) {
 					throw new \Exception;
 				}
 				return $res;
@@ -217,12 +217,10 @@ class Cache {
 				$memcached->delete($memoryKey);
 			}
 
-		}
+		// Try to save into APC.
+		} elseif (static::isApcSupported() && strlen(serialize($res)) <= static::getMaxApcSize()) {
 
-		// Try to save into memory.
-		if (static::isApcSupported() && strlen(serialize($res)) <= static::getMaxApcSize()) {
-
-			// Add to memory.
+			// Add to APC.
 			try {
 				if (!apc_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
 					throw new \Exception;
