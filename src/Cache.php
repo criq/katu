@@ -5,7 +5,7 @@ namespace Katu;
 class Cache {
 
 	const DIR_NAME = 'cache';
-	const APC__MAX_SIZE = 524288;
+	const APC__MAX_SIZE = 1024 * 1024 * .75;
 
 	private $name;
 	private $timeout;
