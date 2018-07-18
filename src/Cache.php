@@ -11,6 +11,8 @@ class Cache {
 	private $callback;
 	private $args = [];
 
+	private $memcached;
+
 	public function __construct($name = null, $timeout = null) {
 		$this->setName($name);
 		$this->setTimeout($timeout);
@@ -137,8 +139,36 @@ class Cache {
 		return $size * .75;
 	}
 
+	static function isMemcachedSupported() {
+		return class_exists('Memcached');
+	}
+
+	public function getMemcahcedInstanceName() {
+		return 'appCache';
+	}
+
+	public function getMemcached() {
+		if (!$this->memcached) {
+			$this->memcached = new \Memcached($this->getMemcahcedInstanceName());
+			$this->memcached->addServer('localhost', 11211);
+		}
+
+		return $this->memcached;
+	}
+
 	public function getResult() {
 		$memoryKey = $this->getMemoryKey();
+
+		// Try Memcached.
+		if (static::isMemcachedSupported()) {
+
+			$memcached = $this->getMemcached();
+			$res = $memcached->get($memoryKey);
+			if ($memcached->getResultCode() == \Memcached::RES_SUCCESS) {
+				return $res;
+			}
+
+		}
 
 		// Try memory.
 		if (static::isApcSupported()) {
@@ -165,6 +195,22 @@ class Cache {
 			return $e->data;
 		}
 
+		// Try to save into Memcached.
+		if (static::isMemcachedSupported()) {
+
+			// Add to Memcached.
+			$memcached = $this->getMemcached();
+			try {
+				if (!$memcached->set($memoryKey, $res, time() + $this->getTimeoutInSeconds())) {
+					throw new \Exception;
+				}
+				return $res;
+			} catch (\Exception $e) {
+				$memcached->delete($memoryKey);
+			}
+
+		}
+
 		// Try to save into memory.
 		if (static::isApcSupported() && strlen(serialize($res)) <= static::getMaxApcSize()) {
 
@@ -173,6 +219,7 @@ class Cache {
 				if (!apc_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
 					throw new \Exception;
 				}
+				return $res;
 			} catch (\Exception $e) {
 				apc_delete($memoryKey);
 			}
@@ -181,7 +228,6 @@ class Cache {
 
 		// Try to save into file.
 		$this->getFile()->set(serialize($res));
-
 		return $res;
 	}
 
