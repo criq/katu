@@ -123,10 +123,14 @@ class Cache {
 	}
 
 	public function getMemoryKey() {
-		return sha1(serialize([
-			static::DIR_NAME,
-			$this->getSanitizedPathSegments(),
-		]));
+		$key = implode('.', $this->getSanitizedPathSegments());
+		$key = (new \Katu\Types\TString($key))->normalizeSpaces();
+		$key = preg_replace('/\s/', null, $key);
+		if (mb_strlen($key) > 250) {
+			$key = sha1($key);
+		}
+
+		return $key;
 	}
 
 	static function isApcSupported() {
@@ -151,15 +155,21 @@ class Cache {
 		}
 	}
 
-	public function getMemcahcedInstanceName() {
+	static function getMemcahcedInstanceName() {
 		return 'appCache';
 	}
 
-	public function getMemcached() {
+	static function loadMemcached() {
 		if (!static::$memcached) {
-			static::$memcached = new \Memcached($this->getMemcahcedInstanceName());
+			static::$memcached = new \Memcached(static::getMemcahcedInstanceName());
 			static::$memcached->addServer('localhost', 11211);
 		}
+
+		return true;
+	}
+
+	public function getMemcached() {
+		static::loadMemcached();
 
 		return static::$memcached;
 	}
@@ -238,6 +248,10 @@ class Cache {
 	}
 
 	static function clearMemory() {
+		if (static::isMemcachedSupported()) {
+			static::loadMemcached();
+			return static::$memcached->flush();
+		}
 		if (static::isApcSupported()) {
 			return apc_clear_cache();
 		}
