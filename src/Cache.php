@@ -176,11 +176,11 @@ class Cache {
 
 	public function getResult() {
 		$memoryKey = $this->getMemoryKey();
-		$memcached = $this->getMemcached();
 
 		// Try Memcached.
 		if (static::isMemcachedSupported()) {
 
+			$memcached = $this->getMemcached();
 			$res = $memcached->get($memoryKey);
 			if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
 				return $res;
@@ -214,9 +214,8 @@ class Cache {
 		// Try to save into Memcached.
 		if (static::isMemcachedSupported()) {
 
-			$memcached = $this->getMemcached();
-
 			// Add to Memcached.
+			$memcached = $this->getMemcached();
 			try {
 				$timeout = $this->getTimeoutInSeconds();
 				if (!$memcached->set($memoryKey, $res, $timeout ? time() + $timeout : 0)) {
