@@ -200,7 +200,7 @@ class Cache {
 
 		// Try file.
 		$file = $this->getFile();
-		if ($file->exists() && \Katu\Utils\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeout()) {
+		if ($file->exists() && \Katu\Utils\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeoutInSeconds()) {
 			return unserialize($file->get());
 		}
 
@@ -262,10 +262,12 @@ class Cache {
 	 * Code sugar.
 	 */
 
-	static function get($name, $timeout, $callback, $args = []) {
-		$object = new static($name, $timeout);
-		$object->setCallback($callback);
-		call_user_func_array([$object, 'setArgs'], array_slice(func_get_args(), 3));
+	static function get() {
+		$args = func_get_args();
+
+		$object = new static($args[0], $args[1]);
+		$object->setCallback($args[2]);
+		call_user_func_array([$object, 'setArgs'], array_slice($args, 3));
 
 		return $object->getResult();
 	}
