@@ -106,7 +106,14 @@ class Cache {
 
 		// Sanitize.
 		$pathSegments = array_map(function($i) {
-			return preg_replace('/[^0-9a-z\-\_\.]/i', '-', $i);
+
+			$i = preg_replace('/[^0-9a-z\-\_\.]/i', '-', $i);
+			if (mb_strlen($i) > 40) {
+				$i = sha1($i);
+			}
+
+			return $i;
+
 		}, $pathSegments);
 
 		return $pathSegments;
