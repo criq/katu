@@ -4,8 +4,44 @@ namespace Katu\Cache;
 
 class Url extends \Katu\Cache {
 
-	private $curlTimeout = 5;
-	private $curlConnectTimeout = 5;
+	protected $url;
+
+	protected $curlTimeout = 5;
+	protected $curlConnectTimeout = 5;
+
+	public function setUrl($url) {
+		$this->url = $url;
+		$this->setName(static::generateNameFromUrl($this->url));
+
+		return $this;
+	}
+
+	static function generateNameFromUrl($url) {
+		$name = [];
+		$urlParts = $url->getParts();
+
+		$name = [
+			'url',
+			$urlParts['scheme'],
+			$urlParts['host'],
+			$urlParts['path'],
+		];
+
+		ksort($urlParts['query']);
+
+		foreach ($urlParts['query'] as $key => $value) {
+			$name[] = (new \Katu\Types\TString($key))->getForUrl();
+			$name[] = (new \Katu\Types\TString($value))->getForUrl();
+		}
+
+		$name = array_values(array_filter($name));
+
+		return $name;
+	}
+
+	public function getUrl() {
+		return $this->url;
+	}
 
 	public function setCurlTimeout($curlTimeout) {
 		$this->curlTimeout = $curlTimeout;
@@ -42,18 +78,18 @@ class Url extends \Katu\Cache {
 			$src = $curl->get((string)$url);
 
 			if (!isset($curl->errorCode)) {
-				throw new \Katu\Exceptions\DoNotCacheException;
+				throw new \Katu\Exceptions\CacheCallbackException;
 			}
 			if ($curl->errorCode) {
-				throw new \Katu\Exceptions\DoNotCacheException;
+				throw new \Katu\Exceptions\CacheCallbackException;
 			}
 
 			$curlInfo = $curl->getInfo();
 			if (!isset($curlInfo['http_code'])) {
-				throw new \Katu\Exceptions\DoNotCacheException;
+				throw new \Katu\Exceptions\CacheCallbackException;
 			}
 			if ($curlInfo['http_code'] != 200) {
-				throw new \Katu\Exceptions\DoNotCacheException;
+				throw new \Katu\Exceptions\CacheCallbackException;
 			}
 
 			return $src;
@@ -68,7 +104,10 @@ class Url extends \Katu\Cache {
 	static function get() {
 		$args = func_get_args();
 
-		$object = new static(['url', (string)$args[0]]);
+		$url = new \Katu\Types\TUrl((string)$args[0]);
+
+		$object = new static;
+		$object->setUrl($args[0]);
 
 		if (isset($args[1])) {
 			$object->setTimeout($args[1]);

@@ -6,12 +6,15 @@ class Cache {
 
 	const DIR_NAME = 'cache';
 
-	private $name;
-	private $timeout;
-	private $callback;
-	private $args = [];
+	protected $enableMemcached = true;
+	protected $enableApc = true;
 
-	private static $memcached;
+	protected $name;
+	protected $timeout;
+	protected $callback;
+	protected $args = [];
+
+	protected static $memcached;
 
 	public function __construct($name = null, $timeout = null) {
 		$this->setName($name);
@@ -76,6 +79,20 @@ class Cache {
 		return $this->args;
 	}
 
+	static function generateHashName($value) {
+		$name = [];
+
+		$hash = sha1($value);
+
+		$name = [
+			'_' . substr($hash, 0, 2),
+			'_' . substr($hash, 2, 2),
+			'_' . $hash,
+		];
+
+		return $name;
+	}
+
 	public function getRawPathSegments() {
 		if ($this->getName()) {
 			$pathSegments = $this->getName();
@@ -87,7 +104,7 @@ class Cache {
 		$pathSegments = array_merge($pathSegments, $this->args);
 
 		// Add checksum.
-		$pathSegments[] = sha1(serialize($pathSegments));
+		$pathSegments[] = '_checksum_' . sha1(serialize($pathSegments));
 
 		return $pathSegments;
 	}
@@ -100,7 +117,9 @@ class Cache {
 			if (is_string($pathSegment) || is_int($pathSegment) || is_float($pathSegment)) {
 				$pathSegments[] = $pathSegment;
 			} else {
-				$pathSegments[] = sha1(serialize($pathSegment));
+				foreach (static::generateHashName(serialize($pathSegment)) as $hashNameSegment) {
+					$pathSegments[] = $hashNameSegment;
+				}
 			}
 		}
 
@@ -108,8 +127,10 @@ class Cache {
 		$pathSegments = array_map(function($i) {
 
 			$i = preg_replace('/[^0-9a-z\-\_\.]/i', '-', $i);
-			if (mb_strlen($i) > 40) {
-				$i = sha1($i);
+			if (mb_strlen($i) > 41) {
+				foreach (static::generateHashName($i) as $hashNameSegment) {
+					$pathSegments[] = $hashNameSegment;
+				}
 			}
 
 			return $i;
@@ -148,6 +169,10 @@ class Cache {
 		}
 	}
 
+	public function isApcEnabled() {
+		return $this->enableApc && static::isApcSupported();
+	}
+
 	static function getMaxApcSize() {
 		$size = \Katu\Utils\FileSize::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
 
@@ -160,6 +185,10 @@ class Cache {
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return false;
 		}
+	}
+
+	public function isMemcachedEnabled() {
+		return $this->enableMemcached && static::isMemcachedSupported();
 	}
 
 	static function getMemcahcedInstanceName() {
@@ -185,7 +214,7 @@ class Cache {
 		$memoryKey = $this->getMemoryKey();
 
 		// Try Memcached.
-		if (static::isMemcachedSupported()) {
+		if ($this->isMemcachedEnabled()) {
 
 			$memcached = $this->getMemcached();
 			$res = $memcached->get($memoryKey);
@@ -194,7 +223,7 @@ class Cache {
 			}
 
 		// Try APC.
-		} elseif (static::isApcSupported()) {
+		} elseif ($this->isApcEnabled()) {
 
 			if (apc_exists($memoryKey)) {
 				$res = apc_fetch($memoryKey, $success);
@@ -212,14 +241,10 @@ class Cache {
 		}
 
 		// Get result.
-		try {
-			$res = call_user_func_array($this->getCallback(), $this->getArgs());
-		} catch (\Katu\Exceptions\DoNotCacheException $e) {
-			return $e->data;
-		}
+		$res = call_user_func_array($this->getCallback(), $this->getArgs());
 
 		// Try to save into Memcached.
-		if (static::isMemcachedSupported()) {
+		if ($this->isMemcachedEnabled()) {
 
 			// Add to Memcached.
 			$memcached = $this->getMemcached();
@@ -234,7 +259,7 @@ class Cache {
 			}
 
 		// Try to save into APC.
-		} elseif (static::isApcSupported() && strlen(serialize($res)) <= static::getMaxApcSize()) {
+		} elseif ($this->isApcEnabled() && strlen(serialize($res)) <= static::getMaxApcSize()) {
 
 			// Add to APC.
 			try {
