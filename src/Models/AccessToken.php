@@ -2,6 +2,8 @@
 
 namespace Katu\Models;
 
+use \Sexy\Sexy as SX;
+
 class AccessToken extends \Katu\Model {
 
 	const TABLE = 'access_tokens';
@@ -23,10 +25,18 @@ class AccessToken extends \Katu\Model {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
-		return static::getOneOrCreateWithList([
-			'userId' => (int) ($user->getId()),
-			new \Sexy\CmpGreaterThanOrEqual(static::getColumn('timeExpires'), (new \Katu\Utils\DateTime())->getDbDateTimeFormat()),
-		], $user);
+		$sql = SX::select()
+			->from(static::getTable())
+			->where(SX::eq(static::getColumn('userId'), (int)$user->getId()))
+			->where(SX::cmpGreaterThanOrEqual(static::getColumn('timeExpires'), (new \Katu\Utils\DateTime())->getDbDateTimeFormat()))
+			;
+
+		$object = static::getOneBySql($sql);
+		if (!$object) {
+			$object = static::create($user);
+		}
+
+		return $object;
 	}
 
 	static function checkCrudParams($user) {

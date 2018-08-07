@@ -40,7 +40,7 @@ class Result implements \Iterator, \ArrayAccess {
 
 					$this->statement->execute();
 
-					if ((int) $this->statement->errorCode()) {
+					if ((int)$this->statement->errorCode()) {
 						$error = $this->statement->errorInfo();
 						throw new \Exception($error[2], $error[1]);
 					}
