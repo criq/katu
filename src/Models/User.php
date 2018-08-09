@@ -257,7 +257,7 @@ class User extends \Katu\Model {
 		$any = isset($args[1]) ? $args[1] : false;
 
 		$status = [];
-		foreach ($permissions as $permission) {
+		foreach ((array)$permissions as $permission) {
 			$status[$permission] = in_array($permission, $this->getAllPermissions());
 		}
 
