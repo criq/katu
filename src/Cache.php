@@ -79,63 +79,22 @@ class Cache {
 		return $this->args;
 	}
 
-	static function generateHashName($value) {
-		$name = [];
-
-		$hash = sha1($value);
-
-		$name = [
-			'_' . substr($hash, 0, 2),
-			'_' . substr($hash, 2, 2),
-			'_' . $hash,
-		];
-
-		return $name;
-	}
-
 	public function getRawPathSegments() {
 		if ($this->getName()) {
-			$pathSegments = $this->getName();
+			$pathSegments = array_map(function($i) {
+				return new Cache\Path\Raw($i);
+			}, $this->getName());
 		} else {
 			$pathSegments = $this->getAnonymousPathSegments();
 		}
 
 		// Add arguments.
-		$pathSegments = array_merge($pathSegments, $this->args);
-
-		// Add checksum.
-		$pathSegments[] = '_checksum_' . sha1(serialize($pathSegments));
-
-		return $pathSegments;
-	}
-
-	public function getSanitizedPathSegments() {
-		$pathSegments = [];
-
-		// Datatype check.
-		foreach ($this->getRawPathSegments() as $pathSegment) {
-			if (is_string($pathSegment) || is_int($pathSegment) || is_float($pathSegment)) {
-				$pathSegments[] = $pathSegment;
-			} else {
-				foreach (static::generateHashName(serialize($pathSegment)) as $hashNameSegment) {
-					$pathSegments[] = $hashNameSegment;
-				}
-			}
+		foreach ($this->args as $arg) {
+			$pathSegments[] = new Cache\Path\Raw($arg);
 		}
 
-		// Sanitize.
-		$pathSegments = array_map(function($i) {
-
-			$i = preg_replace('/[^0-9a-z\-\_\.]/i', '-', $i);
-			if (mb_strlen($i) > 41) {
-				foreach (static::generateHashName($i) as $hashNameSegment) {
-					$pathSegments[] = $hashNameSegment;
-				}
-			}
-
-			return $i;
-
-		}, $pathSegments);
+		// Add checksum.
+		$pathSegments[] = new Cache\Path\Checksum(sha1(serialize($pathSegments)));
 
 		return $pathSegments;
 	}
@@ -143,17 +102,29 @@ class Cache {
 	public function getAnonymousPathSegments() {
 		$backtraceIndex = 5;
 
-		return array_merge(['anonymous'], array_values(array_filter(explode('/', debug_backtrace()[$backtraceIndex]['file']))), ['line ' . debug_backtrace()[$backtraceIndex]['line']]);
+		$array = array_merge(['anonymous'], array_values(array_filter(explode('/', debug_backtrace()[$backtraceIndex]['file']))), ['line ' . debug_backtrace()[$backtraceIndex]['line']]);
+
+		return array_map(function($i) {
+			return new Cache\Path\Raw($i);
+		}, $array);
+	}
+
+	public function getSanitizedPathSegments() {
+		return array_map(function($i) {
+			return (string)$i;
+		}, $this->getRawPathSegments());
+	}
+
+	public function getSanitizedPath() {
+		return implode('/', $this->getSanitizedPathSegments());
 	}
 
 	public function getFile() {
-		return new \Katu\Utils\File(TMP_PATH, static::DIR_NAME, implode('/', $this->getSanitizedPathSegments()), ['cache']);
+		return new \Katu\Utils\File(TMP_PATH, static::DIR_NAME, $this->getSanitizedPath(), ['cache']);
 	}
 
 	public function getMemoryKey() {
-		$key = implode('.', $this->getSanitizedPathSegments());
-		$key = (new \Katu\Types\TString($key))->normalizeSpaces();
-		$key = preg_replace('/\s/', null, $key);
+		$key = $this->getSanitizedPath();
 		if (mb_strlen($key) > 250) {
 			$key = sha1($key);
 		}
