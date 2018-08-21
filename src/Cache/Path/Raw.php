@@ -45,17 +45,15 @@ class Raw extends Segment {
 	}
 
 	static function generateHashArray($value) {
-		$name = [];
-
 		$hash = sha1($value);
 
-		$name = [
+		$array = [
 			'_' . substr($hash, 0, 2),
 			'_' . substr($hash, 2, 2),
 			'_' . substr($hash, 4),
 		];
 
-		return $name;
+		return $array;
 	}
 
 	static function generateHashPathSegment($value) {
