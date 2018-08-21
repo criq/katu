@@ -19,7 +19,7 @@ class Raw extends Segment {
 
 		// Other types.
 		} else {
-			$value = static::generateHashName(serialize($value));
+			$value = static::generateHashPathSegment(serialize($value));
 
 		}
 
@@ -56,6 +56,10 @@ class Raw extends Segment {
 		];
 
 		return $name;
+	}
+
+	static function generateHashPathSegment($value) {
+		return implode('/', static::generateHashArray($value));
 	}
 
 }
