@@ -4,7 +4,7 @@ namespace Katu\Types;
 
 class TArray implements \ArrayAccess, \IteratorAggregate, \Countable {
 
-	private $array;
+	private $array = [];
 
 	public function __construct($value = []) {
 		if (!self::isValid($value)) {
@@ -149,6 +149,12 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable {
 
 	public function slice($offset, $length, $preserveKeys = false) {
 		return new static(array_slice($this->array, $offset, $length, $preserveKeys));
+	}
+
+	public function append($array) {
+		$this->array = array_merge($this->array, (new static($array))->getArray());
+
+		return true;
 	}
 
 	public function getPage($page, $perPage) {

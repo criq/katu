@@ -134,6 +134,10 @@ class View {
 			}
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('markdown', function($text) {
+			return \Michelf\Markdown::defaultTransform($text);
+		}));
+
 		// Functions.
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
