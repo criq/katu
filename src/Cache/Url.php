@@ -84,9 +84,9 @@ class Url extends \Katu\Cache {
 			}
 			if ($curl->errorCode) {
 				throw new \Katu\Exceptions\CacheCallbackException(strtr("Error fetching URL %url%, error code %errorCode%, error %error%.", [
-					'url' => (string)$url,
-					'errorCode' => $curl->errorCode,
-					'error' => $curl->error,
+					'%url%' => (string)$url,
+					'%errorCode%' => $curl->errorCode,
+					'%error%' => $curl->error,
 				]));
 			}
 
