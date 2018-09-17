@@ -80,13 +80,21 @@ class Url extends \Katu\Cache {
 		return function($url, $options = []) {
 
 			$curl = new \Curl\Curl;
-			$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+
+			try {
+				$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+			} catch (\Exception $e) {
+				// Nevermind.
+			}
+
 			if (isset($options['curlTimeout'])) {
 				$curl->setTimeout($options['curlTimeout']);
 			}
+
 			if (isset($options['curlConnectTimeout'])) {
 				$curl->setConnectTimeout($options['curlConnectTimeout']);
 			}
+
 			if (isset($options['curlEncoding'])) {
 				$curl->setOpt(CURLOPT_ENCODING, $options['curlEncoding']);
 			}
