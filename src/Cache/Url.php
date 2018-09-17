@@ -8,6 +8,7 @@ class Url extends \Katu\Cache {
 
 	protected $curlTimeout = 5;
 	protected $curlConnectTimeout = 5;
+	protected $curlEncoding = null;
 
 	public function setUrl($url) {
 		$this->url = $url;
@@ -18,6 +19,8 @@ class Url extends \Katu\Cache {
 
 	static function generateNameFromUrl($url) {
 		$name = [];
+
+		$url = new \Katu\Types\TUrl((string)$url);
 		$urlParts = $url->getParts();
 
 		$name = [
@@ -63,6 +66,16 @@ class Url extends \Katu\Cache {
 		return $this->curlConnectTimeout;
 	}
 
+	public function setCurlEncoding($curlEncoding) {
+		$this->curlEncoding = $curlEncoding;
+
+		return $this;
+	}
+
+	public function getCurlEncoding() {
+		return $this->curlEncoding;
+	}
+
 	public function generateCallback() {
 		return function($url, $options = []) {
 
@@ -73,6 +86,9 @@ class Url extends \Katu\Cache {
 			}
 			if (isset($options['curlConnectTimeout'])) {
 				$curl->setConnectTimeout($options['curlConnectTimeout']);
+			}
+			if (isset($options['curlEncoding'])) {
+				$curl->setOpt(CURLOPT_ENCODING, $options['curlEncoding']);
 			}
 
 			$src = $curl->get((string)$url);
@@ -124,6 +140,7 @@ class Url extends \Katu\Cache {
 		$object->setArgs((string)$args[0], [
 			'curlTimeout' => $object->getCurlTimeout(),
 			'curlConnectTimeout' => $object->getCurlConnectTimeout(),
+			'curlEncoding' => $object->getCurlEncoding(),
 		]);
 
 		return $object->getResult();
