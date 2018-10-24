@@ -255,7 +255,9 @@ class Cache {
 			return static::$memcached->flush();
 		}
 		if (static::isApcSupported()) {
-			return apc_clear_cache();
+			apc_clear_cache();
+			apc_clear_cache('user');
+			return true;
 		}
 
 		return null;
