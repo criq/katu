@@ -261,10 +261,6 @@ class Cache {
 		return null;
 	}
 
-	/*****************************************************************************
-	 * Code sugar.
-	 */
-
 	static function get() {
 		$args = func_get_args();
 

@@ -10,6 +10,13 @@ class Url extends \Katu\Cache {
 	protected $curlConnectTimeout = 5;
 	protected $curlEncoding = null;
 
+	public function __construct($url = null, $timeout = null) {
+		$this->setUrl($url);
+		$this->setTimeout($timeout);
+		$this->setCallback($this->generateCallback());
+		$this->setArgs($url);
+	}
+
 	public function setUrl($url) {
 		$this->url = $url;
 		$this->setName(static::generateNameFromUrl($this->url));
@@ -77,7 +84,7 @@ class Url extends \Katu\Cache {
 	}
 
 	public function generateCallback() {
-		return function($url, $options = []) {
+		return function($url) {
 
 			$curl = new \Curl\Curl;
 
@@ -87,16 +94,11 @@ class Url extends \Katu\Cache {
 				// Nevermind.
 			}
 
-			if (isset($options['curlTimeout'])) {
-				$curl->setTimeout($options['curlTimeout']);
-			}
+			$curl->setTimeout($this->curlTimeout);
+			$curl->setConnectTimeout($this->curlConnectTimeout);
 
-			if (isset($options['curlConnectTimeout'])) {
-				$curl->setConnectTimeout($options['curlConnectTimeout']);
-			}
-
-			if (isset($options['curlEncoding'])) {
-				$curl->setOpt(CURLOPT_ENCODING, $options['curlEncoding']);
+			if ($this->curlEncoding) {
+				$curl->setOpt(CURLOPT_ENCODING, $this->curlEncoding);
 			}
 
 			$src = $curl->get((string)$url);
@@ -127,29 +129,13 @@ class Url extends \Katu\Cache {
 		};
 	}
 
-	/*****************************************************************************
-	 * Code sugar.
-	 */
-
 	static function get() {
 		$args = func_get_args();
 
-		$url = new \Katu\Types\TUrl((string)$args[0]);
-
-		$object = new static;
-		$object->setUrl($args[0]);
-
+		$object = new static((string)$args[0]);
 		if (isset($args[1])) {
 			$object->setTimeout($args[1]);
 		}
-
-		$object->setCallback($object->generateCallback());
-
-		$object->setArgs((string)$args[0], [
-			'curlTimeout' => $object->getCurlTimeout(),
-			'curlConnectTimeout' => $object->getCurlConnectTimeout(),
-			'curlEncoding' => $object->getCurlEncoding(),
-		]);
 
 		return $object->getResult();
 	}
