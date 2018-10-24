@@ -14,6 +14,38 @@ class User extends \Katu\Model {
 		'emailAddressId' => 'emailAddressId',
 	];
 
+	static function getAccessTokenClass() {
+		return '\\App\\Models\\AccessToken';
+	}
+
+	static function getEmailAddressClass() {
+		return '\\App\\Models\\EmailAddress';
+	}
+
+	static function getRoleClass() {
+		return '\\App\\Models\\Role';
+	}
+
+	static function getRolePermissionClass() {
+		return '\\App\\Models\\RolePermission';
+	}
+
+	static function getUserRoleClass() {
+		return '\\App\\Models\\UserRole';
+	}
+
+	static function getUserPermissionClass() {
+		return '\\App\\Models\\UserPermission';
+	}
+
+	static function getUserServiceClass() {
+		return '\\App\\Models\\UserService';
+	}
+
+	static function getUserSettingClass() {
+		return '\\App\\Models\\UserSetting';
+	}
+
 	static function create() {
 		return static::insert([
 			static::$columnNames['timeCreated'] => new \Katu\Utils\DateTime,
@@ -21,7 +53,9 @@ class User extends \Katu\Model {
 	}
 
 	static function createWithEmailAddress($emailAddress) {
-		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
+		$emailAddressClass = static::getEmailAddressClass();
+
+		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
 				->setAbbr('invalidEmailAddress')
 				->addErrorName('emailAddress')
@@ -49,9 +83,11 @@ class User extends \Katu\Model {
 	}
 
 	static function getByAccessToken($token) {
-		$accessToken = \App\Models\AccessToken::getOneBy([
+		$accessTokenClass = static::getAccessTokenClass();
+
+		$accessToken = $accessTokenClass::getOneBy([
 			'token' => $token,
-			new \Sexy\CmpGreaterThanOrEqual(\App\Models\AccessToken::getColumn('timeExpires'), new \Katu\Utils\DateTime),
+			new \Sexy\CmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Utils\DateTime),
 		]);
 
 		if ($accessToken) {
@@ -62,15 +98,19 @@ class User extends \Katu\Model {
 	}
 
 	public function getValidAccessToken() {
-		return \App\Models\AccessToken::makeValidForUser($this);
+		$accessTokenClass = static::getAccessTokenClass();
+
+		return $accessTokenClass::makeValidForUser($this);
 	}
 
 	public function addUserService($serviceName, $serviceUserId) {
-		return \App\Models\UserService::create($this, $serviceName, $serviceUserId);
+		$userServiceClass = static::getUserServiceClass();
+
+		return $userServiceClass::create($this, $serviceName, $serviceUserId);
 	}
 
 	public function makeUserService($serviceName, $serviceUserId) {
-		return \App\Models\UserService::upsert([
+		return $userServiceClass::upsert([
 			'userId'        => (int)$this->getId(),
 			'serviceName'   => (string)$serviceName,
 			'serviceUserId' => (string)$serviceUserId,
@@ -80,7 +120,7 @@ class User extends \Katu\Model {
 	}
 
 	public function getDefaultUserServiceByName($serviceName) {
-		return \App\Models\UserService::getOneBy([
+		return $userServiceClass::getOneBy([
 			'userId'      => (int)    ($this->getId()),
 			'serviceName' => (string) ($serviceName),
 		]);
@@ -91,7 +131,9 @@ class User extends \Katu\Model {
 	}
 
 	public function getEmailAddress() {
-		return \App\Models\EmailAddress::get($this->{static::$columnNames['emailAddressId']});
+		$emailAddressClass = static::getEmailAddressClass();
+
+		return $emailAddressClass::get($this->{static::$columnNames['emailAddressId']});
 	}
 
 	public function hasEmailAddress() {
@@ -99,7 +141,9 @@ class User extends \Katu\Model {
 	}
 
 	public function setEmailAddress($emailAddress) {
-		if (!$emailAddress || !($emailAddress instanceof \App\Models\EmailAddress)) {
+		$emailAddressClass = static::getEmailAddressClass();
+
+		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
 				->setAbbr('invalidEmailAddress')
 				->addErrorName('emailAddress')
@@ -149,14 +193,18 @@ class User extends \Katu\Model {
 	}
 
 	public function addRole($role) {
-		return \App\Models\UserRole::make($this, $role);
+		$userRoleClass = static::getUserRoleClass();
+
+		return $userRoleClass::make($this, $role);
 	}
 
 	public function addRolesByIds($roleIds) {
+		$roleClass = static::getRoleClass();
+
 		$roles = [];
 
 		foreach ((array) $roleIds as $roleId) {
-			$role = \App\Models\Role::get($roleId);
+			$role = $roleClass::get($roleId);
 			if (!$role) {
 				throw (new \Katu\Exceptions\InputErrorException("Invalid role ID."))
 					->setAbbr('invalidRoleId')
@@ -174,14 +222,18 @@ class User extends \Katu\Model {
 	}
 
 	public function hasRole($role) {
-		return (bool) \App\Models\UserRole::getOneBy([
+		$userRoleClass = static::getUserRoleClass();
+
+		return (bool)$userRoleClass::getOneBy([
 			'userId' => (int) ($this->getId()),
 			'roleId' => (int) ($role->getId()),
 		]);
 	}
 
 	public function deleteAllRoles() {
-		foreach (\App\Models\UserRole::getBy([
+		$userRoleClass = static::getUserRoleClass();
+
+		foreach ($userRoleClass::getBy([
 			'userId' => $this->getId(),
 		]) as $userRole) {
 			$userRole->delete();
@@ -191,7 +243,9 @@ class User extends \Katu\Model {
 	}
 
 	public function addUserPermission($permission) {
-		return \App\Models\UserPermission::make($this, $permission);
+		$userPermissionClass = static::getUserPermissionClass();
+
+		return $userPermissionClass::make($this, $permission);
 	}
 
 	public function addUserPermissions($permissions) {
@@ -203,7 +257,9 @@ class User extends \Katu\Model {
 	}
 
 	public function deleteAllUserPermissions() {
-		foreach (\App\Models\UserPermission::getBy([
+		$userPermissionClass = static::getUserPermissionClass();
+
+		foreach ($userPermissionClass::getBy([
 			'userId' => $this->getId(),
 		]) as $userPermission) {
 			$userPermission->delete();
@@ -222,12 +278,15 @@ class User extends \Katu\Model {
 	}
 
 	public function getRolePermissions() {
-		if (class_exists('\App\Models\RolePermission')) {
-			$sql = (new \Sexy\Select(\App\Models\RolePermission::getColumn('permission')))
-				->from(\App\Models\RolePermission::getTable())
-				->joinColumns(\App\Models\RolePermission::getColumn('roleId'), \App\Models\UserRole::getColumn('roleId'))
-				->whereEq(\App\Models\UserRole::getColumn('userId'), $this->getId())
-				->groupBy(new \Sexy\GroupBy(\App\Models\RolePermission::getColumn('permission')));
+		$userRoleClass = static::getUserRoleClass();
+		$rolePermissionClass = static::getRolePermissionClass();
+
+		if (class_exists($rolePermissionClass)) {
+			$sql = (new \Sexy\Select($rolePermissionClass::getColumn('permission')))
+				->from($rolePermissionClass::getTable())
+				->joinColumns($rolePermissionClass::getColumn('roleId'), $userRoleClass::getColumn('roleId'))
+				->whereEq($userRoleClass::getColumn('userId'), $this->getId())
+				->groupBy(new \Sexy\GroupBy($rolePermissionClass::getColumn('permission')));
 
 			return static::getPdo()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
 		}
@@ -236,8 +295,10 @@ class User extends \Katu\Model {
 	}
 
 	public function getUserPermissions() {
-		if (class_exists('\App\Models\UserPermission')) {
-			return \App\Models\UserPermission::getBy([
+		$userPermissionClass = static::getUserPermissionClass();
+
+		if (class_exists($userPermissionClass)) {
+			return $userPermissionClass::getBy([
 				'userId' => (int) ($this->getId()),
 			])->getPropertyValues('permission');
 		}
@@ -277,7 +338,9 @@ class User extends \Katu\Model {
 	}
 
 	public function setUserSetting($name, $value) {
-		$userSetting = \App\Models\UserSetting::make($this, $name);
+		$userSettingClass = static::getUserSettingClass();
+
+		$userSetting = $userSettingClass::make($this, $name);
 		$userSetting->setValue($value);
 		$userSetting->save();
 
@@ -285,7 +348,9 @@ class User extends \Katu\Model {
 	}
 
 	public function getUserSetting($name) {
-		return \App\Models\UserSetting::getOneBy([
+		$userSettingClass = static::getUserSettingClass();
+
+		return $userSettingClass::getOneBy([
 			'userId' => $this->getId(),
 			'name' => $name,
 		]);

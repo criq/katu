@@ -4,6 +4,22 @@ namespace Katu;
 
 class App {
 
+	static function getExtendedClass($appClassName, $fallbackName) {
+		return class_exists($appClassName) ? $appClassName : $fallbackName;
+	}
+
+	static function getControllerClass() {
+		return static::getExtendedClass('\\App\\Extensions\\Controller', '\\Katu\\Controller');
+	}
+
+	static function getViewClass() {
+		return static::getExtendedClass('\\App\\Extensions\\View', '\\Katu\\View');
+	}
+
+	static function getErrorHandlerClass() {
+		return static::getExtendedClass('\\App\\Extensions\\ErrorHandler', '\\Katu\\ErrorHandler');
+	}
+
 	static function init() {
 		// Constants.
 		if (!defined('BASE_DIR')) {
@@ -204,7 +220,7 @@ class App {
 			$app->map('.+', $catchAll)->via('GET', 'POST');
 
 			// Autoload.
-			if (class_exists('\App\Extensions\Autoload')) {
+			if (class_exists('\\App\\Extensions\\Autoload')) {
 				foreach ((array)\App\Extensions\Autoload::getRegisterFunctions() as $registerFunction) {
 					spl_autoload_register($registerFunction);
 				}
@@ -215,26 +231,6 @@ class App {
 
 		} catch (\Exception $e) { throw $e; }
 
-	}
-
-	static function getExtendedClass($appClassName, $fallbackName) {
-		if (class_exists($appClassName)) {
-			return $appClassName;
-		} else {
-			return $fallbackName;
-		}
-	}
-
-	static function getControllerClass() {
-		return static::getExtendedClass('\App\Extensions\Controller', '\Katu\Controller');
-	}
-
-	static function getViewClass() {
-		return static::getExtendedClass('\App\Extensions\View', '\Katu\View');
-	}
-
-	static function getErrorHandlerClass() {
-		return static::getExtendedClass('\App\Extensions\ErrorHandler', '\Katu\ErrorHandler');
 	}
 
 }

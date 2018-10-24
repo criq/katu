@@ -37,9 +37,11 @@ class Controller {
 
 		try {
 
+			$viewClass = App::getViewClass();
+
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
-			$app->response->setBody(View::render($template, static::$data));
+			$app->response->setBody($viewClass::render($template, static::$data));
 
 			// Remove flash memory.
 			Flash::reset();

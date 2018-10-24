@@ -4,9 +4,7 @@ namespace Katu;
 
 class View {
 
-	static function render($template, $data = [], $options = []) {
-		$app = \Katu\App::get();
-
+	static function getTwig($options = []) {
 		$dirs = [];
 
 		if (isset($options['dirs']) && $options['dirs']) {
@@ -29,7 +27,14 @@ class View {
 			'auto_reload' => true,
 		]);
 
-		// Filters.
+		return $twig;
+	}
+
+	static function extendTwig(&$twig) {
+
+		/***************************************************************************
+		 * Filters.
+		 */
 
 		$twig->addFilter(new \Twig_SimpleFilter('version', function($uri, $version) {
 			try {
@@ -138,7 +143,9 @@ class View {
 			return \Michelf\Markdown::defaultTransform($text);
 		}));
 
-		// Functions.
+		/***************************************************************************
+		 * Functions.
+		 */
 
 		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
 			foreach ((array) func_get_args() as $arg) {
@@ -255,66 +262,78 @@ class View {
 			}
 		}));
 
-		// Extend Twig.
+		return true;
 
-		if (class_exists('\App\Extensions\View') && method_exists('\App\Extensions\View', 'extendTwig')) {
-			\App\Extensions\View::extendTwig($twig);
-		}
+	}
 
-		$data['_site']['baseDir'] = BASE_DIR;
-		$data['_site']['baseUrl'] = Config::getApp('baseUrl');
+	static function getCommonData() {
+		$app = \Katu\App::get();
+
+		$commonData['_site']['baseDir'] = BASE_DIR;
+		$commonData['_site']['baseUrl'] = Config::getApp('baseUrl');
 		try {
-			$data['_site']['apiUrl']  = Config::getApp('apiUrl');
+			$commonData['_site']['apiUrl']  = Config::getApp('apiUrl');
 		} catch (\Exception $e) {
 			/* Doesn't exist. */
 		}
 		try {
-			$data['_site']['timezone'] = Config::getApp('timezone');
+			$commonData['_site']['timezone'] = Config::getApp('timezone');
 		} catch (\Exception $e) {
 			/* Doesn't exist. */
 		}
 
-		$data['_request']['uri']    = (string) ($app->request->getResourceUri());
-		$data['_request']['url']    = (string) (Utils\Url::getCurrent());
-		$data['_request']['params'] = (array)  ($app->request->params());
-		$data['_request']['route']  = (array)  ([
+		$commonData['_request']['uri']    = (string) ($app->request->getResourceUri());
+		$commonData['_request']['url']    = (string) (Utils\Url::getCurrent());
+		$commonData['_request']['params'] = (array)  ($app->request->params());
+		$commonData['_request']['route']  = (array)  ([
 			'pattern' => $app->router()->getCurrentRoute()->getPattern(),
 			'name'    => $app->router()->getCurrentRoute()->getName(),
 			'params'  => $app->router()->getCurrentRoute()->getParams(),
 		]);
 
-		$data['_agent'] = new \Jenssegers\Agent\Agent();
+		$commonData['_agent'] = new \Jenssegers\Agent\Agent();
 
 		if (class_exists('\App\Models\User')) {
-			$data['_user'] = \App\Models\User::getCurrent();
+			$commonData['_user'] = \App\Models\User::getCurrent();
 		}
-
-		$data['_platform'] = Env::getPlatform();
-		$data['_config']   = Config::get();
-		$data['_session']  = Session::get();
-		$data['_cookies']  = Cookie::get();
-		$data['_flash']    = Flash::get();
-		$data['_upload']   = [
-			'maxSize' => Upload::getMaxSize(),
-		];
 
 		if (class_exists('\App\Models\Setting')) {
 			$data['_settings'] = \App\Models\Setting::getAllAsAssoc();
 		}
 
+		$commonData['_platform'] = Env::getPlatform();
+		$commonData['_config']   = Config::get();
+		$commonData['_session']  = Session::get();
+		$commonData['_cookies']  = Cookie::get();
+		$commonData['_flash']    = Flash::get();
+		$commonData['_upload']   = [
+			'maxSize' => Upload::getMaxSize(),
+		];
+
+		return $commonData;
+	}
+
+	static function render($template, $templateData = [], $options = []) {
+		$app = \Katu\App::get();
+
+		$twig = static::getTwig($options);
+		static::extendTwig($twig);
+
+		$data = array_merge(static::getCommonData(), $templateData);
+
 		return trim($twig->render($template . '.twig', $data));
 	}
 
-	static function renderFromDir($dir, $template, $data = []) {
-		return self::render($template, $data, [
+	static function renderFromDir($dir, $template, $templateData = []) {
+		return self::render($template, $templateData, [
 			'dirs' => [
 				$dir,
 			],
 		]);
 	}
 
-	static function renderCondensed($template, $data = []) {
-		$src = self::render($template, $data);
+	static function renderCondensed($template, $templateData = []) {
+		$src = self::render($template, $templateData);
 
 		return preg_replace('#[\v\t]#', null, $src);
 	}
