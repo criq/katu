@@ -143,6 +143,10 @@ class View {
 			return \Michelf\Markdown::defaultTransform($text);
 		}));
 
+		$twig->addFilter(new \Twig_SimpleFilter('nbsp', function($text) {
+			return new \Twig_Markup(preg_replace('/\b([aioksvz])(\s)/i', '\\1&nbsp;', $text), 'UTF-8');
+		}));
+
 		/***************************************************************************
 		 * Functions.
 		 */
