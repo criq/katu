@@ -11,7 +11,7 @@ class File extends \Katu\Model {
 	static function create($creator, $path, $fileName, $fileType, $fileSize) {
 		return static::insert([
 			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'creatorId'   => (int)    ($creator ? $creator->getId() : null),
+			'creatorId'   =>          ($creator ? $creator->getId() : null),
 			'path'        => (string) ($path),
 			'name'        => (string) ($fileName),
 			'type'        => (string) ($fileType),
@@ -19,7 +19,7 @@ class File extends \Katu\Model {
 		]);
 	}
 
-	static function createFromFile(\Katu\Models\User $creator, \Katu\Utils\File $file) {
+	static function createFromFile(\Katu\Models\User $creator = null, \Katu\Utils\File $file) {
 		if (!static::checkCrudParams($creator)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
@@ -45,7 +45,7 @@ class File extends \Katu\Model {
 		return static::create($creator, $path, $file->getBasename(), $fileType, $fileSize);
 	}
 
-	static function createFromUpload($creator, $upload) {
+	static function createFromUpload(\Katu\Models\User $creator = null, $upload) {
 		if (!static::checkCrudParams($creator)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
@@ -70,7 +70,7 @@ class File extends \Katu\Model {
 		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
 	}
 
-	static function createFromUrl($creator, $url) {
+	static function createFromUrl(\Katu\Models\User $creator = null, $url) {
 		if (!static::checkCrudParams($creator)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
