@@ -52,9 +52,9 @@ class View {
 			}
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('thumbnailPath', function($uri, $size = 640, $quality = 100) {
+		$twig->addFilter(new \Twig_SimpleFilter('thumbnailFile', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionPath($uri, \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionFile($uri, \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -68,9 +68,9 @@ class View {
 			}
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnailPath', function($uri, $size = 640, $quality = 100) {
+		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnailFile', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionPath($uri, \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionFile($uri, \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}

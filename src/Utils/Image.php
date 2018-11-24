@@ -14,7 +14,7 @@ class Image {
 		} elseif ($source instanceof \Katu\ModelBase) {
 			$source = $source->getImagePath();
 		} elseif ($source instanceof \Katu\Utils\File) {
-			$source = (string) $source;
+			$source = (string)$source;
 		}
 
 		return $source;
@@ -118,7 +118,7 @@ class Image {
 		$fileNameHash = sha1(JSON::encodeStandard($fileNameHashParts));
 
 		$fileNameSuffixes = [
-			'version' => (string) sha1(JSON::encodeStandard($version)),
+			'version' => (string)sha1(JSON::encodeStandard($version)),
 		];
 
 		$fileNameSuffix = (new \Katu\Types\TArray($fileNameSuffixes))->implodeWithKeys('_');
@@ -141,26 +141,74 @@ class Image {
 		]);
 	}
 
-	static function getVersionUrl($uri, $version) {
-		$thumbnailPath = static::getVersionPath($uri, $version);
-		try {
-			static::makeVersion($uri, $thumbnailPath, $version);
-		} catch (\Exception $e) {
-			\Katu\ErrorHandler::handle($e);
+	static function getVersionUrl($source, $version) {
+		if ($source instanceof \App\Models\File) {
 
-			return false;
+			$file = $source;
+			if (!$file) {
+				return false;
+			}
+
+			return \Katu\Utils\Url::getFor('images.getVersionSrc.file', [
+				'fileId' => $file->getId(),
+				'fileSecret' => $file->secret,
+				'version' => $version,
+				'name' => $file->name,
+			]);
+
+		} elseif ($source instanceof \App\Models\FileAttachment) {
+
+			$file = $source->getFile();
+			if (!$file) {
+				return false;
+			}
+
+			return \Katu\Utils\Url::getFor('images.getVersionSrc.file', [
+				'fileId' => $file->getId(),
+				'fileSecret' => $file->secret,
+				'version' => $version,
+				'name' => $file->name,
+			]);
+
+		} elseif ($source instanceof \Katu\ModelBase) {
+
+			$file = $source->getImageFile();
+			if (!$file) {
+				return false;
+			}
+
+			return \Katu\Utils\Url::getFor('images.getVersionSrc.file', [
+				'fileId' => $file->getId(),
+				'fileSecret' => $file->secret,
+				'version' => $version,
+				'name' => $file->name,
+			]);
+
+		} elseif ($source instanceof \Katu\Utils\File) {
+
+			return \Katu\Utils\Url::getFor('images.getVersionSrc.url', [
+				'version' => $version,
+			], [
+				'url' => (string)$source->getUrl(),
+			]);
+
 		}
 
-		return \Katu\Utils\Url::joinPaths(\Katu\Utils\Url::getBase(), \Katu\Config::get('app', 'tmp', 'publicUrl'), static::THUMBNAIL_DIR, self::getVersionFilename($uri, $version));
+		return \Katu\Utils\Url::getFor('images.getVersionSrc.url', [
+			'version' => $version,
+		], [
+			'url' => (string)$source,
+		]);
 	}
 
-	static function getVersionPath($uri, $version) {
-		$thumbnailPath = \Katu\Utils\FileSystem::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, self::getVersionFilename($uri, $version));
+	static function getVersionFile($uri, $version) {
+		$versionFilename = self::getVersionFilename($uri, $version);
+		$thumbnailPath = new \Katu\Utils\File(\Katu\Utils\FileSystem::joinPaths(static::getDirPath(), static::THUMBNAIL_DIR, $version, substr($versionFilename, 0, 2), substr($versionFilename, 2, 2), $versionFilename));
+
 		try {
 			static::makeVersion($uri, $thumbnailPath, $version);
 		} catch (\Exception $e) {
 			\Katu\ErrorHandler::handle($e);
-
 			return false;
 		}
 

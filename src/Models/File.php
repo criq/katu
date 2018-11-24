@@ -219,12 +219,12 @@ class File extends \Katu\Model {
 		return \Katu\Utils\Image::getVersionUrl($this->getPath(), \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
 	}
 
-	public function getThumbnailPath($size = 640, $quality = 100) {
-		return \Katu\Utils\Image::getVersionPath($this->getPath(), \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
+	public function getThumbnailFile($size = 640, $quality = 100) {
+		return \Katu\Utils\Image::getVersionFile($this->getPath(), \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
 	}
 
-	public function getSquareThumbnailPath($size = 640, $quality = 100) {
-		return \Katu\Utils\Image::getVersionPath($this->getPath(), \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
+	public function getSquareThumbnailFile($size = 640, $quality = 100) {
+		return \Katu\Utils\Image::getVersionFile($this->getPath(), \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
 	}
 
 	static function normalizePaths() {
