@@ -107,5 +107,4 @@ class SendGrid extends \Katu\Email\ThirdParty {
 		return $sendGridApi->send($email);
 	}
 
-
 }
