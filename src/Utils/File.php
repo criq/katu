@@ -19,8 +19,20 @@ class File {
 		return $this->getPath();
 	}
 
-	static function createTemporaryFromSrc($src, $extension) {
+	static function createTemporaryWithFileName($fileName) {
+		$file = new static(TMP_PATH, 'files', $fileName);
+
+		return $file;
+	}
+
+	static function createTemporaryWithExtension($extension) {
 		$file = new static(TMP_PATH, 'files', [\Katu\Utils\Random::getFileName(), $extension]);
+
+		return $file;
+	}
+
+	static function createTemporaryFromSrc($src, $extension) {
+		$file = static::createTemporaryWithExtension($extension);
 		$file->set($src);
 
 		return $file;

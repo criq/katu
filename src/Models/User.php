@@ -110,6 +110,8 @@ class User extends \Katu\Model {
 	}
 
 	public function makeUserService($serviceName, $serviceUserId) {
+		$userServiceClass = static::getUserServiceClass();
+
 		return $userServiceClass::upsert([
 			'userId'        => (int)$this->getId(),
 			'serviceName'   => (string)$serviceName,
