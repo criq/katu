@@ -46,7 +46,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnail', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionUrl($uri, \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionUrl($uri, 'thumbnail');
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -54,7 +54,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('thumbnailFile', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionFile($uri, \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionFile($uri, 'thumbnail');
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -62,7 +62,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnail', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionUrl($uri, \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionUrl($uri, 'squareThumbnail');
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -70,7 +70,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('squareThumbnailFile', function($uri, $size = 640, $quality = 100) {
 			try {
-				return \Katu\Utils\Image::getVersionFile($uri, \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
+				return \Katu\Utils\Image::getVersionFile($uri, 'squareThumbnail');
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}

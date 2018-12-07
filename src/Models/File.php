@@ -211,20 +211,20 @@ class File extends \Katu\Model {
 		return in_array($this->type, static::getSupportedImageTypes());
 	}
 
-	public function getThumbnailUrl($size = 640, $quality = 100) {
-		return \Katu\Utils\Image::getVersionUrl($this->getPath(), \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
+	public function getThumbnailUrl() {
+		return \Katu\Utils\Image::getVersionUrl($this, 'thumbnail');
 	}
 
-	public function getSquareThumbnailUrl($size = 640, $quality = 100) {
-		return \Katu\Utils\Image::getVersionUrl($this->getPath(), \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
+	public function getSquareThumbnailUrl() {
+		return \Katu\Utils\Image::getVersionUrl($this, 'squareThumbnail');
 	}
 
-	public function getThumbnailFile($size = 640, $quality = 100) {
-		return \Katu\Utils\Image::getVersionFile($this->getPath(), \Katu\Utils\Image::getThumbnailVersionConfig($size, $quality));
+	public function getThumbnailFile() {
+		return \Katu\Utils\Image::getVersionFile($this, 'thumbnail');
 	}
 
-	public function getSquareThumbnailFile($size = 640, $quality = 100) {
-		return \Katu\Utils\Image::getVersionFile($this->getPath(), \Katu\Utils\Image::getSquareThumbnailVersionConfig($size, $quality));
+	public function getSquareThumbnailFile() {
+		return \Katu\Utils\Image::getVersionFile($this, 'squareThumbnail');
 	}
 
 	static function normalizePaths() {

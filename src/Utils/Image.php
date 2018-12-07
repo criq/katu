@@ -151,7 +151,7 @@ class Image {
 
 			return \Katu\Utils\Url::getFor('images.getVersionSrc.file', [
 				'fileId' => $file->getId(),
-				'fileSecret' => $file->secret,
+				'fileSecret' => $file->getSecret(),
 				'version' => $version,
 				'name' => $file->name,
 			]);
@@ -321,32 +321,6 @@ class Image {
 		} catch (\Exception $e) {
 			return $version;
 		}
-	}
-
-	static function getThumbnailVersionConfig($size = 640, $quality = 100) {
-		return [
-			'quality' => $quality,
-			'filters' => [
-				[
-					'filter' => 'resize',
-					'width' => $size,
-					'height' => $size,
-				],
-			],
-		];
-	}
-
-	static function getSquareThumbnailVersionConfig($size = 640, $quality = 100) {
-		return [
-			'quality' => $quality,
-			'filters' => [
-				[
-					'filter' => 'fit',
-					'width' => $size,
-					'height' => $size,
-				],
-			],
-		];
 	}
 
 	/* Colors *******************************************************************/
