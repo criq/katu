@@ -267,8 +267,11 @@ class Cache {
 		$args = func_get_args();
 
 		$object = new static($args[0], $args[1]);
-		$object->setCallback($args[2]);
-		call_user_func_array([$object, 'setArgs'], array_slice($args, 3));
+		if (isset($args[2])) {
+			$object->setCallback($args[2]);
+		}
+
+		call_user_func_array([$object, 'setArgs'], (array)array_slice($args, 3));
 
 		return $object->getResult();
 	}
