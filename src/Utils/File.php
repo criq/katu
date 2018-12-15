@@ -32,7 +32,12 @@ class File {
 	}
 
 	static function createTemporaryFromSrc($src, $extension) {
-		$file = static::createTemporaryWithExtension($extension);
+		if ($extension) {
+			$file = static::createTemporaryWithExtension($extension);
+		} else {
+			$file = static::createTemporaryWithFileName(\Katu\Utils\Random::getFileName());
+		}
+
 		$file->set($src);
 
 		return $file;
@@ -51,7 +56,7 @@ class File {
 			return false;
 		}
 
-		if (!$extension) {
+		if (!$extension && isset($url->getParts()['path']['extension'])) {
 			$extension = pathinfo($url->getParts()['path']['extension']);
 		}
 

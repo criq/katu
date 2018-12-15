@@ -28,6 +28,8 @@ class Images extends \Katu\Controller {
 			$app->response->headers->set('Cache-Control', 'max-age=604800');
 			$app->response->setBody($versionFile->get());
 
+			return true;
+
 		} catch (\Exception $e) {
 			throw new \Katu\Exceptions\Exception;
 		}
@@ -48,6 +50,8 @@ class Images extends \Katu\Controller {
 			$app->response->headers->set('Content-Type', $versionFile->getMime());
 			$app->response->headers->set('Cache-Control', 'max-age=604800');
 			$app->response->setBody($versionFile->get());
+
+			return true;
 
 		} catch (\Exception $e) {
 			throw new \Katu\Exceptions\Exception;
