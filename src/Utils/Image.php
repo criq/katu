@@ -319,7 +319,11 @@ class Image {
 		try {
 			return \Katu\Config::get('image', 'versions', $version);
 		} catch (\Exception $e) {
-			return $version;
+			try {
+				return \App\Extensions\Image::getVersionConfig($version);
+			} catch (\Exception $e) {
+				return false;
+			}
 		}
 	}
 
