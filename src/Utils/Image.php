@@ -320,7 +320,10 @@ class Image {
 			return \Katu\Config::get('image', 'versions', $version);
 		} catch (\Exception $e) {
 			try {
-				return \App\Extensions\Image::getVersionConfig($version);
+				if (method_exists('\\App\\Extensions\\Image', 'getVersionConfig')) {
+					return \App\Extensions\Image::getVersionConfig($version);
+				}
+				throw new \Exception;
 			} catch (\Exception $e) {
 				return false;
 			}
