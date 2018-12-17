@@ -232,6 +232,14 @@ class User extends \Katu\Model {
 		]);
 	}
 
+	public function getUserRoles() {
+		$userRoleClass = static::getUserRoleClass();
+
+		return $userRoleClass::getBy([
+			'userId' => $this->getId(),
+		]);
+	}
+
 	public function deleteAllRoles() {
 		$userRoleClass = static::getUserRoleClass();
 

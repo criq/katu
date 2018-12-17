@@ -108,6 +108,20 @@ class Role extends \Katu\Model {
 		return true;
 	}
 
+	public function getRolePermissions() {
+		$rolePermissionClass = static::getRolePermissionClass();
+
+		return $rolePermissionClass::getBy([
+			'roleId' => $this->getId(),
+		]);
+	}
+
+	public function getPermissions() {
+		return array_map(function($rolePermission) {
+			return $rolePermission->permission;
+		}, $this->getRolePermissions()->getObjects());
+	}
+
 	public function hasPermission($permission) {
 		$rolePermissionClass = static::getRolePermissionClass();
 
