@@ -25,8 +25,9 @@ class TUrl {
 
 	static function make($url, $params = []) {
 		$params = array_filter((array)$params, function($i) {
-			return !is_null($i);
+			return strlen($i);
 		});
+
 		return new self($url . ($params ? ('?' . http_build_query($params)) : null));
 	}
 

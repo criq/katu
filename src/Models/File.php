@@ -20,9 +20,6 @@ class File extends \Katu\Model {
 	}
 
 	static function createFromFile(\Katu\Models\User $creator = null, \Katu\Utils\File $file) {
-		if (!static::checkCrudParams($creator)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
 		if (!$file->exists()) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
 		}
@@ -46,9 +43,6 @@ class File extends \Katu\Model {
 	}
 
 	static function createFromUpload(\Katu\Models\User $creator = null, $upload) {
-		if (!static::checkCrudParams($creator)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
 		if (!$upload || !($upload instanceof \Katu\Upload)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
 		}
@@ -71,10 +65,6 @@ class File extends \Katu\Model {
 	}
 
 	static function createFromUrl(\Katu\Models\User $creator = null, $url) {
-		if (!static::checkCrudParams($creator)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
-
 		$url = new \Katu\Types\TUrl($url);
 
 		$temporaryFile = \Katu\Utils\File::createTemporaryFromUrl($url);
@@ -85,16 +75,6 @@ class File extends \Katu\Model {
 		$file->save();
 
 		return $file;
-	}
-
-	static function checkCrudParams($creator) {
-		if ($creator && !($creator instanceof \App\Models\User)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid file creator."))
-				->addErrorName('file')
-				;
-		}
-
-		return true;
 	}
 
 	public function delete() {
