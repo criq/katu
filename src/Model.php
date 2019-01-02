@@ -422,10 +422,12 @@ class Model extends ModelBase {
 	public function refreshFileAttachmentsFromFileIds($user, $fileIds) {
 		$this->getFileAttachments()->each('delete');
 
-		foreach ((array) $fileIds as $fileId) {
+		foreach ((array) $fileIds as $key => $fileId) {
 			$file = File::get($fileId);
 			if ($file) {
-				$file->attachTo($user, $this);
+				$fileAttachment = $file->attachTo($user, $this);
+				$fileAttachment->update('position', $key + 1);
+				$fileAttachment->save();
 			}
 		}
 

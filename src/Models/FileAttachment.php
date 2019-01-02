@@ -33,17 +33,12 @@ class FileAttachment extends \Katu\Model {
 	}
 
 	static function checkCrudParams($creator, $object, $file) {
-		if ($creator && !($creator instanceof \App\Models\User)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid file attachment creator."))
-				->addErrorName('file')
-				;
-		}
 		if (!is_a($object, '\Katu\Model')) {
 			throw (new \Katu\Exceptions\InputErrorException("Object is not a model."))
 				->addErrorName('object')
 				;
 		}
-		if (!$file || !($file instanceof \App\Models\File)) {
+		if (!$file) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid file."))
 				->addErrorName('file')
 				;
