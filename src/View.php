@@ -144,7 +144,7 @@ class View {
 		}));
 
 		$twig->addFilter(new \Twig_SimpleFilter('nbsp', function($text) {
-			return new \Twig_Markup(preg_replace('/\b([aioksvz])(\s)/i', '\\1&nbsp;', $text), 'UTF-8');
+			return new \Twig_Markup(preg_replace('/\b([aiouksvz])(\s)/i', '\\1&nbsp;', $text), 'UTF-8');
 		}));
 
 		/***************************************************************************
