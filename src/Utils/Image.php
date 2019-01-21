@@ -242,9 +242,9 @@ class Image {
 
 			// Try a URL as a source.
 			try {
-				$source = \Katu\Utils\Cache::getUrl(new \Katu\Types\TUrl($source));
+				$source = \Katu\Cache\Url::get(new \Katu\Types\TUrl($source));
 			} catch (\Exception $e) {
-
+				// Nevermind.
 			}
 
 			try {
@@ -337,7 +337,7 @@ class Image {
 	}
 
 	static function getColorAtCoords($path, \Katu\Types\TCoordsRectangle $coordsRectangle = null) {
-		return Cache::get(['image', 'color'], function($path, $coordsRectangle) {
+		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], null, function($path, $coordsRectangle) {
 
 			$createFunctionName = static::getImageCreateFunctionName($path);
 			if (!$createFunctionName) {
@@ -355,15 +355,15 @@ class Image {
 
 			return static::getColorRgb(imagecolorat($pixel, 0, 0));
 
-		}, null, $path, $coordsRectangle);
+		}, $path, $coordsRectangle);
 	}
 
 	static function getColors($path) {
-		return \Katu\Utils\Cache::get(['image', 'colors'], function($path) {
+		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], null, function($path) {
 
 			$colors = [];
 
-			$image = \Intervention\Image\ImageManagerStatic::make(\Katu\Utils\Cache::getUrl($path));
+			$image = \Intervention\Image\ImageManagerStatic::make($path);
 
 			for ($x = 0; $x < $image->width(); $x++) {
 				for ($y = 0; $y < $image->height(); $y++) {
@@ -373,15 +373,15 @@ class Image {
 
 			return $colors;
 
-		}, null, $path);
+		}, $path);
 	}
 
 	static function getColorSums($path) {
-		return \Katu\Utils\Cache::get(['image', 'colorSums'], function($path) {
+		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], null, function($path) {
 
 			$colors = [];
 
-			$image = \Intervention\Image\ImageManagerStatic::make(\Katu\Utils\Cache::getUrl($path));
+			$image = \Intervention\Image\ImageManagerStatic::make($path);
 
 			for ($x = 0; $x < $image->width(); $x++) {
 				for ($y = 0; $y < $image->height(); $y++) {
@@ -395,7 +395,7 @@ class Image {
 
 			return $colors;
 
-		}, null, $path);
+		}, $path);
 	}
 
 }
