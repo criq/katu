@@ -154,4 +154,8 @@ class DateTime extends \DateTime {
 		return $this->setTime($this->format('H'), $this->format('i'), $n);
 	}
 
+	public function getDiff($dateTime = null) {
+		return $this->diff($dateTime ?: new static);
+	}
+
 }
