@@ -241,7 +241,11 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('blabla', function($sentences = 10) {
-			return implode(' ', (new \Katu\Types\TArray(\Katu\Utils\Blabot::getList()))->getRandomItems($sentences));
+			try {
+				return implode(' ', (new \Katu\Types\TArray(\Katu\Utils\Blabot::getList()))->getRandomItems($sentences));
+			} catch (\Exception $e) {
+				return \Katu\Utils\BaconIpsum::get();
+			}
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('start', function() {

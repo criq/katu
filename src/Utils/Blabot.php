@@ -13,9 +13,10 @@ class Blabot {
 			'dictionary' => 1,
 		], $params);
 
-		$arr = JSON::decodeAsArray(Cache::getUrl('http://api.blabot.net?' . http_build_query($params), 86400));
+		$url = \Katu\Types\TUrl::make('http://api.blabot.net', $params);
+		$res = JSON::decodeAsArray(\Katu\Cache\Url::get($url, 86400));
 
-		return $arr['blabot']['result'];
+		return $res['blabot']['result'];
 	}
 
 }
