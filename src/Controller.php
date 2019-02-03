@@ -32,6 +32,17 @@ class Controller {
 		return false;
 	}
 
+	static function prepareBody($body) {
+		$app = App::get();
+
+		if (in_array('gzip', array_map('trim', (array)explode(',', $app->request->headers('Accept-Encoding'))))) {
+			$body = gzencode($body);
+			$app->response->headers->set('Content-Encoding', 'gzip');
+		}
+
+		return $body;
+	}
+
 	static function render($template, $code = 200, $headers = []) {
 		$app = App::get();
 
@@ -41,14 +52,7 @@ class Controller {
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
-
-			$body = $viewClass::render($template, static::$data);
-			if (in_array('gzip', array_map('trim', (array)explode(',', $app->request->headers('Accept-Encoding'))))) {
-				$body = gzencode($body);
-				$app->response->headers->set('Content-Encoding', 'gzip');
-			}
-
-			$app->response->setBody($body);
+			$app->response->setBody(static::prepareBody($viewClass::render($template, static::$data)));
 
 			// Remove flash memory.
 			Flash::reset();

@@ -10,10 +10,12 @@ class JSON {
 		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
 
 		if (isset($options['format']) && $options['format'] == 'standard') {
-			$app->response->setBody(self::encodeStandard($var));
+			$body = static::encodeStandard($var);
 		} else {
-			$app->response->setBody(self::encode($var));
+			$body = static::encode($var);
 		}
+
+		$app->response->setBody(\Katu\Controller::prepareBody($body));
 
 		return true;
 	}
@@ -34,11 +36,11 @@ class JSON {
 	}
 
 	static function encode($var) {
-		return json_encode($var, self::getEncodeBitmask());
+		return json_encode($var, static::getEncodeBitmask());
 	}
 
 	static function encodeInline($var) {
-		return json_encode($var, self::getInlineEncodeBitmask());
+		return json_encode($var, static::getInlineEncodeBitmask());
 	}
 
 	static function encodeStandard($var) {
