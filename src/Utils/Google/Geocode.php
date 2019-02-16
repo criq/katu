@@ -2,14 +2,10 @@
 
 namespace Katu\Utils\Google;
 
-use \Katu\Config;
-use \Katu\Utils\Cache;
-use \Katu\Types\TUrl;
-
 class Geocode {
 
 	static function geocode($language, $address, $components = []) {
-		$res = Cache::get(['geocode', $language, $address, $components], function() use($language, $address, $components) {
+		$res = \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400, function($language, $address, $components) {
 
 			$componentArray = [];
 			foreach ($components as $componentName => $componentValue) {
@@ -17,14 +13,18 @@ class Geocode {
 			}
 
 			try {
-				$apiKeys = Config::get('google', 'geocode', 'api', 'keys');
+				$apiKeys = \Katu\Config::get('google', 'geocode', 'api', 'keys');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$apiKeys = [Config::get('google', 'geocode', 'api', 'key')];
+				try {
+					$apiKeys = [\Katu\Config::get('google', 'geocode', 'api', 'key')];
+				} catch (\Katu\Exceptions\MissingConfigException $e) {
+					$apiKeys = [\Katu\Config::get('google', 'api', 'key')];
+				}
 			}
 
 			foreach ($apiKeys as $apiKey) {
 
-				$url = TUrl::make('https://maps.googleapis.com/maps/api/geocode/json', [
+				$url = \Katu\Types\TUrl::make('https://maps.googleapis.com/maps/api/geocode/json', [
 					'address'    => $address,
 					'components' => implode('|', $componentArray),
 					'sensor'     => 'false',
@@ -47,7 +47,7 @@ class Geocode {
 
 			throw new \Katu\Exceptions\DoNotCacheException(isset($response) ? $response : null);
 
-		});
+		}, $language, $address, $components);
 
 		if (!isset($res->results[0])) {
 			return false;
