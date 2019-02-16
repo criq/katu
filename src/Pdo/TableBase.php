@@ -32,6 +32,10 @@ class TableBase extends \Sexy\Expression {
 		return $columns;
 	}
 
+	public function getColumn($columnName) {
+		return new Column($this, $columnName);
+	}
+
 	public function getColumnDescriptions() {
 		$table = $this;
 
@@ -214,6 +218,10 @@ class TableBase extends \Sexy\Expression {
 
 	public function getLastUpdatedTmpName() {
 		return ['!databases', '!' . $this->pdo->name, '!tables', '!updated', trim($this->name, '`')];
+	}
+
+	public function getPdo() {
+		return $this->pdo;
 	}
 
 }

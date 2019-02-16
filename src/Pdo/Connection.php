@@ -53,12 +53,20 @@ class Connection {
 		return $this->connection->lastInsertId();
 	}
 
+	public function tableExists($tableName) {
+		return in_array($tableName, $this->getTableNames());
+	}
+
 	public function getTables() {
 		$pdo = $this;
 
-		return array_map(function($i) use($pdo) {
-			return new Table($pdo, $i);
+		return array_map(function($tableName) use($pdo) {
+			return new Table($pdo, $tableName);
 		}, $this->getTableNames());
+	}
+
+	public function getTable($tableName) {
+		return new Table($this, $tableName);
 	}
 
 	public function getTableNames() {
@@ -104,10 +112,6 @@ class Connection {
 		}
 
 		return $views;
-	}
-
-	public function tableExists($tableName) {
-		return in_array($tableName, $this->getTableNames());
 	}
 
 	public function createQuery($sql = null, $params = []) {

@@ -42,7 +42,15 @@ class TString {
 	}
 
 	public function getAsFloat() {
-		return (float) floatval(trim(strtr(preg_replace('/\s/u', null, $this->string), ',', '.')));
+		return (float)floatval(trim(strtr(preg_replace('/\s/u', null, $this->string), ',', '.')));
+	}
+
+	public function getAsFloatIfNumeric() {
+		if (preg_match('/^([0-9]+(\.[0-9]+)?)|(\.[0-9]+)$/', $this->string)) {
+			return (float)$this->string;
+		}
+
+		return (string)$this->string;
 	}
 
 	public function getAsArray() {
