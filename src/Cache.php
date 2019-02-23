@@ -134,7 +134,7 @@ class Cache {
 
 	static function isApcSupported() {
 		try {
-			return \Katu\Config::get('app', 'cache', 'supported', 'apc') && function_exists('apc_exists');
+			return \Katu\Config::get('app', 'cache', 'supported', 'apc') && function_exists('apcu_exists');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return false;
 		}
@@ -196,8 +196,8 @@ class Cache {
 		// Try APC.
 		} elseif ($this->isApcEnabled()) {
 
-			if (apc_exists($memoryKey)) {
-				$res = apc_fetch($memoryKey, $success);
+			if (apcu_exists($memoryKey)) {
+				$res = apcu_fetch($memoryKey, $success);
 				if ($success) {
 					return $res;
 				}
@@ -234,12 +234,12 @@ class Cache {
 
 			// Add to APC.
 			try {
-				if (!apc_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
+				if (!apcu_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
 					throw new \Exception;
 				}
 				return $res;
 			} catch (\Exception $e) {
-				apc_delete($memoryKey);
+				apcu_delete($memoryKey);
 			}
 
 		}
@@ -255,8 +255,7 @@ class Cache {
 			return static::$memcached->flush();
 		}
 		if (static::isApcSupported()) {
-			apc_clear_cache();
-			apc_clear_cache('user');
+			apcu_clear_cache();
 			return true;
 		}
 

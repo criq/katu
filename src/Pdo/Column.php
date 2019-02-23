@@ -18,7 +18,7 @@ class Column extends \Sexy\Expression {
 
 	public function getSql(&$context = []) {
 		return implode('.', [
-			$this->table->getSql(),
+			$this->table->getSql($context),
 			$this->name == '*' ? '*' : $this->name,
 		]);
 	}
