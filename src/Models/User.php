@@ -73,8 +73,8 @@ class User extends \Katu\Model {
 		}
 
 		return static::insert([
-			static::$columnNames['timeCreated'] => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			static::$columnNames['emailAddressId'] => (int) ($emailAddress->getId()),
+			static::$columnNames['timeCreated'] => (string)\Katu\Utils\DateTime::get()->getDbDateTimeFormat(),
+			static::$columnNames['emailAddressId'] => (int)$emailAddress->getId(),
 		]);
 	}
 
