@@ -46,7 +46,7 @@ class TString {
 	}
 
 	public function getAsFloatIfNumeric() {
-		if (preg_match('/^([0-9]+(\.[0-9]+)?)|(\.[0-9]+)$/', $this->string)) {
+		if (preg_match('/^(([0-9]+(\.[0-9]+)?)|(\.[0-9]+))$/', $this->string, $match)) {
 			return (float)$this->string;
 		}
 

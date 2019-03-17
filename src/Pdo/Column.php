@@ -9,7 +9,7 @@ class Column extends \Sexy\Expression {
 
 	public function __construct($table, $name) {
 		$this->table = $table;
-		$this->name  = new Name($name);
+		$this->name = $name instanceof Name ? $name : new Name($name);
 	}
 
 	public function __toString() {
