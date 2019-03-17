@@ -51,7 +51,7 @@ class Model extends ModelBase {
 
 		$query->setSql($sql);
 		$query->setBindValues($bindValues);
-		$query->getResult();
+		$result = $query->getResult();
 
 		static::change();
 

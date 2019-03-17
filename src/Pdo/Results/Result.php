@@ -22,6 +22,7 @@ class Result implements \Iterator, \ArrayAccess {
 
 			if ((int) $this->statement->errorCode()) {
 				$error = $this->statement->errorInfo();
+				#var_dump($error, $this->statement);
 				throw new \Exception($error[2], $error[1]);
 			}
 

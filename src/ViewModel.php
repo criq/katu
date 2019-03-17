@@ -196,7 +196,7 @@ class ViewModel extends ModelBase {
 		@set_time_limit(600);
 
 		// Get a temporary table.
-		$temporaryTableName = '_tmp_' . \Katu\Utils\Random::getIdString(8);
+		$temporaryTableName = '_tmp_' . strtoupper(\Katu\Utils\Random::getIdString(8));
 		$temporaryTable = new Pdo\Table($destinationTable->pdo, $temporaryTableName);
 
 		// Copy into temporary table view.
@@ -212,7 +212,7 @@ class ViewModel extends ModelBase {
 		try {
 			$destinationTable->delete();
 		} catch (\Exception $e) {
-
+			// Nevermind.
 		}
 
 		// Rename the temporary table.
@@ -226,7 +226,7 @@ class ViewModel extends ModelBase {
 
 			$class = static::getClass();
 
-			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
+			#return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
 
 				$class::materializeSourceViews();
 
@@ -236,10 +236,10 @@ class ViewModel extends ModelBase {
 
 				return true;
 
-			}, $class);
+			#}, $class);
 
 		} catch (\Katu\Exceptions\LockException $e) {
-			\Katu\ErrorHandler::log($e);
+			// Nevermind.
 		}
 	}
 

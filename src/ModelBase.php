@@ -33,6 +33,10 @@ class ModelBase {
 		return implode(array_slice(explode('\\', static::getClass()), -1, 1));
 	}
 
+	public function getClassMethods() {
+		return get_class_methods($this);
+	}
+
 	static function getPdo() {
 		if (!defined('static::DATABASE')) {
 			throw new \Exception("Undefined database.");
