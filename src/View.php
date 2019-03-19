@@ -240,12 +240,20 @@ class View {
 			return $url;
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('blabla', function($sentences = 10) {
+		$twig->addFunction(new \Twig_SimpleFunction('lipsum', function($sentences = 10) {
+			try {
+				return \Katu\Utils\BaconIpsum::get();
+			} catch (\Exception $e) {
+				// Nevermind.
+			}
+
 			try {
 				return implode(' ', (new \Katu\Types\TArray(\Katu\Utils\Blabot::getList()))->getRandomItems($sentences));
 			} catch (\Exception $e) {
-				return \Katu\Utils\BaconIpsum::get();
+				// Nevermind.
 			}
+
+			return false;
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('start', function() {
