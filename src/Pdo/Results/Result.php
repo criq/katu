@@ -20,10 +20,12 @@ class Result implements \Iterator, \ArrayAccess {
 
 			$this->statement->execute();
 
-			if ((int) $this->statement->errorCode()) {
+			if (!preg_match("/^0+$/", $this->statement->errorCode())) {
 				$error = $this->statement->errorInfo();
-				#var_dump($error, $this->statement);
-				throw new \Exception($error[2], $error[1]);
+				throw new \Exception(implode(';', [
+					$error[2],
+					$this->statement->queryString,
+				]), $error[1]);
 			}
 
 		} catch (\Exception $e) {
