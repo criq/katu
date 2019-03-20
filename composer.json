@@ -33,7 +33,8 @@
 		"guzzlehttp/guzzle": "@stable",
 		"illuminate/support": "<=5.4.17",
 		"jenssegers/agent": "@stable",
-		"mischiefcollective/colorjizz": "@stable"
+		"mischiefcollective/colorjizz": "@stable",
+		"league/color-extractor": "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
