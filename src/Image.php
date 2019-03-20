@@ -18,48 +18,35 @@ class Image {
 		return \Intervention\Image\ImageManagerStatic::make($this->getSource()->getUri());
 	}
 
-	public function getColor() {
-		try {
+	public function getPixel() {
+		$version = (new \Katu\Image\Version)
+			->addFilter(new \Katu\Image\Filters\Fit([
+				'width' => 1,
+				'height' => 1,
+			]))
+			->setQuality(100)
+			->setExtension('png')
+			;
 
-			$version = (new \Katu\Image\Version)
-				->addFilter(new \Katu\Image\Filters\Fit([
-					'width' => 1,
-					'height' => 1,
-				]))
-				->setQuality(100)
-				->setExtension('png')
-				;
+		$imageVersion = new \Katu\Image\ImageVersion($this, $version);
 
-			$imageVersion = new \Katu\Image\ImageVersion($this, $version);
-			$image = $imageVersion->getImage();
-			$interventionImage = $image->getInterventionImage();
-
-			$color = $interventionImage->pickColor(0, 0, 'hex');
-
-			return new \Katu\Types\TColor($color);
-
-		} catch (\Katu\Exceptions\ImageErrorException $e) {
-			return false;
-		}
+		return $imageVersion->getImage();
 	}
 
-	public function extractColors($n = 1) {
-		try {
+	public function getColors($n = 1) {
+		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($uri, $n) {
 
-			var_dump($this->getFile()); die;
+			$palette = \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($uri) {
+				return \League\ColorExtractor\Palette::fromFilename($uri);
+			}, $uri);
 
-			$palette = \League\ColorExtractor\Palette::fromFilename('./some/image.png');
-			var_dump($palette); die;
+			$mostUsedColors = array_keys($palette->getMostUsedColors($n));
 
+			return array_map(function($color) {
+				return new \Katu\Types\TColor(\League\ColorExtractor\Color::fromIntToHex($color));
+			}, $mostUsedColors);
 
-
-		} catch (\Exception $e) {
-
-			\Katu\ErrorHandler::log($e);
-
-			return false;
-
-		}
+		}, $this->getSource()->getUri(), $n);
 	}
 
 }
