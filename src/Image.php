@@ -43,25 +43,14 @@ class Image {
 		}
 	}
 
-	static function extractColors($n = 1) {
+	public function extractColors($n = 1) {
 		try {
 
-			$client = new \League\ColorExtractor\Client;
-			var_dump($client); die;
-			$image = \Katu\Utils\Image::getVersionUrl($uri, [
-				'filters' => [
-					[
-						'filter' => 'fit',
-						'width' => 600,
-						'height' => 600,
-					],
-				],
-			]);
-			$extracted = (array) $client->loadJpeg($image)->extract($n);
-			return array_map(function($i) {
-				$color = \Katu\Types\TColorRgb::getFromHex($i);
-				return new \MischiefCollective\ColorJizz\Formats\RGB($color->r, $color->g, $color->b);
-			}, $extracted);
+			var_dump($this->getFile()); die;
+
+			$palette = \League\ColorExtractor\Palette::fromFilename('./some/image.png');
+			var_dump($palette); die;
+
 
 
 		} catch (\Exception $e) {
