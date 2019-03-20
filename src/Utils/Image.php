@@ -332,8 +332,8 @@ class Image {
 
 	/* Colors *******************************************************************/
 
-	static function getColorRgb($color) {
-		return \Katu\Types\TColorRgb::getFromImageColor($color);
+	static function getColor($color) {
+		return \Katu\Types\TColor::getFromImageColor($color);
 	}
 
 	static function getColorAtCoords($path, \Katu\Types\TCoordsRectangle $coordsRectangle = null) {
@@ -353,7 +353,7 @@ class Image {
 
 			imagecopyresampled($pixel, $image, 0, 0, $coordsRectangle->xa, $coordsRectangle->ya, 1, 1, $coordsRectangle->xb - $coordsRectangle->xa, $coordsRectangle->yb - $coordsRectangle->ya);
 
-			return static::getColorRgb(imagecolorat($pixel, 0, 0));
+			return static::getColor(imagecolorat($pixel, 0, 0));
 
 		}, $path, $coordsRectangle);
 	}

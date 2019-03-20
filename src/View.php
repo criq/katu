@@ -33,9 +33,18 @@ class View {
 	static function extendTwig(&$twig) {
 
 		/***************************************************************************
-		 * Filters.
+		 * Image.
 		 */
 
+		$twig->addFunction(new \Twig_SimpleFunction('getImage', function($uri) {
+			try {
+				return new \Katu\Image($uri);
+			} catch (\Katu\Exceptions\ImageErrorException $e) {
+				return false;
+			}
+		}));
+
+		/*
 		$twig->addFilter(new \Twig_SimpleFilter('version', function($uri, $version) {
 			try {
 				return \Katu\Utils\Image::getVersionUrl($uri, $version);
@@ -93,10 +102,24 @@ class View {
 			return \Katu\Utils\Image::getHeight($path);
 		}));
 
-		// @todo - update
 		$twig->addFilter(new \Twig_SimpleFilter('imageColor', function($uri) {
 			try {
-				return \Katu\Utils\Image::getColorAtCoords(\Katu\Utils\Image::getVersionUrl($uri, 1, 100, ['format' => 'square']));
+
+				$image = new \Katu\Image($uri);
+				$version = (new \Katu\Image\Version)
+					->addFilter(new \Katu\Image\Filters\Fit([
+						'width' => 1,
+						'height' => 1,
+					]))
+					->setQuality(100)
+					->setExtension('png')
+					;
+
+				$imageVersion = new \Katu\Image\ImageVersion($image, $version);
+				$image = $imageVersion->getImage();
+
+				var_dump($image); die;
+
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -112,6 +135,11 @@ class View {
 
 			return false;
 		}));
+		*/
+
+		/***************************************************************************
+		 * Text.
+		 */
 
 		$twig->addFilter(new \Twig_SimpleFilter('shorten', function($string, $length, $options = []) {
 			$shorter = substr($string, 0, $length);
