@@ -35,9 +35,8 @@ class Image {
 			$interventionImage = $image->getInterventionImage();
 
 			$color = $interventionImage->pickColor(0, 0, 'hex');
-			var_dump(new \Katu\Types\TColor($color)); die;
 
-
+			return new \Katu\Types\TColor($color);
 
 		} catch (\Katu\Exceptions\ImageErrorException $e) {
 			return false;
