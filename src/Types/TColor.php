@@ -9,8 +9,10 @@ class TColor {
 	public function __construct($color) {
 		if ($color instanceof \SSNepenthe\ColorUtils\Colors\Color) {
 			$this->color = $color;
-		} else {
+		} elseif (class_exists('\\SSNepenthe\\ColorUtils\\Colors\\Color')) {
 			$this->color = \SSNepenthe\ColorUtils\color($color);
+		} else {
+			$this->color = $color;
 		}
 	}
 

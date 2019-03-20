@@ -32,8 +32,7 @@
 		"vlucas/phpdotenv" : "@stable",
 		"guzzlehttp/guzzle": "@stable",
 		"illuminate/support": "<=5.4.17",
-		"jenssegers/agent": "@stable",
-		"ssnepenthe/color-utils": "@stable"
+		"jenssegers/agent": "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
