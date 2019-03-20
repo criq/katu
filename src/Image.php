@@ -10,8 +10,16 @@ class Image {
 		$this->source = Image\Source::createFromInput($source);
 	}
 
+	public function __toString() {
+		return $this->getSource()->getUrl();
+	}
+
 	public function getSource() {
 		return $this->source;
+	}
+
+	public function getImageVersion($version) {
+		return new \Katu\Image\ImageVersion($this, $version);
 	}
 
 	public function getInterventionImage() {
