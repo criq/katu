@@ -7,9 +7,13 @@ class ImageVersion {
 	protected $image;
 	protected $version;
 
-	public function __construct($image, $version) {
+	public function __construct(\Katu\Image $image, \Katu\Image\Version $version) {
 		$this->image = $image;
 		$this->version = $version;
+	}
+
+	public function __toString() {
+		return (string)$this->getImage();
 	}
 
 	public function getExtension() {
@@ -28,30 +32,27 @@ class ImageVersion {
 		return new \Katu\Utils\File($this->version->getDir(), implode('/', $pathSegments));
 	}
 
-
-
 	public function getImage() {
-		try {
+		$image = new \Katu\Image($this->getFile());
+		if (!$image->getSource()->getFile()->exists()) {
 
-			$image = new \Katu\Image($this->getFile());
-			if (!$image->getSource()->getFile()->exists()) {
-
+			try {
 				$interventionImage = $this->image->getInterventionImage();
-				foreach ($this->version->getFilters() as $filter) {
-					$filter->apply($interventionImage);
-				}
-
-				$image->getSource()->getDir()->makeDir();
-
-				$interventionImage->save($this->getFile(), $this->version->getQuality());
-
+			} catch (\Exception $e) {
+				return false;
 			}
 
-			return $image;
+			foreach ($this->version->getFilters() as $filter) {
+				$filter->apply($interventionImage);
+			}
 
-		} catch (\Exception $e) {
+			$image->getSource()->getDir()->makeDir();
+
+			$interventionImage->save($this->getFile(), $this->version->getQuality());
 
 		}
+
+		return $image;
 	}
 
 }

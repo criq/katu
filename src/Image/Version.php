@@ -13,6 +13,31 @@ class Version {
 		$this->name = (string)$name;
 	}
 
+	static function createFromConfig($name) {
+		$config = \Katu\Config::get('image', 'versions', $name);
+
+		$version = new static($name);
+
+		if (isset($config['filters'])) {
+			foreach ((array)$config['filters'] as $filterConfig) {
+				$filter = \Katu\Image\Filter::createByCode($filterConfig['filter']);
+				unset($filterConfig['filter']);
+				$filter->setParams($filterConfig);
+				$version->addFilter($filter);
+			}
+		}
+
+		if (isset($config['quality'])) {
+			$version->setQuality($config['quality']);
+		}
+
+		if (isset($config['extension'])) {
+			$version->setExtension($config['extension']);
+		}
+
+		return $version;
+	}
+
 	public function getName() {
 		return $this->name ?: $this->getHash();
 	}

@@ -19,6 +19,10 @@ class Image {
 	}
 
 	public function getImageVersion($version) {
+		if (is_string($version)) {
+			$version = \Katu\Image\Version::createFromConfig($version);
+		}
+
 		return new \Katu\Image\ImageVersion($this, $version);
 	}
 
@@ -27,7 +31,7 @@ class Image {
 	}
 
 	public function getPixel() {
-		$version = (new \Katu\Image\Version)
+		$version = (new \Katu\Image\Version('pixel'))
 			->addFilter(new \Katu\Image\Filters\Fit([
 				'width' => 1,
 				'height' => 1,
@@ -45,8 +49,18 @@ class Image {
 		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($uri, $n) {
 
 			$palette = \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($uri) {
-				return \League\ColorExtractor\Palette::fromFilename($uri);
+
+				try {
+					return \League\ColorExtractor\Palette::fromFilename($uri);
+				} catch (\Exception $e) {
+					return false;
+				}
+
 			}, $uri);
+
+			if (!$palette) {
+				return false;
+			}
 
 			$mostUsedColors = array_keys($palette->getMostUsedColors($n));
 
