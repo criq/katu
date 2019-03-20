@@ -43,4 +43,34 @@ class Image {
 		}
 	}
 
+	static function extractColors($n = 1) {
+		try {
+
+			$client = new \League\ColorExtractor\Client;
+			var_dump($client); die;
+			$image = \Katu\Utils\Image::getVersionUrl($uri, [
+				'filters' => [
+					[
+						'filter' => 'fit',
+						'width' => 600,
+						'height' => 600,
+					],
+				],
+			]);
+			$extracted = (array) $client->loadJpeg($image)->extract($n);
+			return array_map(function($i) {
+				$color = \Katu\Types\TColorRgb::getFromHex($i);
+				return new \MischiefCollective\ColorJizz\Formats\RGB($color->r, $color->g, $color->b);
+			}, $extracted);
+
+
+		} catch (\Exception $e) {
+
+			\Katu\ErrorHandler::log($e);
+
+			return false;
+
+		}
+	}
+
 }

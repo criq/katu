@@ -4,22 +4,36 @@ namespace Katu\Types;
 
 class TColor {
 
-	private $color;
+	protected $color;
 
 	public function __construct($color) {
-		if ($color instanceof \SSNepenthe\ColorUtils\Colors\Color) {
+		if ($color instanceof \MischiefCollective\ColorJizz\ColorJizz) {
 			$this->color = $color;
-		} elseif (class_exists('\\SSNepenthe\\ColorUtils\\Colors\\Color')) {
-			$this->color = \SSNepenthe\ColorUtils\color($color);
+		} elseif (preg_match('/^#?(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})$/', $color, $match)) {
+			$this->color = new \MischiefCollective\ColorJizz\Formats\RGB(hexdec($match['r']), hexdec($match['g']), hexdec($match['b']));
 		} else {
-			$this->color = $color;
+			throw new \Katu\Exceptions\InputErrorException("Invalid color input.");
 		}
 	}
 
-	public function __toString() {
-		return $this->getHex();
+	public function __call($name, $arguments) {
+		$result = call_user_func_array([$this->color, $name], $arguments);
+		if ($result instanceof \MischiefCollective\ColorJizz\ColorJizz) {
+			return new static($result);
+		}
+
+		return $result;
 	}
 
+	public function __toString() {
+		return (string)$this->color;
+	}
+
+	public function getColor() {
+		return $this->color;
+	}
+
+	/*
 	static function createFromInt($int) {
 		$red   = ($int >> 16) & 0xFF;
 		$green = ($int >> 8) & 0xFF;
@@ -71,5 +85,6 @@ class TColor {
 			'lightness' => $value,
 		]));
 	}
+	*/
 
 }
