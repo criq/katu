@@ -80,7 +80,7 @@ class File {
 		try {
 			$publicRoot = \Katu\Config::get('app', 'publicRoot');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			$publicRoot = './';
+			$publicRoot = './public/';
 		}
 
 		$publicPath = realpath(new \Katu\Utils\File(BASE_DIR, $publicRoot));

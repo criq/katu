@@ -19,14 +19,19 @@ class Images extends \Katu\Controller {
 				throw new \Katu\Exceptions\ModelNotFoundException;
 			}
 
-			$versionFile = \Katu\Utils\Image::getVersionFile($file, $version);
-			if (!$versionFile) {
+			try {
+				$version = \Katu\Image\Version::createFromConfig($version);
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
 
-			$app->response->headers->set('Content-Type', $file->type);
+			$image = new \Katu\Image($file);
+			$imageVersion = $image->getImageVersion($version);
+			$imageVersion->getImage();
+
+			$app->response->headers->set('Content-Type', $imageVersion->getFile()->getMime());
 			$app->response->headers->set('Cache-Control', 'max-age=604800');
-			$app->response->setBody($versionFile->get());
+			$app->response->setBody($imageVersion->getFile()->get());
 
 			return true;
 
@@ -40,21 +45,31 @@ class Images extends \Katu\Controller {
 
 			$app = \Katu\App::get();
 
-			$url = new \Katu\Types\TUrl($app->request->params('url'));
-
-			$versionFile = \Katu\Utils\Image::getVersionFile($url, $version);
-			if (!$versionFile) {
+			try {
+				$url = new \Katu\Types\TUrl(trim($app->request->params('url')));
+			} catch (\Exception $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
 
-			$app->response->headers->set('Content-Type', $versionFile->getMime());
+			try {
+				$version = \Katu\Image\Version::createFromConfig($version);
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
+				throw new \Katu\Exceptions\NotFoundException;
+			}
+
+			$image = new \Katu\Image($url);
+			$imageVersion = $image->getImageVersion($version);
+			$imageVersion->getImage();
+
+			$app->response->headers->set('Content-Type', $imageVersion->getFile()->getMime());
 			$app->response->headers->set('Cache-Control', 'max-age=604800');
-			$app->response->setBody($versionFile->get());
+			$app->response->setBody($imageVersion->getFile()->get());
 
 			return true;
 
 		} catch (\Exception $e) {
-			throw new \Katu\Exceptions\Exception;
+			\App\Extensions\ErrorHandler::log($e);
+			return false;
 		}
 	}
 

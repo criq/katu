@@ -4,7 +4,7 @@ namespace Katu\Image\Sources;
 
 class File extends \Katu\Image\Source {
 
-	public function __construct(\Katu\Utils\File $input) {
+	public function __construct(\Katu\Models\File $input) {
 		return parent::__construct($input);
 	}
 
@@ -16,8 +16,12 @@ class File extends \Katu\Image\Source {
 		return $this->input->getExtension();
 	}
 
+	public function getUri() {
+		return (string)$this->input->getFile();
+	}
+
 	public function getUrl() {
-		return $this->input->getUrl();
+		return false;
 	}
 
 	public function getFile() {

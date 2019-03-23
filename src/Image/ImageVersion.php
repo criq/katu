@@ -29,7 +29,7 @@ class ImageVersion {
 			]);
 		}
 
-		return false;
+		return '';
 	}
 
 	public function getExtension() {
@@ -49,26 +49,27 @@ class ImageVersion {
 	}
 
 	public function getImage() {
-		$image = new \Katu\Image($this->getFile());
-		if (!$image->getSource()->getFile()->exists()) {
+		try {
 
-			try {
+			if (!$this->getFile()->exists()) {
+
 				$interventionImage = $this->image->getInterventionImage();
-			} catch (\Exception $e) {
-				return false;
+				foreach ($this->version->getFilters() as $filter) {
+					$filter->apply($interventionImage);
+				}
+
+				$this->getFile()->getDir()->makeDir();
+
+				$interventionImage->save($this->getFile(), $this->version->getQuality());
+
 			}
 
-			foreach ($this->version->getFilters() as $filter) {
-				$filter->apply($interventionImage);
-			}
+			return new \Katu\Image($this->getFile());
 
-			$image->getSource()->getDir()->makeDir();
-
-			$interventionImage->save($this->getFile(), $this->version->getQuality());
-
+		} catch (\Exception $e) {
+			\App\Extensions\ErrorHandler::log($e);
+			return false;
 		}
-
-		return $image;
 	}
 
 }

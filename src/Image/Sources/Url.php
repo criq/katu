@@ -16,6 +16,10 @@ class Url extends \Katu\Image\Source {
 		return pathinfo($this->input->getParts()['path'])['extension'];
 	}
 
+	public function getUri() {
+		return (string)$this->input;
+	}
+
 	public function getUrl() {
 		return (string)$this->input;
 	}
