@@ -52,7 +52,12 @@ abstract class Source {
 				}
 
 				try {
-					return new Sources\File(new \Katu\Utils\File($input));
+					$file = new \Katu\Utils\File($input);
+					if ($file->exists()) {
+						return new Sources\Url($file->getUrl());
+					}
+
+					throw new \Exception;
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -62,6 +67,10 @@ abstract class Source {
 		}
 
 		return false;
+	}
+
+	public function getInput() {
+		return $this->input;
 	}
 
 	public function getUri() {

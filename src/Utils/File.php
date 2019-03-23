@@ -85,12 +85,12 @@ class File {
 
 		$publicPath = realpath(new \Katu\Utils\File(BASE_DIR, $publicRoot));
 		if (preg_match('#^' . $publicPath . '(.*)$#', $this->getPath(), $match)) {
-			return implode('/', array_map(function($i) {
+			return new \Katu\Types\TUrl(implode('/', array_map(function($i) {
 				return trim($i, '/');
 			}, [
 				\Katu\Config::get('app', 'baseUrl'),
 				$match[1],
-			]));
+			])));
 		}
 
 		return null;

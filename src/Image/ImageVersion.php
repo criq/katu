@@ -13,7 +13,23 @@ class ImageVersion {
 	}
 
 	public function __toString() {
-		return (string)$this->getImage();
+		if ($this->image->getSource() instanceof \Katu\Image\Sources\File) {
+			return (string)\Katu\Utils\Url::getFor('images.getVersionSrc.file', [
+				'fileId' => $this->image->getSource()->getInput()->getId(),
+				'fileSecret' => $this->image->getSource()->getInput()->getSecret(),
+				'version' => $this->version->getName(),
+				'name' => $this->image->getSource()->getInput()->name,
+			]);
+
+		} elseif ($this->image->getSource() instanceof \Katu\Image\Sources\Url) {
+			return (string)\Katu\Utils\Url::getFor('images.getVersionSrc.url', [
+				'version' => $this->version->getName(),
+			], [
+				'url' => $this->image->getSource()->getUrl(),
+			]);
+		}
+
+		return false;
 	}
 
 	public function getExtension() {
