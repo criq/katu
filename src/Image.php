@@ -71,4 +71,17 @@ class Image {
 		}, $this->getSource()->getUri(), $n);
 	}
 
+	public function getImageSize() {
+		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($image) {
+
+			try {
+				$size = getimagesize($image->getSource()->getUri());
+				return new \Katu\Types\TImageSize($size[0], $size[1]);
+			} catch (\Exception $e) {
+				throw new \Katu\Exceptions\DoNotCacheException;
+			}
+
+		}, $this);
+	}
+
 }
