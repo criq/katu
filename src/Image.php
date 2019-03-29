@@ -18,9 +18,12 @@ class Image {
 		return $this->source;
 	}
 
-	public function getImageVersion($version) {
-		if (is_string($version)) {
-			$version = \Katu\Image\Version::createFromConfig($version);
+	public function getImageVersion() {
+		$args = func_get_args();
+		if (isset($args[0]) && $args[0] instanceof \Katu\Image\Version) {
+			$version = $args[0];
+		} else {
+			$version = call_user_func_array(['\\Katu\\Image\\Version', 'createFromConfig'], $args);
 		}
 
 		return new \Katu\Image\ImageVersion($this, $version);

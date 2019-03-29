@@ -4,6 +4,8 @@ namespace Katu\Image;
 
 class Version {
 
+	const SEPARATOR = ".";
+
 	protected $name = null;
 	protected $filters = [];
 	protected $quality = 100;
@@ -13,29 +15,52 @@ class Version {
 		$this->name = (string)$name;
 	}
 
-	static function createFromConfig($name) {
-		$config = \Katu\Config::get('image', 'versions', $name);
+	static function createFromConfig() {
+		$args = func_get_args();
 
-		$version = new static($name);
+		try {
 
-		if (isset($config['filters'])) {
-			foreach ((array)$config['filters'] as $filterConfig) {
-				$filter = \Katu\Image\Filter::createByCode($filterConfig['filter']);
-				unset($filterConfig['filter']);
-				$filter->setParams($filterConfig);
-				$version->addFilter($filter);
+			if (isset($args[0]) && is_string($args[0])) {
+
+				$name = $args[0];
+
+				$config = \Katu\Config::get('image', 'versions', $name);
+
+				$version = new static($name);
+
+				if (isset($config['filters'])) {
+					foreach ((array)$config['filters'] as $filterConfig) {
+						$filter = \Katu\Image\Filter::createByCode($filterConfig['filter']);
+						unset($filterConfig['filter']);
+						$filter->setParams($filterConfig);
+						$version->addFilter($filter);
+					}
+				}
+
+				if (isset($config['quality'])) {
+					$version->setQuality($config['quality']);
+				}
+
+				if (isset($config['extension'])) {
+					$version->setExtension($config['extension']);
+				}
+
+				return $version;
+
 			}
-		}
 
-		if (isset($config['quality'])) {
-			$version->setQuality($config['quality']);
-		}
+			throw new \Katu\Exceptions\MissingConfigException;
 
-		if (isset($config['extension'])) {
-			$version->setExtension($config['extension']);
-		}
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
 
-		return $version;
+			$versionClass = '\\App\\Extensions\\Image\\Version';
+			if (class_exists($versionClass)) {
+				$version = call_user_func_array([$versionClass, 'createFromConfig'], func_get_args());
+
+				return $version;
+			}
+
+		}
 	}
 
 	public function getName() {
@@ -92,7 +117,7 @@ class Version {
 		return $dir;
 	}
 
-	public function addFilter($filter) {
+	public function addFilter(Filter $filter) {
 		$this->filters[] = $filter;
 
 		return $this;
