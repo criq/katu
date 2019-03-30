@@ -18,24 +18,14 @@ class Url extends \Katu\Image\Source {
 			return $pathinfo['extension'];
 		}
 
-		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($source) {
-
-			try {
-				$size = getimagesize($source->getUri());
-				if (isset($size['mime'])) {
-					switch ($size['mime']) {
-						case 'image/jpeg' : return "jpg"; break;
-						case 'image/png'  : return "png"; break;
-						case 'image/gif'  : return "jpg"; break;
-						default: return false; break;
-					}
-				}
-				return new \Katu\Types\TImageSize($size[0], $size[1]);
-			} catch (\Exception $e) {
-				return false;
-			}
-
-		}, $this);
+		try {
+			$size = \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($source) {
+				return getimagesize($source->getUri());
+			}, $this);
+			var_dump($size); die;
+		} catch (\Exception $e) {
+			return false;
+		}
 	}
 
 	public function getUri() {
