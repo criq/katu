@@ -34,7 +34,8 @@
 		"illuminate/support": "<=5.4.17",
 		"jenssegers/agent": "@stable",
 		"mischiefcollective/colorjizz": "@stable",
-		"league/color-extractor": "@stable"
+		"league/color-extractor": "@stable",
+		"ralouphie/mimey": "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
