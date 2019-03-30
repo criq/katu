@@ -13,16 +13,26 @@ class Url extends \Katu\Image\Source {
 	}
 
 	public function getExtension() {
-		$pathinfo = pathinfo($this->input->getParts()['path']);
-		if (isset($pathinfo['extension'])) {
-			return $pathinfo['extension'];
-		}
-
 		try {
+
+			$pathinfo = pathinfo($this->input->getParts()['path']);
+			if (isset($pathinfo['extension'])) {
+				return $pathinfo['extension'];
+			}
+
 			$size = \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($source) {
 				return getimagesize($source->getUri());
 			}, $this);
-			var_dump($size); die;
+
+			if (isset($size['mime'])) {
+				$extension = (new \Mimey\MimeTypes)->getExtension($size['mime']);
+				if ($extension) {
+					return $extension;
+				}
+			}
+
+			throw new \Exception;
+
 		} catch (\Exception $e) {
 			return false;
 		}
