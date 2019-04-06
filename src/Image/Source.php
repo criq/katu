@@ -16,8 +16,12 @@ abstract class Source {
 	}
 
 	static function createFromInput($input) {
+		// Image.
+		if ($input instanceof \Katu\Image) {
+			return $input->getSource();
+
 		// Image source.
-		if ($input instanceof static) {
+		} elseif ($input instanceof static) {
 			return $input;
 
 		// File on filesystem.
