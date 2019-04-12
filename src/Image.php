@@ -87,4 +87,28 @@ class Image {
 		}, $this);
 	}
 
+	public function getMime() {
+		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($image) {
+
+			try {
+				$size = getimagesize($image->getSource()->getUri());
+				return $size['mime'];
+			} catch (\Exception $e) {
+				throw new \Katu\Exceptions\DoNotCacheException;
+			}
+
+		}, $this);
+	}
+
+	public function getEmbedSrc() {
+		$mime = $this->getMime();
+		$base64 = @base64_encode(@file_get_contents($this->getSource()->getUri()));
+
+		if ($mime && $base64) {
+			return 'data:' . $mime . ';base64,' . $base64;
+		}
+
+		return false;
+	}
+
 }
