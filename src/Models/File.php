@@ -68,6 +68,10 @@ class File extends \Katu\Model {
 		$url = new \Katu\Types\TUrl($url);
 
 		$temporaryFile = \Katu\Utils\File::createTemporaryFromUrl($url);
+		if (!$temporaryFile) {
+			throw new \Katu\Exceptions\InputErrorException("Can't create file from URL $url.");
+		}
+
 		$file = static::createFromFile($creator, $temporaryFile);
 		$temporaryFile->delete();
 

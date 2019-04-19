@@ -52,6 +52,7 @@ class File {
 		$src = $curl->get($url);
 
 		$info = $curl->getInfo();
+
 		if ($info['http_code'] != 200) {
 			return false;
 		}
