@@ -30,7 +30,7 @@ class Images extends \Katu\Controller {
 			$imageVersion->getImage();
 
 			$app->response->headers->set('Content-Type', $imageVersion->getFile()->getMime());
-			$app->response->headers->set('Cache-Control', 'max-age=604800');
+			$app->response->headers->set('Cache-Control', 'max-age=604800, public');
 			$app->response->setBody($imageVersion->getFile()->get());
 
 			return true;
@@ -62,7 +62,7 @@ class Images extends \Katu\Controller {
 			$imageVersion->getImage();
 
 			$app->response->headers->set('Content-Type', $imageVersion->getFile()->getMime());
-			$app->response->headers->set('Cache-Control', 'max-age=604800');
+			$app->response->headers->set('Cache-Control', 'max-age=604800, public');
 			$app->response->setBody($imageVersion->getFile()->get());
 
 			return true;
