@@ -183,6 +183,12 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable {
 		return count($this->array);
 	}
 
+	public function map($callback) {
+		$array = array_map($callback, $this->array);
+
+		return new static($array);
+	}
+
 	public function pushArray($array) {
 		foreach ($array as $item) {
 			array_push($this->array, $item);
