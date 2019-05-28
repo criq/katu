@@ -220,48 +220,48 @@ class View {
 	static function getCommonData() {
 		$app = \Katu\App::get();
 
-		$commonData['_site']['baseDir'] = BASE_DIR;
-		$commonData['_site']['baseUrl'] = Config::getApp('baseUrl');
+		$data['_site']['baseDir'] = BASE_DIR;
+		$data['_site']['baseUrl'] = Config::getApp('baseUrl');
 		try {
-			$commonData['_site']['apiUrl']  = Config::getApp('apiUrl');
+			$data['_site']['apiUrl']  = Config::getApp('apiUrl');
 		} catch (\Exception $e) {
 			/* Doesn't exist. */
 		}
 		try {
-			$commonData['_site']['timezone'] = Config::getApp('timezone');
+			$data['_site']['timezone'] = Config::getApp('timezone');
 		} catch (\Exception $e) {
 			/* Doesn't exist. */
 		}
 
-		$commonData['_request']['uri']    = (string) ($app->request->getResourceUri());
-		$commonData['_request']['url']    = (string) (Utils\Url::getCurrent());
-		$commonData['_request']['params'] = (array)  ($app->request->params());
-		$commonData['_request']['route']  = (array)  ([
+		$data['_request']['uri']    = (string) ($app->request->getResourceUri());
+		$data['_request']['url']    = (string) (Utils\Url::getCurrent());
+		$data['_request']['params'] = (array)  ($app->request->params());
+		$data['_request']['route']  = (array)  ([
 			'pattern' => $app->router()->getCurrentRoute()->getPattern(),
 			'name'    => $app->router()->getCurrentRoute()->getName(),
 			'params'  => $app->router()->getCurrentRoute()->getParams(),
 		]);
 
-		$commonData['_agent'] = new \Jenssegers\Agent\Agent();
+		$data['_agent'] = new \Jenssegers\Agent\Agent();
 
 		if (class_exists('\App\Models\User')) {
-			$commonData['_user'] = \App\Models\User::getCurrent();
+			$data['_user'] = \App\Models\User::getCurrent();
 		}
 
 		if (class_exists('\App\Models\Setting')) {
 			$data['_settings'] = \App\Models\Setting::getAllAsAssoc();
 		}
 
-		$commonData['_platform'] = Env::getPlatform();
-		$commonData['_config']   = Config::get();
-		$commonData['_session']  = Session::get();
-		$commonData['_cookies']  = Cookie::get();
-		$commonData['_flash']    = Flash::get();
-		$commonData['_upload']   = [
+		$data['_platform'] = Env::getPlatform();
+		$data['_config']   = Config::get();
+		$data['_session']  = Session::get();
+		$data['_cookies']  = Cookie::get();
+		$data['_flash']    = Flash::get();
+		$data['_upload']   = [
 			'maxSize' => Upload::getMaxSize(),
 		];
 
-		return $commonData;
+		return $data;
 	}
 
 	static function render($template, $templateData = [], $options = []) {
