@@ -270,7 +270,7 @@ class View {
 		$twig = static::getTwig($options);
 		static::extendTwig($twig);
 
-		$data = array_merge(static::getCommonData(), $templateData);
+		$data = array_merge_recursive(static::getCommonData(), $templateData);
 
 		return trim($twig->render($template . '.twig', $data));
 	}
