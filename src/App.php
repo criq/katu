@@ -46,7 +46,7 @@ class App {
 
 		// Timezone.
 		try {
-			date_default_timezone_set(\Katu\Config\Config::getApp('timezone'));
+			date_default_timezone_set(\Katu\Config\Config::get('app', 'timezone'));
 		} catch (\Exception $e) {
 			// Just use default timezone.
 		}
@@ -86,7 +86,7 @@ class App {
 			self::init();
 
 			try {
-				$config = \Katu\Config\Config::getApp('slim');
+				$config = \Katu\Config\Config::get('app', 'slim');
 			} catch (\Exception $e) {
 				$config = array();
 			}

@@ -50,12 +50,4 @@ class Config {
 		return $files;
 	}
 
-	static function getApp() {
-		return call_user_func_array(['static', 'get'], array_merge(['app'], func_get_args()));
-	}
-
-	static function getDb() {
-		return call_user_func_array(['static', 'get'], array_merge(['db'], func_get_args()));
-	}
-
 }

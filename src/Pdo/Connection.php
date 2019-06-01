@@ -14,9 +14,8 @@ class Connection {
 
 	public function __construct($name) {
 		$this->name = $name;
-
 		try {
-			$this->config = \Katu\Config\Config::getDb($name);
+			$this->config = \Katu\Config\Config::get('db', $name);
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			throw new \Katu\Exceptions\MissingPDOConfigException("Missing PDO config for instance " . $name . ".");
 		}

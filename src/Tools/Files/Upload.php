@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Tools\Files;
 
 class Upload {
 
@@ -17,11 +17,11 @@ class Upload {
 	public $error;
 
 	public function __construct($upload) {
-		$this->fileName = (string) $upload['name'];
-		$this->fileType = (string) $upload['type'];
-		$this->fileSize = (int)    $upload['size'];
-		$this->path     = (string) $upload['tmp_name'];
-		$this->error    = (int)    $upload['error'];
+		$this->fileName = (string)$upload['name'];
+		$this->fileType = (string)$upload['type'];
+		$this->fileSize = (int)   $upload['size'];
+		$this->path     = (string)$upload['tmp_name'];
+		$this->error    = (int)   $upload['error'];
 	}
 
 	static function get($key) {
@@ -154,7 +154,7 @@ class Upload {
 	}
 
 	static function getMaxSize() {
-		return min(Utils\FileSize::createFromIni(ini_get('upload_max_filesize')), Utils\FileSize::createFromIni(ini_get('post_max_size')));
+		return min(\Katu\Tools\Files\Size::createFromIni(ini_get('upload_max_filesize')), \Katu\Tools\Files\Size::createFromIni(ini_get('post_max_size')));
 	}
 
 }

@@ -2,291 +2,351 @@
 
 namespace Katu;
 
-class View {
+class ViewModel extends ModelBase {
 
-	static function getTwig($options = []) {
-		$dirs = [];
+	static $_cache              = true;
+	static $_cacheTimeout       = 86400;
+	static $_cacheOnUpdate      = true;
+	static $_cacheAdvance       = .75;
+	static $_materialize        = false;
+	static $_materializeTimeout = 86400;
+	static $_materializeAdvance = 1;
+	static $_materializeHours   = [];
+	static $_autoIndices        = true;
+	static $_compositeIndex     = true;
+	static $_customIndices      = [];
 
-		if (isset($options['dirs']) && $options['dirs']) {
-			foreach ($options['dirs'] as $dir) {
-				$dirs[] = realpath($dir);
-			}
-			$dirs = array_filter($dirs);
-		}
+	static function getTable() {
+		static::cacheIfExpired();
 
-		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
-			$dirs = array_filter([
-				realpath(BASE_DIR . '/app/Views/'),
-				realpath(Utils\FileSystem::joinPaths(Utils\Composer::getDir(), substr(__DIR__, strcmp(Utils\Composer::getDir(), __DIR__)), 'Views')),
-			]);
-		}
-
-		$loader = new \Twig_Loader_Filesystem($dirs);
-		$twig   = new \Twig_Environment($loader, [
-			'cache'       => Utils\FileSystem::joinPaths(TMP_PATH, 'twig'),
-			'auto_reload' => true,
-		]);
-
-		return $twig;
+		return static::isCached() ? static::getCachedTable() : static::getView();
 	}
 
-	static function extendTwig(&$twig) {
+	static function getTableName() {
+		return static::isCached() ? static::getCachedTableName() : static::getViewName();
+	}
 
-		/***************************************************************************
-		 * Image.
-		 */
+	static function getView() {
+		return new PDO\View(static::getPDO(), static::getViewName());
+	}
 
-		$twig->addFunction(new \Twig_SimpleFunction('getImage', function($uri) {
-			try {
-				return new \Katu\Image($uri);
-			} catch (\Katu\Exceptions\ImageErrorException $e) {
-				return false;
-			}
-		}));
+	static function getViewName() {
+		return static::TABLE;
+	}
 
-		/***************************************************************************
-		 * Text.
-		 */
+	static function getColumn($name, $options = []) {
+		if (isset($options['cache']) && $options['cache'] === false) {
+			$table = static::getView();
+		} else {
+			$table = static::getTable();
+		}
 
-		$twig->addFilter(new \Twig_SimpleFilter('shorten', function($string, $length, $options = []) {
-			$shorter = substr($string, 0, $length);
+		return new PDO\Column($table, $name);
+	}
 
-			return $shorter;
-		}));
+	static function getViewColumn($name, $options = []) {
+		$options['cache'] = false;
 
-		$twig->addFilter(new \Twig_SimpleFilter('asArray', function($variable) {
-			return (array) $variable;
-		}));
+		return static::getColumn($name, $options);
+	}
 
-		$twig->addFilter(new \Twig_SimpleFilter('unique', function($variable) {
-			return array_unique($variable);
-		}));
+	static function getCachedTable() {
+		return new PDO\Table(static::getPDO(), static::getCachedTableName());
+	}
 
-		$twig->addFilter(new \Twig_SimpleFilter('joinInSentence', function($list, $delimiter, $lastDelimiter) {
-			return (new \Katu\Types\TArray($list))->implodeInSentence($delimiter, $lastDelimiter);
-		}));
+	static function getCachedTableName() {
+		$name = implode('_', [
+			'_cache',
+			static::getViewName(),
+		]);
 
-		$twig->addFilter(new \Twig_SimpleFilter('isValidDateTime', function($date) {
-			try {
-				return (new Utils\DateTime($date))->isValid();
-			} catch (\Exception $e) {
-				return false;
-			}
-		}));
+		if (strlen($name) > 64) {
+			return substr($name, 0, 60) . substr(sha1($name), 0, 4);
+		}
 
-		$twig->addFilter(new \Twig_SimpleFilter('markdown', function($text) {
-			return \Michelf\Markdown::defaultTransform($text);
-		}));
+		return $name;
+	}
 
-		$twig->addFilter(new \Twig_SimpleFilter('nbsp', function($text) {
-			return new \Twig_Markup(preg_replace('/\b([aiouksvz])(\s)/i', '\\1&nbsp;', $text), 'UTF-8');
-		}));
+	static function getCachedTableCacheName() {
+		return ['!databases', '!' . static::getView()->pdo->name, '!views', '!cachedView', '!' . static::TABLE];
+	}
 
-		/***************************************************************************
-		 * Functions.
-		 */
+	static function isCached() {
+		return static::$_cache;
+	}
 
-		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
-			foreach ((array) func_get_args() as $arg) {
-				var_dump($arg);
-			}
-		}));
+	static function isMaterialized() {
+		return static::$_materialize;
+	}
 
-		$twig->addFunction(new \Twig_SimpleFunction('getBaseDir', function() {
-			return BASE_DIR;
-		}));
+	static function cachedTableExists() {
+		return in_array(static::getCachedTableName(), static::getPDO()->getTableNames());
+	}
 
-		// Deprecated.
-		$twig->addFunction(new \Twig_SimpleFunction('geTURLFor', function() {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
-		}));
+	static function materializedTableExists() {
+		return in_array(static::getMaterializedTableName(), static::getPDO()->getTableNames());
+	}
 
-		$twig->addFunction(new \Twig_SimpleFunction('url', function() {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
-		}));
+	static function cacheHasUpdatedTables() {
+		if (static::$_cacheOnUpdate) {
 
-		$twig->addFunction(new \Twig_SimpleFunction('urlDecoded', function() {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getDecodedFor'], func_get_args());
-		}));
+			$sourceTables = static::getView()->getSourceTables();
+			foreach ($sourceTables as $sourceTable) {
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCurrenTURL', function() {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
-		}));
+				if (!$sourceTable->exists()) {
+					continue;
+				}
 
-		$twig->addFunction(new \Twig_SimpleFunction('makeUrl', function() {
-			return (string) call_user_func_array(['\Katu\Types\TURL', 'make'], func_get_args());
-		}));
+				$lastUpdatedTime = $sourceTable->getLastUpdatedTime();
+				if (!is_null($lastUpdatedTime) && $lastUpdatedTime > static::getLastCachedTime()) {
+					return true;
+				}
 
-		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {
-			return call_user_func_array(['\Katu\Config', 'get'], func_get_args());
-		}));
-
-		$twig->addFunction(new \Twig_SimpleFunction('getCookie', function() {
-			return call_user_func_array(['\Katu\Cookie', 'get'], func_get_args());
-		}));
-
-		$twig->addFunction(new \Twig_SimpleFunction('getSession', function() {
-			return call_user_func_array(['\Katu\Session', 'get'], func_get_args());
-		}));
-
-		$twig->addFunction(new \Twig_SimpleFunction('getFlash', function() {
-			return call_user_func_array(['\Katu\Flash', 'get'], func_get_args());
-		}));
-
-		$twig->addFunction(new \Twig_SimpleFunction('getPages', function() {
-			$pagination = func_get_arg(0);
-
-			return $pagination->getPaginationPages(func_get_arg(1));
-		}));
-
-		$twig->addFunction(new \Twig_SimpleFunction('getPaginationUrl', function() {
-			$url       =          new \Katu\Types\TURL(func_get_arg(0));
-			$page      = (int)    func_get_arg(1);
-			$pageIdent = (string) func_get_arg(2);
-
-			$url->removeQueryParam($pageIdent);
-
-			if ($page > 1) {
-				$url->addQueryParam($pageIdent, $page);
 			}
 
-			return $url->value;
-		}));
+		}
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCsrfToken', function() {
-			$params = (array) @func_get_arg(0);
+		return false;
+	}
 
-			return Utils\CSRF::getFreshToken($params);
-		}));
+	static function getCacheAge() {
+		return time() - static::getLastCachedTime();
+	}
 
-		$twig->addFunction(new \Twig_SimpleFunction('getFile', function() {
-			return new \Katu\Utils\File(BASE_DIR, ltrim(func_get_arg(0), '/'));
-		}));
+	static function getMaterializeAge() {
+		return time() - static::getLastMaterializedTime();
+	}
 
-		$twig->addFunction(new \Twig_SimpleFunction('getFileUrlWithHash', function() {
-			if (func_get_arg(0) instanceof \Katu\Utils\File) {
-				$file = func_get_arg(0);
-			} else {
-				$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
-			}
-			$url = new \Katu\Types\TURL($file->geTURL());
-			$url->addQueryParam('hash', hash('md4', $file->get()));
+	static function getCacheExpiryRatio() {
+		return static::getCacheAge() / static::$_cacheTimeout;
+	}
 
-			return $url;
-		}));
+	static function getMaterializeExpiryRatio() {
+		return static::getMaterializeAge() / static::$_materializeTimeout;
+	}
 
-		$twig->addFunction(new \Twig_SimpleFunction('lipsum', function($sentences = 10) {
-			try {
-				return \Katu\Utils\BaconIpsum::get();
-			} catch (\Exception $e) {
-				// Nevermind.
-			}
-
-			try {
-				return implode(' ', (new \Katu\Types\TArray(\Katu\Utils\Blabot::getList()))->getRandomItems($sentences));
-			} catch (\Exception $e) {
-				// Nevermind.
-			}
-
+	static function isCacheExpired($expiryRatio = 1) {
+		if (!static::isCached()) {
 			return false;
-		}));
+		}
 
-		$twig->addFunction(new \Twig_SimpleFunction('start', function() {
-			if (\Katu\Utils\Profiler::isOn()) {
-				$profiler = \Katu\Utils\Profiler::init('twig');
+		if (!static::cachedTableExists()) {
+			return true;
+		}
 
-				return static::render("Katu/Blocks/profilerStart");
-			}
-		}));
+		if (static::getCacheExpiryRatio() >= $expiryRatio) {
+			return true;
+		}
 
-		$twig->addFunction(new \Twig_SimpleFunction('stop', function() {
-			if (\Katu\Utils\Profiler::isOn()) {
-				$profiler = \Katu\Utils\Profiler::get('twig');
+		if (static::cacheHasUpdatedTables()) {
+			return true;
+		}
 
-				$res = static::render("Katu/Blocks/profilerEnd", [
-					'profiler' => $profiler,
-				]);
+		return false;
+	}
 
-				$profiler->reset('twig');
+	static function isCacheExpiredAdvance() {
+		return static::isCacheExpired(static::$_cacheAdvance);
+	}
 
-				return $res;
-			}
-		}));
+	static function isMaterializeExpired($expiryRatio = 1) {
+		if (!static::isMaterialized()) {
+			return false;
+		}
+
+		if (!static::materializedTableExists()) {
+			return true;
+		}
+
+		if (static::getMaterializeExpiryRatio() >= $expiryRatio) {
+			return true;
+		}
+
+		return false;
+	}
+
+	static function isMaterializeExpiredAdvance($expiryRatio = 1) {
+		return static::isMaterializeExpired(static::$_materializeAdvance);
+	}
+
+	static function isMaterializable() {
+		if (!static::$_materializeHours || \Katu\Env::getPlatform() == 'dev') {
+			return true;
+		}
+
+		return in_array((int) (new \Katu\Utils\DateTime)->format('h'), static::$_materializeHours);
+	}
+
+	static function resetCache() {
+		return \Katu\Utils\Cache::reset(static::getCachedTableCacheName());
+	}
+
+	static function getMaterializedTable() {
+		return new PDO\Table(static::getPDO(), static::getMaterializedTableName());
+	}
+
+	static function getMaterializedTableName() {
+		return implode('_', [
+			'mv',
+			preg_replace('#^view_#', null, static::getViewName()),
+		]);
+	}
+
+	static function copy($sourceTable, $destinationTable) {
+		@set_time_limit(600);
+
+		// Get a temporary table.
+		$temporaryTableName = '_tmp_' . strtoupper(\Katu\Utils\Random::getIdString(8));
+		$temporaryTable = new PDO\Table($destinationTable->pdo, $temporaryTableName);
+
+		// Copy into temporary table view.
+		$params = [
+			'disableNull'    => true,
+			'autoIndices'    => static::$_autoIndices,
+			'compositeIndex' => static::$_compositeIndex,
+			'customIndices'  => static::$_customIndices,
+		];
+		$sourceTable->copy($temporaryTable, $params);
+
+		// Drop the original table.
+		try {
+			$destinationTable->delete();
+		} catch (\Exception $e) {
+			// Nevermind.
+		}
+
+		// Rename the temporary table.
+		$temporaryTable->rename($destinationTable->name);
 
 		return true;
-
 	}
 
-	static function getCommonData() {
-		$app = \Katu\App::get();
-
-		$data['_site']['baseDir'] = BASE_DIR;
-		$data['_site']['baseUrl'] = Config::getApp('baseUrl');
+	static function cache() {
 		try {
-			$data['_site']['apiUrl']  = Config::getApp('apiUrl');
-		} catch (\Exception $e) {
-			/* Doesn't exist. */
+
+			$class = static::getClass();
+
+			#return \Katu\Utils\Lock::run(['databases', static::getPDO()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
+
+				$class::materializeSourceViews();
+
+				$class = '\\' . ltrim($class, '\\');
+				$class::copy($class::getView(), $class::getCachedTable());
+				$class::updateLastCachedTime();
+
+				return true;
+
+			#}, $class);
+
+		} catch (\Katu\Exceptions\LockException $e) {
+			// Nevermind.
 		}
+	}
+
+	static function cacheIfExpired() {
+		if (static::isCacheExpiredAdvance()) {
+			try {
+				return static::cache();
+			} catch (\Exception $e) {
+				\Katu\ErrorHandler::log($e);
+			}
+		}
+	}
+
+	static function materialize() {
 		try {
-			$data['_site']['timezone'] = Config::getApp('timezone');
+
+			return \Katu\Utils\Lock::run(['databases', static::getPDO()->config->database, 'views', 'materialize', static::TABLE], 600, function($class) {
+
+				$class::materializeSourceViews();
+
+				$class = '\\' . ltrim($class, '\\');
+				$class::copy($class::getView(), $class::getMaterializedTable());
+				$class::updateLastMaterializedTime();
+
+				return true;
+
+			}, static::getClass());
+
+		} catch (\Katu\Exceptions\LockException $e) {
+			\Katu\ErrorHandler::log($e);
+		}
+	}
+
+	static function materializeIfExpired() {
+		if (static::isMaterializeExpiredAdvance()) {
+			try {
+				return static::materialize();
+			} catch (\Exception $e) {
+				\Katu\ErrorHandler::log($e);
+			}
+		}
+	}
+
+	static function materializeSourceViews() {
+		foreach (static::getView()->getSourceViewsInMaterializedViews() as $view) {
+			foreach ($view->getModelNames() as $class) {
+
+				$class = '\\' . ltrim($class, '\\');
+				$class::materializeIfExpired();
+
+			}
+		}
+
+		return true;
+	}
+
+	static function getLastCachedTmpName() {
+		return ['!databases', '!' . static::getPDO()->config->database, '!views', '!cached', '!' . static::TABLE];
+	}
+
+	static function updateLastCachedTime() {
+		return \Katu\Utils\Tmp::set(static::getLastCachedTmpName(), microtime(true));
+	}
+
+	static function getLastCachedTime() {
+		return (float) \Katu\Utils\Tmp::get(static::getLastCachedTmpName());
+	}
+
+	static function getLastMaterializedTmpName() {
+		return ['!databases', '!' . static::getPDO()->config->database, '!views', '!materialized', '!' . static::TABLE];
+	}
+
+	static function updateLastMaterializedTime() {
+		return (float) \Katu\Utils\Tmp::set(static::getLastMaterializedTmpName(), microtime(true));
+	}
+
+	static function getLastMaterializedTime() {
+		return \Katu\Utils\Tmp::get(static::getLastMaterializedTmpName());
+	}
+
+	static function getAllViewModelNames($directories = []) {
+		try {
+			$dir = (new \Katu\Utils\File('app', 'Models', 'Views'));
+			if ($dir->exists()) {
+				$dir->includeAllPhpFiles();
+			}
 		} catch (\Exception $e) {
-			/* Doesn't exist. */
+			/* Nevermind. */
 		}
 
-		$data['_request']['uri']    = (string) ($app->request->getResourceUri());
-		$data['_request']['url']    = (string) (Utils\Url::getCurrent());
-		$data['_request']['params'] = (array)  ($app->request->params());
-		$data['_request']['route']  = (array)  ([
-			'pattern' => $app->router()->getCurrentRoute()->getPattern(),
-			'name'    => $app->router()->getCurrentRoute()->getName(),
-			'params'  => $app->router()->getCurrentRoute()->getParams(),
-		]);
+		return array_values(array_filter(array_filter(get_declared_classes(), function($i) {
+			return strpos($i, 'App\\Models\\Views\\') === 0;
+		})));
+	}
 
-		$data['_agent'] = new \Jenssegers\Agent\Agent();
+	static function cacheAndMaterializeAll() {
+		foreach (static::getAllViewModelNames() as $modelView) {
 
-		if (class_exists('\App\Models\User')) {
-			$data['_user'] = \App\Models\User::getCurrent();
+			$class = '\\' . $modelView;
+
+			$class::cacheIfExpired();
+
+			if ($class::isMaterializable()) {
+				$class::materializeIfExpired();
+			}
+
 		}
-
-		if (class_exists('\App\Models\Setting')) {
-			$data['_settings'] = \App\Models\Setting::getAllAsAssoc();
-		}
-
-		$data['_platform'] = Env::getPlatform();
-		$data['_config']   = Config::get();
-		$data['_session']  = Session::get();
-		$data['_cookies']  = Cookie::get();
-		$data['_flash']    = Flash::get();
-		$data['_upload']   = [
-			'maxSize' => Upload::getMaxSize(),
-		];
-
-		return $data;
-	}
-
-	static function render($template, $templateData = [], $options = []) {
-		$app = \Katu\App::get();
-
-		$twig = static::getTwig($options);
-		static::extendTwig($twig);
-
-		$data = array_merge_recursive(static::getCommonData(), $templateData);
-
-		return trim($twig->render($template . '.twig', $data));
-	}
-
-	static function renderFromDir($dir, $template, $templateData = []) {
-		return self::render($template, $templateData, [
-			'dirs' => [
-				$dir,
-			],
-		]);
-	}
-
-	static function renderCondensed($template, $templateData = []) {
-		$src = self::render($template, $templateData);
-
-		return preg_replace('#[\v\t]#', null, $src);
 	}
 
 }

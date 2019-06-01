@@ -7,7 +7,7 @@ class Runtime {
 	static $runtime = [];
 
 	static function get($name, $callback = null) {
-		$args = array_slice(func_get_args(), 0, 2);
+		$args = array_slice(func_get_args(), 2);
 		$key = new \Katu\Tools\Strings\Key([$name, $args]);
 
 		// There's something cached.

@@ -46,7 +46,7 @@ class Cookie {
 
 	static function getConfig() {
 		try {
-			$config = \Katu\Config::getApp('cookie');
+			$config = \Katu\Config\Config::get('app', 'cookie');
 		} catch (\Exception $e) {
 			$config = [];
 		}

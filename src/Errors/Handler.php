@@ -18,7 +18,7 @@ class Handler {
 			define('ERROR_LOG', \Katu\Tools\Files\File::joinPaths(LOG_PATH, static::ERROR_LOG));
 		}
 
-		ini_set('display_errors', false);
+		ini_set('display_errors', true);
 		ini_set('error_log', ERROR_LOG);
 
 		set_error_handler(function($code, $message, $file = null, $line = null, $context = null) {

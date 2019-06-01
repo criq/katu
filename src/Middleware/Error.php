@@ -13,7 +13,7 @@ class Error extends \Slim\Middleware {
 		try {
 			$this->next->call();
 		} catch (\Exception $e) {
-			\Katu\ErrorHandler::handle($e);
+			\Katu\Errors\Handler::handleException($e);
 		}
 	}
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Tools\DateTime;
 
 class DateTime extends \DateTime {
 

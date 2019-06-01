@@ -16,7 +16,7 @@ class URL {
 	}
 
 	static function getBase() {
-		return new TURL(\Katu\Config\Config::getApp('baseUrl'));
+		return new TURL(\Katu\Config\Config::get('app', 'baseUrl'));
 	}
 
 	static function getFor($handle, $args = [], $params = []) {

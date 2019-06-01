@@ -12,11 +12,11 @@ class Stopwatch {
 	public $start;
 
 	public function __construct() {
-		$this->start = (float) (DateTime::getMicrotime() * static::FACTOR_NANO);
+		$this->start = (float) (\Katu\Tools\DateTime\DateTime::getMicrotime() * static::FACTOR_NANO);
 	}
 
 	public function getNanoValues() {
-		return [$this->start, (float) (DateTime::getMicrotime() * static::FACTOR_NANO)];
+		return [$this->start, (float) (\Katu\Tools\DateTime\DateTime::getMicrotime() * static::FACTOR_NANO)];
 	}
 
 	public function getNanoDuration() {

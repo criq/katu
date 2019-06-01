@@ -60,7 +60,7 @@ class Controller {
 			return true;
 
 		} catch (\Exception $e) {
-			throw new Exceptions\TemplateException($e);
+			throw new \Katu\Exceptions\TemplateException($e);
 		}
 	}
 
