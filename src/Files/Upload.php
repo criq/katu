@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Tools\Files;
+namespace Katu\Files;
 
 class Upload {
 
@@ -154,7 +154,7 @@ class Upload {
 	}
 
 	static function getMaxSize() {
-		return min(\Katu\Tools\Files\Size::createFromIni(ini_get('upload_max_filesize')), \Katu\Tools\Files\Size::createFromIni(ini_get('post_max_size')));
+		return min(\Katu\Files\Size::createFromIni(ini_get('upload_max_filesize')), \Katu\Files\Size::createFromIni(ini_get('post_max_size')));
 	}
 
 }

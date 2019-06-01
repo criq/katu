@@ -17,13 +17,13 @@ class View {
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
 			$dirs = array_filter([
 				realpath(BASE_DIR . '/app/Views/'),
-				realpath(\Katu\Tools\Files\File::joinPaths(\Katu\Tools\Services\Composer\Composer::getDir(), substr(__DIR__, strcmp(\Katu\Tools\Services\Composer\Composer::getDir(), __DIR__)), 'Views')),
+				realpath(\Katu\Files\File::joinPaths(\Katu\Tools\Services\Composer\Composer::getDir(), substr(__DIR__, strcmp(\Katu\Tools\Services\Composer\Composer::getDir(), __DIR__)), 'Views')),
 			]);
 		}
 
 		$loader = new \Twig_Loader_Filesystem($dirs);
 		$twig   = new \Twig_Environment($loader, [
-			'cache'       => \Katu\Tools\Files\File::joinPaths(TMP_PATH, 'twig'),
+			'cache'       => \Katu\Files\File::joinPaths(TMP_PATH, 'twig'),
 			'auto_reload' => true,
 		]);
 
@@ -160,14 +160,14 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFile', function() {
-			return new \Katu\Tools\Files\File(BASE_DIR, ltrim(func_get_arg(0), '/'));
+			return new \Katu\Files\File(BASE_DIR, ltrim(func_get_arg(0), '/'));
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFileUrlWithHash', function() {
-			if (func_get_arg(0) instanceof \Katu\Tools\Files\File) {
+			if (func_get_arg(0) instanceof \Katu\Files\File) {
 				$file = func_get_arg(0);
 			} else {
-				$file = new \Katu\Tools\Files\File(BASE_DIR, func_get_arg(0));
+				$file = new \Katu\Files\File(BASE_DIR, func_get_arg(0));
 			}
 			$url = new \Katu\Types\TURL($file->geTURL());
 			$url->addQueryParam('hash', hash('md4', $file->get()));
@@ -258,7 +258,7 @@ class View {
 		$data['_flash']    = \Katu\Tools\Session\Flash::get();
 		$data['_cookies']  = \Katu\Tools\Cookies\Cookie::get();
 		$data['_upload']   = [
-			'maxSize' => \Katu\Tools\Files\Upload::getMaxSize(),
+			'maxSize' => \Katu\Files\Upload::getMaxSize(),
 		];
 
 		return $data;

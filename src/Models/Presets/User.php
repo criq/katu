@@ -315,7 +315,7 @@ class User extends \Katu\Models\Model {
 	}
 
 	public function getAllPermissions() {
-		return \Katu\Utils\Cache::getRuntime(['users', $this->getId(), 'allPermissions'], function() {
+		return \Katu\Cache\Runtime::get(['users', $this->getId(), 'allPermissions'], function() {
 			return array_filter(array_unique(array_merge((array) $this->getRolePermissions(), (array) $this->getUserPermissions())));
 		});
 	}

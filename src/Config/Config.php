@@ -26,7 +26,7 @@ class Config {
 					$config[$pathinfo['filename']] = [];
 				}
 				if ($pathinfo['extension'] == 'yaml') {
-					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array)\Katu\Tools\Files\Formats\YAML::decode($file));
+					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array)\Katu\Files\Formats\YAML::decode($file));
 				} else {
 					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array)include $file);
 				}
@@ -43,7 +43,7 @@ class Config {
 
 		foreach (scandir($dir) as $file) {
 			if (preg_match("/^[a-z]+\.(php|yaml)$/i", $file)) {
-				$files[] = \Katu\Tools\Files\File::joinPaths($dir, $file);
+				$files[] = \Katu\Files\File::joinPaths($dir, $file);
 			}
 		}
 

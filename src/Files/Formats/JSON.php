@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Tools\Files\Formats;
+namespace Katu\Files\Formats;
 
 class JSON {
 

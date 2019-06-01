@@ -7,7 +7,7 @@ class Session {
 	const KEY = 'katu.session';
 
 	static function getPath() {
-		return new \Katu\Tools\Files\File(TMP_PATH, 'session');
+		return new \Katu\Files\File(TMP_PATH, 'session');
 	}
 
 	static function makePath() {

@@ -221,7 +221,7 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function getLastUpdatedTemporaryFile() {
-		return new \Katu\Tools\Files\Temporary('!databases', '!' . $this->pdo->name, '!tables', '!updated', trim($this->name, '`'));
+		return new \Katu\Files\Temporary('!databases', '!' . $this->pdo->name, '!tables', '!updated', trim($this->name, '`'));
 	}
 
 }

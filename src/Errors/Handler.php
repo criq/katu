@@ -12,10 +12,10 @@ class Handler {
 			define('BASE_DIR', realpath(__DIR__ . '/../../../../../'));
 		}
 		if (!defined('LOG_PATH')) {
-			define('LOG_PATH', \Katu\Tools\Files\File::joinPaths(BASE_DIR, static::LOG_DIR));
+			define('LOG_PATH', \Katu\Files\File::joinPaths(BASE_DIR, static::LOG_DIR));
 		}
 		if (!defined('ERROR_LOG')) {
-			define('ERROR_LOG', \Katu\Tools\Files\File::joinPaths(LOG_PATH, static::ERROR_LOG));
+			define('ERROR_LOG', \Katu\Files\File::joinPaths(LOG_PATH, static::ERROR_LOG));
 		}
 
 		ini_set('display_errors', true);

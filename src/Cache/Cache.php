@@ -120,7 +120,7 @@ class Cache {
 	}
 
 	public function getFile() {
-		return new \Katu\Tools\Files\File(TMP_PATH, static::DIR_NAME, $this->getSanitizedPath(), ['cache']);
+		return new \Katu\Files\File(TMP_PATH, static::DIR_NAME, $this->getSanitizedPath(), ['cache']);
 	}
 
 	public function getMemoryKey() {
@@ -145,7 +145,7 @@ class Cache {
 	}
 
 	static function getMaxApcSize() {
-		$size = \Katu\Tools\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
+		$size = \Katu\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
 
 		return $size * .75;
 	}

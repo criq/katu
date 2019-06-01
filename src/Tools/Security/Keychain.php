@@ -29,7 +29,7 @@ class Keychain {
 				throw new \Exception("Unable to read keychain file.");
 			}
 
-			return \Katu\Tools\Files\Formats\YAML::decode($path);
+			return \Katu\Files\Formats\YAML::decode($path);
 		});
 	}
 

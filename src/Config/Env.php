@@ -29,7 +29,7 @@ class Env {
 	}
 
 	static function getWholeHash() {
-		return sha1(\Katu\Tools\Files\Formats\JSON::encodeStandard(self::getEnvProperties()));
+		return sha1(\Katu\Files\Formats\JSON::encodeStandard(self::getEnvProperties()));
 	}
 
 	static function getEnvProperties() {

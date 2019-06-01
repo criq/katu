@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Tools\Files;
+namespace Katu\Files;
 
 class Size {
 
