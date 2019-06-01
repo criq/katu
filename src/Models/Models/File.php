@@ -243,14 +243,14 @@ class File extends \Katu\Model {
 
 		try {
 			$sql = " ALTER TABLE " . static::getTable() . " ADD `isNormalized` TINYINT(1)  UNSIGNED  NOT NULL  DEFAULT '0' ";
-			$res = File::getPdo()->createQuery($sql)->getResult();
+			$res = File::getPDO()->createQuery($sql)->getResult();
 		} catch (\Exception $e) {
 			// Nevermind.
 		}
 
 		try {
 			$sql = " ALTER TABLE " . static::getTable() . " ADD `preNormalizedPath` TEXT  NULL  AFTER `isNormalized` ";
-			$res = File::getPdo()->createQuery($sql)->getResult();
+			$res = File::getPDO()->createQuery($sql)->getResult();
 		} catch (\Exception $e) {
 			// Nevermind.
 		}

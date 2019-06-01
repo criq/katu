@@ -9,7 +9,7 @@ class Config {
 
 		return \Katu\Tools\Cache\Runtime::get(array_merge(['config'], $args), function() use($args) {
 			try {
-				return call_user_func_array([new \Katu\Types\TArray(self::getAll()), 'getValueByArgs'], $args);
+				return call_user_func_array([new \Katu\Types\TArray(static::getAll()), 'getValueByArgs'], $args);
 			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
 				throw new \Katu\Exceptions\MissingConfigException("Missing config for " . implode('.', $args) . ".");
 			}
@@ -20,7 +20,7 @@ class Config {
 		return \Katu\Tools\Cache\Runtime::get('config', function() {
 
 			$config = [];
-			foreach (self::getFiles() as $file) {
+			foreach (static::getFiles() as $file) {
 				$pathinfo = pathinfo($file);
 				if (!isset($config[$pathinfo['filename']])) {
 					$config[$pathinfo['filename']] = [];
@@ -38,11 +38,11 @@ class Config {
 	}
 
 	static function getFiles() {
-		$dir = BASE_DIR . '/app/Config';
+		$dir = BASE_DIR . "/app/Config";
 		$files = [];
 
 		foreach (scandir($dir) as $file) {
-			if (preg_match('#^[a-z]+\.(php|yaml)$#i', $file)) {
+			if (preg_match("/^[a-z]+\.(php|yaml)$/i", $file)) {
 				$files[] = \Katu\Tools\Files\File::joinPaths($dir, $file);
 			}
 		}
@@ -51,11 +51,11 @@ class Config {
 	}
 
 	static function getApp() {
-		return call_user_func_array(['self', 'get'], array_merge(['app'], func_get_args()));
+		return call_user_func_array(['static', 'get'], array_merge(['app'], func_get_args()));
 	}
 
 	static function getDb() {
-		return call_user_func_array(['self', 'get'], array_merge(['db'], func_get_args()));
+		return call_user_func_array(['static', 'get'], array_merge(['db'], func_get_args()));
 	}
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Pdo;
+namespace Katu\PDO;
 
 use \Katu\Utils\Cache;
 
@@ -220,7 +220,7 @@ class TableBase extends \Sexy\Expression {
 		return ['!databases', '!' . $this->pdo->name, '!tables', '!updated', trim($this->name, '`')];
 	}
 
-	public function getPdo() {
+	public function getPDO() {
 		return $this->pdo;
 	}
 

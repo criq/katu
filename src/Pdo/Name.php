@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Pdo;
+namespace Katu\PDO;
 
 class Name extends \Sexy\Expression {
 

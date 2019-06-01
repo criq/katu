@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Pdo\Results;
+namespace Katu\PDO\Results;
 
 class CachedClassResult implements \Iterator, \ArrayAccess {
 

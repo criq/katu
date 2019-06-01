@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Pdo;
+namespace Katu\PDO;
 
 class Config {
 
@@ -22,15 +22,15 @@ class Config {
 
 	static function getFromKeychain($name) {
 		return new static(
-			\Katu\Keychain::get('db', $name, 'host'),
-			\Katu\Keychain::get('db', $name, 'user'),
-			\Katu\Keychain::get('db', $name, 'password'),
-			\Katu\Keychain::get('db', $name, 'database'),
-			\Katu\Keychain::get('db', $name, 'charset')
+			\Katu\Tools\Security\Keychain::get('db', $name, 'host'),
+			\Katu\Tools\Security\Keychain::get('db', $name, 'user'),
+			\Katu\Tools\Security\Keychain::get('db', $name, 'password'),
+			\Katu\Tools\Security\Keychain::get('db', $name, 'database'),
+			\Katu\Tools\Security\Keychain::get('db', $name, 'charset')
 		);
 	}
 
-	public function getPdoArray() {
+	public function getPDOArray() {
 		return array(
 			'driver'   => static::DRIVER,
 			'host'     => $this->host,
@@ -41,7 +41,7 @@ class Config {
 		);
 	}
 
-	public function getPdoDSN() {
+	public function getPDODSN() {
 		return static::SCHEMA . ':dbname=' . $this->database . ';host=' . $this->host . ';charset=' . $this->charset;
 	}
 

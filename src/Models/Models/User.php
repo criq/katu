@@ -296,7 +296,7 @@ class User extends \Katu\Models\Model {
 				->whereEq($userRoleClass::getColumn('userId'), $this->getId())
 				->groupBy(new \Sexy\GroupBy($rolePermissionClass::getColumn('permission')));
 
-			return static::getPdo()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
+			return static::getPDO()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
 		}
 
 		return false;

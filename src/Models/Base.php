@@ -37,12 +37,12 @@ class Base {
 		return get_class_methods($this);
 	}
 
-	static function getPdo() {
+	static function getPDO() {
 		if (!defined('static::DATABASE')) {
 			throw new \Exception("Undefined database.");
 		}
 
-		return Pdo\Connection::getInstance(static::DATABASE);
+		return PDO\Connection::getInstance(static::DATABASE);
 	}
 
 	static function getTableName() {
@@ -54,11 +54,11 @@ class Base {
 	}
 
 	static function getTable() {
-		return new Pdo\Table(static::getPdo(), static::getTableName());
+		return new PDO\Table(static::getPDO(), static::getTableName());
 	}
 
 	static function getColumn($name) {
-		return new Pdo\Column(static::getTable(), $name);
+		return new PDO\Column(static::getTable(), $name);
 	}
 
 	static function createQuery() {
@@ -68,21 +68,21 @@ class Base {
 			&& func_get_arg(0) instanceof \Sexy\Expression
 		) {
 
-			$query = static::getPdo()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
+			$query = static::getPDO()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
 
 		// Raw sql and bind values.
 		} elseif (
 			count(func_get_args()) == 2
 		) {
 
-			$query = static::getPdo()->createClassQuery(static::getClass(), func_get_arg(0), func_get_arg(1));
+			$query = static::getPDO()->createClassQuery(static::getClass(), func_get_arg(0), func_get_arg(1));
 
 		// Raw sql.
 		} elseif (
 			count(func_get_args()) == 1
 		) {
 
-			$query = static::getPdo()->createClassQuery(static::getClass(), func_get_arg(0));
+			$query = static::getPDO()->createClassQuery(static::getClass(), func_get_arg(0));
 
 		} else {
 
@@ -94,7 +94,7 @@ class Base {
 	}
 
 	static function transaction($callback) {
-		return call_user_func_array([static::getPdo(), 'transaction'], func_get_args());
+		return call_user_func_array([static::getPDO(), 'transaction'], func_get_args());
 	}
 
 	static function filterParams($params) {
@@ -110,7 +110,7 @@ class Base {
 	}
 
 	static function getBy($params = [], $expressions = [], $options = []) {
-		$pdo = static::getPdo();
+		$pdo = static::getPDO();
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 
@@ -143,7 +143,7 @@ class Base {
 
 	static function getCachedBySql($sql, $timeout = null) {
 		return Utils\Cache::get(function($sql) {
-			return Pdo\Results\CachedClassResult::createFromClassResult(static::getBySql($sql));
+			return PDO\Results\CachedClassResult::createFromClassResult(static::getBySql($sql));
 		}, $timeout, $sql);
 	}
 

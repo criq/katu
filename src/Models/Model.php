@@ -38,10 +38,10 @@ class Model extends Base {
 	}
 
 	static function insert($bindValues = []) {
-		$query = static::getPdo()->createQuery();
+		$query = static::getPDO()->createQuery();
 
 		$columns = array_map(function($i) {
-			return new Pdo\Name($i);
+			return new PDO\Name($i);
 		}, array_keys($bindValues));
 		$values  = array_map(function($i) {
 			return ':' . $i;
@@ -55,7 +55,7 @@ class Model extends Base {
 
 		static::change();
 
-		$primaryKey = static::getPdo()->getLastInsertId();
+		$primaryKey = static::getPDO()->getLastInsertId();
 		if ($primaryKey) {
 			return static::get($primaryKey);
 		} else {
@@ -66,10 +66,10 @@ class Model extends Base {
 	static function insertMultiple($items = []) {
 		$items = array_values($items);
 
-		$query = static::getPdo()->createQuery();
+		$query = static::getPDO()->createQuery();
 
 		$columns = array_map(function($i) {
-			return new Pdo\Name($i);
+			return new PDO\Name($i);
 		}, array_keys($items[0]));
 
 		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ";
@@ -98,7 +98,7 @@ class Model extends Base {
 
 		static::change();
 
-		return static::get(static::getPdo()->getLastInsertId());
+		return static::get(static::getPDO()->getLastInsertId());
 	}
 
 	static function upsert($getByParams, $insertParams = [], $updateParams = []) {
@@ -131,7 +131,7 @@ class Model extends Base {
 	}
 
 	public function delete() {
-		$query = static::getPdo()->createQuery();
+		$query = static::getPDO()->createQuery();
 
 		// Delete file attachments.
 		if (class_exists('\App\Models\FileAttachment')) {
@@ -166,12 +166,12 @@ class Model extends Base {
 
 			$set = [];
 			foreach ($bindValues as $name => $value) {
-				$set[] = (new Pdo\Name($name)) . " = :" . $name;
+				$set[] = (new PDO\Name($name)) . " = :" . $name;
 			}
 
 			if ($set) {
 
-				$query = static::getPdo()->createQuery();
+				$query = static::getPDO()->createQuery();
 
 				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
 
@@ -352,7 +352,7 @@ class Model extends Base {
 			->where(new \Sexy\CmpRegexp(static::getColumn($column), $preg))
 			->addExpressions($constraints)
 			;
-		$res = static::getPdo()->createQueryFromSql($sql)->getResult();
+		$res = static::getPDO()->createQueryFromSql($sql)->getResult();
 
 		// Nothing, keep the slug.
 		if (!$res->getCount()) {

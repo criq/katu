@@ -12,7 +12,7 @@ class Runtime {
 
 		// There's something cached.
 		if (isset(static::$runtime[(string)$key]) && !is_null(static::$runtime[(string)$key])) {
-			return static::$runtime[$key];
+			return static::$runtime[(string)$key];
 		}
 
 		// There is callback.

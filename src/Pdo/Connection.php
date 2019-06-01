@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Pdo;
+namespace Katu\PDO;
 
 use \PDO;
 
@@ -18,7 +18,7 @@ class Connection {
 		try {
 			$this->config = \Katu\Config::getDb($name);
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			throw new \Katu\Exceptions\MissingPdoConfigException("Missing PDO config for instance " . $name . ".");
+			throw new \Katu\Exceptions\MissingPDOConfigException("Missing PDO config for instance " . $name . ".");
 		}
 
 		// Try to connect.
@@ -27,7 +27,7 @@ class Connection {
 		];
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->connection = new PDO($this->config->getPdoDSN(), $this->config->user, $this->config->password, $attributes);
+				$this->connection = new PDO($this->config->getPDODSN(), $this->config->user, $this->config->password, $attributes);
 				break;
 			} catch (\ErrorException $e) {
 				if (strpos($e->getMessage(), 'driver does not support setting attributes')) {

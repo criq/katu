@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Pdo\Config;
+namespace Katu\PDO\Config;
 
-class MySQL extends \Katu\Pdo\Config {
+class MySQL extends \Katu\PDO\Config {
 
 	const TYPE = 'mysql';
 	const SCHEMA = 'mysql';

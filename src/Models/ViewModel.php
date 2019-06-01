@@ -27,7 +27,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getView() {
-		return new Pdo\View(static::getPdo(), static::getViewName());
+		return new PDO\View(static::getPDO(), static::getViewName());
 	}
 
 	static function getViewName() {
@@ -41,7 +41,7 @@ class ViewModel extends ModelBase {
 			$table = static::getTable();
 		}
 
-		return new Pdo\Column($table, $name);
+		return new PDO\Column($table, $name);
 	}
 
 	static function getViewColumn($name, $options = []) {
@@ -51,7 +51,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getCachedTable() {
-		return new Pdo\Table(static::getPdo(), static::getCachedTableName());
+		return new PDO\Table(static::getPDO(), static::getCachedTableName());
 	}
 
 	static function getCachedTableName() {
@@ -80,11 +80,11 @@ class ViewModel extends ModelBase {
 	}
 
 	static function cachedTableExists() {
-		return in_array(static::getCachedTableName(), static::getPdo()->getTableNames());
+		return in_array(static::getCachedTableName(), static::getPDO()->getTableNames());
 	}
 
 	static function materializedTableExists() {
-		return in_array(static::getMaterializedTableName(), static::getPdo()->getTableNames());
+		return in_array(static::getMaterializedTableName(), static::getPDO()->getTableNames());
 	}
 
 	static function cacheHasUpdatedTables() {
@@ -182,7 +182,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getMaterializedTable() {
-		return new Pdo\Table(static::getPdo(), static::getMaterializedTableName());
+		return new PDO\Table(static::getPDO(), static::getMaterializedTableName());
 	}
 
 	static function getMaterializedTableName() {
@@ -197,7 +197,7 @@ class ViewModel extends ModelBase {
 
 		// Get a temporary table.
 		$temporaryTableName = '_tmp_' . strtoupper(\Katu\Utils\Random::getIdString(8));
-		$temporaryTable = new Pdo\Table($destinationTable->pdo, $temporaryTableName);
+		$temporaryTable = new PDO\Table($destinationTable->pdo, $temporaryTableName);
 
 		// Copy into temporary table view.
 		$params = [
@@ -226,7 +226,7 @@ class ViewModel extends ModelBase {
 
 			$class = static::getClass();
 
-			#return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
+			#return \Katu\Utils\Lock::run(['databases', static::getPDO()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
 
 				$class::materializeSourceViews();
 
@@ -256,7 +256,7 @@ class ViewModel extends ModelBase {
 	static function materialize() {
 		try {
 
-			return \Katu\Utils\Lock::run(['databases', static::getPdo()->config->database, 'views', 'materialize', static::TABLE], 600, function($class) {
+			return \Katu\Utils\Lock::run(['databases', static::getPDO()->config->database, 'views', 'materialize', static::TABLE], 600, function($class) {
 
 				$class::materializeSourceViews();
 
@@ -297,7 +297,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getLastCachedTmpName() {
-		return ['!databases', '!' . static::getPdo()->config->database, '!views', '!cached', '!' . static::TABLE];
+		return ['!databases', '!' . static::getPDO()->config->database, '!views', '!cached', '!' . static::TABLE];
 	}
 
 	static function updateLastCachedTime() {
@@ -309,7 +309,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getLastMaterializedTmpName() {
-		return ['!databases', '!' . static::getPdo()->config->database, '!views', '!materialized', '!' . static::TABLE];
+		return ['!databases', '!' . static::getPDO()->config->database, '!views', '!materialized', '!' . static::TABLE];
 	}
 
 	static function updateLastMaterializedTime() {

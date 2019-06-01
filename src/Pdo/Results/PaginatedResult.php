@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Pdo\Results;
+namespace Katu\PDO\Results;
 
 use \PDO;
 use \Sexy\Page;

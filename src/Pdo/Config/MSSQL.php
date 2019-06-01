@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Pdo\Config;
+namespace Katu\PDO\Config;
 
-class MSSQL extends \Katu\Pdo\Config {
+class MSSQL extends \Katu\PDO\Config {
 
 	const TYPE = 'mssql';
 	const SCHEMA = 'dblib';
