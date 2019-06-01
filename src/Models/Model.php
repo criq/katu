@@ -243,7 +243,7 @@ class Model extends Base {
 	}
 
 	public function getTransmittableId() {
-		return base64_encode(\Katu\Utils\JSON::encodeStandard([
+		return base64_encode(\Katu\Files\Formats\JSON::encodeStandard([
 			'class' => $this->getClass(),
 			'id'    => $this->getId(),
 		]));
@@ -270,7 +270,7 @@ class Model extends Base {
 		};
 
 		if (static::CACHE_IN_MEMORY_BY_PRIMARY_KEY) {
-			return \Katu\Cache::get(['model', 'get'], 86400, $callback, static::getClass(), $primaryKey);
+			return \Katu\Cache\Cache::get(['model', 'get'], 86400, $callback, static::getClass(), $primaryKey);
 		} else {
 			return call_user_func_array($callback, [static::getClass(), $primaryKey]);
 		}

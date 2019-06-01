@@ -94,7 +94,7 @@ class PayU {
 			throw new \Exception();
 		}
 
-		return \Katu\Utils\JSON::decodeAsObjects(\Katu\Utils\JSON::encode($response))->trans;
+		return \Katu\Files\Formats\JSON::decodeAsObjects(\Katu\Files\Formats\JSON::encode($response))->trans;
 	}
 
 }

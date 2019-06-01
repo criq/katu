@@ -81,7 +81,7 @@ class Version {
 	}
 
 	public function getHash() {
-		return sha1(\Katu\Utils\JSON::encodeStandard($this->getArray()));
+		return sha1(\Katu\Files\Formats\JSON::encodeStandard($this->getArray()));
 	}
 
 	public function setQuality($quality) {

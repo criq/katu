@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Tools\Random;
 
-class Random {
+class Generator {
 
 	const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
 	const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

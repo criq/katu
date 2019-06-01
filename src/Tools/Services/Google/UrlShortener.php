@@ -19,7 +19,7 @@ class UrlShortener {
 
 			$curl = new \Curl\Curl;
 			$curl->setHeader('Content-Type', 'application/json');
-			$res = $curl->post($apiUrl, \Katu\Utils\JSON::encode([
+			$res = $curl->post($apiUrl, \Katu\Files\Formats\JSON::encode([
 				'longUrl' => (string) $url,
 			]));
 

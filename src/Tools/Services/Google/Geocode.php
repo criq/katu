@@ -5,7 +5,7 @@ namespace Katu\Utils\Google;
 class Geocode {
 
 	static function geocode($language, $address, $components = []) {
-		$res = \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400, function($language, $address, $components) {
+		$res = \Katu\Cache\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400, function($language, $address, $components) {
 
 			$componentArray = [];
 			foreach ($components as $componentName => $componentValue) {

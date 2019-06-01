@@ -70,7 +70,7 @@ class Setting extends \Katu\Models\Model {
 	}
 
 	public function getValue() {
-		return \Katu\Utils\JSON::decodeAsArray($this->value);
+		return \Katu\Files\Formats\JSON::decodeAsArray($this->value);
 	}
 
 	static function getObject($name) {

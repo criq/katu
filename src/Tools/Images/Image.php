@@ -49,9 +49,9 @@ class Image {
 	}
 
 	public function getColors($n = 1) {
-		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($uri, $n) {
+		return \Katu\Cache\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($uri, $n) {
 
-			$palette = \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($uri) {
+			$palette = \Katu\Cache\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($uri) {
 
 				try {
 					return \League\ColorExtractor\Palette::fromFilename($uri);
@@ -75,7 +75,7 @@ class Image {
 	}
 
 	public function getImageSize() {
-		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($image) {
+		return \Katu\Cache\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($image) {
 
 			try {
 				$size = getimagesize($image->getSource()->getUri());
@@ -88,7 +88,7 @@ class Image {
 	}
 
 	public function getMime() {
-		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($image) {
+		return \Katu\Cache\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($image) {
 
 			try {
 				$size = getimagesize($image->getSource()->getUri());
