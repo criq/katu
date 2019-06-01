@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Models;
+namespace Katu\Models\Presets;
 
 class Role extends \Katu\Model {
 
@@ -20,7 +20,7 @@ class Role extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
 			'name'        => (string) (trim($name)),
 		));
 	}

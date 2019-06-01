@@ -34,7 +34,7 @@ class Profiler {
 	}
 
 	public function getPath() {
-		$path = \Katu\Utils\Tmp::getPath(['!profiler', \Katu\Utils\Url::getCurrent(), '!' . (new \Katu\Tools\DateTime\DateTime())->format('Y-m-d-H-i-s') . '-' . \Katu\Utils\DateTime::getMicroseconds()]);
+		$path = \Katu\Utils\Tmp::getPath(['!profiler', \Katu\Utils\Url::getCurrent(), '!' . (new \Katu\Tools\DateTime\DateTime())->format('Y-m-d-H-i-s') . '-' . \Katu\Tools\DateTime\DateTime::getMicroseconds()]);
 		$path = dirname($path) . '/' . ltrim(basename($path), '.') . '.csv';
 
 		return $path;

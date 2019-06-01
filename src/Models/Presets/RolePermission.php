@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Models;
+namespace Katu\Models\Presets;
 
 class RolePermission extends \Katu\Model {
 
@@ -12,7 +12,7 @@ class RolePermission extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
 			'roleId'      => (int)    ($role->getId()),
 			'permission'  => (string) (trim($permission)),
 		));

@@ -19,7 +19,7 @@ class DumpDateCollection extends DumpCollection {
 	}
 
 	public function getAgeInDays() {
-		return (new \Katu\Utils\DateTime)->diff($this->getMondayDateTime())->days;
+		return (new \Katu\Tools\DateTime\DateTime)->diff($this->getMondayDateTime())->days;
 	}
 
 	public function getAgeInWeeks() {

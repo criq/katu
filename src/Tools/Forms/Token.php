@@ -2,7 +2,7 @@
 
 namespace Katu\Form;
 
-use \Katu\Utils\DateTime;
+use \Katu\Tools\DateTime\DateTime;
 
 class Token {
 

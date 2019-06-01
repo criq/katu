@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Models\Models;
+namespace Katu\Models\Presets;
 
 use \Sexy\Sexy as SX;
 
@@ -47,7 +47,7 @@ class User extends \Katu\Models\Model {
 
 	static function create() {
 		return static::insert([
-			static::$columnNames['timeCreated'] => new \Katu\Utils\DateTime,
+			static::$columnNames['timeCreated'] => new \Katu\Tools\DateTime\DateTime,
 		]);
 	}
 
@@ -72,7 +72,7 @@ class User extends \Katu\Models\Model {
 		}
 
 		return static::insert([
-			static::$columnNames['timeCreated'] => (string)\Katu\Utils\DateTime::get()->getDbDateTimeFormat(),
+			static::$columnNames['timeCreated'] => (string)\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat(),
 			static::$columnNames['emailAddressId'] => (int)$emailAddress->getId(),
 		]);
 	}
@@ -86,7 +86,7 @@ class User extends \Katu\Models\Model {
 
 		$accessToken = $accessTokenClass::getOneBy([
 			'token' => $token,
-			new \Sexy\CmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Utils\DateTime),
+			new \Sexy\CmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
 		]);
 
 		if ($accessToken) {
@@ -116,7 +116,7 @@ class User extends \Katu\Models\Model {
 			'serviceName'   => (string)$serviceName,
 			'serviceUserId' => (string)$serviceUserId,
 		], [
-			'timeCreated'   => (string)(new \Katu\Utils\DateTime),
+			'timeCreated'   => (string)(new \Katu\Tools\DateTime\DateTime),
 		]);
 	}
 

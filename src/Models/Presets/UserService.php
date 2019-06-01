@@ -1,8 +1,6 @@
 <?php
 
-namespace Katu\Models;
-
-use \Katu\Exception;
+namespace Katu\Models\Presets;
 
 class UserService extends \Katu\Model {
 
@@ -10,7 +8,7 @@ class UserService extends \Katu\Model {
 
 	static function create($user, $serviceName, $serviceUserId) {
 		return static::insert([
-			'timeCreated'   => (string)(new \Katu\Utils\DateTime),
+			'timeCreated'   => (string)(new \Katu\Tools\DateTime\DateTime),
 			'userId'        => (int)$user->getId(),
 			'serviceName'   => (string)$serviceName,
 			'serviceUserId' => (string)$serviceUserId,

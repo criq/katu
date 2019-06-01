@@ -1,8 +1,6 @@
 <?php
 
-namespace Katu\Models;
-
-use \Katu\Exception;
+namespace Katu\Models\Presets;
 
 class UserSetting extends \Katu\Model {
 
@@ -10,7 +8,7 @@ class UserSetting extends \Katu\Model {
 
 	static function create($user, $name) {
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
 			'userId'      => (int)    ($user->getId()),
 			'name'        => (string) ($name),
 		));

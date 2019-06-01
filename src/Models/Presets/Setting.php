@@ -1,8 +1,6 @@
 <?php
 
-namespace Katu\Models;
-
-use \Katu\Exception;
+namespace Katu\Models\Presets;
 
 class Setting extends \Katu\Model {
 
@@ -14,7 +12,7 @@ class Setting extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
 			'creatorId'   => (int)    ($creator->getId()),
 			'name'        => (string) (trim($name)),
 			'value'       => (string) (trim($value)),

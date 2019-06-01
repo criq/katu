@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Models;
+namespace Katu\Models\Presets;
 
 use \Sexy\Sexy as SX;
 
@@ -10,7 +10,7 @@ class File extends \Katu\Model {
 
 	static function create($creator, $path, $fileName, $fileType, $fileSize) {
 		return static::insert([
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
 			'creatorId'   =>          ($creator ? $creator->getId() : null),
 			'path'        => (string) ($path),
 			'name'        => (string) ($fileName),

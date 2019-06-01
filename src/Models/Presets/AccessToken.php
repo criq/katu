@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Models;
+namespace Katu\Models\Presets;
 
 use \Sexy\Sexy as SX;
 
@@ -13,8 +13,8 @@ class AccessToken extends \Katu\Model {
 
 	static function create($user) {
 		return static::insert([
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'timeExpires' => (string) (\Katu\Utils\DateTime::get('+ ' . static::EXPIRES . ' seconds')->getDbDateTimeFormat()),
+			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
+			'timeExpires' => (string) (\Katu\Tools\DateTime\DateTime::get('+ ' . static::EXPIRES . ' seconds')->getDbDateTimeFormat()),
 			'userId'      => (int)    ($user->getId()),
 			'token'       => (string) (\Katu\Utils\Random::getString(static::LENGTH)),
 		]);

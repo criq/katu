@@ -55,7 +55,7 @@ class Controller {
 			$app->response->setBody(static::prepareBody($viewClass::render($template, static::$data)));
 
 			// Reset flash memory.
-			Flash::reset();
+			\Katu\Tools\Session\Flash::reset();
 
 			return true;
 

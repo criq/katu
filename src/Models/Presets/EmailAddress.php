@@ -1,10 +1,8 @@
 <?php
 
-namespace Katu\Models;
+namespace Katu\Models\Presets;
 
-use \Katu\Exception;
-
-class EmailAddress extends \Katu\Model {
+class EmailAddress extends \Katu\Models\Model {
 
 	const TABLE = 'email_addresses';
 
@@ -19,7 +17,7 @@ class EmailAddress extends \Katu\Model {
 		}
 
 		return static::insert(array(
-			static::$columnNames['timeCreated']  => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			static::$columnNames['timeCreated']  => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
 			static::$columnNames['emailAddress'] => (string) (trim($emailAddress)),
 		));
 	}

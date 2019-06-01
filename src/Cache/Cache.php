@@ -207,7 +207,7 @@ class Cache {
 
 		// Try file.
 		$file = $this->getFile();
-		if ($file->exists() && \Katu\Utils\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeoutInSeconds()) {
+		if ($file->exists() && \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeoutInSeconds()) {
 			return unserialize($file->get());
 		}
 

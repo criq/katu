@@ -174,7 +174,7 @@ class ViewModel extends ModelBase {
 			return true;
 		}
 
-		return in_array((int) (new \Katu\Utils\DateTime)->format('h'), static::$_materializeHours);
+		return in_array((int) (new \Katu\Tools\DateTime\DateTime)->format('h'), static::$_materializeHours);
 	}
 
 	static function resetCache() {

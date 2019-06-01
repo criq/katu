@@ -68,7 +68,7 @@ class View {
 
 		$twig->addFilter(new \Twig_SimpleFilter('isValidDateTime', function($date) {
 			try {
-				return (new Utils\DateTime($date))->isValid();
+				return (new \Katu\Tools\DateTime\DateTime($date))->isValid();
 			} catch (\Exception $e) {
 				return false;
 			}
@@ -98,19 +98,19 @@ class View {
 
 		// Deprecated.
 		$twig->addFunction(new \Twig_SimpleFunction('geTURLFor', function() {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getFor'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('url', function() {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getFor'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('urlDecoded', function() {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getDecodedFor'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getDecodedFor'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCurrenTURL', function() {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getCurrent'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('makeUrl', function() {
@@ -130,7 +130,7 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFlash', function() {
-			return call_user_func_array(['\Katu\Flash', 'get'], func_get_args());
+			return call_user_func_array(['\Katu\Tools\Session\Flash', 'get'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getPages', function() {
@@ -156,18 +156,18 @@ class View {
 		$twig->addFunction(new \Twig_SimpleFunction('getCsrfToken', function() {
 			$params = (array) @func_get_arg(0);
 
-			return Utils\CSRF::getFreshToken($params);
+			return \Katu\Tools\Security\CSRF::getFreshToken($params);
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFile', function() {
-			return new \Katu\Utils\File(BASE_DIR, ltrim(func_get_arg(0), '/'));
+			return new \Katu\Tools\Files\File(BASE_DIR, ltrim(func_get_arg(0), '/'));
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFileUrlWithHash', function() {
-			if (func_get_arg(0) instanceof \Katu\Utils\File) {
+			if (func_get_arg(0) instanceof \Katu\Tools\Files\File) {
 				$file = func_get_arg(0);
 			} else {
-				$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
+				$file = new \Katu\Tools\Files\File(BASE_DIR, func_get_arg(0));
 			}
 			$url = new \Katu\Types\TURL($file->geTURL());
 			$url->addQueryParam('hash', hash('md4', $file->get()));
@@ -177,13 +177,13 @@ class View {
 
 		$twig->addFunction(new \Twig_SimpleFunction('lipsum', function($sentences = 10) {
 			try {
-				return \Katu\Utils\BaconIpsum::get();
+				return \Katu\Tools\Strings\BaconIpsum::get();
 			} catch (\Exception $e) {
 				// Nevermind.
 			}
 
 			try {
-				return implode(' ', (new \Katu\Types\TArray(\Katu\Utils\Blabot::getList()))->getRandomItems($sentences));
+				return implode(' ', (new \Katu\Types\TArray(\Katu\Tools\Strings\Blabot::getList()))->getRandomItems($sentences));
 			} catch (\Exception $e) {
 				// Nevermind.
 			}
@@ -192,16 +192,16 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('start', function() {
-			if (\Katu\Utils\Profiler::isOn()) {
-				$profiler = \Katu\Utils\Profiler::init('twig');
+			if (\Katu\Tools\Profiler\Profiler::isOn()) {
+				$profiler = \Katu\Tools\Profiler\Profiler::init('twig');
 
 				return static::render("Katu/Blocks/profilerStart");
 			}
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('stop', function() {
-			if (\Katu\Utils\Profiler::isOn()) {
-				$profiler = \Katu\Utils\Profiler::get('twig');
+			if (\Katu\Tools\Profiler\Profiler::isOn()) {
+				$profiler = \Katu\Tools\Profiler\Profiler::get('twig');
 
 				$res = static::render("Katu/Blocks/profilerEnd", [
 					'profiler' => $profiler,

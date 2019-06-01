@@ -1,8 +1,6 @@
 <?php
 
-namespace Katu\Models;
-
-use \Katu\Exception;
+namespace Katu\Models\Presets;
 
 class Geocode extends \Katu\Model {
 
@@ -25,7 +23,7 @@ class Geocode extends \Katu\Model {
 		if (!$geocode) {
 
 			$params = [
-				'timeCreated'  => (string) \Katu\Utils\DateTime::get()->getDbDateTimeFormat(),
+				'timeCreated'  => (string) \Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat(),
 				'hash'         => (string) $hash,
 				'language'     => (string) $geocodeAddress->language,
 				'number'       => (string) $geocodeAddress->number,
