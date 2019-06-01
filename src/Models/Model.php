@@ -229,7 +229,7 @@ class Model extends Base {
 	static function getIdColumnName() {
 		$table = static::getTable();
 
-		return \Katu\Cache::get(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name->name], 86400, function() use($table) {
+		return \Katu\Cache\Cache::get(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name->name], 86400, function() use($table) {
 
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
 				if (isset($row['Key']) && $row['Key'] == 'PRI') {

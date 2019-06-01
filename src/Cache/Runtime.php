@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Tools\Cache;
+namespace Katu\Cache;
 
 class Runtime {
 

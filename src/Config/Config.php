@@ -7,7 +7,7 @@ class Config {
 	static function get() {
 		$args = func_get_args();
 
-		return \Katu\Tools\Cache\Runtime::get(array_merge(['config'], $args), function() use($args) {
+		return \Katu\Cache\Runtime::get(array_merge(['config'], $args), function() use($args) {
 			try {
 				return call_user_func_array([new \Katu\Types\TArray(static::getAll()), 'getValueByArgs'], $args);
 			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
@@ -17,7 +17,7 @@ class Config {
 	}
 
 	static function getAll() {
-		return \Katu\Tools\Cache\Runtime::get('config', function() {
+		return \Katu\Cache\Runtime::get('config', function() {
 
 			$config = [];
 			foreach (static::getFiles() as $file) {

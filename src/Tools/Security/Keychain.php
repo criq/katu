@@ -5,7 +5,7 @@ namespace Katu\Tools\Security;
 class Keychain {
 
 	static function get() {
-		return \Katu\Tools\Cache\Runtime::get('keychain', function($args) {
+		return \Katu\Cache\Runtime::get('keychain', function($args) {
 			try {
 				return call_user_func_array([new \Katu\Types\TArray(static::getAll()), 'getValueByArgs'], $args);
 			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
@@ -15,7 +15,7 @@ class Keychain {
 	}
 
 	static function getAll() {
-		return \Katu\Tools\Cache\Runtime::get('keychain', function() {
+		return \Katu\Cache\Runtime::get('keychain', function() {
 			if (!defined('BASE_DIR')) {
 				throw new \Exception("Undefined BASE_DIR.");
 			}

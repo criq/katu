@@ -70,7 +70,7 @@ class App {
 	}
 
 	static function isProfilerOn() {
-		return \Katu\Tools\Cache\Runtime::get('profiler.on', function() {
+		return \Katu\Cache\Runtime::get('profiler.on', function() {
 			try {
 				return \Katu\Config\Config::get('app', 'profiler');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {

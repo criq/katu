@@ -42,7 +42,7 @@ class Base {
 			throw new \Exception("Undefined database.");
 		}
 
-		return PDO\Connection::getInstance(static::DATABASE);
+		return \Katu\PDO\Connection::getInstance(static::DATABASE);
 	}
 
 	static function getTableName() {
@@ -54,11 +54,11 @@ class Base {
 	}
 
 	static function getTable() {
-		return new PDO\Table(static::getPDO(), static::getTableName());
+		return new \Katu\PDO\Table(static::getPDO(), static::getTableName());
 	}
 
 	static function getColumn($name) {
-		return new PDO\Column(static::getTable(), $name);
+		return new \Katu\PDO\Column(static::getTable(), $name);
 	}
 
 	static function createQuery() {

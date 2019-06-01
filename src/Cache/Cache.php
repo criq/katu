@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Tools\Cache;
+namespace Katu\Cache;
 
 class Cache {
 
@@ -82,7 +82,7 @@ class Cache {
 	public function getRawPathSegments() {
 		if ($this->getName()) {
 			$pathSegments = array_map(function($i) {
-				return new Cache\Path\Raw($i);
+				return new \Katu\Cache\Path\Raw($i);
 			}, $this->getName());
 		} else {
 			$pathSegments = $this->getAnonymousPathSegments();
@@ -90,11 +90,11 @@ class Cache {
 
 		// Add arguments.
 		foreach ($this->args as $arg) {
-			$pathSegments[] = new Cache\Path\Raw($arg);
+			$pathSegments[] = new \Katu\Cache\Path\Raw($arg);
 		}
 
 		// Add checksum.
-		$pathSegments[] = new Cache\Path\Checksum(sha1(serialize($pathSegments)));
+		$pathSegments[] = new \Katu\Cache\Path\Checksum(sha1(serialize($pathSegments)));
 
 		return $pathSegments;
 	}
@@ -120,7 +120,7 @@ class Cache {
 	}
 
 	public function getFile() {
-		return new \Katu\Utils\File(TMP_PATH, static::DIR_NAME, $this->getSanitizedPath(), ['cache']);
+		return new \Katu\Tools\Files\File(TMP_PATH, static::DIR_NAME, $this->getSanitizedPath(), ['cache']);
 	}
 
 	public function getMemoryKey() {
@@ -134,7 +134,7 @@ class Cache {
 
 	static function isApcSupported() {
 		try {
-			return \Katu\Config::get('app', 'cache', 'supported', 'apc') && function_exists('apcu_exists');
+			return \Katu\Config\Config::get('app', 'cache', 'supported', 'apc') && function_exists('apcu_exists');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return false;
 		}
@@ -152,7 +152,7 @@ class Cache {
 
 	static function isMemcachedSupported() {
 		try {
-			return \Katu\Config::get('app', 'cache', 'supported', 'memcached') && class_exists('Memcached');
+			return \Katu\Config\Config::get('app', 'cache', 'supported', 'memcached') && class_exists('Memcached');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return false;
 		}

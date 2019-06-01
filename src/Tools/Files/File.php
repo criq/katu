@@ -10,7 +10,7 @@ class File {
 	const TYPE_DIR  = 'dir';
 
 	public function __construct() {
-		$this->path = call_user_func_array(['\Katu\Tools\Files\File', 'joinPaths'], func_get_args());
+		$this->path = call_user_func_array(['static', 'joinPaths'], func_get_args());
 
 		return $this;
 	}
@@ -75,7 +75,7 @@ class File {
 			return realpath($this->path);
 		}
 
-		$path = FileSystem::joinPaths(BASE_DIR, $this->path);
+		$path = static::joinPaths(BASE_DIR, $this->path);
 		if (file_exists($path)) {
 			return realpath($path);
 		}
