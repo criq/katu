@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Controllers;
 
 use \Katu\App;
 

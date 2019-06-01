@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Controllers;
+namespace Katu\Controllers\Controllers;
 
 class Images extends \Katu\Controller {
 

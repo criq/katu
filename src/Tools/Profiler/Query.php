@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils\Profiler;
+namespace Katu\Tools\Profiler;
 
 class Query {
 

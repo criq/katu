@@ -70,9 +70,9 @@ class App {
 	}
 
 	static function isProfilerOn() {
-		return \Katu\Utils\Cache::getRuntime('profiler.on', function() {
+		return \Katu\Tools\Cache\Runtime::get('profiler.on', function() {
 			try {
-				return \Katu\Config::get('app', 'profiler');
+				return \Katu\Config\Config::get('app', 'profiler');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				return false;
 			}
@@ -86,7 +86,7 @@ class App {
 			self::init();
 
 			try {
-				$config = Config::getApp('slim');
+				$config = \Katu\Config\Config::getApp('slim');
 			} catch (\Exception $e) {
 				$config = array();
 			}
@@ -141,10 +141,10 @@ class App {
 
 		// Redirect to canonical host.
 		try {
-			if ($app->request->getMethod() == 'GET' && Config::get('app', 'redirectToCanonicalHost')) {
-				$currenTURL = Utils\Url::getCurrent();
+			if ($app->request->getMethod() == 'GET' && \Katu\Config\Config::get('app', 'redirectToCanonicalHost')) {
+				$currenTURL = \Katu\Tools\Routing\URL::getCurrent();
 				$currentHost = $currenTURL->getHost();
-				$canonicalUrl = new Types\TURL(Config::get('app', 'baseUrl'));
+				$canonicalUrl = new Types\TURL(\Katu\Config\Config::get('app', 'baseUrl'));
 				$canonicalHost = $canonicalUrl->getHost();
 
 				if ($currentHost != $canonicalHost) {
@@ -188,17 +188,17 @@ class App {
 			try {
 
 				// Set up routes.
-				foreach ((array) Config::get('routes') as $name => $route) {
+				foreach ((array) \Katu\Config\Config::get('routes') as $name => $route) {
 
 					$pattern  = $route->getPattern();
 					$callable = $route->getCallable();
 
 					if (!$pattern) {
-						throw new Exceptions\RouteException("Invalid pattern for route " . $name . ".");
+						throw new \Katu\Exceptions\RouteException("Invalid pattern for route " . $name . ".");
 					}
 
 					if (!$callable || !is_callable($callable)) {
-						throw new Exceptions\RouteException("Invalid callable for route " . $name . ".");
+						throw new \Katu\Exceptions\RouteException("Invalid callable for route " . $name . ".");
 					}
 
 					$slimRoute = $app->map($pattern, $callable)->via('GET', 'POST');

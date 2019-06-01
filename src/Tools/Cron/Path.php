@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Tools\Cron;
 
-class CronPath {
+class Path {
 
 	public $path;
 
