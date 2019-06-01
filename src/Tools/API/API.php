@@ -53,16 +53,16 @@ class API {
 		return Utils\JSON::respond($res);
 	}
 
-	static function getUrl($endpoint) {
+	static function geTURL($endpoint) {
 		return Utils\Url::joinPaths(Config::get('app', 'apiUrl'), $endpoint);
 	}
 
 	static function get($endpoint, $params = [], &$curl = null) {
-		return \Amiko\Amiko::get(static::getUrl($endpoint), $params, $curl);
+		return \Amiko\Amiko::get(static::geTURL($endpoint), $params, $curl);
 	}
 
 	static function post($endpoint, $params = [], &$curl = null) {
-		return \Amiko\Amiko::post(static::getUrl($endpoint), $params, $curl);
+		return \Amiko\Amiko::post(static::geTURL($endpoint), $params, $curl);
 	}
 
 }

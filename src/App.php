@@ -46,13 +46,13 @@ class App {
 
 		// Timezone.
 		try {
-			date_default_timezone_set(Config::getApp('timezone'));
+			date_default_timezone_set(\Katu\Config\Config::getApp('timezone'));
 		} catch (\Exception $e) {
 			// Just use default timezone.
 		}
 
 		// Session.
-		\Katu\Session::setCookieParams();
+		\Katu\Tools\Session\Session::setCookieParams();
 
 		return true;
 	}
@@ -142,18 +142,18 @@ class App {
 		// Redirect to canonical host.
 		try {
 			if ($app->request->getMethod() == 'GET' && Config::get('app', 'redirectToCanonicalHost')) {
-				$currentUrl = Utils\Url::getCurrent();
-				$currentHost = $currentUrl->getHost();
-				$canonicalUrl = new Types\TUrl(Config::get('app', 'baseUrl'));
+				$currenTURL = Utils\Url::getCurrent();
+				$currentHost = $currenTURL->getHost();
+				$canonicalUrl = new Types\TURL(Config::get('app', 'baseUrl'));
 				$canonicalHost = $canonicalUrl->getHost();
 
 				if ($currentHost != $canonicalHost) {
-					$canonicalParts = $currentUrl->getParts();
+					$canonicalParts = $currenTURL->getParts();
 					$canonicalParts['host'] = $canonicalHost;
 
-					$redirectUrl = Types\TUrl::build($canonicalParts);
+					$redirecTURL = Types\TURL::build($canonicalParts);
 
-					return header('Location: ' . (string) $redirectUrl, 301); die;
+					return header('Location: ' . (string) $redirecTURL, 301); die;
 				}
 			}
 		} catch (\Katu\Exceptions\MissingConfigException $e) {

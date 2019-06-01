@@ -46,7 +46,7 @@ class Images extends \Katu\Controller {
 			$app = \Katu\App::get();
 
 			try {
-				$url = new \Katu\Types\TUrl(trim($app->request->params('url')));
+				$url = new \Katu\Types\TURL(trim($app->request->params('url')));
 			} catch (\Exception $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}

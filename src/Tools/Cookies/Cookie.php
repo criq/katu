@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Tools\Cookies;
 
 class Cookie {
 
@@ -55,7 +55,7 @@ class Cookie {
 	}
 
 	static function getDefautDomain() {
-		return '.' . Utils\Url::getBase()->get2ndLevelDomain();
+		return '.' . \Katu\Tools\Routing\URL::getBase()->get2ndLevelDomain();
 	}
 
 }

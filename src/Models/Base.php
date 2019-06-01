@@ -1,10 +1,10 @@
 <?php
 
-namespace Katu;
+namespace Katu\Models;
 
 use \Sexy\Sexy as SX;
 
-class ModelBase {
+class Base {
 
 	const DATABASE = 'app';
 

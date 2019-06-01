@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Tools\Files;
 
 class File {
 
@@ -10,13 +10,19 @@ class File {
 	const TYPE_DIR  = 'dir';
 
 	public function __construct() {
-		$this->path = call_user_func_array(['\Katu\Utils\FileSystem', 'joinPaths'], func_get_args());
+		$this->path = call_user_func_array(['\Katu\Tools\Files\File', 'joinPaths'], func_get_args());
 
 		return $this;
 	}
 
 	public function __toString() {
 		return $this->getPath();
+	}
+
+	static function joinPaths() {
+		return implode('/', array_map(function($i) {
+			return rtrim(implode('.', (array) $i), '/');
+		}, func_get_args()));
 	}
 
 	static function createTemporaryWithFileName($fileName) {
@@ -26,7 +32,7 @@ class File {
 	}
 
 	static function createTemporaryWithExtension($extension) {
-		$file = new static(TMP_PATH, 'files', [\Katu\Utils\Random::getFileName(), $extension]);
+		$file = new static(TMP_PATH, 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 
 		return $file;
 	}
@@ -35,7 +41,7 @@ class File {
 		if ($extension) {
 			$file = static::createTemporaryWithExtension($extension);
 		} else {
-			$file = static::createTemporaryWithFileName(\Katu\Utils\Random::getFileName());
+			$file = static::createTemporaryWithFileName(\Katu\Tools\Random\Generator::getFileName());
 		}
 
 		$file->set($src);
@@ -44,7 +50,7 @@ class File {
 	}
 
 	static function createTemporaryFromUrl($url, $extension = null) {
-		$url = new \Katu\Types\TUrl($url);
+		$url = new \Katu\Types\TURL($url);
 
 		$curl = new \Curl\Curl;
 		$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
@@ -77,7 +83,7 @@ class File {
 		return $this->path;
 	}
 
-	public function getUrl() {
+	public function geTURL() {
 		try {
 			$publicRoot = \Katu\Config::get('app', 'publicRoot');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
@@ -86,7 +92,7 @@ class File {
 
 		$publicPath = realpath(new \Katu\Utils\File(BASE_DIR, $publicRoot));
 		if (preg_match('#^' . $publicPath . '(.*)$#', $this->getPath(), $match)) {
-			return new \Katu\Types\TUrl(implode('/', array_map(function($i) {
+			return new \Katu\Types\TURL(implode('/', array_map(function($i) {
 				return trim($i, '/');
 			}, [
 				\Katu\Config::get('app', 'baseUrl'),

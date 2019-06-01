@@ -11,7 +11,7 @@ class Image {
 	}
 
 	public function __toString() {
-		return (string)$this->getSource()->getUrl();
+		return (string)$this->getSource()->geTURL();
 	}
 
 	public function getSource() {

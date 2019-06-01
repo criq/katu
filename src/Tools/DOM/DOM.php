@@ -21,7 +21,7 @@ class DOM {
 	}
 
 	static function crawlUrl($url, $timeout = null) {
-		return static::crawlHtml(Cache::getUrl($url, $timeout));
+		return static::crawlHtml(Cache::geTURL($url, $timeout));
 	}
 
 }

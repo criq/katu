@@ -65,7 +65,7 @@ class File extends \Katu\Model {
 	}
 
 	static function createFromUrl(\Katu\Models\User $creator = null, $url) {
-		$url = new \Katu\Types\TUrl($url);
+		$url = new \Katu\Types\TURL($url);
 
 		$temporaryFile = \Katu\Utils\File::createTemporaryFromUrl($url);
 		if (!$temporaryFile) {

@@ -1,8 +1,6 @@
 <?php
 
-namespace Katu\Utils;
-
-use \Katu\Exception;
+namespace Katu\Tools\Files\Formats;
 
 class CSS {
 

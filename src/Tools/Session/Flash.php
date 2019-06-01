@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Tools\Session;
 
 class Flash extends Session {
 

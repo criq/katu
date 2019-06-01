@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Tools\Session;
 
 class Session {
 
@@ -91,12 +91,12 @@ class Session {
 
 	static function setCookieParams($config = array()) {
 		try {
-			$config = \Katu\Config::getApp('cookie');
+			$config = \Katu\Config\Config::getApp('cookie');
 		} catch (\Exception $e) {
 			$config = array();
 		}
 
-		$config = array_merge(Cookie::getDefaultConfig(), $config);
+		$config = array_merge(\Katu\Tools\Cookies\Cookie::getDefaultConfig(), $config);
 
 		return session_set_cookie_params($config['lifetime'], $config['path'], $config['domain'], $config['secure'], $config['httponly']);
 	}

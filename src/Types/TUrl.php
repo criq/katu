@@ -2,21 +2,31 @@
 
 namespace Katu\Types;
 
-class TUrl {
+class TURL {
 
 	const DEFAULT_SCHEME = 'http';
 
 	public $value;
 
 	public function __construct($value) {
-		// Remove invalid characters.
-		$value = iconv(mb_detect_encoding($value), 'ASCII//IGNORE', $value);
+		// Is already a URL object.
+		if ($value instanceof static) {
 
-		if (!self::isValid($value)) {
-			throw new \Exception("Invalid URL '" . $value . "'.");
+			$this->value = (string)$value;
+
+		// Is just a string.
+		} else {
+
+			// Remove invalid characters.
+			$sanitizedValue = iconv(mb_detect_encoding($value), 'ASCII//IGNORE', $value);
+
+			if (!self::isValid($sanitizedValue)) {
+				throw new \Exception("Invalid URL '" . $value . "'.");
+			}
+
+			$this->value = (string)trim($value);
+
 		}
-
-		$this->value = (string) (trim($value));
 	}
 
 	public function __toString() {

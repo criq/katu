@@ -25,7 +25,7 @@ class ImageVersion {
 			return (string)\Katu\Utils\Url::getFor('images.getVersionSrc.url', [
 				'version' => $this->version->getName(),
 			], [
-				'url' => $this->image->getSource()->getUrl(),
+				'url' => $this->image->getSource()->geTURL(),
 			]);
 		}
 

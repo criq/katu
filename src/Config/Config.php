@@ -1,15 +1,13 @@
 <?php
 
-namespace Katu;
-
-use \Katu\Utils\Cache;
+namespace Katu\Config;
 
 class Config {
 
 	static function get() {
 		$args = func_get_args();
 
-		return Cache::getRuntime(array_merge(['config'], $args), function() use($args) {
+		return \Katu\Tools\Cache\Runtime::get(array_merge(['config'], $args), function() use($args) {
 			try {
 				return call_user_func_array([new \Katu\Types\TArray(self::getAll()), 'getValueByArgs'], $args);
 			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
@@ -19,7 +17,7 @@ class Config {
 	}
 
 	static function getAll() {
-		return Cache::getRuntime('config', function() {
+		return \Katu\Tools\Cache\Runtime::get('config', function() {
 
 			$config = [];
 			foreach (self::getFiles() as $file) {
@@ -28,9 +26,9 @@ class Config {
 					$config[$pathinfo['filename']] = [];
 				}
 				if ($pathinfo['extension'] == 'yaml') {
-					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array) \Katu\Utils\YAML::decode($file));
+					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array)\Katu\Tools\Files\Formats\YAML::decode($file));
 				} else {
-					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array) include $file);
+					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array)include $file);
 				}
 			}
 
@@ -45,7 +43,7 @@ class Config {
 
 		foreach (scandir($dir) as $file) {
 			if (preg_match('#^[a-z]+\.(php|yaml)$#i', $file)) {
-				$files[] = Utils\FileSystem::joinPaths($dir, $file);
+				$files[] = \Katu\Tools\Files\File::joinPaths($dir, $file);
 			}
 		}
 

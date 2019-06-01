@@ -27,12 +27,12 @@ class PayU {
 		);
 	}
 
-	public function getEndpointUrl($endpoint, $encoding = 'UTF') {
+	public function getEndpoinTURL($endpoint, $encoding = 'UTF') {
 		return static::BASE_URL . '/' . $encoding . '/' . $endpoint;
 	}
 
-	public function getNewPaymentUrl($params) {
-		$url = $this->getEndpointUrl('NewPayment');
+	public function getNewPaymenTURL($params) {
+		$url = $this->getEndpoinTURL('NewPayment');
 
 		$params = array(
 			'pos_id'       => $this->posId,
@@ -61,7 +61,7 @@ class PayU {
 
 		$params['sig'] = md5(implode(array_values($params)));
 
-		return \Katu\Types\TUrl::make($url, $params);
+		return \Katu\Types\TURL::make($url, $params);
 	}
 
 	public function getPaymentStatus($sessionId, $encoding = 'UTF') {

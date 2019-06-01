@@ -1,11 +1,10 @@
 <?php
 
-namespace Katu\Models;
+namespace Katu\Models\Models;
 
-use \Katu\Exception;
-use \Sexy\CmpNotEq;
+use \Sexy\Sexy as SX;
 
-class User extends \Katu\Model {
+class User extends \Katu\Models\Model {
 
 	const TABLE = 'users';
 
@@ -155,7 +154,7 @@ class User extends \Katu\Model {
 		// Look for another user with this e-mail address.
 		if (static::getBy([
 			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
-			new CmpNotEq(static::getIdColumn(), $this->getId()),
+			SX::cmpNotEq(static::getIdColumn(), $this->getId()),
 		])->getTotal()) {
 			throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
 				->setAbbr('emailAddressInUse')

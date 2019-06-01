@@ -9,7 +9,7 @@ abstract class Source {
 	abstract public function getDir();
 	abstract public function getExtension();
 	abstract public function getUri();
-	abstract public function getUrl();
+	abstract public function geTURL();
 
 	public function __construct($input) {
 		$this->input = $input;
@@ -26,10 +26,10 @@ abstract class Source {
 
 		// File on filesystem.
 		} elseif ($input instanceof \Katu\Utils\File) {
-			return new Sources\Url($input->getUrl());
+			return new Sources\Url($input->geTURL());
 
 		// URL.
-		} elseif ($input instanceof \Katu\Types\TUrl) {
+		} elseif ($input instanceof \Katu\Types\TURL) {
 			return new Sources\Url($input);
 
 		// File model.
@@ -49,7 +49,7 @@ abstract class Source {
 		} elseif (is_string($input)) {
 
 			try {
-				return new Sources\Url(new \Katu\Types\TUrl($input));
+				return new Sources\Url(new \Katu\Types\TURL($input));
 			} catch (\Exception $e) {
 				// Nevermind.
 			}
@@ -57,7 +57,7 @@ abstract class Source {
 			try {
 				$file = new \Katu\Utils\File($input);
 				if ($file->exists()) {
-					return new Sources\Url($file->getUrl());
+					return new Sources\Url($file->geTURL());
 				}
 
 				throw new \Exception;

@@ -8,14 +8,6 @@ class System {
 
 	static $names = [];
 
-	static function joinPaths() {
-		return implode('/', array_map(function($i) {
-
-			return rtrim(implode('.', (array) $i), '/');
-
-		}, func_get_args()));
-	}
-
 	static function getTree($dir) {
 		if (!function_exists('__scandirr')) {
 
@@ -52,43 +44,6 @@ class System {
 		finfo_close($finfo);
 
 		return $mime;
-	}
-
-	static function getPathForName($nameParts, $options = []) {
-		// TODO - vyřešit cache (je tam rekurze)?
-		#return \Katu\Cache::get(['fileSystemName', $nameParts], 86400, function($nameParts, $options) {
-
-			$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
-			$nameParts = array_values(array_filter($nameParts));
-
-			$segments = new FileSystemPathSegments;
-
-			// Special treatment of URLs.
-			foreach ($nameParts as $namePart) {
-
-				try {
-					$urlParts = (new \Katu\Types\TUrl($namePart))->getParts();
-					$segments->add('!' . $urlParts['scheme']);
-					foreach (array_reverse(explode('.', $urlParts['host'])) as $segment) {
-						$segments->add('!' . $segment);
-					}
-					$segments->add('!' . $urlParts['path']);
-					$segments->add($urlParts['query']);
-				} catch (\Exception $e) {
-					$segments->add($namePart);
-				}
-
-			}
-
-			// Get path segments.
-			$segments = $segments->getPathSegments();
-
-			// Attach hashed hidden file name at the end.
-			$segments[] = '.' . sha1(serialize($segments));
-
-			return implode('/', $segments);
-
-		#}, $nameParts, $options);
 	}
 
 	static function touch($path) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Config;
 
 class Env {
 
@@ -29,7 +29,7 @@ class Env {
 	}
 
 	static function getWholeHash() {
-		return sha1(Utils\JSON::encodeStandard(self::getEnvProperties()));
+		return sha1(\Katu\Tools\Files\Formats\JSON::encodeStandard(self::getEnvProperties()));
 	}
 
 	static function getEnvProperties() {

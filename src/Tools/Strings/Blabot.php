@@ -13,7 +13,7 @@ class Blabot {
 			'dictionary' => 1,
 		], $params);
 
-		$url = \Katu\Types\TUrl::make('http://api.blabot.net', $params);
+		$url = \Katu\Types\TURL::make('http://api.blabot.net', $params);
 		$res = JSON::decodeAsArray(\Katu\Cache\Url::get($url, 86400));
 
 		return $res['blabot']['result'];

@@ -146,10 +146,10 @@ class Cache {
 		return $path;
 	}
 
-	static function getUrl($url, $timeout = null) {
+	static function geTURL($url, $timeout = null) {
 		return \Katu\Utils\Cache::get($url, function() use($url) {
 
-			$response = (new \Katu\Types\TUrl((string) $url))->get($curl);
+			$response = (new \Katu\Types\TURL((string) $url))->get($curl);
 			if ($curl->error) {
 				throw (new \Katu\Exceptions\ErrorException("Error getting URL " . ((string) $url)))
 					->setAbbr('urlUnavailable')
@@ -165,23 +165,7 @@ class Cache {
 		}, $timeout);
 	}
 
-	static function getRuntime($name, $callback = null) {
-		$args = array_slice(func_get_args(), 2);
-		$cacheName = static::getPath((array) $name, (array) $args);
 
-		// There's something cached.
-		if (isset(static::$runtime[$cacheName]) && !is_null(static::$runtime[$cacheName])) {
-			return static::$runtime[$cacheName];
-		}
-
-		// There is callback.
-		if (!is_null($callback)) {
-			static::$runtime[$cacheName] = call_user_func_array($callback, $args);
-			return static::$runtime[$cacheName];
-		}
-
-		return null;
-	}
 
 	static function resetRuntime($name = null) {
 		if ($name) {

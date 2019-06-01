@@ -24,7 +24,7 @@ class Geocode {
 
 			foreach ($apiKeys as $apiKey) {
 
-				$url = \Katu\Types\TUrl::make('https://maps.googleapis.com/maps/api/geocode/json', [
+				$url = \Katu\Types\TURL::make('https://maps.googleapis.com/maps/api/geocode/json', [
 					'address'    => $address,
 					'components' => implode('|', $componentArray),
 					'sensor'     => 'false',

@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu;
+namespace Katu\Errors;
 
-class Errors implements \Iterator, \ArrayAccess {
+class Collection implements \Iterator, \ArrayAccess {
 
 	public $errors = [];
 

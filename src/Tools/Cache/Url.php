@@ -11,13 +11,13 @@ class Url extends \Katu\Cache {
 	protected $curlEncoding = null;
 
 	public function __construct($url = null, $timeout = null) {
-		$this->setUrl($url);
+		$this->seTURL($url);
 		$this->setTimeout($timeout);
 		$this->setCallback($this->generateCallback());
 		$this->setArgs($url);
 	}
 
-	public function setUrl($url) {
+	public function seTURL($url) {
 		$this->url = $url;
 		$this->setName(static::generateNameFromUrl($this->url));
 
@@ -27,7 +27,7 @@ class Url extends \Katu\Cache {
 	static function generateNameFromUrl($url) {
 		$name = [];
 
-		$url = new \Katu\Types\TUrl((string)$url);
+		$url = new \Katu\Types\TURL((string)$url);
 		$urlParts = $url->getParts();
 
 		$name = [
@@ -49,7 +49,7 @@ class Url extends \Katu\Cache {
 		return $name;
 	}
 
-	public function getUrl() {
+	public function geTURL() {
 		return $this->url;
 	}
 

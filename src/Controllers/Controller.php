@@ -20,7 +20,7 @@ class Controller {
 
 		foreach ($urls as $url) {
 			$url = (string) $url;
-			if (\Katu\Types\TUrl::isValid($url)) {
+			if (\Katu\Types\TURL::isValid($url)) {
 				try {
 					return $app->redirect($url, $code);
 				} catch (\Slim\Exception\Stop $e) {

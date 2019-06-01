@@ -85,7 +85,6 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable {
 	}
 
 	public function getRandomItems($n) {
-		$array = [];
 		for ($i = 0; $i < $n; $i++) {
 			$res[] = $this->array[array_rand($this->array)];
 		}
@@ -152,6 +151,10 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable {
 	}
 
 	public function append($array) {
+		if (!is_array($array) && !($array instanceof static)) {
+			$array = [$array];
+		}
+
 		$this->array = array_merge($this->array, (new static($array))->getArray());
 
 		return true;
@@ -185,6 +188,18 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable {
 
 	public function map($callback) {
 		$array = array_map($callback, $this->array);
+
+		return new static($array);
+	}
+
+	public function filter($callback = null) {
+		if (!$callback) {
+			$callback = function($i) {
+				return (bool)$i;
+			};
+		}
+
+		$array = array_filter($this->array, $callback);
 
 		return new static($array);
 	}

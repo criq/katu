@@ -151,8 +151,8 @@ class Facebook {
 		return false;
 	}
 
-	static function redirectToFacebookLoginUrl($redirectUrl) {
-		header('Location: ' . (string) $redirectUrl, true, 302);
+	static function redirectToFacebookLoginUrl($redirecTURL) {
+		header('Location: ' . (string) $redirecTURL, true, 302);
 		die;
 	}
 

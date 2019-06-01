@@ -97,7 +97,7 @@ class View {
 		}));
 
 		// Deprecated.
-		$twig->addFunction(new \Twig_SimpleFunction('getUrlFor', function() {
+		$twig->addFunction(new \Twig_SimpleFunction('geTURLFor', function() {
 			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
 		}));
 
@@ -109,12 +109,12 @@ class View {
 			return (string) call_user_func_array(['\Katu\Utils\Url', 'getDecodedFor'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCurrentUrl', function() {
+		$twig->addFunction(new \Twig_SimpleFunction('getCurrenTURL', function() {
 			return (string) call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('makeUrl', function() {
-			return (string) call_user_func_array(['\Katu\Types\TUrl', 'make'], func_get_args());
+			return (string) call_user_func_array(['\Katu\Types\TURL', 'make'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {
@@ -140,7 +140,7 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getPaginationUrl', function() {
-			$url       =          new \Katu\Types\TUrl(func_get_arg(0));
+			$url       =          new \Katu\Types\TURL(func_get_arg(0));
 			$page      = (int)    func_get_arg(1);
 			$pageIdent = (string) func_get_arg(2);
 
@@ -169,7 +169,7 @@ class View {
 			} else {
 				$file = new \Katu\Utils\File(BASE_DIR, func_get_arg(0));
 			}
-			$url = new \Katu\Types\TUrl($file->getUrl());
+			$url = new \Katu\Types\TURL($file->geTURL());
 			$url->addQueryParam('hash', hash('md4', $file->get()));
 
 			return $url;

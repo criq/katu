@@ -4,7 +4,7 @@ namespace Katu\Image\Sources;
 
 class Url extends \Katu\Image\Source {
 
-	public function __construct(\Katu\Types\TUrl $input) {
+	public function __construct(\Katu\Types\TURL $input) {
 		return parent::__construct($input);
 	}
 
@@ -42,7 +42,7 @@ class Url extends \Katu\Image\Source {
 		return (string)$this->input;
 	}
 
-	public function getUrl() {
+	public function geTURL() {
 		return (string)$this->input;
 	}
 

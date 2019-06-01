@@ -13,7 +13,7 @@ class UrlShortener {
 	static function shorten($url) {
 		return \Katu\Utils\Cache::get(function($url) {
 
-			$apiUrl = \Katu\Types\TUrl::make('https://www.googleapis.com/urlshortener/v1/url', [
+			$apiUrl = \Katu\Types\TURL::make('https://www.googleapis.com/urlshortener/v1/url', [
 				'key' => static::getApiKey(),
 			]);
 

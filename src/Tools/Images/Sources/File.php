@@ -20,7 +20,7 @@ class File extends \Katu\Image\Source {
 		return (string)$this->input->getFile();
 	}
 
-	public function getUrl() {
+	public function geTURL() {
 		return false;
 	}
 

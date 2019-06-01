@@ -12,7 +12,7 @@ class BaconIpsum {
 			'format'           => 'json',
 		], $params);
 
-		$url = \Katu\Types\TUrl::make('https://baconipsum.com/api/', $params);
+		$url = \Katu\Types\TURL::make('https://baconipsum.com/api/', $params);
 		$res = \Katu\Cache\Url::get($url, 86400);
 
 		return $res[0];

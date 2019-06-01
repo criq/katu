@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Models;
 
 use \App\Models\File;
 use \App\Models\FileAttachment;
@@ -10,7 +10,7 @@ use \Sexy\CmpNotEq;
 use \Sexy\OrderBy;
 use \Sexy\Keyword;
 
-class Model extends ModelBase {
+class Model extends Base {
 
 	const CACHE_IN_MEMORY_BY_PRIMARY_KEY = false;
 
@@ -498,7 +498,7 @@ class Model extends ModelBase {
 			return $file->getPath();
 
 		// Is URL.
-		} elseif (Types\TUrl::isValid($file)) {
+		} elseif (Types\TURL::isValid($file)) {
 			return $file;
 		}
 

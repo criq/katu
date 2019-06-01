@@ -1,35 +1,34 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Tools\Routing;
 
 use \Katu\App;
-use \Katu\Config;
-use \Katu\Types\TUrl;
+use \Katu\Types\TURL;
 
-class Url {
+class URL {
 
 	static function isHttps() {
 		return isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
 	}
 
 	static function getCurrent() {
-		return new TUrl('http' . (self::isHttps() ? 's' : null) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+		return new TURL('http' . (self::isHttps() ? 's' : null) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 	}
 
 	static function getBase() {
-		return new TUrl(Config::getApp('baseUrl'));
+		return new TURL(\Katu\Config\Config::getApp('baseUrl'));
 	}
 
 	static function getFor($handle, $args = [], $params = []) {
 		$app = App::get();
 
-		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', (array)$args))), $params);
+		return TURL::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, array_map('urlencode', (array)$args))), $params);
 	}
 
 	static function getDecodedFor($handle, $args = [], $params = []) {
 		$app = App::get();
 
-		return TUrl::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, $args)), $params);
+		return TURL::make(self::joinPaths(self::getBase()->getHostWithScheme(), $app->urlFor($handle, $args)), $params);
 	}
 
 	static function joinPaths() {
