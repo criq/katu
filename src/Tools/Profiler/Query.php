@@ -11,7 +11,7 @@ class Query {
 			$this->query = (string)trim($query);
 		}
 
-		if ($duration instanceof \Katu\Utils\Stopwatch) {
+		if ($duration instanceof \Katu\Tools\Profiler\Stopwatch) {
 			$this->duration = (int)$duration->getMicroDuration();
 		} else {
 			$this->duration = (int)$duration;

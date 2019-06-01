@@ -39,7 +39,7 @@ class TableBase extends \Sexy\Expression {
 	public function getColumnDescriptions() {
 		$table = $this;
 
-		return \Katu\Cache::get(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], 86400, function() use($table) {
+		return \Katu\Cache\Cache::get(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], 86400, function($table) {
 
 			$columns = [];
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
@@ -48,7 +48,7 @@ class TableBase extends \Sexy\Expression {
 
 			return $columns;
 
-		});
+		}, $table);
 	}
 
 	public function getColumnDescription($columnName) {

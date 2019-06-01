@@ -54,7 +54,7 @@ class Controller {
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 			$app->response->setBody(static::prepareBody($viewClass::render($template, static::$data)));
 
-			// Remove flash memory.
+			// Reset flash memory.
 			Flash::reset();
 
 			return true;

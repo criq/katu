@@ -28,7 +28,7 @@ class AccessToken extends \Katu\Model {
 		$sql = SX::select()
 			->from(static::getTable())
 			->where(SX::eq(static::getColumn('userId'), (int)$user->getId()))
-			->where(SX::cmpGreaterThanOrEqual(static::getColumn('timeExpires'), (new \Katu\Utils\DateTime())->getDbDateTimeFormat()))
+			->where(SX::cmpGreaterThanOrEqual(static::getColumn('timeExpires'), (new \Katu\Tools\DateTime\DateTime())->getDbDateTimeFormat()))
 			;
 
 		$object = static::getOneBySql($sql);
@@ -50,7 +50,7 @@ class AccessToken extends \Katu\Model {
 	}
 
 	public function getRemainingTime() {
-		return (new \Katu\Utils\DateTime($this->timeExpires))->getTimestamp() - (new \Katu\Utils\DateTime())->getTimestamp();
+		return (new \Katu\Tools\DateTime\DateTime($this->timeExpires))->getTimestamp() - (new \Katu\Tools\DateTime\DateTime())->getTimestamp();
 	}
 
 }

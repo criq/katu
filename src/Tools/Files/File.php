@@ -304,7 +304,7 @@ class File {
 	}
 
 	public function getDateTimeModified() {
-		return new \Katu\Utils\DateTime('@' . filemtime($this));
+		return new \Katu\Tools\DateTime\DateTime('@' . filemtime($this));
 	}
 
 	public function eachRecursive($callback) {

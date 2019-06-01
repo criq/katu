@@ -53,7 +53,7 @@ class Cache {
 		} elseif (is_float($timeout)) {
 			return round($timeout);
 		} elseif (is_string($timeout)) {
-			return (new \Katu\Utils\DateTime('- ' . $timeout))->getAge();
+			return (new \Katu\Tools\DateTime\DateTime('- ' . $timeout))->getAge();
 		}
 
 		return null;
@@ -145,7 +145,7 @@ class Cache {
 	}
 
 	static function getMaxApcSize() {
-		$size = \Katu\Utils\FileSize::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
+		$size = \Katu\Tools\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
 
 		return $size * .75;
 	}
