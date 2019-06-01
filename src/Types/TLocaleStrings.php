@@ -33,7 +33,7 @@ class TLocaleStrings implements \Iterator, \ArrayAccess {
 	}
 
 	public function getPreferredString() {
-		$preferredLocales = \Katu\Utils\Formatter::getPreferredLocales();
+		$preferredLocales = \Katu\Tools\Intl\Formatter::getPreferredLocales();
 
 		// Exact match.
 		$localeStringArray = $this->getLocaleArray();

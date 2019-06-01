@@ -14,8 +14,12 @@ class Key {
 		$this->source = $source;
 	}
 
+	public function __toString() {
+		return $this->getKey();
+	}
+
 	public function getHash($arg) {
-		return sha1(serialize($arg));
+		return sha1(var_export($arg, true));
 	}
 
 	public function getHashPrefix($arg) {

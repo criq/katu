@@ -22,9 +22,8 @@ class Handler {
 		ini_set('display_errors', true);
 		ini_set('error_log', ERROR_LOG);
 
-		set_error_handler(function($code, $message, $file = null, $line = null, $args = null) {
-			static::log($message, $code, $file, $line);
-			return true;
+		set_error_handler(function($code, $message, $file = null, $line = null) {
+			throw new \Katu\Exceptions\Exception($message . " in " . $file . ", line " . $line, $code);
 		});
 
 		set_exception_handler(function($exception) {
