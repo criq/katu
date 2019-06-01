@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\File;
 
-class FileStorage {
+class Storage {
 
 	static function set($name, $value) {
 		return static::setValue($name, serialize($value));

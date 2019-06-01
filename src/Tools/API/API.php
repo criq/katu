@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu;
+namespace Katu\Utils\API;
 
-class Api {
+class API {
 
 	static function success($res = null, $options = []) {
 		$app = App::get();

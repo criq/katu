@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Utils\Callback;
 
 class Callback {
 

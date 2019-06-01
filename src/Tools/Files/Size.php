@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\File;
 
-class FileSize {
+class Size {
 
 	public $size;
 

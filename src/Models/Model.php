@@ -229,7 +229,7 @@ class Model extends ModelBase {
 	static function getIdColumnName() {
 		$table = static::getTable();
 
-		return Utils\Cache::getFromMemory(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name->name], function() use($table) {
+		return \Katu\Cache::get(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name->name], 86400, function() use($table) {
 
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
 				if (isset($row['Key']) && $row['Key'] == 'PRI') {
@@ -274,7 +274,7 @@ class Model extends ModelBase {
 		};
 
 		if (static::CACHE_IN_MEMORY_BY_PRIMARY_KEY) {
-			return Utils\Cache::getFromMemory(['model', 'get'], $callback, static::getClass(), $primaryKey);
+			return \Katu\Cache::get(['model', 'get'], 86400, $callback, static::getClass(), $primaryKey);
 		} else {
 			return call_user_func_array($callback, [static::getClass(), $primaryKey]);
 		}

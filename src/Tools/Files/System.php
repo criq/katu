@@ -1,11 +1,10 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\File;
 
-use \Katu\Classes\FileSystemPathSegment;
 use \Katu\Classes\FileSystemPathSegments;
 
-class FileSystem {
+class System {
 
 	static $names = [];
 
@@ -56,7 +55,8 @@ class FileSystem {
 	}
 
 	static function getPathForName($nameParts, $options = []) {
-		return Cache::getFromMemory(['fileSystemName', $nameParts], function($nameParts, $options) {
+		// TODO - vyřešit cache (je tam rekurze)?
+		#return \Katu\Cache::get(['fileSystemName', $nameParts], 86400, function($nameParts, $options) {
 
 			$nameParts = is_array($nameParts) ? $nameParts : [$nameParts];
 			$nameParts = array_values(array_filter($nameParts));
@@ -88,7 +88,7 @@ class FileSystem {
 
 			return implode('/', $segments);
 
-		}, $nameParts, $options);
+		#}, $nameParts, $options);
 	}
 
 	static function touch($path) {

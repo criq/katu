@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Utils\Callback;
 
-class CallbackCollection {
+class Collection {
 
 	public $callbackCollection;
 
