@@ -4,7 +4,7 @@ namespace Katu\Models\Presets;
 
 use \Sexy\Sexy as SX;
 
-class File extends \Katu\Model {
+class File extends \Katu\Models\Model {
 
 	const TABLE = 'files';
 

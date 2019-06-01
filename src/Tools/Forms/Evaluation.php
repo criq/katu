@@ -3,7 +3,7 @@
 namespace Katu\Form;
 
 use \Katu\App;
-use \Katu\Session;
+use \Katu\Tools\Session\Session;
 use \Katu\Tools\Session\Flash;
 
 class Evaluation {

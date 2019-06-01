@@ -2,7 +2,7 @@
 
 namespace Katu\Utils;
 
-use \Katu\Session;
+use \Katu\Tools\Session\Session;
 use \Katu\Tools\DateTime\DateTime;
 
 class CSRF {

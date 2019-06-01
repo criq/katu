@@ -4,7 +4,7 @@ namespace Katu\Models\Presets;
 
 use \Sexy\Sexy as SX;
 
-class AccessToken extends \Katu\Model {
+class AccessToken extends \Katu\Models\Model {
 
 	const TABLE = 'access_tokens';
 

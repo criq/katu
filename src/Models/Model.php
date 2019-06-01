@@ -4,11 +4,7 @@ namespace Katu\Models;
 
 use \App\Models\File;
 use \App\Models\FileAttachment;
-use \Sexy\Select;
-use \Sexy\CmpEq;
-use \Sexy\CmpNotEq;
-use \Sexy\OrderBy;
-use \Sexy\Keyword;
+use \Sexy\Sexy as SX;
 
 class Model extends Base {
 
@@ -166,7 +162,7 @@ class Model extends Base {
 
 			$set = [];
 			foreach ($bindValues as $name => $value) {
-				$set[] = (new PDO\Name($name)) . " = :" . $name;
+				$set[] = (new \Katu\PDO\Name($name)) . " = :" . $name;
 			}
 
 			if ($set) {
@@ -346,10 +342,10 @@ class Model extends Base {
 		$preg = '^' . $slug . '(\-([0-9]+))?$';
 
 		// Select all already used slugs.
-		$sql = (new \Sexy\Select(static::getColumn($column)))
+		$sql = SX::select(static::getColumn($column))
 			->from(static::getTable())
-			->where(new \Sexy\CmpNotEq(static::getIdColumn(), $this->getId()))
-			->where(new \Sexy\CmpRegexp(static::getColumn($column), $preg))
+			->where(SX::cmpNotEq(static::getIdColumn(), $this->getId()))
+			->where(SX::cmpRegexp(static::getColumn($column), $preg))
 			->addExpressions($constraints)
 			;
 		$res = static::getPDO()->createQueryFromSql($sql)->getResult();
@@ -394,7 +390,7 @@ class Model extends Base {
 	}
 
 	static function checkUniqueColumnValue($whereExpressions, $excludeObject = null) {
-		$sql = (new \Sexy\Select(static::getTable()))
+		$sql = SX::select(static::getTable())
 			->from(static::getTable())
 			->addExpressions([
 				'where' => $whereExpressions,
@@ -402,7 +398,7 @@ class Model extends Base {
 			;
 
 		if (!is_null($excludeObject)) {
-			$sql->where(new \Sexy\CmpNotEq(static::getIdColumn(), $excludeObject->getId()));
+			$sql->where(SX::cmpNotEq(static::getIdColumn(), $excludeObject->getId()));
 		}
 
 		return !static::getBySql($sql)->getTotal();
@@ -439,7 +435,7 @@ class Model extends Base {
 
 		// Refresh the ones with position.
 		foreach ($this->getFileAttachments([
-			new CmpNotEq(FileAttachment::getColumn('position'), 0),
+			SX::cmpNotEq(FileAttachment::getColumn('position'), 0),
 		], [
 			'orderBy' => FileAttachment::getColumn('position'),
 		]) as $fileAttachment) {
@@ -449,7 +445,7 @@ class Model extends Base {
 
 		// Refresh the ones without position.
 		foreach ($this->getFileAttachments([
-			new CmpEq(FileAttachment::getColumn('position'), 0),
+			SX::eq(FileAttachment::getColumn('position'), 0),
 		], [
 			'orderBy' => FileAttachment::getColumn('timeCreated'),
 		]) as $fileAttachment) {
@@ -461,7 +457,7 @@ class Model extends Base {
 	}
 
 	public function getImageFileAttachments($expressions = []) {
-		$sql = (new Select(FileAttachment::getTable()))
+		$sql = SX::select(FileAttachment::getTable())
 			->from(FileAttachment::getTable())
 			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
 			->whereIn(File::getColumn('type'), [
@@ -472,8 +468,8 @@ class Model extends Base {
 			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
 			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
 			->orderBy([
-				new OrderBy(FileAttachment::getColumn('position')),
-				new OrderBy(FileAttachment::getColumn('timeCreated'), new Keyword('desc')),
+				SX::orderBy(FileAttachment::getColumn('position')),
+				SX::orderBy(FileAttachment::getColumn('timeCreated'), SX::kw('desc')),
 			])
 			->addExpressions($expressions)
 			;

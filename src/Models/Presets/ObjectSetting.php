@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-abstract class ObjectSetting extends \Katu\Model {
+abstract class ObjectSetting extends \Katu\Models\Model {
 
 	static function create($creator, $object, $name) {
 		if (!static::checkCrudParams($creator, $object, $name)) {

@@ -39,11 +39,11 @@ class Facebook {
 	}
 
 	static function getAccessToken() {
-		return \Katu\Session::get(static::ACCESS_TOKEN_SESSION_KEY);
+		return \Katu\Tools\Session\Session::get(static::ACCESS_TOKEN_SESSION_KEY);
 	}
 
 	static function setAccessToken($accessToken) {
-		return \Katu\Session::set(static::ACCESS_TOKEN_SESSION_KEY, $accessToken);
+		return \Katu\Tools\Session\Session::set(static::ACCESS_TOKEN_SESSION_KEY, $accessToken);
 	}
 
 	static function login($loginUrl, CallbackCollection $callbackCollection = null, $scopes = []) {

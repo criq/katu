@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-class FileAttachment extends \Katu\Model {
+class FileAttachment extends \Katu\Models\Model {
 
 	const TABLE = 'file_attachments';
 

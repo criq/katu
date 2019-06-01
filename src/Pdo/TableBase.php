@@ -18,6 +18,10 @@ class TableBase extends \Sexy\Expression {
 		return $this->getSql();
 	}
 
+	public function getPDO() {
+		return $this->pdo;
+	}
+
 	public function getSql(&$context = []) {
 		return implode('.', [new Name($this->pdo->config->database), $this->name]);
 	}
@@ -216,12 +220,8 @@ class TableBase extends \Sexy\Expression {
 		return ['!databases', '!' . $this->pdo->name, '!tables', '!totalRows', '!' . trim($this->name, '`')];
 	}
 
-	public function getLastUpdatedTmpName() {
-		return ['!databases', '!' . $this->pdo->name, '!tables', '!updated', trim($this->name, '`')];
-	}
-
-	public function getPDO() {
-		return $this->pdo;
+	public function getLastUpdatedTemporaryFile() {
+		return new \Katu\Tools\Files\Temporary('!databases', '!' . $this->pdo->name, '!tables', '!updated', trim($this->name, '`'));
 	}
 
 }

@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-class Geocode extends \Katu\Model {
+class Geocode extends \Katu\Models\Model {
 
 	const TABLE = 'geocodes';
 

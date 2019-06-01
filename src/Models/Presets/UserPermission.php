@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-class UserPermission extends \Katu\Model {
+class UserPermission extends \Katu\Models\Model {
 
 	const TABLE = 'user_permissions';
 

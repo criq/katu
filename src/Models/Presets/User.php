@@ -78,7 +78,7 @@ class User extends \Katu\Models\Model {
 	}
 
 	static function getCurrent() {
-		return static::get(\Katu\Session::get('katu.user.id'));
+		return static::get(\Katu\Tools\Session\Session::get('katu.user.id'));
 	}
 
 	static function getByAccessToken($token) {
@@ -180,14 +180,14 @@ class User extends \Katu\Models\Model {
 	}
 
 	public function login() {
-		\Katu\Session::set('katu.user.id', (int)$this->getId());
+		\Katu\Tools\Session\Session::set('katu.user.id', (int)$this->getId());
 
 		return true;
 	}
 
 	static function logout() {
-		\Katu\Session::reset('katu.user.id');
-		\Katu\Cookie::remove('accessToken');
+		\Katu\Tools\Session\Session::reset('katu.user.id');
+		\Katu\Tools\Cookies\Cookie::remove('accessToken');
 
 		return true;
 	}

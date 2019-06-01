@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-class RolePermission extends \Katu\Model {
+class RolePermission extends \Katu\Models\Model {
 
 	const TABLE = 'role_permissions';
 

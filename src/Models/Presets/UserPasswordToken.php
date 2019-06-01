@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-class UserPasswordToken extends \Katu\Model {
+class UserPasswordToken extends \Katu\Models\Model {
 
 	const TABLE = 'user_password_tokens';
 

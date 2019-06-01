@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-class UserSetting extends \Katu\Model {
+class UserSetting extends \Katu\Models\Model {
 
 	const TABLE = 'user_settings';
 

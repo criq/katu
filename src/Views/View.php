@@ -122,11 +122,11 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getCookie', function() {
-			return call_user_func_array(['\Katu\Cookie', 'get'], func_get_args());
+			return call_user_func_array(['\Katu\Tools\Cookies\Cookie', 'get'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getSession', function() {
-			return call_user_func_array(['\Katu\Session', 'get'], func_get_args());
+			return call_user_func_array(['\Katu\Tools\Session\Session', 'get'], func_get_args());
 		}));
 
 		$twig->addFunction(new \Twig_SimpleFunction('getFlash', function() {

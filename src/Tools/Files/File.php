@@ -186,7 +186,7 @@ class File {
 	}
 
 	public function getDir() {
-		return new static(dirname($this));
+		return new self(dirname($this));
 	}
 
 	public function getBasename() {

@@ -5,14 +5,14 @@ namespace Katu\PDO;
 class Table extends TableBase {
 
 	public function touch() {
-		$file = new \Katu\Tools\Files\Temporary(static::getLastUpdatedTmpName());
+		$file = static::getLastUpdatedTemporaryFile();
 		$file->touch();
 
 		return true;
 	}
 
 	public function getLastUpdatedTime() {
-		$file = new \Katu\Tools\Files\Temporary(static::getLastUpdatedTmpName());
+		$file = static::getLastUpdatedTemporaryFile();
 
 		return $file->getDateTimeModified();
 	}
