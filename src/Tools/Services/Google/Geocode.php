@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils\Google;
+namespace Katu\Tools\Services\Google;
 
 class Geocode {
 
@@ -13,12 +13,12 @@ class Geocode {
 			}
 
 			try {
-				$apiKeys = \Katu\Config::get('google', 'geocode', 'api', 'keys');
+				$apiKeys = \Katu\Config\Config::get('google', 'geocode', 'api', 'keys');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				try {
-					$apiKeys = [\Katu\Config::get('google', 'geocode', 'api', 'key')];
+					$apiKeys = [\Katu\Config\Config::get('google', 'geocode', 'api', 'key')];
 				} catch (\Katu\Exceptions\MissingConfigException $e) {
-					$apiKeys = [\Katu\Config::get('google', 'api', 'key')];
+					$apiKeys = [\Katu\Config\Config::get('google', 'api', 'key')];
 				}
 			}
 
@@ -53,7 +53,7 @@ class Geocode {
 			return false;
 		}
 
-		return new GeocodeAddress($language, $res->results[0]);
+		return new \Katu\Tools\Services\Google\GeocodeAddress($language, $res->results[0]);
 	}
 
 }

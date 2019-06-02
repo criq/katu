@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils\Google;
+namespace Katu\Tools\Services\Google;
 
 class GeocodeAddress {
 

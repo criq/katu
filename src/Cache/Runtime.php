@@ -24,7 +24,7 @@ class Runtime {
 		return null;
 	}
 
-	public function clear() {
+	static function clear() {
 		return static::$cache = [];
 	}
 
