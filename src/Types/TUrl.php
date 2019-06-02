@@ -17,10 +17,7 @@ class TURL {
 		// Is just a string.
 		} else {
 
-			// Remove invalid characters.
-			$sanitizedValue = iconv(mb_detect_encoding($value), 'ASCII//IGNORE', $value);
-
-			if (!self::isValid($sanitizedValue)) {
+			if (!static::isValid($value)) {
 				throw new \Exception("Invalid URL '" . $value . "'.");
 			}
 
@@ -41,18 +38,18 @@ class TURL {
 			return $i;
 		});
 
-		return new self($url . ($params ? ('?' . http_build_query($params)) : null));
+		return new static($url . ($params ? ('?' . http_build_query($params)) : null));
 	}
 
 	static function build($parts) {
 		$url = '';
 
 		if (!isset($parts['host'])) {
-			throw new \Exception("Missing host");
+			throw new \Exception("Missing host.");
 		}
 
 		if (!isset($parts['scheme'])) {
-			$url .= self::DEFAULT_SCHEME;
+			$url .= static::DEFAULT_SCHEME;
 		} else {
 			$url .= $parts['scheme'];
 		}
@@ -140,7 +137,7 @@ class TURL {
 
 		$parts['query'][$name] = $value;
 
-		$this->value = self::build($parts);
+		$this->value = static::build($parts);
 
 		return $this;
 	}
@@ -150,7 +147,7 @@ class TURL {
 
 		unset($parts['query'][$name]);
 
-		$this->value = self::build($parts);
+		$this->value = static::build($parts);
 
 		return $this;
 	}
@@ -180,7 +177,7 @@ class TURL {
 
 		unset($parts['query']);
 
-		$this->value = self::build($parts);
+		$this->value = static::build($parts);
 
 		return $this;
 	}
@@ -195,7 +192,7 @@ class TURL {
 			}
 		}
 
-		$this->value = self::build($parts);
+		$this->value = static::build($parts);
 
 		return $this;
 	}

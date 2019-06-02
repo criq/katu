@@ -69,7 +69,7 @@ class Connection {
 	}
 
 	public function getTableNames() {
-		return \Katu\Utils\Cache::getRuntime(['pdo', $this->name, 'tables'], function() {
+		return \Katu\Cache\Runtime::get(['pdo', $this->name, 'tables'], function() {
 			$sql = " SHOW TABLES ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 

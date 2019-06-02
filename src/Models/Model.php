@@ -37,7 +37,7 @@ class Model extends Base {
 		$query = static::getPDO()->createQuery();
 
 		$columns = array_map(function($i) {
-			return new PDO\Name($i);
+			return new \Katu\PDO\Name($i);
 		}, array_keys($bindValues));
 		$values  = array_map(function($i) {
 			return ':' . $i;
