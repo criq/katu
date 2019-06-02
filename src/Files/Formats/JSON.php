@@ -20,6 +20,15 @@ class JSON {
 		return true;
 	}
 
+	static function respondError($var = null, $options = []) {
+		static::respond($var);
+
+		$app = \Katu\App::get();
+		$app->response->setStatus(500);
+
+		return true;
+	}
+
 	static function getEncodeBitmask() {
 		return
 			  (defined('JSON_PRETTY_PRINT')      ? JSON_PRETTY_PRINT      : null)
