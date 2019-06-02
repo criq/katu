@@ -15,7 +15,7 @@ class JSON {
 			$body = static::encode($var);
 		}
 
-		$app->response->setBody(\Katu\Controller::prepareBody($body));
+		$app->response->setBody(\Katu\Controllers\Controller::prepareBody($body));
 
 		return true;
 	}
