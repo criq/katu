@@ -90,7 +90,6 @@ class Connection {
 
 	public function getViewNames() {
 		return \Katu\Utils\Cache::getRuntime(['pdo', $this->name, 'views'], function() {
-
 			$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 
@@ -98,7 +97,6 @@ class Connection {
 				$names = array_values($i);
 				return $names[0];
 			}, $res);
-
 		});
 	}
 

@@ -5,7 +5,7 @@ namespace Katu\Utils;
 class System {
 
 	static function getNumberOfCpus() {
-		return \Katu\Cache\Cache::get(['system', 'numberOfCpus'], 86400, function() {
+		return \Katu\Cache\General::get(['system', 'numberOfCpus'], 86400, function() {
 
 			$numCpus = 1;
 			if (is_file('/proc/cpuinfo')) {

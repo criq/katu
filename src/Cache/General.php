@@ -2,7 +2,7 @@
 
 namespace Katu\Cache;
 
-class Cache {
+class General {
 
 	const DIR_NAME = 'cache';
 

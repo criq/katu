@@ -20,7 +20,7 @@ class Url extends \Katu\Image\Source {
 				return $pathinfo['extension'];
 			}
 
-			$size = \Katu\Cache\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($source) {
+			$size = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function($source) {
 				return getimagesize($source->getUri());
 			}, $this);
 
