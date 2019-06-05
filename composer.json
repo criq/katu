@@ -34,9 +34,7 @@
 		"symfony/intl": "@stable",
 		"twig/extensions": "@stable",
 		"twig/twig": "@stable",
-		"vlucas/phpdotenv" : "@stable"
-	},
-	"require-dev": {
+		"vlucas/phpdotenv" : "@stable",
 		"middlewares/psr15-middlewares": "dev-master"
 	},
 	"minimum-stability": "dev",

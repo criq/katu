@@ -70,11 +70,11 @@ class App {
 				$config = [];
 			}
 
-			$config['logger'] = new \Flynsarmy\SlimMonolog\Log\MonologWriter([
-				'handlers' => [
-					new \Monolog\Handler\StreamHandler(ERROR_LOG),
-				],
-			]);
+			$config['logger'] = [
+				'name' => 'katu-app',
+				'level' => \Monolog\Logger::DEBUG,
+				'path' => ERROR_LOG,
+			];
 
 			static::$app = new \Slim\App($config);
 			static::$app->add(new TrailingSlash(false));
@@ -91,7 +91,7 @@ class App {
 
 		}
 
-		return $app;
+		return static::$app;
 	}
 
 	static function isDev() {
