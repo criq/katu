@@ -37,7 +37,7 @@
 		"vlucas/phpdotenv" : "@stable"
 	},
 	"require-dev": {
-		"middlewares/psr15-middlewares": "@stable"
+		"middlewares/psr15-middlewares": "dev-master"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
