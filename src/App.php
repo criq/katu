@@ -64,36 +64,30 @@ class App {
 
 			static::init();
 
-			static::$app = new \Slim\App;
-			static::$app->add(new TrailingSlash(false));
-
-
-
 			try {
 				$config = \Katu\Config\Config::get('app', 'slim');
 			} catch (\Exception $e) {
 				$config = [];
 			}
 
-			// Logger.
-			$config['logger'] = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
-				'handlers' => array(
+			$config['logger'] = new \Flynsarmy\SlimMonolog\Log\MonologWriter([
+				'handlers' => [
 					new \Monolog\Handler\StreamHandler(ERROR_LOG),
-				),
-			));
+				],
+			]);
 
-			// Create app.
-			$app = new \Slim\Slim($config);
+			static::$app = new \Slim\App($config);
+			static::$app->add(new TrailingSlash(false));
 
 			// Add error middleware.
-			$app->add(new Middleware\Error());
+			#$app->add(new Middleware\Error());
 
 			// Add profiler middleware.
-			$app->add(new Middleware\Profiler());
+			#$app->add(new Middleware\Profiler());
 
 			// Default content-type header for debugging, will be probably overwritten by app.
-			header('Content-Type: text/html; charset=UTF-8');
-			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
+			#header('Content-Type: text/html; charset=UTF-8');
+			#$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
 		}
 
