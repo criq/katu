@@ -4,6 +4,8 @@ namespace Katu;
 
 class App {
 
+	static $app = null;
+
 	static function getExtendedClass($appClassName, $fallbackName) {
 		return class_exists($appClassName) ? $appClassName : $fallbackName;
 	}
@@ -57,42 +59,24 @@ class App {
 		return true;
 	}
 
-	static function isDev() {
-		return Config::get('app', 'slim', 'mode') == 'development';
-	}
-
-	static function isTest() {
-		return Config::get('app', 'slim', 'mode') == 'testing';
-	}
-
-	static function isProd() {
-		return Config::get('app', 'slim', 'mode') == 'production';
-	}
-
-	static function isProfilerOn() {
-		return \Katu\Cache\Runtime::get('profiler.on', function() {
-			try {
-				return \Katu\Config\Config::get('app', 'profiler');
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				return false;
-			}
-		});
-	}
-
 	static function get() {
-		$app = new \Slim\App();
-		if (!$app) {
+		if (!static::$app) {
 
-			self::init();
+			static::init();
+
+			static::$app = new \Slim\App;
+			static::$app->add(new TrailingSlash(false));
+
+
 
 			try {
 				$config = \Katu\Config\Config::get('app', 'slim');
 			} catch (\Exception $e) {
-				$config = array();
+				$config = [];
 			}
 
 			// Logger.
-			$config['log.writer'] = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
+			$config['logger'] = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
 				'handlers' => array(
 					new \Monolog\Handler\StreamHandler(ERROR_LOG),
 				),
@@ -116,6 +100,28 @@ class App {
 		return $app;
 	}
 
+	static function isDev() {
+		return Config::get('app', 'slim', 'mode') == 'development';
+	}
+
+	static function isTest() {
+		return Config::get('app', 'slim', 'mode') == 'testing';
+	}
+
+	static function isProd() {
+		return Config::get('app', 'slim', 'mode') == 'production';
+	}
+
+	static function isProfilerOn() {
+		return \Katu\Cache\Runtime::get('profiler.on', function() {
+			try {
+				return \Katu\Config\Config::get('app', 'profiler');
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
+				return false;
+			}
+		});
+	}
+
 	static function getPDO($name = null) {
 		$names = array_keys(Config::getDb());
 
@@ -135,9 +141,9 @@ class App {
 	}
 
 	static function run() {
-		self::init();
+		static::init();
 
-		$app = self::get();
+		$app = static::get();
 
 		// Redirect to canonical host.
 		try {
@@ -163,7 +169,7 @@ class App {
 		// Catch all.
 		$catchAll = function() {
 
-			$app = self::get();
+			$app = static::get();
 
 			// Map URL to controller method.
 			$parts = array_filter(explode('/', $app->request->getResourceUri()));
@@ -183,7 +189,7 @@ class App {
 
 		try {
 
-			$app = self::get();
+			$app = static::get();
 
 			try {
 
