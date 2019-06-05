@@ -22,7 +22,7 @@ class View {
 		}
 
 		$loader = new \Twig_Loader_Filesystem($dirs);
-		$twig   = new \Twig_Environment($loader, [
+		$twig   = new \Twig\Environment($loader, [
 			'cache'       => \Katu\Files\File::joinPaths(TMP_PATH, 'twig'),
 			'auto_reload' => true,
 		]);
@@ -36,7 +36,7 @@ class View {
 		 * Image.
 		 */
 
-		$twig->addFunction(new \Twig_SimpleFunction('getImage', function($uri) {
+		$twig->addFunction(new \Twig\TwigFunction('getImage', function($uri) {
 			try {
 				return new \Katu\Image($uri);
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
@@ -48,25 +48,25 @@ class View {
 		 * Text.
 		 */
 
-		$twig->addFilter(new \Twig_SimpleFilter('shorten', function($string, $length, $options = []) {
+		$twig->addFilter(new \Twig\TwigFilter('shorten', function($string, $length, $options = []) {
 			$shorter = substr($string, 0, $length);
 
 			return $shorter;
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('asArray', function($variable) {
+		$twig->addFilter(new \Twig\TwigFilter('asArray', function($variable) {
 			return (array) $variable;
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('unique', function($variable) {
+		$twig->addFilter(new \Twig\TwigFilter('unique', function($variable) {
 			return array_unique($variable);
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('joinInSentence', function($list, $delimiter, $lastDelimiter) {
+		$twig->addFilter(new \Twig\TwigFilter('joinInSentence', function($list, $delimiter, $lastDelimiter) {
 			return (new \Katu\Types\TArray($list))->implodeInSentence($delimiter, $lastDelimiter);
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('isValidDateTime', function($date) {
+		$twig->addFilter(new \Twig\TwigFilter('isValidDateTime', function($date) {
 			try {
 				return (new \Katu\Tools\DateTime\DateTime($date))->isValid();
 			} catch (\Exception $e) {
@@ -74,11 +74,11 @@ class View {
 			}
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('markdown', function($text) {
+		$twig->addFilter(new \Twig\TwigFilter('markdown', function($text) {
 			return \Michelf\Markdown::defaultTransform($text);
 		}));
 
-		$twig->addFilter(new \Twig_SimpleFilter('nbsp', function($text) {
+		$twig->addFilter(new \Twig\TwigFilter('nbsp', function($text) {
 			return new \Twig_Markup(preg_replace('/\b([aiouksvz])(\s)/i', '\\1&nbsp;', $text), 'UTF-8');
 		}));
 
@@ -86,60 +86,60 @@ class View {
 		 * Functions.
 		 */
 
-		$twig->addFunction(new \Twig_SimpleFunction('dump', function() {
+		$twig->addFunction(new \Twig\TwigFunction('dump', function() {
 			foreach ((array) func_get_args() as $arg) {
 				var_dump($arg);
 			}
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getBaseDir', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getBaseDir', function() {
 			return BASE_DIR;
 		}));
 
 		// Deprecated.
-		$twig->addFunction(new \Twig_SimpleFunction('geTURLFor', function() {
+		$twig->addFunction(new \Twig\TwigFunction('geTURLFor', function() {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getFor'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('url', function() {
+		$twig->addFunction(new \Twig\TwigFunction('url', function() {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getFor'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('urlDecoded', function() {
+		$twig->addFunction(new \Twig\TwigFunction('urlDecoded', function() {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getDecodedFor'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCurrenTURL', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getCurrenTURL', function() {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getCurrent'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('makeUrl', function() {
+		$twig->addFunction(new \Twig\TwigFunction('makeUrl', function() {
 			return (string) call_user_func_array(['\Katu\Types\TURL', 'make'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getConfig', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getConfig', function() {
 			return call_user_func_array(['\Katu\Config', 'get'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCookie', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getCookie', function() {
 			return call_user_func_array(['\Katu\Tools\Cookies\Cookie', 'get'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getSession', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getSession', function() {
 			return call_user_func_array(['\Katu\Tools\Session\Session', 'get'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getFlash', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getFlash', function() {
 			return call_user_func_array(['\Katu\Tools\Session\Flash', 'get'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getPages', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getPages', function() {
 			$pagination = func_get_arg(0);
 
 			return $pagination->getPaginationPages(func_get_arg(1));
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getPaginationUrl', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getPaginationUrl', function() {
 			$url       =          new \Katu\Types\TURL(func_get_arg(0));
 			$page      = (int)    func_get_arg(1);
 			$pageIdent = (string) func_get_arg(2);
@@ -153,17 +153,17 @@ class View {
 			return $url->value;
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getCsrfToken', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getCsrfToken', function() {
 			$params = (array) @func_get_arg(0);
 
 			return \Katu\Tools\Security\CSRF::getFreshToken($params);
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getFile', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getFile', function() {
 			return new \Katu\Files\File(BASE_DIR, ltrim(func_get_arg(0), '/'));
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('getFileUrlWithHash', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getFileUrlWithHash', function() {
 			if (func_get_arg(0) instanceof \Katu\Files\File) {
 				$file = func_get_arg(0);
 			} else {
@@ -175,7 +175,7 @@ class View {
 			return $url;
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('lipsum', function($sentences = 10) {
+		$twig->addFunction(new \Twig\TwigFunction('lipsum', function($sentences = 10) {
 			try {
 				return \Katu\Tools\Strings\BaconIpsum::get();
 			} catch (\Exception $e) {
@@ -191,7 +191,7 @@ class View {
 			return false;
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('start', function() {
+		$twig->addFunction(new \Twig\TwigFunction('start', function() {
 			if (\Katu\Tools\Profiler\Profiler::isOn()) {
 				$profiler = \Katu\Tools\Profiler\Profiler::init('twig');
 
@@ -199,7 +199,7 @@ class View {
 			}
 		}));
 
-		$twig->addFunction(new \Twig_SimpleFunction('stop', function() {
+		$twig->addFunction(new \Twig\TwigFunction('stop', function() {
 			if (\Katu\Tools\Profiler\Profiler::isOn()) {
 				$profiler = \Katu\Tools\Profiler\Profiler::get('twig');
 
