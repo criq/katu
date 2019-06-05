@@ -35,7 +35,7 @@
 		"twig/extensions": "@stable",
 		"twig/twig": "@stable",
 		"vlucas/phpdotenv" : "@stable",
-		"middlewares/psr15-middlewares": "dev-master"
+		"middlewares/psr15-middlewares": "dev-master#03d55677aacd65398d3f651319b30560912efc13"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
