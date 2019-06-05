@@ -80,7 +80,7 @@ class App {
 	}
 
 	static function get() {
-		$app = \Slim\Slim::getInstance();
+		$app = new \Slim\App();
 		if (!$app) {
 
 			self::init();
