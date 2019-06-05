@@ -7,6 +7,10 @@ class Handler {
 	const LOG_DIR   = 'logs';
 	const ERROR_LOG = 'error.log';
 
+	public function __invoke($request, $response, $exception) {
+		return static::handleException($exception);
+	}
+
 	static function init() {
 		if (!defined('BASE_DIR')) {
 			define('BASE_DIR', realpath(__DIR__ . '/../../../../../'));
@@ -26,7 +30,7 @@ class Handler {
 				$message,
 				"file: " . $file,
 				"line: " . $line,
-				"context: " . var_export($context, true),
+				"context: " . @var_export($context, true),
 			]), $code);
 		});
 
@@ -59,7 +63,7 @@ class Handler {
 	}
 
 	static function handleException($e) {
-		if (class_exists('\App\Extensions\Errors\Handler') && method_exists('\App\Extensions\Errors\Handler', 'resolveException')) {
+		if (class_exists('\\App\\Extensions\\Errors\\Handler') && method_exists('\\App\\Extensions\\Errors\\Handler', 'resolveException')) {
 			return \App\Extensions\Errors\Handler::resolveException($e);
 		}
 

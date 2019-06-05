@@ -2,18 +2,45 @@
 
 namespace Katu\Controllers;
 
-use \Katu\App;
-
 class Controller {
 
-	static $data = [];
+	public $data = [];
 
-	static function init() {
-		return true;
+	public function render($request, $response, $args, $template) {
+		try {
+
+			$viewClass = \Katu\App::getViewClass();
+			$template = $viewClass::render($request, $response, $args, $template, $this->data);
+
+			$headers = $request->getHeader('Accept-Encoding');
+			if (isset($headers[0]) && in_array('gzip', array_map('trim', (array)explode(',', $headers[0])))) {
+				$template = gzencode($template);
+				$response = $response->withHeader('Content-Encoding', 'gzip');
+			}
+
+			$response->getBody()->write($template);
+
+			// Reset flash memory.
+			\Katu\Tools\Session\Flash::reset();
+
+			return $response;
+
+		} catch (\Exception $e) {
+			throw new \Katu\Exceptions\TemplateException($e);
+		}
 	}
 
+
+
+
+
+
+
+
+
+
 	static function redirect($urls, $code = 302) {
-		$app = App::get();
+		$app = \Katu\App::get();
 
 		$urls = is_array($urls) ? $urls : [$urls];
 		$urls = array_values(array_filter($urls));
@@ -32,38 +59,6 @@ class Controller {
 		return false;
 	}
 
-	static function prepareBody($body) {
-		$app = App::get();
-
-		if (in_array('gzip', array_map('trim', (array)explode(',', $app->request->headers('Accept-Encoding'))))) {
-			$body = gzencode($body);
-			$app->response->headers->set('Content-Encoding', 'gzip');
-		}
-
-		return $body;
-	}
-
-	static function render($template, $code = 200, $headers = []) {
-		$app = App::get();
-
-		try {
-
-			$viewClass = App::getViewClass();
-
-			$app->response->setStatus($code);
-			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
-			$app->response->setBody(static::prepareBody($viewClass::render($template, static::$data)));
-
-			// Reset flash memory.
-			\Katu\Tools\Session\Flash::reset();
-
-			return true;
-
-		} catch (\Exception $e) {
-			throw new \Katu\Exceptions\TemplateException($e);
-		}
-	}
-
 	static function renderError($code = 500) {
 		return static::render('Errors/' . $code, $code);
 	}
@@ -77,7 +72,7 @@ class Controller {
 	}
 
 	static function isSubmitted($name = null) {
-		$app = App::get();
+		$app = \Katu\App::get();
 
 		return $app->request->params('formSubmitted')
 			&& $app->request->params('formName') == $name
@@ -85,7 +80,7 @@ class Controller {
 	}
 
 	static function isSubmittedWithToken($name = null) {
-		$app = App::get();
+		$app = \Katu\App::get();
 
 		return static::isSubmitted($name)
 			&& Utils\CSRF::isValidToken($app->request->params('formToken'))
@@ -93,7 +88,7 @@ class Controller {
 	}
 
 	static function isSubmittedByHuman($name = null) {
-		$app = App::get();
+		$app = \Katu\App::get();
 
 		// Check basic form params.
 		if (!static::isSubmittedWithToken($name)) {
@@ -120,7 +115,7 @@ class Controller {
 	}
 
 	static function getSubmittedFormWithToken($name = null) {
-		$app = App::get();
+		$app = \Katu\App::get();
 
 		if (static::isSubmittedWithToken($name)) {
 			return new Form\Evaluation($name);

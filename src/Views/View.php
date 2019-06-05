@@ -21,7 +21,7 @@ class View {
 			]);
 		}
 
-		$loader = new \Twig_Loader_Filesystem($dirs);
+		$loader = new \Twig\Loader\FilesystemLoader($dirs);
 		$twig   = new \Twig\Environment($loader, [
 			'cache'       => \Katu\Files\File::joinPaths(TMP_PATH, 'twig'),
 			'auto_reload' => true,
@@ -217,7 +217,7 @@ class View {
 
 	}
 
-	static function getCommonData() {
+	static function getCommonData($request, $response, $args) {
 		$app = \Katu\App::get();
 
 		$data['_site']['baseDir'] = BASE_DIR;
@@ -233,13 +233,13 @@ class View {
 			/* Doesn't exist. */
 		}
 
-		$data['_request']['uri']    = (string)$app->request->getResourceUri();
+		$data['_request']['uri']    = (string)(string)$request->getUri();
 		$data['_request']['url']    = (string)\Katu\Tools\Routing\URL::getCurrent();
-		$data['_request']['params'] = (array)$app->request->params();
+		$data['_request']['params'] = (array)$request->getQueryParams();
 		$data['_request']['route']  = (array)[
-			'pattern' => $app->router()->getCurrentRoute()->getPattern(),
-			'name'    => $app->router()->getCurrentRoute()->getName(),
-			'params'  => $app->router()->getCurrentRoute()->getParams(),
+			'pattern' => $request->getAttribute('route')->getPattern(),
+			'name'    => $request->getAttribute('route')->getName(),
+			'params'  => $request->getAttribute('route')->getArguments(),
 		];
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();
@@ -264,15 +264,15 @@ class View {
 		return $data;
 	}
 
-	static function render($template, $templateData = [], $options = []) {
+	static function render($request, $response, $args, $template, $data, $options = []) {
 		$app = \Katu\App::get();
 
 		$twig = static::getTwig($options);
 		static::extendTwig($twig);
 
-		$data = array_merge_recursive(static::getCommonData(), $templateData);
+		$data = array_merge_recursive(static::getCommonData($request, $response, $args), $data);
 
-		return trim($twig->render($template . '.twig', $data));
+		return trim($twig->render($template, $data));
 	}
 
 	static function renderFromDir($dir, $template, $templateData = []) {

@@ -19,7 +19,7 @@ class App {
 	}
 
 	static function getErrorHandlerClass() {
-		return static::getExtendedClass('\\App\\Extensions\\ErrorHandler', '\\Katu\\ErrorHandler');
+		return static::getExtendedClass('\\App\\Extensions\\Errors\\Handler', '\\Katu\\Errors\\Handler');
 	}
 
 	static function init() {
@@ -70,75 +70,38 @@ class App {
 				$config = [];
 			}
 
-			$config['logger'] = [
-				'name' => 'katu-app',
+			$config['errorHandler'] = function($c) {
+				$errorHandlerClass = static::getErrorHandlerClass();
+				return new $errorHandlerClass;
+			};
+
+			$config['settings']['logger'] = [
+				'name' => 'KatuLogger',
 				'level' => \Monolog\Logger::DEBUG,
 				'path' => ERROR_LOG,
 			];
 
 			static::$app = new \Slim\App($config);
-			static::$app->add(new TrailingSlash(false));
+			#static::$app->add(new \Psr7Middlewares\Middleware\TrailingSlash(false));
 
 			// Add error middleware.
-			#$app->add(new Middleware\Error());
+			// TODO - updatovat
+			#static::$app->add(new \Katu\Middleware\Error);
 
 			// Add profiler middleware.
+			// TODO - updatovat
 			#$app->add(new Middleware\Profiler());
-
-			// Default content-type header for debugging, will be probably overwritten by app.
-			#header('Content-Type: text/html; charset=UTF-8');
-			#$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 
 		}
 
 		return static::$app;
 	}
 
-	static function isDev() {
-		return Config::get('app', 'slim', 'mode') == 'development';
-	}
-
-	static function isTest() {
-		return Config::get('app', 'slim', 'mode') == 'testing';
-	}
-
-	static function isProd() {
-		return Config::get('app', 'slim', 'mode') == 'production';
-	}
-
-	static function isProfilerOn() {
-		return \Katu\Cache\Runtime::get('profiler.on', function() {
-			try {
-				return \Katu\Config\Config::get('app', 'profiler');
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				return false;
-			}
-		});
-	}
-
-	static function getPDO($name = null) {
-		$names = array_keys(Config::getDb());
-
-		if ($name) {
-			if (!in_array($name, $names)) {
-				throw new Exceptions\DatabaseConnectionException("Invalid database connection name.");
-			}
-
-			return PDO\Connection::getInstance($name);
-		} else {
-			if (count($names) > 1) {
-				throw new Exceptions\DatabaseConnectionException("Ambiguous database connection name.");
-			}
-		}
-
-		return PDO\Connection::getInstance($names[0]);
-	}
-
 	static function run() {
-		static::init();
-
 		$app = static::get();
 
+		// TODO - obnovit
+		/*
 		// Redirect to canonical host.
 		try {
 			if ($app->request->getMethod() == 'GET' && \Katu\Config\Config::get('app', 'redirectToCanonicalHost')) {
@@ -180,10 +143,9 @@ class App {
 			}
 
 		};
+		*/
 
 		try {
-
-			$app = static::get();
 
 			try {
 
@@ -196,15 +158,15 @@ class App {
 					}
 
 					$callable = $route->getCallable();
-					if (!$callable || !is_callable($callable)) {
+					if (!$callable) {
 						throw new \Katu\Exceptions\RouteException("Invalid callable for route " . $name . ".");
 					}
 
-					$slimRoute = $app->map($pattern, $callable)->via('GET', 'POST');
+					$slimRoute = $app->map($route->getMethods(), $pattern, $callable);
 					if (is_string($name) && trim($name)) {
-						$slimRoute->name($name);
+						$slimRoute->setName($name);
 					} elseif ($route->name) {
-						$slimRoute->name($route->name);
+						$slimRoute->setName($route->name);
 					}
 
 				}
@@ -216,7 +178,10 @@ class App {
 			}
 
 			// Catch-all.
+			// TODO - obnovit
+			/*
 			$app->map('.+', $catchAll)->via('GET', 'POST');
+			*/
 
 			// Autoload.
 			if (class_exists('\\App\\Extensions\\Autoload')) {
@@ -230,6 +195,50 @@ class App {
 
 		} catch (\Exception $e) { throw $e; }
 
+	}
+
+
+
+
+
+	static function isDev() {
+		return Config::get('app', 'slim', 'mode') == 'development';
+	}
+
+	static function isTest() {
+		return Config::get('app', 'slim', 'mode') == 'testing';
+	}
+
+	static function isProd() {
+		return Config::get('app', 'slim', 'mode') == 'production';
+	}
+
+	static function isProfilerOn() {
+		return \Katu\Cache\Runtime::get('profiler.on', function() {
+			try {
+				return \Katu\Config\Config::get('app', 'profiler');
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
+				return false;
+			}
+		});
+	}
+
+	static function getPDO($name = null) {
+		$names = array_keys(Config::getDb());
+
+		if ($name) {
+			if (!in_array($name, $names)) {
+				throw new Exceptions\DatabaseConnectionException("Invalid database connection name.");
+			}
+
+			return PDO\Connection::getInstance($name);
+		} else {
+			if (count($names) > 1) {
+				throw new Exceptions\DatabaseConnectionException("Ambiguous database connection name.");
+			}
+		}
+
+		return PDO\Connection::getInstance($names[0]);
 	}
 
 }

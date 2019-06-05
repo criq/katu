@@ -4,17 +4,27 @@ namespace Katu\Tools\Routing;
 
 class Route {
 
-	public $name;
-	public $pattern;
-	public $controller;
-	public $method;
-	public $httpMethods;
+	protected $name;
+	protected $pattern;
+	protected $controller;
+	protected $function;
+	protected $methods = ['GET', 'POST'];
 
-	public function __construct($pattern, $controller, $method, $httpMethods = null) {
-		$this->pattern     = $pattern;
-		$this->controller  = $controller;
-		$this->method      = $method;
-		$this->httpMethods = $httpMethods;
+	public function __construct($pattern, $controller, $function, $methods = null) {
+		$this->pattern    = $pattern;
+		$this->controller = $controller;
+		$this->function   = $function;
+		$this->methods    = $methods ?: $this->methods;
+	}
+
+	public function setName($name) {
+		$this->name = $name;
+
+		return $this;
+	}
+
+	public function getMethods() {
+		return $this->methods;
 	}
 
 	public function getPattern() {
@@ -22,20 +32,10 @@ class Route {
 	}
 
 	public function getCallable() {
-		return [
+		return implode(':', [
 			"\\App\\Controllers\\" . strtr($this->controller, '/', '\\'),
-			$this->method,
-		];
-	}
-
-	public function isCallable() {
-		return is_callable($this->getCallable());
-	}
-
-	public function setName($name) {
-		$this->name = $name;
-
-		return $this;
+			$this->function,
+		]);
 	}
 
 	static function getCurrentName() {

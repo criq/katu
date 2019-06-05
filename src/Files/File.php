@@ -244,7 +244,11 @@ class File {
 	}
 
 	public function makeDir($mode = 0777, $recursive = true) {
-		return @mkdir($this, $mode, $recursive);
+		try {
+			return @mkdir($this, $mode, $recursive);
+		} catch (\Exception $e) {
+			return false;
+		}
 	}
 
 	public function touch() {
