@@ -20,7 +20,6 @@
 		"jwage/easy-csv": "0.0.2",
 		"league/color-extractor": "@stable",
 		"michelf/php-markdown": "1.*",
-		"middlewares/psr15-middlewares": "@stable",
 		"mischiefcollective/colorjizz": "@stable",
 		"monolog/monolog": "^1",
 		"mtdowling/cron-expression": "1.*",
@@ -36,6 +35,9 @@
 		"twig/extensions": "@stable",
 		"twig/twig": "@stable",
 		"vlucas/phpdotenv" : "@stable"
+	},
+	"require-dev": {
+		"middlewares/psr15-middlewares": "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
