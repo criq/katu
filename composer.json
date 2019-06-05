@@ -24,6 +24,7 @@
 		"monolog/monolog": "^1",
 		"mtdowling/cron-expression": "1.*",
 		"mustangostang/spyc": "@stable",
+		"oscarotero/psr7-middlewares": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"ralouphie/mimey": "@stable",
 		"slim/extras": "@stable",
@@ -34,8 +35,7 @@
 		"symfony/intl": "@stable",
 		"twig/extensions": "@stable",
 		"twig/twig": "@stable",
-		"vlucas/phpdotenv" : "@stable",
-		"middlewares/psr15-middlewares": "dev-master#03d55677aacd65398d3f651319b30560912efc13"
+		"vlucas/phpdotenv" : "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
