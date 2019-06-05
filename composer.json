@@ -6,7 +6,7 @@
 		"php": ">=5.3.0",
 		"ext-curl": "*",
 		"ext-json": "*",
-		"slim/slim": "2.*@stable",
+		"slim/slim": "^3.*@stable",
 		"slim/extras": "@stable",
 		"monolog/monolog": "^1",
 		"flynsarmy/slim-monolog": "@stable",

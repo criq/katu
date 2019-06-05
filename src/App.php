@@ -188,15 +188,14 @@ class App {
 			try {
 
 				// Set up routes.
-				foreach ((array) \Katu\Config\Config::get('routes') as $name => $route) {
+				foreach ((array)\Katu\Config\Config::get('routes') as $name => $route) {
 
 					$pattern  = $route->getPattern();
-					$callable = $route->getCallable();
-
 					if (!$pattern) {
 						throw new \Katu\Exceptions\RouteException("Invalid pattern for route " . $name . ".");
 					}
 
+					$callable = $route->getCallable();
 					if (!$callable || !is_callable($callable)) {
 						throw new \Katu\Exceptions\RouteException("Invalid callable for route " . $name . ".");
 					}
@@ -210,10 +209,10 @@ class App {
 
 				}
 
-			} catch (Exceptions\RouteException $e) {
+			} catch (\Katu\Exceptions\RouteException $e) {
 				throw $e;
 			} catch (\Exception $e) {
-				/* Nothing to do, no custom routes defined. */
+				// Nothing to do, no custom routes defined.
 			}
 
 			// Catch-all.

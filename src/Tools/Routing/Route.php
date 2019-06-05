@@ -8,17 +8,13 @@ class Route {
 	public $pattern;
 	public $controller;
 	public $method;
-	public $conditions;
+	public $httpMethods;
 
-	public function __construct($pattern, $controller, $method = 'index', $conditions = []) {
-		$this->pattern    = $pattern;
-		$this->controller = $controller;
-		$this->method     = $method;
-		$this->conditions = $conditions;
-	}
-
-	static function create($pattern, $controller, $method = 'index', $conditions = []) {
-		return new self($pattern, $controller, $method, $conditions);
+	public function __construct($pattern, $controller, $method, $httpMethods = null) {
+		$this->pattern     = $pattern;
+		$this->controller  = $controller;
+		$this->method      = $method;
+		$this->httpMethods = $httpMethods;
 	}
 
 	public function getPattern() {
@@ -27,19 +23,13 @@ class Route {
 
 	public function getCallable() {
 		return [
-			"\App\Controllers\\" . strtr($this->controller, '/', '\\'),
+			"\\App\\Controllers\\" . strtr($this->controller, '/', '\\'),
 			$this->method,
 		];
 	}
 
 	public function isCallable() {
 		return is_callable($this->getCallable());
-	}
-
-	public function setConditions($conditions = []) {
-		$this->conditions = $conditions;
-
-		return $this;
 	}
 
 	public function setName($name) {
