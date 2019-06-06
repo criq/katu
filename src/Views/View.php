@@ -278,18 +278,10 @@ class View {
 		return trim($twig->render($template, $data));
 	}
 
-	static function renderFromDir($dir, $template, $templateData = []) {
-		return self::render($template, $templateData, [
-			'dirs' => [
-				$dir,
-			],
-		]);
-	}
+	static function renderCondensed($request, $response, $args, $template, $templateData = []) {
+		$template = self::render($request, $response, $args, $template, $templateData);
 
-	static function renderCondensed($template, $templateData = []) {
-		$src = self::render($template, $templateData);
-
-		return preg_replace('#[\v\t]#', null, $src);
+		return preg_replace('#[\v\t]#', null, $template);
 	}
 
 }

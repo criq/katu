@@ -36,7 +36,9 @@ class Controller {
 	}
 
 	public function renderError($request, $response, $args, $status = 500) {
-		return $this->render($request, $response, $args, 'Errors/' . $status . '.twig', $status);
+		return $this->render($request, $response, $args, 'Errors/' . $status . '.twig')
+			->withStatus($status)
+			;
 	}
 
 	public function renderNotFound($request, $response, $args, $status = 404) {
@@ -54,11 +56,7 @@ class Controller {
 		foreach ($urls as $url) {
 			$url = (string) $url;
 			if (\Katu\Types\TURL::isValid($url)) {
-				try {
-					return $this->container->get('response')->withStatus($status)->withHeader('Location', $url);
-				} catch (\Slim\Exception\Stop $e) {
-					return;
-				}
+				return $this->container->get('response')->withRedirect($url, $status);
 			}
 		}
 
