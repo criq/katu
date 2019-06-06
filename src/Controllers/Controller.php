@@ -11,6 +11,10 @@ class Controller {
 		$this->container = $container;
 	}
 
+	/****************************************************************************
+	 * Render.
+	 */
+
 	public function render($request, $response, $args, $template) {
 		try {
 
@@ -49,6 +53,10 @@ class Controller {
 		return $this->renderError($request, $response, $args, $status);
 	}
 
+	/****************************************************************************
+	 * Redirect.
+	 */
+
 	public function redirect($urls, $status = 302) {
 		$urls = is_array($urls) ? $urls : [$urls];
 		$urls = array_values(array_filter($urls));
@@ -63,36 +71,26 @@ class Controller {
 		return false;
 	}
 
+	/****************************************************************************
+	 * Form submission.
+	 */
 
-
-
-
-	static function isSubmitted($name = null) {
-		$app = \Katu\App::get();
-
-		return $app->request->params('formSubmitted')
-			&& $app->request->params('formName') == $name
-			;
+	public function isSubmitted($request, $name = null) {
+		return $request->getParsedBodyParam('formSubmitted') && $request->getParsedBodyParam('formName') == $name;
 	}
 
-	static function isSubmittedWithToken($name = null) {
-		$app = \Katu\App::get();
-
-		return static::isSubmitted($name)
-			&& Utils\CSRF::isValidToken($app->request->params('formToken'))
-			;
+	public function isSubmittedWithToken($request, $name = null) {
+		return $this->isSubmitted($request, $name) && \Katu\Tools\Security\CSRF::isValidToken($request->getParsedBodyParam('formToken'));
 	}
 
-	static function isSubmittedByHuman($name = null) {
-		$app = \Katu\App::get();
-
+	public function isSubmittedByHuman($request, $name = null) {
 		// Check basic form params.
-		if (!static::isSubmittedWithToken($name)) {
+		if (!$this->isSubmittedWithToken($request, $name)) {
 			return false;
 		}
 
 		// Get the token.
-		$token = Utils\CSRF::getValidTokenByToken($app->request->params('formToken'));
+		$token = \Katu\Tools\Security\CSRF::getValidTokenByToken($request->getParsedBodyParam('formToken'));
 		if (!$token) {
 			return false;
 		}
@@ -103,35 +101,37 @@ class Controller {
 		}
 
 		// Check captcha. Should be empty.
-		if ($app->request->params('yourName_' . $token->secret) !== '') {
+		if ($request->getParsedBodyParam('yourName_' . $token->secret) !== '') {
 			return false;
 		}
 
 		return true;
 	}
 
-	static function getSubmittedFormWithToken($name = null) {
-		$app = \Katu\App::get();
-
-		if (static::isSubmittedWithToken($name)) {
-			return new Form\Evaluation($name);
+	public function getSubmittedFormWithToken($request, $name = null) {
+		if ($this->isSubmittedWithToken($request, $name)) {
+			return new \Katu\Tools\Forms\Evaluation($name);
 		}
 
 		return false;
 	}
 
-	static function addError($error) {
-		if (!isset(static::$data['_errors'])) {
-			static::$data['_errors'] = new Errors;
+	/****************************************************************************
+	 * Errors
+	 */
+
+	public function addError($error) {
+		if (!isset($this->data['_errors'])) {
+			$this->data['_errors'] = new Errors;
 		}
 
-		static::$data['_errors']->addError($error);
+		$this->data['_errors']->addError($error);
 
 		return true;
 	}
 
-	static function hasErrors() {
-		return (bool) (isset(static::$data['_errors']) ? static::$data['_errors'] : false);
+	public function hasErrors() {
+		return (bool) (isset($this->data['_errors']) ? $this->data['_errors'] : false);
 	}
 
 }

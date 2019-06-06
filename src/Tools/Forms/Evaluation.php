@@ -9,8 +9,8 @@ use \Katu\Tools\Session\Flash;
 class Evaluation {
 
 	public $name = null;
-	public $params = array();
-	public $errors = array();
+	public $params = [];
+	public $errors = [];
 
 	public function __construct($name = null) {
 		$app = App::get();

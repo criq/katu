@@ -1,9 +1,8 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Tools\Security;
 
 use \Katu\Tools\Session\Session;
-use \Katu\Tools\DateTime\DateTime;
 
 class CSRF {
 
