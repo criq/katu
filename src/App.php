@@ -75,11 +75,14 @@ class App {
 				return new $errorHandlerClass;
 			};
 
+			// TODO - je zapotřebí?
+			/*
 			$config['settings']['logger'] = [
 				'name' => 'KatuLogger',
 				'level' => \Monolog\Logger::DEBUG,
 				'path' => ERROR_LOG,
 			];
+			*/
 
 			static::$app = new \Slim\App($config);
 			#static::$app->add(new \Psr7Middlewares\Middleware\TrailingSlash(false));

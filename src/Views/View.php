@@ -236,11 +236,14 @@ class View {
 		$data['_request']['uri']    = (string)(string)$request->getUri();
 		$data['_request']['url']    = (string)\Katu\Tools\Routing\URL::getCurrent();
 		$data['_request']['params'] = (array)$request->getQueryParams();
-		$data['_request']['route']  = (array)[
-			'pattern' => $request->getAttribute('route')->getPattern(),
-			'name'    => $request->getAttribute('route')->getName(),
-			'params'  => $request->getAttribute('route')->getArguments(),
-		];
+
+		if ($request->getAttribute('route')) {
+			$data['_request']['route']  = (array)[
+				'pattern' => $request->getAttribute('route')->getPattern(),
+				'name'    => $request->getAttribute('route')->getName(),
+				'params'  => $request->getAttribute('route')->getArguments(),
+			];
+		}
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();
 

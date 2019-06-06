@@ -8,7 +8,7 @@ class Handler {
 	const ERROR_LOG = 'error.log';
 
 	public function __invoke($request, $response, $exception) {
-		return static::handleException($exception);
+		return static::handleException($exception, $request, $response);
 	}
 
 	static function init() {
@@ -34,10 +34,6 @@ class Handler {
 			]), $code);
 		});
 
-		set_exception_handler(function($exception) {
-			static::handleException($exception);
-		});
-
 		register_shutdown_function(function() {
 			$error = error_get_last();
 			if ($error) {
@@ -47,6 +43,10 @@ class Handler {
 					"line: " . $error['line'],
 				]), $error['type']);
 			}
+		});
+
+		set_exception_handler(function($exception) {
+			static::handleException($exception);
 		});
 	}
 
@@ -62,25 +62,25 @@ class Handler {
 		return true;
 	}
 
-	static function handleException($e) {
+	static function handleException($exception, $request = null, $response = null) {
 		if (class_exists('\\App\\Extensions\\Errors\\Handler') && method_exists('\\App\\Extensions\\Errors\\Handler', 'resolveException')) {
-			return \App\Extensions\Errors\Handler::resolveException($e);
+			return \App\Extensions\Errors\Handler::resolveException($exception, $request, $response);
 		}
 
-		return static::resolveException($e);
+		return static::resolveException($exception, $request, $response);
 	}
 
-	static function resolveException($e) {
+	static function resolveException($exception, $request = null, $response = null) {
 		$controllerClass = \Katu\App::getControllerClass();
 
 		try {
-			throw $e;
-		} catch (Exceptions\NotFoundException $e) {
+			throw $exception;
+		} catch (Exceptions\NotFoundException $exception) {
 			$controllerClass::renderNotFound();
-		} catch (Exceptions\UnauthorizedException $e) {
+		} catch (Exceptions\UnauthorizedException $exception) {
 			$controllerClass::renderUnauthorized();
-		} catch (Exceptions\UserErrorException $e) {
-			$controllerClass::renderError($e->getMessage());
+		} catch (Exceptions\UserErrorException $exception) {
+			$controllerClass::renderError($exception->getMessage());
 		}
 	}
 

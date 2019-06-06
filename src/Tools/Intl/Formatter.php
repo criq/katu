@@ -5,7 +5,10 @@ namespace Katu\Tools\Intl;
 class Formatter {
 
 	static function getPreferredLocales() {
-		return \Katu\Types\TLocale::getPreferredFromRequest(\Katu\App::get()->request->headers->get('Accept-Language'));
+		$app = \Katu\App::get();
+		$headers = $app->getContainer()->get('request')->getHeader('Accept-Language');
+
+		return \Katu\Types\TLocale::getPreferredFromRequest($headers[0]);
 	}
 
 	static function getPreferredLocale($locale = null) {

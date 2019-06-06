@@ -21,15 +21,12 @@ class Connection {
 		}
 
 		// Try to connect.
-		$attributes = [
-			PDO::ATTR_PERSISTENT => true,
-		];
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->connection = new PDO($this->config->getPDODSN(), $this->config->user, $this->config->password, $attributes);
+				$this->connection = new PDO($this->config->getPDODSN(), $this->config->user, $this->config->password);
 				break;
 			} catch (\ErrorException $e) {
-				if (strpos($e->getMessage(), 'driver does not support setting attributes')) {
+				if (strpos($e->getMessage(), 'driver does not support setting attributes.')) {
 					$attributes = null;
 				}
 			}

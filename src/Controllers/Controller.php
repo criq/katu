@@ -4,7 +4,12 @@ namespace Katu\Controllers;
 
 class Controller {
 
+	public $container;
 	public $data = [];
+
+	public function __construct(\Psr\Container\ContainerInterface $container) {
+		$this->container = $container;
+	}
 
 	public function render($request, $response, $args, $template) {
 		try {
@@ -18,7 +23,7 @@ class Controller {
 				$response = $response->withHeader('Content-Encoding', 'gzip');
 			}
 
-			$response->getBody()->write($template);
+			$response->write($template);
 
 			// Reset flash memory.
 			\Katu\Tools\Session\Flash::reset();
@@ -30,18 +35,19 @@ class Controller {
 		}
 	}
 
+	public function renderError($request, $response, $args, $status = 500) {
+		return $this->render($request, $response, $args, 'Errors/' . $status . '.twig', $status);
+	}
 
+	public function renderNotFound($request, $response, $args, $status = 404) {
+		return $this->renderError($request, $response, $args, $status);
+	}
 
+	public function renderUnauthorized($request, $response, $args, $status = 401) {
+		return $this->renderError($request, $response, $args, $status);
+	}
 
-
-
-
-
-
-
-	static function redirect($urls, $code = 302) {
-		$app = \Katu\App::get();
-
+	public function redirect($urls, $status = 302) {
 		$urls = is_array($urls) ? $urls : [$urls];
 		$urls = array_values(array_filter($urls));
 
@@ -49,7 +55,7 @@ class Controller {
 			$url = (string) $url;
 			if (\Katu\Types\TURL::isValid($url)) {
 				try {
-					return $app->redirect($url, $code);
+					return $this->container->get('response')->withStatus($status)->withHeader('Location', $url);
 				} catch (\Slim\Exception\Stop $e) {
 					return;
 				}
@@ -59,17 +65,9 @@ class Controller {
 		return false;
 	}
 
-	static function renderError($code = 500) {
-		return static::render('Errors/' . $code, $code);
-	}
 
-	static function renderNotFound($code = 404) {
-		return static::renderError($code);
-	}
 
-	static function renderUnauthorized($code = 401) {
-		return static::renderError($code);
-	}
+
 
 	static function isSubmitted($name = null) {
 		$app = \Katu\App::get();
