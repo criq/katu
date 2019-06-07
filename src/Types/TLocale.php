@@ -9,7 +9,7 @@ class TLocale {
 
 	public function __construct() {
 		if (count(func_get_args()) == 1) {
-			@list($this->language, $this->country) = explode('_', func_get_arg(0));
+			@list($this->language, $this->country) = array_pad(explode('_', func_get_arg(0)), 2, null);
 		} elseif (count(func_get_args()) == 2) {
 			$this->language = func_get_arg(0);
 			$this->country = func_get_arg(1);

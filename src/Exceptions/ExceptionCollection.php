@@ -28,6 +28,8 @@ class ExceptionCollection extends Exception implements \Iterator, \ArrayAccess {
 		} else {
 			$this->collection[] = $exception;
 		}
+
+		return $this;
 	}
 
 	public function has() {
@@ -57,6 +59,14 @@ class ExceptionCollection extends Exception implements \Iterator, \ArrayAccess {
 		}
 
 		return $this;
+	}
+
+	public function getResponseArray() {
+		return [
+			'errors' => array_map(function($e) {
+				return $e->getResponseArray();
+			}, $this->collection),
+		];
 	}
 
 	/* Iterator *****************************************************************/

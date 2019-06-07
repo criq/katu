@@ -84,4 +84,11 @@ class Exception extends \Exception {
 		return $this->getMessage();
 	}
 
+	public function getResponseArray() {
+		return [
+			'message' => $this->getMessage(),
+			'names' => $this->getErrorNames() ?: null,
+		];
+	}
+
 }

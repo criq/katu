@@ -31,14 +31,14 @@ class Result implements \Iterator, \ArrayAccess {
 		} catch (\Exception $e) {
 
 			// Non-existing table.
-			if ($e->getCode() == 1146 && preg_match('#^Table \'(.+)\.(?<table>.+)\' doesn\'t exist$#', $e->getMessage(), $match)) {
+			if ($e->getCode() == 1146 && preg_match('/Table \'(.+)\.(?<table>.+)\' doesn\'t exist/', $e->getMessage(), $match)) {
 
 				// Create the table.
-				$sqlFileName = __DIR__ . '/../../Sql/' . $match['table'] . '.create.sql';
-				if (file_exists(realpath($sqlFileName))) {
+				$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['table'] . '.create.sql');
+				if ($sqlFile->exists()) {
 
 					// There is a file, let's create the table.
-					$createQuery = $this->pdo->createQuery(file_get_contents($sqlFileName));
+					$createQuery = $this->pdo->createQuery($sqlFile->get());
 					$createQuery->getResult();
 
 					$this->statement->execute();
