@@ -11,11 +11,11 @@ class App {
 	}
 
 	static function getControllerClass() {
-		return static::getExtendedClass('\\App\\Extensions\\Controller', '\\Katu\\Controller');
+		return static::getExtendedClass('\\App\\Extensions\\Controller', '\\Katu\\Controllers\\Controller');
 	}
 
 	static function getViewClass() {
-		return static::getExtendedClass('\\App\\Extensions\\View', '\\Katu\\View');
+		return static::getExtendedClass('\\App\\Extensions\\View', '\\Katu\\Views\\View');
 	}
 
 	static function getErrorHandlerClass() {
