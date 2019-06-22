@@ -4,7 +4,7 @@ namespace Katu\Tools\Cookies;
 
 class Cookie {
 
-	const DEFAULT_LIFETIME = 86400;
+	const DEFAULT_LIFETIME = 86400 * 365 * 10;
 	const DEFAULT_PATH     = '/';
 	const DEFAULT_SECURE   = false;
 	const DEFAULT_HTTPONLY = true;

@@ -6,6 +6,11 @@ class Session {
 
 	const KEY = 'katu.session';
 
+	const DEFAULT_NAME                   = 'sessionId';
+	const DEFAULT_SID_LENGTH             = 64;
+	const DEFAULT_SID_BITS_PER_CHARACTER = 6;
+	const DEFAULT_COOKIE_LIFETIME        = 86400 * 365 * 10;
+
 	static function getPath() {
 		return new \Katu\Files\File(TMP_PATH, 'session');
 	}
@@ -21,9 +26,10 @@ class Session {
 	static function getDefaultConfig() {
 		return [
 			'save_path'              => (string)static::getPath(),
-			'name'                   => 'sessionId',
-			'sid_length'             => 64,
-			'sid_bits_per_character' => 6,
+			'name'                   => static::DEFAULT_NAME,
+			'sid_length'             => static::DEFAULT_SID_LENGTH,
+			'sid_bits_per_character' => static::DEFAULT_SID_BITS_PER_CHARACTER,
+			'cookie_lifetime'        => static::DEFAULT_COOKIE_LIFETIME,
 		];
 	}
 
