@@ -2,6 +2,8 @@
 
 namespace Katu\Models\Presets;
 
+use \Sexy\Sexy as SX;
+
 class Geocode extends \Katu\Models\Model {
 
 	const TABLE = 'geocodes';
@@ -10,11 +12,7 @@ class Geocode extends \Katu\Models\Model {
 		return static::getOrCreateFromAddress(call_user_func_array('\Katu\Utils\Google\Geocode::geocode', [$language, $address, $components]), $extra);
 	}
 
-	static function getOrCreateFromAddress($geocodeAddress, $extra = []) {
-		if (!$geocodeAddress || !($geocodeAddress instanceof \Katu\Utils\Google\GeocodeAddress)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid geocode address.");
-		}
-
+	static function getOrCreateFromAddress(\Katu\Tools\Services\Google\GeocodeAddress $geocodeAddress, $extra = []) {
 		$hash = static::getHashByGeocodeAddress($geocodeAddress, $extra);
 
 		$geocode = static::getOneBy([
@@ -52,11 +50,7 @@ class Geocode extends \Katu\Models\Model {
 		return $geocode;
 	}
 
-	static function getHashByGeocodeAddress($geocodeAddress, $extra = []) {
-		if (!$geocodeAddress || !($geocodeAddress instanceof \Katu\Utils\Google\GeocodeAddress)) {
-			throw new \Exception("Invalid geocode address.");
-		}
-
+	static function getHashByGeocodeAddress(\Katu\Tools\Services\Google\GeocodeAddress $geocodeAddress, $extra = []) {
 		$params = [
 			'language'     => (string) $geocodeAddress->language,
 			'number'       => (string) $geocodeAddress->number,
@@ -89,7 +83,11 @@ class Geocode extends \Katu\Models\Model {
 		return ($this->number || $this->premise || $this->street);
 	}
 
-	public function getDistanceSqlSelectExpression(\Katu\Types\Geo\TLatLng $latLng) {
+	public function getLatLng() {
+		return new \Katu\Types\Geo\TLatLng($this->lat, $this->lng);
+	}
+
+	static function getDistanceSqlSelectExpression(\Katu\Types\Geo\TLatLng $latLng) {
 		return SX::calcMultiply([
 			SX::val(6371),
 			SX::fnAcos([

@@ -55,7 +55,7 @@ class Query {
 			if (is_int($value)) {
 				$statement->bindValue($bindValue, $value, PDO::PARAM_INT);
 			} elseif (is_float($value)) {
-				$statement->bindValue($bindValue, $value, PDO::PARAM_INT);
+				$statement->bindValue($bindValue, $value, PDO::PARAM_STR);
 			} else {
 				$statement->bindValue($bindValue, $value, PDO::PARAM_STR);
 			}
