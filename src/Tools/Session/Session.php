@@ -14,15 +14,33 @@ class Session {
 		try {
 			return static::getPath()->makeDir();
 		} catch (\Exception $e) {
-
+			// Nevermind.
 		}
+	}
+
+	static function getDefaultConfig() {
+		return [
+			'save_path'              => (string)static::getPath(),
+			'name'                   => 'sessionId',
+			'sid_length'             => 64,
+			'sid_bits_per_character' => 6,
+		];
+	}
+
+	static function getConfig() {
+		try {
+			$config = \Katu\Config\Config::get('app', 'session');
+		} catch (\Exception $e) {
+			$config = [];
+		}
+
+		return array_merge(static::getDefaultConfig(), $config);
 	}
 
 	static function start() {
 		if (!session_id()) {
 			static::makePath();
-			session_save_path(static::getPath());
-			session_start();
+			session_start(static::getConfig());
 		}
 	}
 

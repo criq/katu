@@ -10,7 +10,7 @@ class Cookie {
 	const DEFAULT_HTTPONLY = true;
 
 	static function set($name, $value = null, $lifetime = null, $path = null, $domain = null) {
-		$config = self::getConfig();
+		$config = static::getConfig();
 
 		$name = strtr($name, '.', '_');
 		$lifetime = !is_null($lifetime) ? (time() + (int) $lifetime) : (time() + $config['lifetime']);
@@ -31,16 +31,16 @@ class Cookie {
 	}
 
 	static function remove($name) {
-		return self::set($name, null, -86400);
+		return static::set($name, null, -86400);
 	}
 
 	static function getDefaultConfig() {
 		return [
-			'lifetime' => self::DEFAULT_LIFETIME,
-			'path'     => self::DEFAULT_PATH,
-			'domain'   => self::getDefautDomain(),
-			'secure'   => self::DEFAULT_SECURE,
-			'httponly' => self::DEFAULT_HTTPONLY,
+			'lifetime' => static::DEFAULT_LIFETIME,
+			'path'     => static::DEFAULT_PATH,
+			'domain'   => static::getDefautDomain(),
+			'secure'   => static::DEFAULT_SECURE,
+			'httponly' => static::DEFAULT_HTTPONLY,
 		];
 	}
 
@@ -51,7 +51,7 @@ class Cookie {
 			$config = [];
 		}
 
-		return array_merge(self::getDefaultConfig(), $config);
+		return array_merge(static::getDefaultConfig(), $config);
 	}
 
 	static function getDefautDomain() {
