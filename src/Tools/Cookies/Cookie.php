@@ -4,7 +4,7 @@ namespace Katu\Tools\Cookies;
 
 class Cookie {
 
-	const DEFAULT_LIFETIME = 86400 * 365 * 10;
+	const DEFAULT_LIFETIME = '10 years';
 	const DEFAULT_PATH     = '/';
 	const DEFAULT_SECURE   = false;
 	const DEFAULT_HTTPONLY = true;
@@ -36,7 +36,7 @@ class Cookie {
 
 	static function getDefaultConfig() {
 		return [
-			'lifetime' => static::DEFAULT_LIFETIME,
+			'lifetime' => abs((new \Katu\Tools\DateTime\DateTime('+ ' . static::DEFAULT_LIFETIME))->getAge()),
 			'path'     => static::DEFAULT_PATH,
 			'domain'   => static::getDefautDomain(),
 			'secure'   => static::DEFAULT_SECURE,
