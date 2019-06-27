@@ -205,9 +205,7 @@ class View {
 			if (\Katu\Tools\Profiler\Profiler::isOn()) {
 				$profiler = \Katu\Tools\Profiler\Profiler::get('twig');
 
-				$res = static::render("Katu/Blocks/profilerEnd", [
-					'profiler' => $profiler,
-				]);
+				$res = static::render("Katu/Blocks/profilerEnd", ['profiler' => $profiler,]);
 
 				$profiler->reset('twig');
 
@@ -220,8 +218,6 @@ class View {
 	}
 
 	static function getCommonData($request, $response, $args) {
-		$app = \Katu\App::get();
-
 		$data['_site']['baseDir'] = BASE_DIR;
 		$data['_site']['baseUrl'] = \Katu\Config\Config::get('app', 'baseUrl');
 		try {
@@ -270,8 +266,6 @@ class View {
 	}
 
 	static function render($request, $response, $args, $template, $data, $options = []) {
-		$app = \Katu\App::get();
-
 		$twig = static::getTwig($options);
 		static::extendTwig($twig);
 
