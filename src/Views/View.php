@@ -175,9 +175,11 @@ class View {
 			return $url;
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('lipsum', function($sentences = 10) {
+		$twig->addFunction(new \Twig\TwigFunction('lipsum', function($sentences = 1) {
 			try {
-				return \Katu\Tools\Strings\BaconIpsum::get();
+				return \Katu\Tools\Strings\BaconIpsum::get([
+					'sentences' => $sentences,
+				]);
 			} catch (\Exception $e) {
 				// Nevermind.
 			}

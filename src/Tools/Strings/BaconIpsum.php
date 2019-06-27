@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Tools\Strings;
 
 class BaconIpsum {
 
@@ -13,7 +13,7 @@ class BaconIpsum {
 		], $params);
 
 		$url = \Katu\Types\TURL::make('https://baconipsum.com/api/', $params);
-		$res = \Katu\Cache\Url::get($url, 86400);
+		$res = \Katu\Cache\URL::get($url, 86400);
 
 		return $res[0];
 	}

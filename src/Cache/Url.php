@@ -2,7 +2,7 @@
 
 namespace Katu\Cache;
 
-class Url extends \Katu\Cache {
+class URL extends \Katu\Cache\General {
 
 	protected $url;
 
