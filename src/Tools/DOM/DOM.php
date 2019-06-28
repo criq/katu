@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Tools\DOM;
 
 use \Symfony\Component\DomCrawler\Crawler;
 

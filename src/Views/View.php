@@ -177,16 +177,20 @@ class View {
 
 		$twig->addFunction(new \Twig\TwigFunction('lipsum', function($sentences = 1) {
 			try {
-				return \Katu\Tools\Strings\BaconIpsum::get([
-					'sentences' => $sentences,
-				]);
-			} catch (\Exception $e) {
+				return implode(' ', \Katu\Tools\Random\LoremIpsum\Blabot::getSentences($sentences)->getArray());
+			} catch (\Throwable $e) {
 				// Nevermind.
 			}
 
 			try {
-				return implode(' ', (new \Katu\Types\TArray(\Katu\Tools\Strings\Blabot::getList()))->getRandomItems($sentences));
-			} catch (\Exception $e) {
+				return implode(' ', \Katu\Tools\Random\LoremIpsum\FillText::getSentences($sentences)->getArray());
+			} catch (\Throwable $e) {
+				// Nevermind.
+			}
+
+			try {
+				return implode(' ', \Katu\Tools\Random\LoremIpsum\BaconIpsum::getSentences($sentences)->getArray());
+			} catch (\Throwable $e) {
 				// Nevermind.
 			}
 
