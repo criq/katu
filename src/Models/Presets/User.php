@@ -294,7 +294,8 @@ class User extends \Katu\Models\Model {
 				->from($rolePermissionClass::getTable())
 				->joinColumns($rolePermissionClass::getColumn('roleId'), $userRoleClass::getColumn('roleId'))
 				->whereEq($userRoleClass::getColumn('userId'), $this->getId())
-				->groupBy(new \Sexy\GroupBy($rolePermissionClass::getColumn('permission')));
+				->groupBy(new \Sexy\GroupBy($rolePermissionClass::getColumn('permission')))
+				;
 
 			return static::getPDO()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
 		}
@@ -316,7 +317,7 @@ class User extends \Katu\Models\Model {
 
 	public function getAllPermissions() {
 		return \Katu\Cache\Runtime::get(['users', $this->getId(), 'allPermissions'], function() {
-			return array_filter(array_unique(array_merge((array) $this->getRolePermissions(), (array) $this->getUserPermissions())));
+			return array_filter(array_unique(array_merge((array)$this->getRolePermissions(), (array)$this->getUserPermissions())));
 		});
 	}
 

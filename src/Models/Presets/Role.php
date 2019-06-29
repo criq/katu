@@ -101,7 +101,7 @@ class Role extends \Katu\Models\Model {
 	}
 
 	public function addPermissions($permissions) {
-		foreach ((array) $permissions as $permission) {
+		foreach ((array)$permissions as $permission) {
 			$this->addPermission($permission);
 		}
 
