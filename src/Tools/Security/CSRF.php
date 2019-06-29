@@ -9,7 +9,7 @@ class CSRF {
 	static function getFreshToken($params = array()) {
 		$token = new \Katu\Tools\Forms\Token($params);
 
-		$tokens = self::getValidTokens();
+		$tokens = static::getValidTokens();
 		$tokens[] = $token;
 
 		Session::set('csrf.tokens', $tokens);
@@ -22,7 +22,7 @@ class CSRF {
 	}
 
 	static function getValidTokens() {
-		return array_values(array_filter(self::getAllTokens(), function($token) {
+		return array_values(array_filter(static::getAllTokens(), function($token) {
 			return $token->isValid();
 		}));
 	}

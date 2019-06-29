@@ -285,7 +285,7 @@ class View {
 	}
 
 	static function renderCondensed($request, $response, $args, $template, $templateData = []) {
-		$template = self::render($request, $response, $args, $template, $templateData);
+		$template = static::render($request, $response, $args, $template, $templateData);
 
 		return preg_replace('#[\v\t]#', null, $template);
 	}

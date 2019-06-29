@@ -17,8 +17,8 @@ class Token {
 	public $minDuration;
 
 	public function __construct($params = array()) {
-		$this->token  = \Katu\Tools\Random\Generator::getString(self::TOKEN_LENGTH);
-		$this->secret = \Katu\Tools\Random\Generator::getNumber(self::SECRET_LENGTH);
+		$this->token  = \Katu\Tools\Random\Generator::getString(static::TOKEN_LENGTH);
+		$this->secret = \Katu\Tools\Random\Generator::getNumber(static::SECRET_LENGTH);
 		$this->time   = time();
 
 		$this->minDuration = isset($params['minDuration']) ? (int) $params['minDuration'] : 0;
@@ -29,7 +29,7 @@ class Token {
 	}
 
 	public function isInTimeout() {
-		return DateTime::get($this->time)->isInTimeout(self::TOKEN_TIMEOUT);
+		return DateTime::get($this->time)->isInTimeout(static::TOKEN_TIMEOUT);
 	}
 
 	public function getAge() {
