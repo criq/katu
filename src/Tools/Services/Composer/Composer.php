@@ -20,10 +20,10 @@ class Composer {
 	static function getDir() {
 		$json = self::getJSON();
 		if (isset($json['config']['vendor-dir'])) {
-			return realpath(\Katu\Files\File::joinPaths(BASE_DIR, $json['config']['vendor-dir']));
+			return new \Katu\Files\File(\Katu\Files\File::joinPaths(BASE_DIR, $json['config']['vendor-dir']));
 		}
 
-		return realpath(\Katu\Files\File::joinPaths(BASE_DIR, 'vendor'));
+		return new \Katu\Files\File(\Katu\Files\File::joinPaths(BASE_DIR, 'vendor'));
 	}
 
 }

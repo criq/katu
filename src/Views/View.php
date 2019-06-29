@@ -15,10 +15,16 @@ class View {
 		}
 
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
-			$dirs = array_filter([
-				realpath(BASE_DIR . '/app/Views/'),
-				realpath(\Katu\Files\File::joinPaths(\Katu\Tools\Services\Composer\Composer::getDir(), substr(__DIR__, strcmp(\Katu\Tools\Services\Composer\Composer::getDir(), __DIR__)), 'Views')),
-			]);
+
+			$dirs = [
+				new \Katu\Files\File(BASE_DIR, 'app', 'Views'),
+				new \Katu\Files\File(\Katu\Tools\Services\Composer\Composer::getDir(), substr(__DIR__, strcmp(\Katu\Tools\Services\Composer\Composer::getDir(), __DIR__))),
+			];
+
+			$dirs = array_unique(array_filter(array_map(function($dir) {
+				return $dir->exists() ? $dir->getPath() : null;
+			}, $dirs)));
+
 		}
 
 		$loader = new \Twig\Loader\FilesystemLoader($dirs);

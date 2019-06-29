@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Form;
+namespace Katu\Tools\Forms;
 
 use \Katu\Tools\DateTime\DateTime;
 
@@ -17,8 +17,8 @@ class Token {
 	public $minDuration;
 
 	public function __construct($params = array()) {
-		$this->token  = \Katu\Utils\Random::getString(self::TOKEN_LENGTH);
-		$this->secret = \Katu\Utils\Random::getNumber(self::SECRET_LENGTH);
+		$this->token  = \Katu\Tools\Random\Generator::getString(self::TOKEN_LENGTH);
+		$this->secret = \Katu\Tools\Random\Generator::getNumber(self::SECRET_LENGTH);
 		$this->time   = time();
 
 		$this->minDuration = isset($params['minDuration']) ? (int) $params['minDuration'] : 0;

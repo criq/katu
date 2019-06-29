@@ -7,7 +7,7 @@ use \Katu\Tools\Session\Session;
 class CSRF {
 
 	static function getFreshToken($params = array()) {
-		$token = new \Katu\Form\Token($params);
+		$token = new \Katu\Tools\Forms\Token($params);
 
 		$tokens = self::getValidTokens();
 		$tokens[] = $token;
