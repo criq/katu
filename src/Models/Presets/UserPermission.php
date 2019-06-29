@@ -51,7 +51,7 @@ class UserPermission extends \Katu\Models\Model {
 			throw new \Katu\Exceptions\ErrorException("Permission file doesn't exist.");
 		}
 
-		$permissions = array_unique(array_filter(array_map('trim', \Katu\Utils\YAML::decode($permissionFilePath))));
+		$permissions = array_unique(array_filter(array_map('trim', \Katu\Files\Formats\YAML::decode($permissionFilePath))));
 		if (!$permissions) {
 			throw new \Katu\Exceptions\ErrorException("No permissions found.");
 		}
