@@ -2,8 +2,6 @@
 
 namespace Katu\PDO;
 
-use \PDO;
-
 class Query {
 
 	public $pdo;
@@ -52,12 +50,14 @@ class Query {
 		$statement = $this->pdo->connection->prepare($this->sql);
 
 		foreach ($this->bindValues as $bindValue => $value) {
-			if (is_int($value)) {
-				$statement->bindValue($bindValue, $value, PDO::PARAM_INT);
+			if (is_string($value)) {
+				$statement->bindValue($bindValue, $value, \PDO::PARAM_STR);
+			} elseif (is_int($value)) {
+				$statement->bindValue($bindValue, $value, \PDO::PARAM_INT);
 			} elseif (is_float($value)) {
-				$statement->bindValue($bindValue, $value, PDO::PARAM_STR);
+				$statement->bindValue($bindValue, $value, \PDO::PARAM_STR);
 			} else {
-				$statement->bindValue($bindValue, $value, PDO::PARAM_STR);
+				$statement->bindValue($bindValue, $value, \PDO::PARAM_STR);
 			}
 		}
 
