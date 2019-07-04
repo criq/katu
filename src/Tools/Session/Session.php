@@ -7,7 +7,7 @@ class Session {
 	const KEY = 'katu.session';
 
 	const DEFAULT_NAME                   = 'session';
-	const DEFAULT_SID_LENGTH             = 64;
+	const DEFAULT_SID_LENGTH             = 32;
 	const DEFAULT_SID_BITS_PER_CHARACTER = 6;
 	const DEFAULT_COOKIE_LIFETIME        = '10 years';
 
