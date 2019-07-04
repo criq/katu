@@ -11,8 +11,6 @@ class File {
 
 	public function __construct() {
 		$this->path = call_user_func_array(['static', 'joinPaths'], func_get_args());
-
-		return $this;
 	}
 
 	public function __toString() {
@@ -21,7 +19,7 @@ class File {
 
 	static function joinPaths() {
 		return implode('/', array_map(function($i) {
-			return rtrim(implode('.', (array) $i), '/');
+			return rtrim(implode('.', (array)$i), '/');
 		}, func_get_args()));
 	}
 
@@ -83,19 +81,19 @@ class File {
 		return $this->path;
 	}
 
-	public function geTURL() {
+	public function getURL() {
 		try {
-			$publicRoot = \Katu\Config::get('app', 'publicRoot');
+			$publicRoot = \Katu\Config\Config::get('app', 'publicRoot');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			$publicRoot = './public/';
 		}
 
-		$publicPath = realpath(new \Katu\Utils\File(BASE_DIR, $publicRoot));
+		$publicPath = realpath(new static(BASE_DIR, $publicRoot));
 		if (preg_match('#^' . $publicPath . '(.*)$#', $this->getPath(), $match)) {
 			return new \Katu\Types\TURL(implode('/', array_map(function($i) {
 				return trim($i, '/');
 			}, [
-				\Katu\Config::get('app', 'baseUrl'),
+				\Katu\Config\Config::get('app', 'baseUrl'),
 				$match[1],
 			])));
 		}
