@@ -172,19 +172,24 @@ class View {
 			return new \Katu\Files\File($path);
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getHashedWebpackFile', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getLatestHashedWebpackFile', function() {
 			$args = array_merge([BASE_DIR], func_get_args());
 			$path = call_user_func_array(['\\Katu\\Files\\File', 'joinPaths'], $args);
 			$placeholderFile = new \Katu\Files\File($path);
 			$regexp = '/' . preg_replace('/\[hash\]/', '([0-9a-f]+)', $placeholderFile->getBasename()) . '/';
 
+			$matchedFiles = [];
 			foreach ($placeholderFile->getDir()->getFiles() as $file) {
 				if (preg_match($regexp, $file->getBasename())) {
-					return $file;
+					$matchedFiles[] = $file;
 				}
 			}
 
-			return false;
+			usort($matchedFiles, function($a, $b) {
+				return filemtime($a) > filemtime($b) ? -1 : 1;
+			});
+
+			return $matchedFiles[0] ?? null;
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getFileUrlWithHash', function() {
