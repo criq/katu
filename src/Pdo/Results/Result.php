@@ -76,6 +76,12 @@ class Result implements \Iterator, \ArrayAccess {
 		return $this->iteratorArray;
 	}
 
+	public function getObjects($class) {
+		$this->setIteratorArray($class);
+
+		return $this->iteratorArray;
+	}
+
 	public function getColumnValues($column) {
 		$values = [];
 
@@ -135,11 +141,17 @@ class Result implements \Iterator, \ArrayAccess {
 
 	/* ArrayAccess **************************************************************/
 
-	public function setIteratorArray() {
+	public function setIteratorArray($class = null) {
 		if (is_null($this->iteratorArray)) {
 			$this->iteratorArray = [];
-			while ($row = $this->statement->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT)) {
-				$this->iteratorArray[] = $row;
+			if ($class) {
+				while ($row = $this->statement->fetchObject($class)) {
+					$this->iteratorArray[] = $row;
+				}
+			} else {
+				while ($row = $this->statement->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT)) {
+					$this->iteratorArray[] = $row;
+				}
 			}
 		}
 	}

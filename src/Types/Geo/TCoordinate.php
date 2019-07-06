@@ -11,11 +11,11 @@ class TCoordinate {
 			throw new \Exception("Invalid coordinate.");
 		}
 
-		$this->value = (float) $value;
+		$this->value = (float)$value;
 	}
 
 	public function __toString() {
-		return (string) $this->value;
+		return (string)$this->value;
 	}
 
 	public function getDeg() {
