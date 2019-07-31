@@ -1,10 +1,10 @@
 <?php
 
-namespace Katu\Image\Sources;
+namespace Katu\Tools\Images\Sources;
 
-class File extends \Katu\Image\Source {
+class File extends \Katu\Tools\Images\Source {
 
-	public function __construct(\Katu\Models\File $input) {
+	public function __construct(\Katu\Models\Presets\File $input) {
 		return parent::__construct($input);
 	}
 
@@ -16,11 +16,11 @@ class File extends \Katu\Image\Source {
 		return $this->input->getExtension();
 	}
 
-	public function getUri() {
+	public function getURI() {
 		return (string)$this->input->getFile();
 	}
 
-	public function geTURL() {
+	public function getURL() {
 		return false;
 	}
 

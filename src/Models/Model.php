@@ -130,7 +130,7 @@ class Model extends Base {
 		$query = static::getPDO()->createQuery();
 
 		// Delete file attachments.
-		if (class_exists('\App\Models\FileAttachment')) {
+		if (class_exists('\\App\\Models\\FileAttachment')) {
 			foreach ($this->getFileAttachments() as $fileAttachment) {
 				$fileAttachment->delete();
 			}

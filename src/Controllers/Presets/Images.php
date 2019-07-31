@@ -1,18 +1,18 @@
 <?php
 
-namespace Katu\Controllers\Controllers;
+namespace Katu\Controllers\Presets;
 
-class Images extends \Katu\Controller {
+class Images extends \Katu\Controllers\Controller {
 
-	static function getVersionSrcFile($fileId, $fileSecret, $version, $name) {
+	static function getVersionSrcFile($request, $response, $args) {
 		try {
 
 			$app = \Katu\App::get();
 
 			$fileClass = \Katu\App::getExtendedClass('\\App\\Models\\File', '\\Katu\\Models\\File');
 			$file = $fileClass::getOneBy([
-				'id' => $fileId,
-				'secret' => $fileSecret,
+				'id' => $args['fileId'],
+				'secret' => $args['fileSecret'],
 			]);
 
 			if (!$file) {
@@ -20,39 +20,39 @@ class Images extends \Katu\Controller {
 			}
 
 			try {
-				$version = \Katu\Image\Version::createFromConfig($version);
+				$version = \Katu\Tools\Images\Version::createFromConfig($args['version']);
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
 
-			$image = new \Katu\Image($file);
+			$image = new \Katu\Tools\Images\Image($file);
 			$imageVersion = $image->getImageVersion($version);
 			$imageVersion->getImage();
 
-			$app->response->headers->set('Content-Type', $imageVersion->getFile()->getMime());
-			$app->response->headers->set('Cache-Control', 'max-age=604800, public');
-			$app->response->setBody($imageVersion->getFile()->get());
-
-			return true;
+			return $response
+				->withHeader('Content-Type', $imageVersion->getFile()->getMime())
+				->withHeader('Cache-Control', 'max-age=604800, public')
+				->write($imageVersion->getFile()->get())
+				;
 
 		} catch (\Exception $e) {
 			throw new \Katu\Exceptions\Exception;
 		}
 	}
 
-	static function getVersionSrcUrl($version) {
+	static function getVersionSrcUrl($request, $response, $args) {
 		try {
 
 			$app = \Katu\App::get();
 
 			try {
-				$url = new \Katu\Types\TURL(trim($app->request->params('url')));
+				$url = new \Katu\Types\TURL(trim($request->getParam('url')));
 			} catch (\Exception $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
 
 			try {
-				$version = \Katu\Image\Version::createFromConfig($version);
+				$version = \Katu\Tools\Images\Version::createFromConfig($args['version']);
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
@@ -61,15 +61,14 @@ class Images extends \Katu\Controller {
 			$imageVersion = $image->getImageVersion($version);
 			$imageVersion->getImage();
 
-			$app->response->headers->set('Content-Type', $imageVersion->getFile()->getMime());
-			$app->response->headers->set('Cache-Control', 'max-age=604800, public');
-			$app->response->setBody($imageVersion->getFile()->get());
-
-			return true;
+			return $response
+				->withHeader('Content-Type', $imageVersion->getFile()->getMime())
+				->withHeader('Cache-Control', 'max-age=604800, public')
+				->write($imageVersion->getFile()->get())
+				;
 
 		} catch (\Exception $e) {
-			\App\Extensions\ErrorHandler::log($e);
-			return false;
+			throw new \Katu\Exceptions\Exception;
 		}
 	}
 

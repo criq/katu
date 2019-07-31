@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Image\Sources;
+namespace Katu\Tools\Images\Sources;
 
-class Url extends \Katu\Image\Source {
+class URL extends \Katu\Tools\Images\Source {
 
 	public function __construct(\Katu\Types\TURL $input) {
 		return parent::__construct($input);
@@ -38,11 +38,11 @@ class Url extends \Katu\Image\Source {
 		}
 	}
 
-	public function getUri() {
+	public function getURI() {
 		return (string)$this->input;
 	}
 
-	public function geTURL() {
+	public function getURL() {
 		return (string)$this->input;
 	}
 

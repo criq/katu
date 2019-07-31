@@ -10,18 +10,18 @@ class Upload {
 	const ERROR_PROGRESS = 3;
 	const ERROR_SERVER   = 4;
 
+	public $path;
 	public $fileName;
 	public $fileType;
 	public $fileSize;
-	public $path;
 	public $error;
 
-	public function __construct($upload) {
-		$this->fileName = (string)$upload['name'];
-		$this->fileType = (string)$upload['type'];
-		$this->fileSize = (int)   $upload['size'];
-		$this->path     = (string)$upload['tmp_name'];
-		$this->error    = (int)   $upload['error'];
+	public function __construct(\Slim\Http\UploadedFile $upload) {
+		$this->path     = (string)$upload->file;
+		$this->fileName = (string)$upload->getClientFilename();
+		$this->fileType = (string)$upload->getClientMediaType();
+		$this->fileSize = (int)   $upload->getSize();
+		$this->error    = (int)   $upload->getError();
 	}
 
 	static function get($key) {

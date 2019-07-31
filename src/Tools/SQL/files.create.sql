@@ -3,6 +3,7 @@ CREATE TABLE `files` (
   `timeCreated` datetime NOT NULL,
   `creatorId` int(11) unsigned NOT NULL,
   `path` text NOT NULL,
+  `secret` char(10) NULL,
   `name` text NOT NULL,
   `type` varchar(255) NOT NULL DEFAULT '',
   `size` int(10) unsigned NOT NULL,

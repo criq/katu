@@ -1,17 +1,17 @@
 <?php
 
-namespace Katu;
+namespace Katu\Tools\Images;
 
 class Image {
 
 	protected $source;
 
 	public function __construct($source = null) {
-		$this->source = Image\Source::createFromInput($source);
+		$this->source = Source::createFromInput($source);
 	}
 
 	public function __toString() {
-		return (string)$this->getSource()->geTURL();
+		return (string)$this->getSource()->getURL();
 	}
 
 	public function getSource() {
@@ -20,13 +20,13 @@ class Image {
 
 	public function getImageVersion() {
 		$args = func_get_args();
-		if (isset($args[0]) && $args[0] instanceof \Katu\Image\Version) {
+		if (isset($args[0]) && $args[0] instanceof Version) {
 			$version = $args[0];
 		} else {
-			$version = call_user_func_array(['\\Katu\\Image\\Version', 'createFromConfig'], $args);
+			$version = Version::createFromConfig(...$args);
 		}
 
-		return new \Katu\Image\ImageVersion($this, $version);
+		return new ImageVersion($this, $version);
 	}
 
 	public function getInterventionImage() {
@@ -34,8 +34,8 @@ class Image {
 	}
 
 	public function getPixel() {
-		$version = (new \Katu\Image\Version('pixel'))
-			->addFilter(new \Katu\Image\Filters\Fit([
+		$version = (new Version('pixel'))
+			->addFilter(new Filters\Fit([
 				'width' => 1,
 				'height' => 1,
 			]))
@@ -43,7 +43,7 @@ class Image {
 			->setExtension('png')
 			;
 
-		$imageVersion = new \Katu\Image\ImageVersion($this, $version);
+		$imageVersion = new ImageVersion($this, $version);
 
 		return $imageVersion->getImage();
 	}

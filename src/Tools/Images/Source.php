@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Image;
+namespace Katu\Tools\Images;
 
 abstract class Source {
 
@@ -8,8 +8,8 @@ abstract class Source {
 
 	abstract public function getDir();
 	abstract public function getExtension();
-	abstract public function getUri();
-	abstract public function geTURL();
+	abstract public function getURI();
+	abstract public function getURL();
 
 	public function __construct($input) {
 		$this->input = $input;
@@ -17,7 +17,7 @@ abstract class Source {
 
 	static function createFromInput($input) {
 		// Image.
-		if ($input instanceof \Katu\Image) {
+		if ($input instanceof Image) {
 			return $input->getSource();
 
 		// Image source.
@@ -25,23 +25,23 @@ abstract class Source {
 			return $input;
 
 		// File on filesystem.
-		} elseif ($input instanceof \Katu\Utils\File) {
-			return new Sources\Url($input->geTURL());
+		} elseif ($input instanceof \Katu\Files\File) {
+			return new Sources\URL($input->getURL());
 
 		// URL.
 		} elseif ($input instanceof \Katu\Types\TURL) {
-			return new Sources\Url($input);
+			return new Sources\URL($input);
 
 		// File model.
-		} elseif ($input instanceof \App\Models\File) {
+		} elseif ($input instanceof \Katu\Models\Presets\File) {
 			return new Sources\File($input);
 
 		// File attachment.
-		} elseif ($input instanceof \App\Models\FileAttachment) {
+		} elseif ($input instanceof \Katu\Models\Presets\FileAttachment) {
 			return new Sources\File($input->getFile());
 
 		// Model.
-		} elseif ($input instanceof \Katu\ModelBase) {
+		} elseif ($input instanceof \Katu\Models\Base) {
 			$imageFile = $input->getImageFile();
 			return $imageFile ? new Sources\File($imageFile) : false;
 
@@ -49,15 +49,15 @@ abstract class Source {
 		} elseif (is_string($input)) {
 
 			try {
-				return new Sources\Url(new \Katu\Types\TURL($input));
+				return new Sources\URL(new \Katu\Types\TURL($input));
 			} catch (\Exception $e) {
 				// Nevermind.
 			}
 
 			try {
-				$file = new \Katu\Utils\File($input);
+				$file = new \Katu\Files\File($input);
 				if ($file->exists()) {
-					return new Sources\Url($file->geTURL());
+					return new Sources\URL($file->geTURL());
 				}
 
 				throw new \Exception;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Image;
+namespace Katu\Tools\Images;
 
 abstract class Filter {
 
@@ -13,7 +13,7 @@ abstract class Filter {
 	}
 
 	static function createByCode($code) {
-		$class = '\\Katu\\Image\Filters\\' . ucfirst($code);
+		$class = '\\Katu\\Tools\\Images\\Filters\\' . ucfirst($code);
 
 		return new $class;
 	}

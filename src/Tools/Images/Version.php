@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Image;
+namespace Katu\Tools\Images;
 
 class Version {
 
@@ -24,13 +24,13 @@ class Version {
 
 				$name = $args[0];
 
-				$config = \Katu\Config::get('image', 'versions', $name);
+				$config = \Katu\Config\Config::get('image', 'versions', $name);
 
 				$version = new static($name);
 
 				if (isset($config['filters'])) {
 					foreach ((array)$config['filters'] as $filterConfig) {
-						$filter = \Katu\Image\Filter::createByCode($filterConfig['filter']);
+						$filter = \Katu\Tools\Images\Filter::createByCode($filterConfig['filter']);
 						unset($filterConfig['filter']);
 						$filter->setParams($filterConfig);
 						$version->addFilter($filter);
@@ -105,7 +105,7 @@ class Version {
 	}
 
 	public function getDir() {
-		$dir = new \Katu\Utils\File(BASE_DIR, \Katu\Config::get('app', 'tmp', 'publicDir'), 'image', 'versions', $this->getName());
+		$dir = new \Katu\Files\File(BASE_DIR, \Katu\Config\Config::get('app', 'tmp', 'publicDir'), 'image', 'versions', $this->getName());
 		if (!$dir->isWritable()) {
 			try {
 				$dir->makeDir();

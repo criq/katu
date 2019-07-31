@@ -19,7 +19,7 @@ abstract class ThirdParty extends \Katu\Email {
 
 	public function addAttachment($file, $params = []) {
 		$this->attachments[] = [
-			'file' => new \Katu\Utils\File($file),
+			'file' => new \Katu\Files\File($file),
 			'name' => isset($params['name']) ? $params['name'] : null,
 			'cid'  => isset($params['cid']) ? $params['cid'] : null,
 		];

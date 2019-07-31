@@ -85,7 +85,7 @@ class User extends \Katu\Models\Model {
 		$accessTokenClass = static::getAccessTokenClass();
 
 		$accessToken = $accessTokenClass::getOneBy([
-			'token' => $token,
+			'token' => preg_replace('/^Token\s/', null, $token),
 			new \Sexy\CmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
 		]);
 

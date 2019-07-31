@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Image\Filters;
+namespace Katu\Tools\Images\Filters;
 
-class Blur extends \Katu\Image\Filter {
+class Blur extends \Katu\Tools\Images\Filter {
 
 	public function apply($image) {
 		$image->blur($this->params['level']);
