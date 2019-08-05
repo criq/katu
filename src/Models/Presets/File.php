@@ -19,7 +19,7 @@ class File extends \Katu\Models\Model {
 		]);
 	}
 
-	static function createFromFile(\Katu\Models\User $creator = null, \Katu\Files\File $file) {
+	static function createFromFile(\Katu\Models\Presets\User $creator = null, \Katu\Files\File $file) {
 		if (!$file->exists()) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
 		}
@@ -42,7 +42,7 @@ class File extends \Katu\Models\Model {
 		return static::create($creator, $path, $file->getBasename(), $fileType, $fileSize);
 	}
 
-	static function createFromUpload(\Katu\Models\User $creator = null, $upload) {
+	static function createFromUpload(\Katu\Models\Presets\User $creator = null, $upload) {
 		if (!$upload || !($upload instanceof \Katu\Files\Upload)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
 		}
@@ -64,7 +64,7 @@ class File extends \Katu\Models\Model {
 		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
 	}
 
-	static function createFromUrl(\Katu\Models\User $creator = null, $url) {
+	static function createFromURL(\Katu\Models\Presets\User $creator = null, $url) {
 		$url = new \Katu\Types\TURL($url);
 
 		$temporaryFile = \Katu\Files\File::createTemporaryFromUrl($url);
