@@ -172,17 +172,20 @@ class View {
 			return new \Katu\Files\File($path);
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getLatestHashedWebpackFile', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getHashedFile', function($path) {
 			try {
 
-				$args = array_merge([BASE_DIR], func_get_args());
-				$path = \Katu\Files\File::joinPaths(...$args);
-				$placeholderFile = new \Katu\Files\File($path);
-				$regexp = '/' . preg_replace('/\[hash\]/', '([0-9a-f]+)', $placeholderFile->getBasename()) . '/';
+				$placeholderFile = new \Katu\Files\File(BASE_DIR, $path);
+				$platformDir = new \Katu\Files\File(preg_replace('/{platform}/', \Katu\Config\Env::getPlatform(), $placeholderFile->getDir()));
+
+				$fileRegexp = $placeholderFile->getBasename();
+				$fileRegexp = preg_replace('/{hash}/', '([0-9a-f]+)?', $fileRegexp);
+				$fileRegexp = preg_replace('/{dash}/', '-?', $fileRegexp);
+				$fileRegexp = '/^' . $fileRegexp . '$/';
 
 				$matchedFiles = [];
-				foreach ($placeholderFile->getDir()->getFiles() as $file) {
-					if (preg_match($regexp, $file->getBasename())) {
+				foreach ($platformDir->getFiles() as $file) {
+					if (preg_match($fileRegexp, $file->getBasename())) {
 						$matchedFiles[] = $file;
 					}
 				}
@@ -191,23 +194,11 @@ class View {
 					return filemtime($a) > filemtime($b) ? -1 : 1;
 				});
 
-				return $matchedFiles[0] ?? null;
+				return $matchedFiles[0] ?? false;
 
 			} catch (\Throwable $e) {
 				return false;
 			}
-		}));
-
-		$twig->addFunction(new \Twig\TwigFunction('getFileUrlWithHash', function() {
-			if (func_get_arg(0) instanceof \Katu\Files\File) {
-				$file = func_get_arg(0);
-			} else {
-				$file = new \Katu\Files\File(BASE_DIR, func_get_arg(0));
-			}
-			$url = new \Katu\Types\TURL($file->geTURL());
-			$url->addQueryParam('hash', hash('md4', $file->get()));
-
-			return $url;
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('lipsum', function($sentences = 1) {
@@ -272,7 +263,7 @@ class View {
 
 		$data['_request']['uri']    = (string)(string)$request->getUri();
 		$data['_request']['url']    = (string)\Katu\Tools\Routing\URL::getCurrent();
-		$data['_request']['params'] = (array)$request->getQueryParams();
+		$data['_request']['params'] = (array)$request->getParams();
 
 		if ($request->getAttribute('route')) {
 			$data['_request']['route']  = (array)[

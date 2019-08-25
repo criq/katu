@@ -10,7 +10,7 @@ class File {
 	const TYPE_DIR  = 'dir';
 
 	public function __construct() {
-		$this->path = call_user_func_array(['static', 'joinPaths'], func_get_args());
+		$this->path = static::joinPaths(...func_get_args());
 	}
 
 	public function __toString() {
@@ -19,7 +19,8 @@ class File {
 
 	static function joinPaths() {
 		return implode('/', array_map(function($i) {
-			return rtrim(implode('.', (array)$i), '/');
+			$implodedFilename = implode('.', (array)$i);
+			return rtrim($implodedFilename, '/');
 		}, func_get_args()));
 	}
 
