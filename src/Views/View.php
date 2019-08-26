@@ -85,7 +85,10 @@ class View {
 		}));
 
 		$twig->addFilter(new \Twig\TwigFilter('nbsp', function($text) {
-			return new \Twig_Markup(preg_replace('/\b([aiouksvz])(\s)/i', '\\1&nbsp;', $text), 'UTF-8');
+			$text = preg_replace('/\b([aiouksvz])(\s)/i', '\\1&nbsp;', $text);
+			$text = preg_replace('/([0-9])\s+(%)/i', '\\1&nbsp;\\2', $text);
+
+			return new \Twig\Markup($text, 'UTF-8');
 		}));
 
 		/***************************************************************************
