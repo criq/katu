@@ -264,7 +264,7 @@ class View {
 			/* Doesn't exist. */
 		}
 
-		$data['_request']['uri']    = (string)(string)$request->getUri();
+		$data['_request']['uri']    = (string)$request->getUri();
 		$data['_request']['url']    = (string)\Katu\Tools\Routing\URL::getCurrent();
 		$data['_request']['params'] = (array)$request->getParams();
 
