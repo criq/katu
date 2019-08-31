@@ -28,10 +28,10 @@ class App {
 			define('BASE_DIR', realpath(__DIR__ . '/../../../../'));
 		}
 		if (!defined('LOG_PATH')) {
-			define('LOG_PATH', Utils\FileSystem::joinPaths(BASE_DIR, ErrorHandler::LOG_DIR));
+			define('LOG_PATH', \Katu\Files\File::joinPaths(BASE_DIR, ErrorHandler::LOG_DIR));
 		}
 		if (!defined('ERROR_LOG')) {
-			define('ERROR_LOG', Utils\FileSystem::joinPaths(LOG_PATH, ErrorHandler::ERROR_LOG));
+			define('ERROR_LOG', \Katu\Files\File::joinPaths(LOG_PATH, ErrorHandler::ERROR_LOG));
 		}
 		if (!defined('FILE_DIR')) {
 			define('FILE_DIR', 'files');
