@@ -313,7 +313,7 @@ class Model extends Base {
 		}
 
 		while (true) {
-			$string = \Katu\Utils\Random::getFromChars($chars, $length);
+			$string = \Katu\Tools\Random\Generator::getFromChars($chars, $length);
 			if (!static::getBy([$column->name->name => $string])->getTotal()) {
 				$this->update($column->name->name, $string);
 				$this->save();
