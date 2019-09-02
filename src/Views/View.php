@@ -264,15 +264,22 @@ class View {
 			/* Doesn't exist. */
 		}
 
-		$data['_request']['uri']    = (string)$request->getUri();
-		$data['_request']['url']    = (string)\Katu\Tools\Routing\URL::getCurrent();
+		$data['_request']['uri'] = (string)$request->getUri();
+		$data['_request']['url'] = (string)\Katu\Tools\Routing\URL::getCurrent();
+
+		try {
+			$data['_request']['ip'] = (string)$request->getServerParam('REMOTE_ADDR');
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
 		$data['_request']['params'] = (array)$request->getParams();
 
 		if ($request->getAttribute('route')) {
 			$data['_request']['route']  = (array)[
 				'pattern' => $request->getAttribute('route')->getPattern(),
-				'name'    => $request->getAttribute('route')->getName(),
-				'params'  => $request->getAttribute('route')->getArguments(),
+				'name' => $request->getAttribute('route')->getName(),
+				'params' => $request->getAttribute('route')->getArguments(),
 			];
 		}
 
