@@ -129,7 +129,7 @@ class File {
 			$this->getDir()->makeDir();
 			return file_put_contents($this, $data, LOCK_EX);
 		} catch (\Exception $e) {
-			\Katu\ErrorHandler::log($e);
+			\Katu\Errors\Handler::log($e);
 			return false;
 		}
 	}
