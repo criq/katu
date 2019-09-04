@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Emails\ThirdParty;
 
-class SendGrid extends \Katu\Tools\Emails\ThirdParty {
+class Sendgrid extends \Katu\Tools\Emails\ThirdParty {
 
 	public $attachments = [];
 
@@ -10,77 +10,44 @@ class SendGrid extends \Katu\Tools\Emails\ThirdParty {
 		$app = \Katu\App::get();
 
 		try {
-			$key = \Katu\Config\Config::get('app', 'email', 'useSendGridKey');
+			$key = \Katu\Config\Config::get('app', 'email', 'useSendgridKey');
 		} catch (\Exception $e) {
 			$key = 'live';
 		}
 
-		return new \SendGrid(\Katu\Config\Config::get('sendGrid', 'api', 'keys', $key));
+		return new \Sendgrid(\Katu\Config\Config::get('sendgrid', 'api', 'keys', $key));
 	}
 
 	public function getEmail($message = []) {
-		$email = new \SendGrid\Email;
+		$from = new \SendGrid\Mail\From($this->fromEmailAddress, $this->fromName);
+		$email = new \SendGrid\Mail\Mail($from);
+
+		$email->setSubject($this->subject);
+		$email->addContent('text/html', $this->html);
+		$email->addContent('text/plain', $this->plain ?: strip_tags($this->html));
+		$email->addHeaders($this->headers);
 
 		if ($this->template) {
 			$email->setTemplateId($this->template);
 		}
 
-		$email->setSubject($this->subject);
-		$email->setHtml($this->html);
-		$email->setText($this->plain);
-		$email->setFrom($this->fromEmailAddress);
-		$email->setFromName($this->fromName);
-		$email->setHeaders($this->headers);
-
 		/**********************************************************************
-		 * Substitutions.
+		 * Personalizations.
 		 */
-
-		$substitutions = [];
 
 		foreach ($this->to as $toEmailAddress => $toName) {
-			$email->addTo($toEmailAddress, $toName);
+
+			$personalization = new \SendGrid\Mail\Personalization;
+			$personalization->addTo(new \SendGrid\Mail\To($toEmailAddress, $toName));
+
+			$substitution = new \SendGrid\Mail\Substitution('content.value', $this->html);
 			foreach ($this->variables as $variable => $value) {
-				$substitutions[$toEmailAddress][$variable] = $value;
+				$substitution = new \SendGrid\Mail\Substitution($variable, $value);
+				$personalization->addSubstitution($substitution);
 			}
-			if (isset($this->recipientVariables[$toEmailAddress])) {
-				foreach ($this->recipientVariables[$toEmailAddress] as $variable => $value) {
-					$substitutions[$toEmailAddress][$variable] = $value;
-				}
-			}
-		}
 
-		foreach ($this->cc as $toEmailAddress => $toName) {
-			$email->addCc($toEmailAddress, $toName);
-			foreach ($this->variables as $variable => $value) {
-				$substitutions[$toEmailAddress][$variable] = $value;
-			}
-			if (isset($this->recipientVariables[$toEmailAddress])) {
-				foreach ($this->recipientVariables[$toEmailAddress] as $variable => $value) {
-					$substitutions[$toEmailAddress][$variable] = $value;
-				}
-			}
-		}
+			$email->addPersonalization($personalization);
 
-		$smtpApiTo = [];
-		$smtpApiSubstitutions = [];
-
-		foreach ($substitutions as $emailAddress => $substitutions) {
-			$smtpApiTo[] = $emailAddress;
-			foreach ($substitutions as $variable => $value) {
-				$smtpApiSubstitutions[$variable][] = $value;
-			}
-		}
-
-		$email->setSmtpapiTos($smtpApiTo);
-		$email->setSubstitutions($smtpApiSubstitutions);
-
-		/**********************************************************************
-		 * Sections.
-		 */
-
-		foreach ($this->variables as $variable => $value) {
-			$email->addSection($variable, $value);
 		}
 
 		/**********************************************************************
@@ -97,14 +64,14 @@ class SendGrid extends \Katu\Tools\Emails\ThirdParty {
 	public function send() {
 		$args = [];
 		if (isset($args[0]) && $args[0] instanceof \SendGrid) {
-			$sendGridApi = $args[0];
+			$sendgridApi = $args[0];
 		} else {
-			$sendGridApi = static::getDefaultApi();
+			$sendgridApi = static::getDefaultApi();
 		}
 
 		$email = $this->getEmail();
 
-		return $sendGridApi->send($email);
+		return $sendgridApi->send($email);
 	}
 
 }
