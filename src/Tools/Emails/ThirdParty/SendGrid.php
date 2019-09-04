@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Email\ThirdParty;
+namespace Katu\Tools\Emails\ThirdParty;
 
-class SendGrid extends \Katu\Email\ThirdParty {
+class SendGrid extends \Katu\Tools\Emails\ThirdParty {
 
 	public $attachments = [];
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Email;
+namespace Katu\Tools\Emails;
 
-abstract class ThirdParty extends \Katu\Email {
+abstract class ThirdParty extends \Katu\Tools\Emails\Email {
 
 	public $template;
 
