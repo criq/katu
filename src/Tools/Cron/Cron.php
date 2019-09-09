@@ -20,7 +20,7 @@ class Cron {
 				$expression = \Cron\CronExpression::factory($spec);
 				$nextRunTime = $expression->getNextRunDate($time, 0, true);
 				if ($time == $nextRunTime) {
-					$crons[] = new CronPath($path);
+					$crons[] = new Path($path);
 				}
 			}
 
@@ -38,7 +38,7 @@ class Cron {
 				$expression = \Cron\CronExpression::factory($spec);
 				$nextRunTime = $expression->getNextRunDate($time, 0, true);
 				if ($time == $nextRunTime) {
-					$crons[] = new CronRoute($route);
+					$crons[] = new Route($route);
 				}
 			}
 
