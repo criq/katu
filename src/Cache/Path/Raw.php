@@ -20,7 +20,6 @@ class Raw extends Segment {
 		// Other types.
 		} else {
 			$value = static::generateHashPathSegment(serialize($value));
-
 		}
 
 		// Sanitize.

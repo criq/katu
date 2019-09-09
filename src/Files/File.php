@@ -17,6 +17,79 @@ class File {
 		return $this->getPath();
 	}
 
+	static function createFromName() {
+		$generateHashArray = function($value) {
+			$hash = sha1($value);
+
+			$array = [
+				substr($hash, 0, 2),
+				substr($hash, 2, 2),
+				substr($hash, 4),
+			];
+
+			return $array;
+		};
+
+		$args = array_flatten(func_get_args());
+		$parts = [];
+
+		foreach ($args as $arg) {
+
+			// Existing directory.
+			try {
+
+				$dir = new static($arg);
+				if ($dir->isDir() && $dir->exists()) {
+					$parts[] = $dir;
+				} else {
+					throw new \Exception;
+				}
+
+			} catch (\Throwable $e) {
+
+				// URL.
+				try {
+
+					$url = new \Katu\Types\TURL($arg);
+					$parts[] = $url->getScheme();
+					$parts[] = $url->getHost();
+					$parts[] = trim($url->getParts()['path'], '/');
+					$parts[] = $generateHashArray(\Katu\Files\Formats\JSON::encodeStandard($url->getQueryParams()));
+
+				} catch (\Throwable $e) {
+
+					// Numbers and strings.
+					if (is_string($arg) || is_int($arg) || is_float($arg)) {
+
+						$arg = (new \Katu\Types\TString($arg))->normalizeSpaces()->trim();
+						$arg = preg_replace('/\v/m', ' ', $arg);
+						$arg = preg_split('/[\/\\\]/', $arg);
+
+						$parts[] = $arg;
+
+					// Other types.
+					} else {
+						$parts[] = $generateHashArray(serialize($arg));
+					}
+
+				}
+
+			}
+
+		}
+
+		// Downcode.
+		$parts = array_filter(array_flatten($parts));
+		$parts = array_map(function($part) {
+			return \URLify::downcode($part);
+		}, $parts);
+
+		// Add checksum.
+		$parts[] = [sha1(var_export($args, true)), 'checksum'];
+
+		return new static(...$parts);
+	}
+
 	static function joinPaths() {
 		return implode('/', array_map(function($i) {
 			$implodedFilename = implode('.', (array)$i);

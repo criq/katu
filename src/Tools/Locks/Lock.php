@@ -1,64 +1,108 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Tools\Locks;
 
 class Lock {
 
-	public $name;
-	public $timeout;
+	const DIR_NAME = 'locks';
 
-	public function __construct($name, $timeout) {
-		$this->name    = (array) $name;
-		$this->timeout = (int)   $timeout;
+	private $timeout;
+	private $name;
+	private $callback;
+	private $args = [];
+	private $useLock = true;
 
-		if (file_exists($this->getPath()) && filectime($this->getPath()) > (time() - $this->timeout)) {
-			throw new \Katu\Exceptions\LockException("Lock exists.");
+	public function __construct(int $timeout, $name = null, callable $callback = null) {
+		$this->timeout = $timeout;
+		$this->name = $name;
+		$this->callback = $callback;
+
+		if (!$this->name) {
+			$origin = debug_backtrace()[1];
+			$this->name = [$origin['class'], $origin['function']];
+		}
+	}
+
+	public function setName($name) {
+		$this->name = $name;
+
+		return $this;
+	}
+
+	public function setTimeout(int $timeout) {
+		$this->timeout = $timeout;
+
+		return $this;
+	}
+
+	public function setCallback(callable $callback) {
+		$this->callback = $callback;
+
+		return $this;
+	}
+
+	public function setArgs(array $args) {
+		$this->args = $args;
+
+		return $this;
+	}
+
+	public function setUseLock($useLock) {
+		$this->useLock = $useLock;
+
+		return $this;
+	}
+
+	public function getFile() {
+		return \Katu\Files\File::createFromName(TMP_PATH, static::DIR_NAME, $this->name);
+	}
+
+	public function isLocked() {
+		$file = $this->getFile();
+		if (!$file->exists()) {
+			return false;
 		}
 
-		FileSystem::touch($this->getPath());
+		if ($file->getDateTimeModified()->isInTimeout($this->timeout)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public function lock() {
+		if ($this->isLocked()) {
+			throw new \Katu\Exceptions\LockException;
+		}
+
+		$this->getFile()->touch();
 
 		return true;
-	}
-
-	public function getPath() {
-		return FileSystem::joinPaths(TMP_PATH, \Katu\Files\FileSystem::getPathForName(...array_merge(['!locks'], $this->name)));
-	}
-
-	static function run($name, $timeout, $callback, $conditions = true) {
-		@set_time_limit($timeout);
-
-		if ($conditions) {
-			$lock = new static($name, $timeout);
-		}
-
-		try {
-
-			$args = array_slice(func_get_args(), 3);
-			$res = call_user_func_array($callback, $args);
-
-		} catch (\Exception $e) {
-
-			if (isset($lock)) {
-				$lock->unlock();
-			}
-
-			throw $e;
-
-		}
-
-		if (isset($lock)) {
-			$lock->unlock();
-		}
-
-		return $res;
 	}
 
 	public function unlock() {
-		if (file_exists($this->getPath())) {
-			@unlink($this->getPath());
+		$file = $this->getFile();
+		if ($file->exists()) {
+			$file->delete();
 		}
 
 		return true;
+	}
+
+	public function run() {
+		if ($this->useLock) {
+			$this->lock();
+		}
+
+		@set_time_limit($this->timeout);
+		$callback = $this->callback;
+		$res = $callback(...$this->args);
+
+		if ($this->useLock) {
+			$this->unlock();
+		}
+
+		return $res;
 	}
 
 }
