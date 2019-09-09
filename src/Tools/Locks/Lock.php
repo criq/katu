@@ -11,6 +11,7 @@ class Lock {
 	private $callback;
 	private $args = [];
 	private $useLock = true;
+	private $excludedPlatforms = [];
 
 	public function __construct(int $timeout, $name = null, callable $callback = null) {
 		$this->timeout = $timeout;
@@ -53,6 +54,16 @@ class Lock {
 		return $this;
 	}
 
+	public function getUseLock() {
+		return $this->useLock && !in_array(\Katu\Config\Env::getPlatform(), $this->excludedPlatforms);
+	}
+
+	public function excludePlatform($platform) {
+		$this->excludedPlatforms[] = $platform;
+
+		return $this;
+	}
+
 	public function getFile() {
 		return \Katu\Files\File::createFromName(TMP_PATH, static::DIR_NAME, $this->name);
 	}
@@ -90,7 +101,7 @@ class Lock {
 	}
 
 	public function run() {
-		if ($this->useLock) {
+		if ($this->getUseLock()) {
 			$this->lock();
 		}
 
@@ -98,7 +109,7 @@ class Lock {
 		$callback = $this->callback;
 		$res = $callback(...$this->args);
 
-		if ($this->useLock) {
+		if ($this->getUseLock()) {
 			$this->unlock();
 		}
 
