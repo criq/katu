@@ -272,13 +272,11 @@ class View {
 			/* Doesn't exist. */
 		}
 
-<<<<<<< HEAD
-=======
-		if ($request) {
-			$data['_request']['uri'] = (string)$request->getUri();
+		try {
+			$data['_request']['url'] = (string)\Katu\Tools\Routing\URL::getCurrent();
+		} catch (\Throwable $e) {
+			/* Doesn't exist. */
 		}
->>>>>>> 911bfcca138add9bd4e83223f62d83cab6c0e661
-		$data['_request']['url'] = (string)\Katu\Tools\Routing\URL::getCurrent();
 
 		try {
 			$data['_request']['ip'] = (string)$request->getServerParam('REMOTE_ADDR');
@@ -286,7 +284,6 @@ class View {
 			/* Doesn't exist. */
 		}
 
-<<<<<<< HEAD
 		try {
 			$data['_request']['params'] = (array)$request->getParams();
 		} catch (\Throwable $e) {
@@ -303,18 +300,6 @@ class View {
 			}
 		} catch (\Throwable $e) {
 			/* Doesn't exist. */
-=======
-		if ($request) {
-			$data['_request']['params'] = (array)$request->getParams();
-		}
-
-		if ($request && $request->getAttribute('route')) {
-			$data['_request']['route']  = (array)[
-				'pattern' => $request->getAttribute('route')->getPattern(),
-				'name' => $request->getAttribute('route')->getName(),
-				'params' => $request->getAttribute('route')->getArguments(),
-			];
->>>>>>> 911bfcca138add9bd4e83223f62d83cab6c0e661
 		}
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();
