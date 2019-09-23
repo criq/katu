@@ -253,34 +253,49 @@ class View {
 	static function getCommonData($request, $response, $args) {
 		$data['_site']['baseDir'] = BASE_DIR;
 		$data['_site']['baseUrl'] = \Katu\Config\Config::get('app', 'baseUrl');
+
 		try {
 			$data['_site']['apiUrl']  = \Katu\Config\Config::get('app', 'apiUrl');
-		} catch (\Exception $e) {
-			/* Doesn't exist. */
-		}
-		try {
-			$data['_site']['timezone'] = \Katu\Config\Config::get('app', 'timezone');
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			/* Doesn't exist. */
 		}
 
-		$data['_request']['uri'] = (string)$request->getUri();
+		try {
+			$data['_site']['timezone'] = \Katu\Config\Config::get('app', 'timezone');
+		} catch (\Throwable $e) {
+			/* Doesn't exist. */
+		}
+
+		try {
+			$data['_request']['uri'] = (string)$request->getUri();
+		} catch (\Throwable $e) {
+			/* Doesn't exist. */
+		}
+
 		$data['_request']['url'] = (string)\Katu\Tools\Routing\URL::getCurrent();
 
 		try {
 			$data['_request']['ip'] = (string)$request->getServerParam('REMOTE_ADDR');
 		} catch (\Throwable $e) {
-			// Nevermind.
+			/* Doesn't exist. */
 		}
 
-		$data['_request']['params'] = (array)$request->getParams();
+		try {
+			$data['_request']['params'] = (array)$request->getParams();
+		} catch (\Throwable $e) {
+			/* Doesn't exist. */
+		}
 
-		if ($request->getAttribute('route')) {
-			$data['_request']['route']  = (array)[
-				'pattern' => $request->getAttribute('route')->getPattern(),
-				'name' => $request->getAttribute('route')->getName(),
-				'params' => $request->getAttribute('route')->getArguments(),
-			];
+		try {
+			if ($request->getAttribute('route')) {
+				$data['_request']['route']  = (array)[
+					'pattern' => $request->getAttribute('route')->getPattern(),
+					'name' => $request->getAttribute('route')->getName(),
+					'params' => $request->getAttribute('route')->getArguments(),
+				];
+			}
+		} catch (\Throwable $e) {
+			/* Doesn't exist. */
 		}
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();
