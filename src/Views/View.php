@@ -44,7 +44,7 @@ class View {
 
 		$twig->addFunction(new \Twig\TwigFunction('getImage', function($uri) {
 			try {
-				return new \Katu\Image($uri);
+				return new \Katu\Tools\Images\Image($uri);
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
 				return false;
 			}
@@ -272,6 +272,12 @@ class View {
 			/* Doesn't exist. */
 		}
 
+<<<<<<< HEAD
+=======
+		if ($request) {
+			$data['_request']['uri'] = (string)$request->getUri();
+		}
+>>>>>>> 911bfcca138add9bd4e83223f62d83cab6c0e661
 		$data['_request']['url'] = (string)\Katu\Tools\Routing\URL::getCurrent();
 
 		try {
@@ -280,6 +286,7 @@ class View {
 			/* Doesn't exist. */
 		}
 
+<<<<<<< HEAD
 		try {
 			$data['_request']['params'] = (array)$request->getParams();
 		} catch (\Throwable $e) {
@@ -296,6 +303,18 @@ class View {
 			}
 		} catch (\Throwable $e) {
 			/* Doesn't exist. */
+=======
+		if ($request) {
+			$data['_request']['params'] = (array)$request->getParams();
+		}
+
+		if ($request && $request->getAttribute('route')) {
+			$data['_request']['route']  = (array)[
+				'pattern' => $request->getAttribute('route')->getPattern(),
+				'name' => $request->getAttribute('route')->getName(),
+				'params' => $request->getAttribute('route')->getArguments(),
+			];
+>>>>>>> 911bfcca138add9bd4e83223f62d83cab6c0e661
 		}
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();

@@ -15,7 +15,7 @@ class TString {
 	}
 
 	public function __toString() {
-		return $this->string;
+		return (string)$this->string;
 	}
 
 	static function isValid($string) {
@@ -30,7 +30,7 @@ class TString {
 		return $this->getNumberOfWords() >= $n;
 	}
 
-	public function getForUrl($options = []) {
+	public function getForURL($options = []) {
 		$options = array_merge($options, [
 			'delimiter' => '-',
 			'lowercase' => true,
@@ -66,12 +66,12 @@ class TString {
 		return implode('<wbr />', $this->getAsArray());
 	}
 
-	public function trim() {
-		return new static(trim($this));
-	}
-
 	public function normalizeSpaces() {
 		return new static(str_replace("\xc2\xa0", "\x20", $this));
+	}
+
+	public function trim() {
+		return new static(trim($this));
 	}
 
 }

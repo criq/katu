@@ -31,11 +31,11 @@ class TPagination {
 	}
 
 	static function getAppPageIdent() {
-		return \Katu\Config::get('app', 'pagination', 'pageIdent');
+		return \Katu\Config\Config::get('app', 'pagination', 'pageIdent');
 	}
 
 	static function getAppPerPage() {
-		return \Katu\Config::get('app', 'pagination', 'perPage');
+		return \Katu\Config\Config::get('app', 'pagination', 'perPage');
 	}
 
 	static function getRequestPageExpression($perPage = null) {

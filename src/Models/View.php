@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu;
+namespace Katu\Models;
 
-class ViewModel extends ModelBase {
+class View extends Base {
 
 	static $_cache              = true;
 	static $_cacheTimeout       = 86400;
@@ -27,7 +27,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getView() {
-		return new PDO\View(static::getPDO(), static::getViewName());
+		return new \Katu\PDO\View(static::getPDO(), static::getViewName());
 	}
 
 	static function getViewName() {
@@ -41,7 +41,7 @@ class ViewModel extends ModelBase {
 			$table = static::getTable();
 		}
 
-		return new PDO\Column($table, $name);
+		return new \Katu\PDO\Column($table, $name);
 	}
 
 	static function getViewColumn($name, $options = []) {
@@ -51,7 +51,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getCachedTable() {
-		return new PDO\Table(static::getPDO(), static::getCachedTableName());
+		return new \Katu\PDO\Table(static::getPDO(), static::getCachedTableName());
 	}
 
 	static function getCachedTableName() {
@@ -182,7 +182,7 @@ class ViewModel extends ModelBase {
 	}
 
 	static function getMaterializedTable() {
-		return new PDO\Table(static::getPDO(), static::getMaterializedTableName());
+		return new \Katu\PDO\Table(static::getPDO(), static::getMaterializedTableName());
 	}
 
 	static function getMaterializedTableName() {
@@ -197,7 +197,7 @@ class ViewModel extends ModelBase {
 
 		// Get a temporary table.
 		$temporaryTableName = '_tmp_' . strtoupper(\Katu\Utils\Random::getIdString(8));
-		$temporaryTable = new PDO\Table($destinationTable->pdo, $temporaryTableName);
+		$temporaryTable = new \Katu\PDO\Table($destinationTable->pdo, $temporaryTableName);
 
 		// Copy into temporary table view.
 		$params = [

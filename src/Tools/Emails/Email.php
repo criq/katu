@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu;
+namespace Katu\Tools\Emails;
 
 class Email {
 
@@ -29,7 +29,7 @@ class Email {
 	}
 
 	static function resolveEmailAddress($emailAddress) {
-		if ($emailAddress instanceof \Katu\Models\EmailAddress) {
+		if ($emailAddress instanceof \Katu\Models\Presets\EmailAddress) {
 			$originalEmailAddress = $emailAddress->emailAddress;
 		} elseif ($emailAddress instanceof \Katu\Types\TEmailAddress) {
 			$originalEmailAddress = (string) $emailAddress;
@@ -39,7 +39,7 @@ class Email {
 
 		try {
 
-			$fakeEmailAddresses = (array) \Katu\Config::get('app', 'email', 'useFakeEmailAddress');
+			$fakeEmailAddresses = (array) \Katu\Config\Config::get('app', 'email', 'useFakeEmailAddress');
 			$emailAddresses = [];
 			foreach ($fakeEmailAddresses as $fakeEmailAddress) {
 				list($username, $domain) = explode('@', $fakeEmailAddress);

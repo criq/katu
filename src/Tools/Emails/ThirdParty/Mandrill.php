@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Email\ThirdParty;
+namespace Katu\Tools\Emails\ThirdParty;
 
-class Mandrill extends \Katu\Email\ThirdParty {
+class Mandrill extends \Katu\Tools\Emails\ThirdParty {
 
 	public $content = [];
 	public $attachments = [];

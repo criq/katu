@@ -35,7 +35,7 @@ class Images extends \Katu\Controllers\Controller {
 				->write($imageVersion->getFile()->get())
 				;
 
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\Exception;
 		}
 	}
@@ -57,7 +57,7 @@ class Images extends \Katu\Controllers\Controller {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
 
-			$image = new \Katu\Image($url);
+			$image = new \Katu\Tools\Images\Image($url);
 			$imageVersion = $image->getImageVersion($version);
 			$imageVersion->getImage();
 
@@ -67,7 +67,7 @@ class Images extends \Katu\Controllers\Controller {
 				->write($imageVersion->getFile()->get())
 				;
 
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\Exception;
 		}
 	}

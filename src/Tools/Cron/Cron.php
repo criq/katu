@@ -7,12 +7,12 @@ class Cron {
 	static function getCurrent() {
 		$crons = [];
 
-		$time = new DateTime;
+		$time = new \Katu\Tools\DateTime\DateTime;
 		$time->setTime($time->format('H'), $time->format('i'), 0);
 
 		try {
 
-			$paths = array_filter((array)\Katu\Config::get('cron', 'paths'));
+			$paths = array_filter((array)\Katu\Config\Config::get('cron', 'paths'));
 			foreach ($paths as $path => $spec) {
 				if (is_array($spec)) {
 					list($path, $spec) = [key($spec), current($spec)];
@@ -20,7 +20,7 @@ class Cron {
 				$expression = \Cron\CronExpression::factory($spec);
 				$nextRunTime = $expression->getNextRunDate($time, 0, true);
 				if ($time == $nextRunTime) {
-					$crons[] = new CronPath($path);
+					$crons[] = new Path($path);
 				}
 			}
 
@@ -30,7 +30,7 @@ class Cron {
 
 		try {
 
-			$routes = array_filter((array)\Katu\Config::get('cron', 'routes'));
+			$routes = array_filter((array)\Katu\Config\Config::get('cron', 'routes'));
 			foreach ($routes as $route => $spec) {
 				if (is_array($spec)) {
 					list($route, $spec) = [key($spec), current($spec)];
@@ -38,7 +38,7 @@ class Cron {
 				$expression = \Cron\CronExpression::factory($spec);
 				$nextRunTime = $expression->getNextRunDate($time, 0, true);
 				if ($time == $nextRunTime) {
-					$crons[] = new CronRoute($route);
+					$crons[] = new Route($route);
 				}
 			}
 
