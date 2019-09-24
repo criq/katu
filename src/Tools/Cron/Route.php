@@ -11,7 +11,7 @@ class Route {
 	}
 
 	public function run() {
-		return Url::getFor($this->route)->ping();
+		return \Katu\Tools\Routing\URL::getFor($this->route)->ping();
 	}
 
 }
