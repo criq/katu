@@ -197,7 +197,7 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function getUsedInViewsCacheName() {
-		return ['!databases', '!' . $this->pdo->name, '!tables', '!usedInViews', '!' . trim($this->name, '`')];
+		return ['databases', $this->pdo->name, 'tables', 'usedInViews', $this->name];
 	}
 
 	public function getTotalUsage($timeout = null) {
@@ -217,11 +217,11 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function getTotalUsageCacheName() {
-		return ['!databases', '!' . $this->pdo->name, '!tables', '!totalRows', '!' . trim($this->name, '`')];
+		return ['databases', $this->pdo->name, 'tables', 'totalRows', $this->name];
 	}
 
 	public function getLastUpdatedTemporaryFile() {
-		return new \Katu\Files\Temporary('!databases', '!' . $this->pdo->name, '!tables', '!updated', trim($this->name, '`'));
+		return \Katu\Files\Temporary::createFromName('databases', $this->pdo->name, 'tables', 'updated', $this->name);
 	}
 
 }

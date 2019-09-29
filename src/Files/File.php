@@ -318,7 +318,7 @@ class File {
 	public function makeDir($mode = 0777, $recursive = true) {
 		try {
 			return @mkdir($this, $mode, $recursive);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			return false;
 		}
 	}
