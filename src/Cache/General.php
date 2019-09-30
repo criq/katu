@@ -16,7 +16,7 @@ class General {
 
 	protected static $memcached;
 
-	public function __construct($name = null, int $timeout = null) {
+	public function __construct($name = null, $timeout = null) {
 		$this->setName($name);
 		$this->setTimeout($timeout);
 	}
