@@ -15,7 +15,12 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty {
 			$key = 'live';
 		}
 
-		return new \Sendgrid(\Katu\Config\Config::get('sendgrid', 'api', 'keys', $key));
+		try {
+			return new \Sendgrid(\Katu\Config\Config::get('sendgrid', 'api', 'keys', $key));
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return new \Sendgrid(\Katu\Config\Config::get('sendgrid', 'api', 'key'));
+		}
+
 	}
 
 	public function getEmail($message = []) {
