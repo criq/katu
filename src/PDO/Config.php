@@ -22,11 +22,11 @@ class Config {
 
 	static function getFromKeychain($name) {
 		return new static(
-			\Katu\Tools\Security\Keychain::get('db', $name, 'host'),
-			\Katu\Tools\Security\Keychain::get('db', $name, 'user'),
-			\Katu\Tools\Security\Keychain::get('db', $name, 'password'),
-			\Katu\Tools\Security\Keychain::get('db', $name, 'database'),
-			\Katu\Tools\Security\Keychain::get('db', $name, 'charset')
+			$_SERVER['DB'][$name]['host']     ?? \Katu\Tools\Security\Keychain::get('db', $name, 'host'),
+			$_SERVER['DB'][$name]['user']     ?? \Katu\Tools\Security\Keychain::get('db', $name, 'user'),
+			$_SERVER['DB'][$name]['password'] ?? \Katu\Tools\Security\Keychain::get('db', $name, 'password'),
+			$_SERVER['DB'][$name]['database'] ?? \Katu\Tools\Security\Keychain::get('db', $name, 'database'),
+			$_SERVER['DB'][$name]['charset']  ?? \Katu\Tools\Security\Keychain::get('db', $name, 'charset')
 		);
 	}
 

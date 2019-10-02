@@ -26,11 +26,13 @@ class Config {
 					$config[$pathinfo['filename']] = [];
 				}
 				if ($pathinfo['extension'] == 'yaml') {
-					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array)\Katu\Files\Formats\YAML::decode($file));
+					$config[$pathinfo['filename']] = array_merge_recursive($config[$pathinfo['filename']], (array)\Katu\Files\Formats\YAML::decode($file));
 				} else {
-					$config[$pathinfo['filename']] = array_merge($config[$pathinfo['filename']], (array)include $file);
+					$config[$pathinfo['filename']] = array_merge_recursive($config[$pathinfo['filename']], (array)include $file);
 				}
 			}
+			
+			$config = array_merge_recursive($config, $_SERVER['CONFIG'] ?? []);
 
 			return $config;
 
