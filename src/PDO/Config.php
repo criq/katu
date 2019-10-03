@@ -20,25 +20,24 @@ class Config {
 		$this->charset  = $charset;
 	}
 
-	static function getFromKeychain($name) {
-		return new static(
-			$_SERVER['DB'][$name]['host']     ?? \Katu\Tools\Security\Keychain::get('db', $name, 'host'),
-			$_SERVER['DB'][$name]['user']     ?? \Katu\Tools\Security\Keychain::get('db', $name, 'user'),
-			$_SERVER['DB'][$name]['password'] ?? \Katu\Tools\Security\Keychain::get('db', $name, 'password'),
-			$_SERVER['DB'][$name]['database'] ?? \Katu\Tools\Security\Keychain::get('db', $name, 'database'),
-			$_SERVER['DB'][$name]['charset']  ?? \Katu\Tools\Security\Keychain::get('db', $name, 'charset')
-		);
+	static function createFromConfig($config) {
+		$class = '\\Katu\\PDO\\Config\\' . $config['type'];
+		if (!class_exists($class)) {
+			throw new \Katu\Exceptions\PDOConfigException("Invalid PDO type.");
+		}
+
+		return new $class($config['host'], $config['user'], $config['password'], $config['database'], $config['charset']);
 	}
 
 	public function getPDOArray() {
-		return array(
+		return [
 			'driver'   => static::DRIVER,
 			'host'     => $this->host,
 			'user'     => $this->user,
 			'password' => $this->password,
 			'dbname'   => $this->database,
 			'charset'  => $this->charset,
-		);
+		];
 	}
 
 	public function getPDODSN() {

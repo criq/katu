@@ -4,6 +4,8 @@ namespace Katu\Config;
 
 class Config {
 
+	const FILENAME_REGEXP = "/^(?<name>[a-z0-9]+)(\.(?<platform>[a-z0-9]+))?\.(?<type>php|yaml)$/i";
+
 	static function get() {
 		$args = func_get_args();
 
@@ -20,19 +22,21 @@ class Config {
 		return \Katu\Cache\Runtime::get('config', function() {
 
 			$config = [];
+
 			foreach (static::getFiles() as $file) {
-				$pathinfo = pathinfo($file);
-				if (!isset($config[$pathinfo['filename']])) {
-					$config[$pathinfo['filename']] = [];
-				}
-				if ($pathinfo['extension'] == 'yaml') {
-					$config[$pathinfo['filename']] = array_merge_recursive($config[$pathinfo['filename']], (array)\Katu\Files\Formats\YAML::decode($file));
-				} else {
-					$config[$pathinfo['filename']] = array_merge_recursive($config[$pathinfo['filename']], (array)include $file);
+				if (preg_match(static::FILENAME_REGEXP, $file->getBasename(), $match)) {
+					if (!$match['platform'] || $match['platform'] == Env::getPlatform()) {
+						if ($match['type'] == 'yaml') {
+							$config[$match['name']] = array_merge_recursive($config[$match['name']] ?? [], (array)\Katu\Files\Formats\YAML::decode($file));
+						} elseif ($match['type'] == 'php') {
+							$config[$match['name']] = array_merge_recursive($config[$match['name']] ?? [], (array)include $file);
+						}
+					}
 				}
 			}
-			
+
 			$config = array_merge_recursive($config, $_SERVER['CONFIG'] ?? []);
+			#var_dump($config);die;
 
 			return $config;
 
@@ -44,8 +48,8 @@ class Config {
 		$files = [];
 
 		foreach (scandir($dir) as $file) {
-			if (preg_match("/^[a-z]+\.(php|yaml)$/i", $file)) {
-				$files[] = \Katu\Files\File::joinPaths($dir, $file);
+			if (preg_match(static::FILENAME_REGEXP, $file)) {
+				$files[] = new \Katu\Files\File($dir, $file);
 			}
 		}
 

@@ -14,10 +14,11 @@ class Connection {
 
 	public function __construct($name) {
 		$this->name = $name;
+
 		try {
-			$this->config = \Katu\Config\Config::get('db', $name);
+			$this->config = Config::createFromConfig(\Katu\Config\Config::get('db', $name));
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			throw new \Katu\Exceptions\MissingPDOConfigException("Missing PDO config for instance " . $name . ".");
+			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance " . $name . ".");
 		}
 
 		// Try to connect.
