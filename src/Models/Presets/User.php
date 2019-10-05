@@ -81,16 +81,24 @@ class User extends \Katu\Models\Model {
 		return static::get(\Katu\Tools\Session\Session::get('katu.user.id'));
 	}
 
-	static function getByAccessToken($token) {
+	static function getByAccessToken($tokens) {
 		$accessTokenClass = static::getAccessTokenClass();
 
-		$accessToken = $accessTokenClass::getOneBy([
-			'token' => preg_replace('/^Token\s/', null, $token),
-			new \Sexy\CmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
-		]);
+		if (is_string($tokens)) {
+			$tokens = [$tokens];
+		}
 
-		if ($accessToken) {
-			return static::get($accessToken->userId);
+		foreach ($tokens as $token) {
+
+			$accessToken = $accessTokenClass::getOneBy([
+				'token' => preg_replace('/^(Bearer)\s+/', null, $token),
+				new \Sexy\CmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
+			]);
+
+			if ($accessToken) {
+				return static::get($accessToken->userId);
+			}
+
 		}
 
 		return false;

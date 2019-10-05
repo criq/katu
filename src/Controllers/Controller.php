@@ -34,7 +34,7 @@ class Controller {
 
 			return $response;
 
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\TemplateException($e);
 		}
 	}
