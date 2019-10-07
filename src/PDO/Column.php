@@ -7,13 +7,17 @@ class Column extends \Sexy\Expression {
 	public $table;
 	public $name;
 
-	public function __construct($table, $name) {
+	public function __construct(TableBase $table, Name $name) {
 		$this->table = $table;
-		$this->name = $name instanceof Name ? $name : new Name($name);
+		$this->name = $name;
 	}
 
 	public function __toString() {
 		return $this->getSql();
+	}
+
+	public function getName() {
+		return $this->name;
 	}
 
 	public function getSql(&$context = []) {

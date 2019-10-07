@@ -6,24 +6,28 @@ use \Katu\Utils\Cache;
 
 class TableBase extends \Sexy\Expression {
 
-	public $pdo;
+	public $connection;
 	public $name;
 
-	public function __construct($pdo, $name) {
-		$this->pdo  = $pdo;
-		$this->name = new Name($name);
+	public function __construct(Connection $connection, Name $name) {
+		$this->connection = $connection;
+		$this->name = $name;
 	}
 
 	public function __toString() {
 		return $this->getSql();
 	}
 
-	public function getPDO() {
-		return $this->pdo;
+	public function getConnection() {
+		return $this->connection;
 	}
 
 	public function getSql(&$context = []) {
-		return implode('.', [new Name($this->pdo->config->database), $this->name]);
+		return implode('.', [new Name($this->getConnection()->config->database), $this->name]);
+	}
+
+	public function getName() {
+		return $this->name;
 	}
 
 	public function getColumns() {
@@ -36,17 +40,17 @@ class TableBase extends \Sexy\Expression {
 		return $columns;
 	}
 
-	public function getColumn($columnName) {
-		return new Column($this, $columnName);
+	public function getColumn(string $column) {
+		return new Column($this, new Name($column));
 	}
 
 	public function getColumnDescriptions() {
 		$table = $this;
 
-		return \Katu\Cache\General::get(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], 86400, function($table) {
+		return \Katu\Cache\General::get(['databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name], 86400, function($table) {
 
 			$columns = [];
-			foreach ($table->pdo->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
+			foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
 				$columns[$properties['Field']] = $properties;
 			}
 
@@ -68,12 +72,12 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function exists() {
-		return $this->pdo->tableExists($this->name->name);
+		return $this->getConnection()->tableExists($this->name->name);
 	}
 
 	public function rename($name) {
 		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
-		$res = $this->pdo->createQuery($sql)->getResult();
+		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		Cache::resetRuntime();
 
@@ -82,7 +86,7 @@ class TableBase extends \Sexy\Expression {
 
 	public function delete() {
 		$sql = " DROP TABLE " . $this->name;
-		$res = $this->pdo->createQuery($sql)->getResult();
+		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		Cache::resetRuntime();
 
@@ -102,7 +106,7 @@ class TableBase extends \Sexy\Expression {
 
 			// View.
 			$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
-			$destinationTable->pdo->createQuery($sql)->getResult();
+			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 		} else {
 
@@ -110,11 +114,11 @@ class TableBase extends \Sexy\Expression {
 			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function($i) use($destinationTable) {
 				return "CREATE TABLE `" . $destinationTable->name->name . "`";
 			}, $sql);
-			$destinationTable->pdo->createQuery($sql)->getResult();
+			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 			// Create table and copy the data.
 			$sql = " INSERT INTO " . $destinationTable . " SELECT * FROM " . $this;
-			$destinationTable->pdo->createQuery($sql)->getResult();
+			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 		}
 
@@ -145,7 +149,7 @@ class TableBase extends \Sexy\Expression {
 				}, $indexableColumns)) . "); ";
 
 				try {
-					$destinationTable->pdo->createQuery($sql)->getResult();
+					$destinationTable->getConnection()->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -155,7 +159,7 @@ class TableBase extends \Sexy\Expression {
 			foreach ($indexableColumns as $indexableColumn) {
 				try {
 					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . $indexableColumn->name . ") ";
-					$destinationTable->pdo->createQuery($sql)->getResult();
+					$destinationTable->getConnection()->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -167,7 +171,7 @@ class TableBase extends \Sexy\Expression {
 			foreach ($options['customIndices'] as $customIndex) {
 				try {
 					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
-					$destinationTable->pdo->createQuery($sql)->getResult();
+					$destinationTable->getConnection()->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -184,8 +188,8 @@ class TableBase extends \Sexy\Expression {
 
 			$views = [];
 
-			foreach ($this->pdo->getViewNames() as $viewName) {
-				$view = new static($this->pdo, $viewName);
+			foreach ($this->getConnection()->getViewNames() as $viewName) {
+				$view = new static($this->getConnection(), $viewName);
 				if (strpos($view->getCreateSyntax(), (string) $this->name) !== false && $viewName != $this->name->name) {
 					$views[] = $viewName;
 				}
@@ -197,7 +201,7 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function getUsedInViewsCacheName() {
-		return ['databases', $this->pdo->name, 'tables', 'usedInViews', $this->name];
+		return ['databases', $this->getConnection()->name, 'tables', 'usedInViews', $this->name];
 	}
 
 	public function getTotalUsage($timeout = null) {
@@ -206,7 +210,7 @@ class TableBase extends \Sexy\Expression {
 			$stopwatch = new \Katu\Utils\Stopwatch();
 
 			$sql = " SELECT COUNT(1) AS total FROM " . $table->name;
-			$res = $table->pdo->createQuery($sql)->getResult()->getArray();
+			$res = $table->getConnection()->createQuery($sql)->getResult()->getArray();
 
 			return [
 				'rows' => (int) $res[0]['total'],
@@ -217,11 +221,11 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function getTotalUsageCacheName() {
-		return ['databases', $this->pdo->name, 'tables', 'totalRows', $this->name];
+		return ['databases', $this->getConnection()->name, 'tables', 'totalRows', $this->name];
 	}
 
 	public function getLastUpdatedTemporaryFile() {
-		return \Katu\Files\Temporary::createFromName('databases', $this->pdo->name, 'tables', 'updated', $this->name);
+		return \Katu\Files\Temporary::createFromName('databases', $this->getConnection()->name, 'tables', 'updated', $this->name);
 	}
 
 }

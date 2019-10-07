@@ -37,7 +37,7 @@ class Base {
 		return get_class_methods($this);
 	}
 
-	static function getPDO() {
+	static function getConnection() {
 		if (!defined('static::DATABASE')) {
 			throw new \Exception("Undefined database.");
 		}
@@ -50,15 +50,15 @@ class Base {
 			throw new \Exception("Undefined table.");
 		}
 
-		return static::TABLE;
+		return new \Katu\PDO\Name(static::TABLE);
 	}
 
 	static function getTable() {
-		return new \Katu\PDO\Table(static::getPDO(), static::getTableName());
+		return new \Katu\PDO\Table(static::getConnection(), static::getTableName());
 	}
 
 	static function getColumn($name) {
-		return new \Katu\PDO\Column(static::getTable(), $name);
+		return new \Katu\PDO\Column(static::getTable(), new \Katu\PDO\Name($name));
 	}
 
 	static function createQuery() {
@@ -68,21 +68,21 @@ class Base {
 			&& func_get_arg(0) instanceof \Sexy\Expression
 		) {
 
-			$query = static::getPDO()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
+			$query = static::getConnection()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
 
 		// Raw sql and bind values.
 		} elseif (
 			count(func_get_args()) == 2
 		) {
 
-			$query = static::getPDO()->createClassQuery(static::getClass(), func_get_arg(0), func_get_arg(1));
+			$query = static::getConnection()->createClassQuery(static::getClass(), func_get_arg(0), func_get_arg(1));
 
 		// Raw sql.
 		} elseif (
 			count(func_get_args()) == 1
 		) {
 
-			$query = static::getPDO()->createClassQuery(static::getClass(), func_get_arg(0));
+			$query = static::getConnection()->createClassQuery(static::getClass(), func_get_arg(0));
 
 		} else {
 
@@ -94,7 +94,7 @@ class Base {
 	}
 
 	static function transaction($callback) {
-		return call_user_func_array([static::getPDO(), 'transaction'], func_get_args());
+		return call_user_func_array([static::getConnection(), 'transaction'], func_get_args());
 	}
 
 	static function filterParams($params) {
@@ -110,7 +110,7 @@ class Base {
 	}
 
 	static function getBy($params = [], $expressions = [], $options = []) {
-		$pdo = static::getPDO();
+		$pdo = static::getConnection();
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
 

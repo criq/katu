@@ -34,7 +34,7 @@ class Model extends Base {
 	}
 
 	static function insert($bindValues = []) {
-		$query = static::getPDO()->createQuery();
+		$query = static::getConnection()->createQuery();
 
 		$columns = array_map(function($i) {
 			return new \Katu\PDO\Name($i);
@@ -51,7 +51,7 @@ class Model extends Base {
 
 		static::change();
 
-		$primaryKey = static::getPDO()->getLastInsertId();
+		$primaryKey = static::getConnection()->getLastInsertId();
 		if ($primaryKey) {
 			return static::get($primaryKey);
 		} else {
@@ -62,7 +62,7 @@ class Model extends Base {
 	static function insertMultiple($items = []) {
 		$items = array_values($items);
 
-		$query = static::getPDO()->createQuery();
+		$query = static::getConnection()->createQuery();
 
 		$columns = array_map(function($i) {
 			return new PDO\Name($i);
@@ -94,7 +94,7 @@ class Model extends Base {
 
 		static::change();
 
-		return static::get(static::getPDO()->getLastInsertId());
+		return static::get(static::getConnection()->getLastInsertId());
 	}
 
 	static function upsert($getByParams, $insertParams = [], $updateParams = []) {
@@ -127,7 +127,7 @@ class Model extends Base {
 	}
 
 	public function delete() {
-		$query = static::getPDO()->createQuery();
+		$query = static::getConnection()->createQuery();
 
 		// Delete file attachments.
 		if (class_exists('\\App\\Models\\FileAttachment')) {
@@ -167,7 +167,7 @@ class Model extends Base {
 
 			if ($set) {
 
-				$query = static::getPDO()->createQuery();
+				$query = static::getConnection()->createQuery();
 
 				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
 
@@ -225,9 +225,9 @@ class Model extends Base {
 	static function getIdColumnName() {
 		$table = static::getTable();
 
-		return \Katu\Cache\General::get(['databases', $table->pdo->name, 'tables', 'idColumn', $table->name->name], 86400, function() use($table) {
+		return \Katu\Cache\General::get(['databases', $table->getConnection()->name, 'tables', 'idColumn', $table->name->name], 86400, function() use($table) {
 
-			foreach ($table->pdo->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
+			foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
 				if (isset($row['Key']) && $row['Key'] == 'PRI') {
 					return $row['Field'];
 				}
@@ -348,7 +348,7 @@ class Model extends Base {
 			->where(SX::cmpRegexp(static::getColumn($column), $preg))
 			->addExpressions($constraints)
 			;
-		$res = static::getPDO()->createQueryFromSql($sql)->getResult();
+		$res = static::getConnection()->createQueryFromSql($sql)->getResult();
 
 		// Nothing, keep the slug.
 		if (!$res->getCount()) {

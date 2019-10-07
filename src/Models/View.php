@@ -27,7 +27,7 @@ class View extends Base {
 	}
 
 	static function getView() {
-		return new \Katu\PDO\View(static::getPDO(), static::getViewName());
+		return new \Katu\PDO\View(static::getConnection(), static::getViewName());
 	}
 
 	static function getViewName() {
@@ -51,7 +51,7 @@ class View extends Base {
 	}
 
 	static function getCachedTable() {
-		return new \Katu\PDO\Table(static::getPDO(), static::getCachedTableName());
+		return new \Katu\PDO\Table(static::getConnection(), static::getCachedTableName());
 	}
 
 	static function getCachedTableName() {
@@ -80,11 +80,11 @@ class View extends Base {
 	}
 
 	static function cachedTableExists() {
-		return in_array(static::getCachedTableName(), static::getPDO()->getTableNames());
+		return in_array(static::getCachedTableName(), static::getConnection()->getTableNames());
 	}
 
 	static function materializedTableExists() {
-		return in_array(static::getMaterializedTableName(), static::getPDO()->getTableNames());
+		return in_array(static::getMaterializedTableName(), static::getConnection()->getTableNames());
 	}
 
 	static function cacheHasUpdatedTables() {
@@ -182,7 +182,7 @@ class View extends Base {
 	}
 
 	static function getMaterializedTable() {
-		return new \Katu\PDO\Table(static::getPDO(), static::getMaterializedTableName());
+		return new \Katu\PDO\Table(static::getConnection(), static::getMaterializedTableName());
 	}
 
 	static function getMaterializedTableName() {
@@ -226,7 +226,7 @@ class View extends Base {
 
 			$class = static::getClass();
 
-			#return \Katu\Utils\Lock::run(['databases', static::getPDO()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
+			#return \Katu\Utils\Lock::run(['databases', static::getConnection()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
 
 				$class::materializeSourceViews();
 
@@ -256,7 +256,7 @@ class View extends Base {
 	static function materialize() {
 		try {
 
-			return \Katu\Utils\Lock::run(['databases', static::getPDO()->config->database, 'views', 'materialize', static::TABLE], 600, function($class) {
+			return \Katu\Utils\Lock::run(['databases', static::getConnection()->config->database, 'views', 'materialize', static::TABLE], 600, function($class) {
 
 				$class::materializeSourceViews();
 
@@ -297,7 +297,7 @@ class View extends Base {
 	}
 
 	static function getLastCachedTmpName() {
-		return ['!databases', '!' . static::getPDO()->config->database, '!views', '!cached', '!' . static::TABLE];
+		return ['!databases', '!' . static::getConnection()->config->database, '!views', '!cached', '!' . static::TABLE];
 	}
 
 	static function updateLastCachedTime() {
@@ -309,7 +309,7 @@ class View extends Base {
 	}
 
 	static function getLastMaterializedTmpName() {
-		return ['!databases', '!' . static::getPDO()->config->database, '!views', '!materialized', '!' . static::TABLE];
+		return ['!databases', '!' . static::getConnection()->config->database, '!views', '!materialized', '!' . static::TABLE];
 	}
 
 	static function updateLastMaterializedTime() {

@@ -226,7 +226,7 @@ class App {
 		});
 	}
 
-	static function getPDO($name = null) {
+	static function getConnection($name = null) {
 		$names = array_keys(Config::getDb());
 
 		if ($name) {
