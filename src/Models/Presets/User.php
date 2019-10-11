@@ -129,6 +129,8 @@ class User extends \Katu\Models\Model {
 	}
 
 	public function getDefaultUserServiceByName($serviceName) {
+		$userServiceClass = static::getUserServiceClass();
+
 		return $userServiceClass::getOneBy([
 			'userId'      => (int)    ($this->getId()),
 			'serviceName' => (string) ($serviceName),
