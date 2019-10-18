@@ -151,11 +151,13 @@ class Model extends Base {
 	public function save() {
 		if ($this->isUpdated()) {
 
-			$columns = static::getTable()->getColumnNames();
+			$columnsNames = array_map(function($columnName) {
+				return $columnName->getName();
+			}, static::getTable()->getColumnNames());
 
 			$bindValues = [];
 			foreach (get_object_vars($this) as $name => $value) {
-				if (in_array($name, $columns) && $name != static::getIdColumnName()) {
+				if (in_array($name, $columnsNames) && $name != static::getIdColumnName()) {
 					$bindValues[$name] = $value;
 				}
 			}

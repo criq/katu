@@ -34,7 +34,7 @@ class TableBase extends \Sexy\Expression {
 		$columns = [];
 
 		foreach ($this->getColumnNames() as $columnName) {
-			$columns[] = new Column($this, $columnName);
+			$columns[] = new Column($this, new Name($columnName));
 		}
 
 		return $columns;
@@ -67,7 +67,7 @@ class TableBase extends \Sexy\Expression {
 
 	public function getColumnNames() {
 		return array_values(array_map(function($i) {
-			return $i['Field'];
+			return new Name($i['Field']);
 		}, $this->getColumnDescriptions()));
 	}
 

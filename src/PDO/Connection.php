@@ -38,6 +38,10 @@ class Connection {
 		return ['name', 'config'];
 	}
 
+	public function getName() {
+		return $this->name;
+	}
+
 	static function getInstance($name) {
 		if (!isset(static::$connections[$name])) {
 			static::$connections[$name] = new self($name);
