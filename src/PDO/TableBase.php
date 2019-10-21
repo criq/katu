@@ -110,12 +110,18 @@ class TableBase extends \Sexy\Expression {
 
 			// Table.
 			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function($i) use($destinationTable) {
-				return "CREATE TABLE `" . $destinationTable->name->name . "`";
+				return " CREATE TABLE `" . $destinationTable->name->name . "` ";
 			}, $sql);
+
+			if ($options['createSqlSanitizeCallback'] ?? null) {
+				$callback = $options['createSqlSanitizeCallback'];
+				$sql = $callback($sql);
+			}
+
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 			// Create table and copy the data.
-			$sql = " INSERT INTO " . $destinationTable . " SELECT * FROM " . $this;
+			$sql = " INSERT " . (($options['insertIgnore'] ?? null) ? " IGNORE " : NULL) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 		}
