@@ -2,8 +2,6 @@
 
 namespace Katu\PDO;
 
-use \Katu\Utils\Cache;
-
 class TableBase extends \Sexy\Expression {
 
 	public $connection;
@@ -79,7 +77,7 @@ class TableBase extends \Sexy\Expression {
 		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-		Cache::resetRuntime();
+		\Katu\Cache\General::resetRuntime();
 
 		return $res;
 	}
@@ -88,7 +86,7 @@ class TableBase extends \Sexy\Expression {
 		$sql = " DROP TABLE " . $this->name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-		Cache::resetRuntime();
+		\Katu\Cache\General::resetRuntime();
 
 		return $res;
 	}
@@ -178,13 +176,13 @@ class TableBase extends \Sexy\Expression {
 			}
 		}
 
-		Cache::resetRuntime();
+		\Katu\Cache\General::resetRuntime();
 
 		return true;
 	}
 
 	public function getUsedInViews() {
-		return \Katu\Utils\Cache::get($this->getUsedInViewsCacheName(), function($table) {
+		return \Katu\Cache\General::get($this->getUsedInViewsCacheName(), null, function($table) {
 
 			$views = [];
 
@@ -197,7 +195,7 @@ class TableBase extends \Sexy\Expression {
 
 			return $views;
 
-		}, null, $this);
+		}, $this);
 	}
 
 	public function getUsedInViewsCacheName() {
@@ -205,7 +203,7 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function getTotalUsage($timeout = null) {
-		return \Katu\Utils\Cache::get($this->getTotalUsageCacheName(), function($table) {
+		return \Katu\Cache\General::get($this->getTotalUsageCacheName(), $timeout, function($table) {
 
 			$stopwatch = new \Katu\Utils\Stopwatch();
 
@@ -217,7 +215,7 @@ class TableBase extends \Sexy\Expression {
 				'duration' => $stopwatch->getDuration(),
 			];
 
-		}, $timeout, $this);
+		}, $this);
 	}
 
 	public function getTotalUsageCacheName() {
