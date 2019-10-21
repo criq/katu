@@ -19,7 +19,7 @@ class Table extends TableBase {
 
 	public function getType() {
 		$sql = " SHOW CREATE TABLE " . $this->name;
-		$res = $this->pdo->createQuery($sql)->getResult();
+		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		if (isset($res[0]['View'])) {
 			return 'view';
@@ -38,7 +38,7 @@ class Table extends TableBase {
 
 	public function getCreateSyntax() {
 		$sql = " SHOW CREATE TABLE " . $this->name;
-		$res = $this->pdo->createQuery($sql)->getResult();
+		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		if (isset($res[0]['View'])) {
 			return $res[0]['Create View'];
