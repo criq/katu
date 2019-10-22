@@ -8,7 +8,7 @@ class Formatter {
 		$app = \Katu\App::get();
 		$headers = $app->getContainer()->get('request')->getHeader('Accept-Language');
 
-		return ($headers[0] ?? null) ? \Katu\Types\TLocale::getPreferredFromRequest($headers[0]) : null;
+		return ($headers[0] ?? null) ? \Katu\Types\TLocale::getPreferredFromRequest($headers[0]) : [];
 	}
 
 	static function getPreferredLocale($locale = null) {
