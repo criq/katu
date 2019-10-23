@@ -2,8 +2,6 @@
 
 namespace Katu\PDO;
 
-use \Katu\Utils\Cache;
-
 class TableBase extends \Sexy\Expression {
 
 	public $connection;
@@ -34,7 +32,7 @@ class TableBase extends \Sexy\Expression {
 		$columns = [];
 
 		foreach ($this->getColumnNames() as $columnName) {
-			$columns[] = new Column($this, $columnName);
+			$columns[] = new Column($this, new Name($columnName));
 		}
 
 		return $columns;
@@ -67,7 +65,7 @@ class TableBase extends \Sexy\Expression {
 
 	public function getColumnNames() {
 		return array_values(array_map(function($i) {
-			return $i['Field'];
+			return new Name($i['Field']);
 		}, $this->getColumnDescriptions()));
 	}
 
@@ -79,7 +77,7 @@ class TableBase extends \Sexy\Expression {
 		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-		Cache::resetRuntime();
+		\Katu\Cache\Runtime::clear();
 
 		return $res;
 	}
@@ -88,7 +86,7 @@ class TableBase extends \Sexy\Expression {
 		$sql = " DROP TABLE " . $this->name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-		Cache::resetRuntime();
+		\Katu\Cache\Runtime::clear();
 
 		return $res;
 	}
@@ -112,12 +110,18 @@ class TableBase extends \Sexy\Expression {
 
 			// Table.
 			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function($i) use($destinationTable) {
-				return "CREATE TABLE `" . $destinationTable->name->name . "`";
+				return " CREATE TABLE `" . $destinationTable->name->name . "` ";
 			}, $sql);
+
+			if ($options['createSqlSanitizeCallback'] ?? null) {
+				$callback = $options['createSqlSanitizeCallback'];
+				$sql = $callback($sql);
+			}
+
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 			// Create table and copy the data.
-			$sql = " INSERT INTO " . $destinationTable . " SELECT * FROM " . $this;
+			$sql = " INSERT " . (($options['insertIgnore'] ?? null) ? " IGNORE " : NULL) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 		}
@@ -178,13 +182,13 @@ class TableBase extends \Sexy\Expression {
 			}
 		}
 
-		Cache::resetRuntime();
+		\Katu\Cache\Runtime::clear();
 
 		return true;
 	}
 
 	public function getUsedInViews() {
-		return \Katu\Utils\Cache::get($this->getUsedInViewsCacheName(), function($table) {
+		return \Katu\Cache\General::get($this->getUsedInViewsCacheName(), null, function($table) {
 
 			$views = [];
 
@@ -197,7 +201,7 @@ class TableBase extends \Sexy\Expression {
 
 			return $views;
 
-		}, null, $this);
+		}, $this);
 	}
 
 	public function getUsedInViewsCacheName() {
@@ -205,7 +209,7 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function getTotalUsage($timeout = null) {
-		return \Katu\Utils\Cache::get($this->getTotalUsageCacheName(), function($table) {
+		return \Katu\Cache\General::get($this->getTotalUsageCacheName(), $timeout, function($table) {
 
 			$stopwatch = new \Katu\Utils\Stopwatch();
 
@@ -217,7 +221,7 @@ class TableBase extends \Sexy\Expression {
 				'duration' => $stopwatch->getDuration(),
 			];
 
-		}, $timeout, $this);
+		}, $this);
 	}
 
 	public function getTotalUsageCacheName() {

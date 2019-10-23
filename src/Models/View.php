@@ -31,7 +31,7 @@ class View extends Base {
 	}
 
 	static function getViewName() {
-		return static::TABLE;
+		return new \Katu\PDO\Name(static::TABLE);
 	}
 
 	static function getColumn($name, $options = []) {
@@ -41,7 +41,7 @@ class View extends Base {
 			$table = static::getTable();
 		}
 
-		return new \Katu\PDO\Column($table, $name);
+		return new \Katu\PDO\Column($table, new \Katu\PDO\Name($name));
 	}
 
 	static function getViewColumn($name, $options = []) {
@@ -57,7 +57,7 @@ class View extends Base {
 	static function getCachedTableName() {
 		$name = implode('_', [
 			'_cache',
-			static::getViewName(),
+			static::getViewName()->getName(),
 		]);
 
 		if (strlen($name) > 64) {
@@ -188,7 +188,7 @@ class View extends Base {
 	static function getMaterializedTableName() {
 		return implode('_', [
 			'mv',
-			preg_replace('#^view_#', null, static::getViewName()),
+			preg_replace('#^view_#', null, static::getViewName()->getName()),
 		]);
 	}
 
