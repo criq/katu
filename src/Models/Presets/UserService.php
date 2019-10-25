@@ -6,6 +6,10 @@ class UserService extends \Katu\Models\Model {
 
 	const TABLE = 'user_services';
 
+	static function getUserClass() {
+		return '\\Katu\\Models\\Presets\\User';
+	}
+
 	static function create($user, $serviceName, $serviceUserId) {
 		return static::insert([
 			'timeCreated'   => (string)(new \Katu\Tools\DateTime\DateTime),
@@ -27,7 +31,9 @@ class UserService extends \Katu\Models\Model {
 	}
 
 	public function getUser() {
-		return \App\Models\User::get($this->userId);
+		$class = static::getUserClass();
+
+		return $class::get($this->userId);
 	}
 
 	public function setServiceAccessToken($serviceAccessToken) {
