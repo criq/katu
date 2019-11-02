@@ -19,7 +19,7 @@ class Model extends Base {
 
 			// Not found, maybe just added.
 			if (!$property) {
-				\Katu\Utils\Cache::clearMemory();
+				\Katu\Cache\General::clearMemory();
 				$property = $this->getPropertyName($match['property']);
 			}
 

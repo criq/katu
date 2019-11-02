@@ -94,14 +94,6 @@ class CSV {
 		return $this->file->get();
 	}
 
-	public function respond($saveAs, $disposition = 'inline') {
-		return (new \Katu\Utils\Download($this->file))
-			->setMime('text/csv')
-			->setCharset('utf-8')
-			->respond($saveAs, $disposition)
-			;
-	}
-
 	public function delete() {
 		return @unlink($this->file);
 	}
