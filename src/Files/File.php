@@ -380,7 +380,11 @@ class File {
 	}
 
 	public function getDateTimeModified() {
-		return new \Katu\Tools\DateTime\DateTime('@' . filemtime($this));
+		try {
+			return new \Katu\Tools\DateTime\DateTime('@' . filemtime((string)$this));
+		} catch (\Throwable $e) {
+			return false;
+		}
 	}
 
 	public function eachRecursive($callback) {

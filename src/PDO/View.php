@@ -2,37 +2,35 @@
 
 namespace Katu\PDO;
 
-use \Katu\Utils\Cache;
-
 class View extends Table {
 
 	public function getCreateSyntax() {
-		$sql = " SHOW CREATE TABLE " . $this->name;
-		$res = $this->pdo->createQuery($sql)->getResult();
+		$sql = " SHOW CREATE TABLE " . $this->getName();
+		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		return $res[0]['Create View'];
 	}
 
 	public function getSourceTables() {
-		$tableNames = \Katu\Utils\Cache::get($this->getSourceTablesCacheName(), function($table) {
+		$tableNames = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400, function($table) {
 
-			$tables = [];
+			$tableNames = [];
 
 			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
-			$res = $table->pdo->createQuery($sql)->getResult()->getArray();
+			$res = $table->getConnection()->createQuery($sql)->getResult()->getArray();
 			foreach ($res as $row) {
 				if (!preg_match('#^<.+>$#', $row['table'])) {
-					$tables[] = $row['table'];
+					$tableNames[] = new \Katu\PDO\Name($row['table']);
 				}
 			}
 
-			return array_values(array_filter(array_unique($tables)));
+			return array_values(array_filter(array_unique($tableNames)));
 
-		}, null, $this);
+		}, $this);
 
 		$tables = [];
 		foreach ($tableNames as $tableName) {
-			$tables[] = new Table($this->pdo, $tableName);
+			$tables[] = new Table($this->getConnection(), $tableName);
 		}
 
 		return $tables;
@@ -50,14 +48,10 @@ class View extends Table {
 		$views = [];
 
 		foreach (array_filter((array) $this->getSourceMaterializedViewNames()) as $tableName) {
-			$views[] = new static($this->pdo, preg_replace('#^mv_#', 'view_', $tableName));
+			$views[] = new static($this->getConnection(), preg_replace('/^mv_/', 'view_', $tableName));
 		}
 
 		return $views;
-	}
-
-	public function getSourceTablesCacheName() {
-		return ['!databases', '!' . $this->pdo->name, '!views', '!sourceTables', '!' . trim($this->name, '`')];
 	}
 
 	public function getModelNames() {
@@ -65,7 +59,7 @@ class View extends Table {
 
 		foreach (\Katu\ViewModel::getAllViewModelNames() as $class) {
 			$class = '\\' . ltrim($class, '\\');
-			if ($class::TABLE == $this->name->name) {
+			if ($class::TABLE == $this->getName()->getName()) {
 				$modelNames[] = $class;
 			}
 		}

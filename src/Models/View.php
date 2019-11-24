@@ -64,11 +64,11 @@ class View extends Base {
 			return substr($name, 0, 60) . substr(sha1($name), 0, 4);
 		}
 
-		return $name;
+		return new \Katu\PDO\Name($name);
 	}
 
 	static function getCachedTableCacheName() {
-		return ['!databases', '!' . static::getView()->pdo->name, '!views', '!cachedView', '!' . static::TABLE];
+		return ['!databases', '!' . static::getView()->getConnection()->name, '!views', '!cachedView', '!' . static::TABLE];
 	}
 
 	static function isCached() {
@@ -80,7 +80,7 @@ class View extends Base {
 	}
 
 	static function cachedTableExists() {
-		return in_array(static::getCachedTableName(), static::getConnection()->getTableNames());
+		return in_array(static::getCachedTableName()->getName(), static::getConnection()->getTableNames());
 	}
 
 	static function materializedTableExists() {
@@ -196,8 +196,8 @@ class View extends Base {
 		@set_time_limit(600);
 
 		// Get a temporary table.
-		$temporaryTableName = '_tmp_' . strtoupper(\Katu\Utils\Random::getIdString(8));
-		$temporaryTable = new \Katu\PDO\Table($destinationTable->pdo, $temporaryTableName);
+		$temporaryTableName = new \Katu\PDO\Name('_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(8)));
+		$temporaryTable = new \Katu\PDO\Table($destinationTable->getConnection(), $temporaryTableName);
 
 		// Copy into temporary table view.
 		$params = [
@@ -248,7 +248,7 @@ class View extends Base {
 			try {
 				return static::cache();
 			} catch (\Exception $e) {
-				\Katu\ErrorHandler::log($e);
+				\App\Extensions\Errors\Handler::log($e);
 			}
 		}
 	}
@@ -269,7 +269,7 @@ class View extends Base {
 			}, static::getClass());
 
 		} catch (\Katu\Exceptions\LockException $e) {
-			\Katu\ErrorHandler::log($e);
+			\App\Extensions\Errors\Handler::log($e);
 		}
 	}
 
@@ -278,7 +278,7 @@ class View extends Base {
 			try {
 				return static::materialize();
 			} catch (\Exception $e) {
-				\Katu\ErrorHandler::log($e);
+				\App\Extensions\Errors\Handler::log($e);
 			}
 		}
 	}
@@ -296,30 +296,31 @@ class View extends Base {
 		return true;
 	}
 
-	static function getLastCachedTmpName() {
-		return ['!databases', '!' . static::getConnection()->config->database, '!views', '!cached', '!' . static::TABLE];
+	static function getLastCachedTemporaryFile() {
+		return new \Katu\Files\Temporary(['!databases', '!' . static::getConnection()->config->database, '!views', '!cached', '!' . static::TABLE]);
 	}
 
 	static function updateLastCachedTime() {
-		return \Katu\Utils\Tmp::set(static::getLastCachedTmpName(), microtime(true));
+		return static::getLastCachedTemporaryFile()->set(microtime(true));
 	}
 
 	static function getLastCachedTime() {
-		return (float) \Katu\Utils\Tmp::get(static::getLastCachedTmpName());
+		return (float)static::getLastCachedTemporaryFile()->get();
 	}
 
-	static function getLastMaterializedTmpName() {
-		return ['!databases', '!' . static::getConnection()->config->database, '!views', '!materialized', '!' . static::TABLE];
+	static function getLastMaterializedTemporaryFile() {
+		return new \Katu\Files\Temporary(['!databases', '!' . static::getConnection()->config->database, '!views', '!materialized', '!' . static::TABLE]);
 	}
 
 	static function updateLastMaterializedTime() {
-		return (float) \Katu\Utils\Tmp::set(static::getLastMaterializedTmpName(), microtime(true));
+		return static::getLastMaterializedTemporaryFile()->set(microtime(true));
 	}
 
 	static function getLastMaterializedTime() {
-		return \Katu\Utils\Tmp::get(static::getLastMaterializedTmpName());
+		return (float)static::getLastMaterializedTemporaryFile()->get();
 	}
 
+	// TODO - předělat, nemusí být v podadresáři
 	static function getAllViewModelNames($directories = []) {
 		try {
 			$dir = (new \Katu\Utils\File('app', 'Models', 'Views'));
