@@ -182,8 +182,7 @@ class File {
 	public function get() {
 		try {
 			return file_get_contents($this);
-		} catch (\Exception $e) {
-			\App\Extensions\Errors\Handler::log($e);
+		} catch (\Throwable $e) {
 			return false;
 		}
 	}
@@ -191,8 +190,7 @@ class File {
 	public function getLines() {
 		try {
 			return file($this);
-		} catch (\Exception $e) {
-			\App\Extensions\Errors\Handler::log($e);
+		} catch (\Throwable $e) {
 			return false;
 		}
 	}
@@ -201,8 +199,7 @@ class File {
 		try {
 			$this->getDir()->makeDir();
 			return file_put_contents($this, $data, LOCK_EX);
-		} catch (\Exception $e) {
-			\App\Extensions\Errors\Handler::log($e);
+		} catch (\Throwable $e) {
 			return false;
 		}
 	}
