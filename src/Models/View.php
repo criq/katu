@@ -320,33 +320,24 @@ class View extends Base {
 		return (float)static::getLastMaterializedTemporaryFile()->get();
 	}
 
-	// TODO - předělat, nemusí být v podadresáři
-	static function getAllViewModelNames($directories = []) {
-		try {
-			$dir = (new \Katu\Utils\File('app', 'Models', 'Views'));
-			if ($dir->exists()) {
-				$dir->includeAllPhpFiles();
-			}
-		} catch (\Exception $e) {
-			/* Nevermind. */
+	static function getAllViewClassNames() {
+		$dir = (new \Katu\Files\File('app', 'Models'));
+		if ($dir->exists()) {
+			$dir->includeAllPhpFiles();
 		}
 
-		return array_values(array_filter(array_filter(get_declared_classes(), function($i) {
-			return strpos($i, 'App\\Models\\Views\\') === 0;
-		})));
+		return array_values(array_filter(get_declared_classes(), function($class) {
+			return is_subclass_of($class, '\\Katu\\Models\\View') && defined("$class::TABLE");
+		}));
 	}
 
 	static function cacheAndMaterializeAll() {
-		foreach (static::getAllViewModelNames() as $modelView) {
-
-			$class = '\\' . $modelView;
-
-			$class::cacheIfExpired();
-
-			if ($class::isMaterializable()) {
-				$class::materializeIfExpired();
+		foreach (static::getAllViewClassNames() as $viewClass) {
+			$viewClassName = '\\' . $viewClass;
+			$viewClassName::cacheIfExpired();
+			if ($viewClassName::isMaterializable()) {
+				$viewClassName::materializeIfExpired();
 			}
-
 		}
 	}
 

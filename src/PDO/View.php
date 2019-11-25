@@ -57,7 +57,7 @@ class View extends Table {
 	public function getModelNames() {
 		$modelNames = [];
 
-		foreach (\Katu\ViewModel::getAllViewModelNames() as $class) {
+		foreach (\Katu\ViewModel::getAllViewClassNames() as $class) {
 			$class = '\\' . ltrim($class, '\\');
 			if ($class::TABLE == $this->getName()->getName()) {
 				$modelNames[] = $class;
