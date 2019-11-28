@@ -1,0 +1,43 @@
+{% set prevCopy  = options.prevCopy|default("Previous") %}
+{% set nextCopy  = options.nextCopy|default("Next") %}
+{% set pageIdent = options.pageIdent|default("page") %}
+
+{% set pages = getPages(pagination, { allPagesLimit: options.allPagesLimit, endsOffset: options.endsOffset, currentOffset: options.currentOffset }) %}
+
+{% if pages|length > 1 %}
+	<p class="pagination">
+
+		<span class="segment prev">
+			{% if pagination.page > 1 %}
+				<a class="node skip prev active" href="{{ getPaginationUrl(url, pagination.page - 1, pageIdent) }}">{{ prevCopy }}</a>
+			{% else %}
+				<span class="node skip prev inactive">{{ prevCopy }}</span>
+			{% endif %}
+		</span>
+
+		<span class="segment pages">
+			{% for key, page in pages %}
+
+				{% if page != pagination.page %}
+					<a class="node page active" href="{{ getPaginationUrl(url, page, pageIdent) }}">{{ page }}</a>
+				{% else %}
+					<span class="node page inactive current">{{ page }}</span>
+				{% endif %}
+
+				{% if page + 1 != pages[key + 1] and page + 1 <= pagination.getMaxPage %}
+					<span class="node hellip">&hellip;</span>
+				{% endif %}
+
+			{% endfor %}
+		</span>
+
+		<span class="segment next">
+			{% if pagination.page < pagination.getMaxPage %}
+				<a class="node skip next active" href="{{ getPaginationUrl(url, pagination.page + 1, pageIdent) }}">{{ nextCopy }}</a>
+			{% else %}
+				<span class="node skip next active">{{ nextCopy }}</span>
+			{% endif %}
+		</span>
+
+	</p>
+{% endif %}
