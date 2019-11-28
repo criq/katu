@@ -12,7 +12,7 @@ class CSV {
 		if ($file) {
 
 			if (is_string($file)) {
-				$file = new File($file);
+				$file = new \Katu\Files\File($file);
 			}
 
 			@$file->touch();
