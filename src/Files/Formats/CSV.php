@@ -15,7 +15,11 @@ class CSV {
 				$file = new \Katu\Files\File($file);
 			}
 
-			@$file->touch();
+			try {
+				$file->touch();
+			} catch (\Throwable $e) {
+				// Nevermind.
+			}
 
 			if ((!isset($options['readOnly']) || (isset($options['readOnly']) && !$options['readOnly'])) && !$file->isWritable()) {
 				throw new \Exception("Unable to write into specified file.");
