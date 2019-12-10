@@ -11,16 +11,17 @@ class Handler {
 		return static::handleException($exception, $request, $response);
 	}
 
-	static function init() {
-		if (!defined('LOG_PATH')) {
-			define('LOG_PATH', \Katu\Files\File::joinPaths(\Katu\App::getBaseDir(), static::LOG_DIR));
-		}
-		if (!defined('ERROR_LOG')) {
-			define('ERROR_LOG', \Katu\Files\File::joinPaths(LOG_PATH, static::ERROR_LOG));
-		}
+	static function getLogDir() {
+		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::LOG_DIR);
+	}
 
+	static function getErrorLog() {
+		return new \Katu\Files\File(static::getLogDir(), static::ERROR_LOG);
+	}
+
+	static function init() {
 		ini_set('display_errors', true);
-		ini_set('error_log', ERROR_LOG);
+		ini_set('error_log', (string)static::getErrorLog());
 
 		set_error_handler(function($code, $message, $file = null, $line = null, $context = null) {
 			throw new \Exception(implode("; ", [
@@ -49,7 +50,7 @@ class Handler {
 
 	static function log($message, $code = 0, $file = null, $line = null) {
 		$log = new \Monolog\Logger('KatuLogger');
-		$log->pushHandler(new \Monolog\Handler\StreamHandler(ERROR_LOG));
+		$log->pushHandler(new \Monolog\Handler\StreamHandler((string)static::getErrorLog()));
 		$log->addError($message, [
 			'code' => $code,
 			'file' => $file,

@@ -35,13 +35,6 @@ class App {
 	}
 
 	static function init() {
-		if (!defined('LOG_PATH')) {
-			define('LOG_PATH', \Katu\Files\File::joinPaths(static::getBaseDir(), Errors\Handler::LOG_DIR));
-		}
-		if (!defined('ERROR_LOG')) {
-			define('ERROR_LOG', \Katu\Files\File::joinPaths(LOG_PATH, Errors\Handler::ERROR_LOG));
-		}
-
 		// Timezone.
 		try {
 			date_default_timezone_set(\Katu\Config\Config::get('app', 'timezone'));
