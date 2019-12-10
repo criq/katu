@@ -46,7 +46,7 @@ class UserPermission extends \Katu\Models\Model {
 	}
 
 	static function getAvailable() {
-		$permissionFilePath = BASE_DIR . '/app/Config/userPermissions.yaml';
+		$permissionFilePath = \Katu\App::getBaseDir() . '/app/Config/userPermissions.yaml';
 		if (!file_exists($permissionFilePath)) {
 			throw new \Katu\Exceptions\ErrorException("Permission file doesn't exist.");
 		}

@@ -83,11 +83,11 @@ class System {
 	}
 
 	static function getDiskSpace() {
-		return new FileSize(disk_total_space(BASE_DIR));
+		return new FileSize(disk_total_space(\Katu\App::getBaseDir()));
 	}
 
 	static function getFreeDiskSpace() {
-		return new FileSize(disk_free_space(BASE_DIR));
+		return new FileSize(disk_free_space(\Katu\App::getBaseDir()));
 	}
 
 	static function getDiskUsage() {

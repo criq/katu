@@ -102,7 +102,7 @@ class File extends \Katu\Models\Model {
 	}
 
 	static function getDirPath() {
-		return realpath(BASE_DIR . '/' . static::getDirName());
+		return realpath(\Katu\App::getBaseDir() . '/' . static::getDirName());
 	}
 
 	public function getName() {

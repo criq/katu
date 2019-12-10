@@ -199,7 +199,7 @@ class Model extends Base {
 	}
 
 	static function getAppModels() {
-		$dir = BASE_DIR . '/app/Models/';
+		$dir = \Katu\App::getBaseDir() . '/app/Models/';
 		$ns = '\\App\\Models';
 
 		$models = [];

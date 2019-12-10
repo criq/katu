@@ -147,7 +147,7 @@ class File {
 			return realpath($this->path);
 		}
 
-		$path = static::joinPaths(BASE_DIR, $this->path);
+		$path = static::joinPaths(\Katu\App::getBaseDir(), $this->path);
 		if (file_exists($path)) {
 			return realpath($path);
 		}
@@ -162,7 +162,7 @@ class File {
 			$publicRoot = './public/';
 		}
 
-		$publicPath = realpath(new static(BASE_DIR, $publicRoot));
+		$publicPath = realpath(new static(\Katu\App::getBaseDir(), $publicRoot));
 		if (preg_match('#^' . $publicPath . '(.*)$#', $this->getPath(), $match)) {
 			return new \Katu\Types\TURL(implode('/', array_map(function($i) {
 				return trim($i, '/');
