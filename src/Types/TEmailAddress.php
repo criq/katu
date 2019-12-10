@@ -19,9 +19,8 @@ class TEmailAddress {
 	}
 
 	static function isValid($value) {
-		$validator = new \Egulias\EmailValidator\EmailValidator();
-
-		return $validator->isValid($value);
+		$validator = new \Egulias\EmailValidator\EmailValidator;
+		return $validator->isValid($value, new \Egulias\EmailValidator\Validation\RFCValidation);
 	}
 
 }

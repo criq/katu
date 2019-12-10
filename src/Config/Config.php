@@ -9,13 +9,11 @@ class Config {
 	static function get() {
 		$args = func_get_args();
 
-		return \Katu\Cache\Runtime::get(array_merge(['config'], $args), function() use($args) {
-			try {
-				return call_user_func_array([new \Katu\Types\TArray(static::getAll()), 'getValueByArgs'], $args);
-			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
-				throw new \Katu\Exceptions\MissingConfigException("Missing config for " . implode('.', $args) . ".");
-			}
-		});
+		try {
+			return call_user_func_array([new \Katu\Types\TArray(static::getAll()), 'getValueByArgs'], $args);
+		} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
+			throw new \Katu\Exceptions\MissingConfigException("Missing config for " . implode('.', $args) . ".");
+		}
 	}
 
 	static function getAll() {
@@ -36,7 +34,6 @@ class Config {
 			}
 
 			$config = array_merge_recursive($config, $_SERVER['CONFIG'] ?? []);
-			#var_dump($config);die;
 
 			return $config;
 
