@@ -17,7 +17,7 @@ class Dump {
 	static function getAll() {
 		$dumps = [];
 
-		$dirs = (new \Katu\Utils\File(BASE_DIR, 'databases'))->getDirs();
+		$dirs = (new \Katu\Files\File(\Katu\App::getBaseDir(), 'databases'))->getDirs();
 		foreach ($dirs as $dir) {
 			$files = $dir->getFiles([
 				'regexp' => '#[0-9]{12}\.sql\.gz$#',

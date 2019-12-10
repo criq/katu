@@ -181,7 +181,7 @@ class Connection {
 		if (isset($options['fileName']) && $options['fileName']) {
 			$fileName = $options['fileName'];
 		} else {
-			$fileName = \Katu\Utils\FileSystem::joinPaths(BASE_DIR, 'databases', $this->config->database, implode('.', [(new \Katu\Tools\DateTime\DateTime())->format('YmdHis'), $extension]));
+			$fileName = \Katu\File\System::joinPaths(\Katu\App::getBaseDir(), 'databases', $this->config->database, implode('.', [(new \Katu\Tools\DateTime\DateTime())->format('YmdHis'), $extension]));
 		}
 
 		if (isset($options['addDropTable']) && $options['addDropTable']) {

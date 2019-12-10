@@ -17,7 +17,7 @@ class View {
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
 
 			$dirs = [
-				new \Katu\Files\File(BASE_DIR, 'app', 'Views'),
+				new \Katu\Files\File(\Katu\App::getBaseDir(), 'app', 'Views'),
 				new \Katu\Files\File(\Katu\Tools\Services\Composer\Composer::getDir(), substr(__DIR__, strcmp(\Katu\Tools\Services\Composer\Composer::getDir(), __DIR__))),
 			];
 
@@ -102,7 +102,7 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getBaseDir', function() {
-			return BASE_DIR;
+			return \Katu\App::getBaseDir();
 		}));
 
 		// Deprecated.
@@ -169,7 +169,7 @@ class View {
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getFile', function() {
-			$args = array_merge([BASE_DIR], func_get_args());
+			$args = array_merge([\Katu\App::getBaseDir()], func_get_args());
 			$path = \Katu\Files\File::joinPaths(...$args);
 
 			return new \Katu\Files\File($path);
@@ -178,7 +178,7 @@ class View {
 		$twig->addFunction(new \Twig\TwigFunction('getHashedFile', function($path) {
 			try {
 
-				$placeholderFile = new \Katu\Files\File(BASE_DIR, $path);
+				$placeholderFile = new \Katu\Files\File(\Katu\App::getBaseDir(), $path);
 				$platformDir = new \Katu\Files\File(preg_replace('/{platform}/', \Katu\Config\Env::getPlatform(), $placeholderFile->getDir()));
 
 				$fileRegexp = $placeholderFile->getBasename();
@@ -251,7 +251,7 @@ class View {
 	}
 
 	static function getCommonData($request, $response, $args) {
-		$data['_site']['baseDir'] = BASE_DIR;
+		$data['_site']['baseDir'] = \Katu\App::getBaseDir();
 		$data['_site']['baseUrl'] = \Katu\Config\Config::get('app', 'baseUrl');
 
 		try {

@@ -105,7 +105,7 @@ class Version {
 	}
 
 	public function getDir() {
-		$dir = new \Katu\Files\File(BASE_DIR, \Katu\Config\Config::get('app', 'tmp', 'publicDir'), 'image', 'versions', $this->getName());
+		$dir = new \Katu\Files\File(\Katu\App::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'publicDir'), 'image', 'versions', $this->getName());
 		if (!$dir->isWritable()) {
 			try {
 				$dir->makeDir();

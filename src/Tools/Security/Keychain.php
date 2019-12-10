@@ -16,20 +16,15 @@ class Keychain {
 
 	static function getAll() {
 		return \Katu\Cache\Runtime::get('keychain', function() {
-			if (!defined('BASE_DIR')) {
-				throw new \Exception("Undefined BASE_DIR.");
-			}
-
-			$path = BASE_DIR . '/app/Keychains/' . \Katu\Config\Env::getPlatform() . '.yaml';
-			if (!file_exists($path)) {
+			$file = new \Katu\Files\File(\Katu\App::getBaseDir(), 'app', 'Keychains', [\Katu\Config\Env::getPlatform(), 'yaml']);
+			if (!$file->exists()) {
 				throw new \Exception("Missing keychain file.");
 			}
-
-			if (!is_readable($path)) {
+			if (!$file->isReadable()) {
 				throw new \Exception("Unable to read keychain file.");
 			}
 
-			return \Katu\Files\Formats\YAML::decode($path);
+			return \Katu\Files\Formats\YAML::decode($file);
 		});
 	}
 
