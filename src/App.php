@@ -22,28 +22,28 @@ class App {
 		return static::getExtendedClass('\\App\\Extensions\\Errors\\Handler', '\\Katu\\Errors\\Handler');
 	}
 
+	static function getBaseDir() {
+		return new \Katu\Files\File(realpath(__DIR__ . '/../../../../'));
+	}
+
 	static function init() {
-		// Constants.
-		if (!defined('BASE_DIR')) {
-			define('BASE_DIR', realpath(__DIR__ . '/../../../../'));
-		}
 		if (!defined('LOG_PATH')) {
-			define('LOG_PATH', \Katu\Files\File::joinPaths(BASE_DIR, ErrorHandler::LOG_DIR));
+			define('LOG_PATH', \Katu\Files\File::joinPaths(static::getBaseDir(), Errors\Handler::LOG_DIR));
 		}
 		if (!defined('ERROR_LOG')) {
-			define('ERROR_LOG', \Katu\Files\File::joinPaths(LOG_PATH, ErrorHandler::ERROR_LOG));
+			define('ERROR_LOG', \Katu\Files\File::joinPaths(LOG_PATH, Errors\Handler::ERROR_LOG));
 		}
 		if (!defined('FILE_DIR')) {
 			define('FILE_DIR', 'files');
 		}
 		if (!defined('FILE_PATH')) {
-			define('FILE_PATH', rtrim(BASE_DIR) . '/' . FILE_DIR . '/');
+			define('FILE_PATH', rtrim(static::getBaseDir()) . '/' . FILE_DIR . '/');
 		}
 		if (!defined('TMP_DIR')) {
 			define('TMP_DIR', 'tmp');
 		}
 		if (!defined('TMP_PATH')) {
-			define('TMP_PATH', rtrim(BASE_DIR) . '/' . TMP_DIR . '/');
+			define('TMP_PATH', rtrim(static::getBaseDir()) . '/' . TMP_DIR . '/');
 		}
 
 		// Timezone.
