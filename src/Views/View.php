@@ -29,7 +29,7 @@ class View {
 
 		$loader = new \Twig\Loader\FilesystemLoader($dirs);
 		$twig   = new \Twig\Environment($loader, [
-			'cache'       => \Katu\Files\File::joinPaths(TMP_PATH, 'twig'),
+			'cache'       => \Katu\Files\File::joinPaths(\Katu\App::getTmpDir(), 'twig'),
 			'auto_reload' => true,
 		]);
 

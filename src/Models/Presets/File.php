@@ -37,7 +37,7 @@ class File extends \Katu\Models\Model {
 
 		// Get a new file name.
 		$path = new \Katu\Files\File(static::generatePath($file));
-		$file->copy(new \Katu\Files\File(FILE_PATH, $path));
+		$file->copy(new \Katu\Files\File(\Katu\App::getFileDir(), $path));
 
 		return static::create($creator, $path, $file->getBasename(), $fileType, $fileSize);
 	}
@@ -59,7 +59,7 @@ class File extends \Katu\Models\Model {
 
 		// Get a new file name.
 		$path = new \Katu\Files\File(static::generatePath($upload->fileName));
-		(new \Katu\Files\File($upload->path))->copy(new \Katu\Files\File(FILE_PATH, $path));
+		(new \Katu\Files\File($upload->path))->copy(new \Katu\Files\File(\Katu\App::getFileDir(), $path));
 
 		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
 	}
@@ -166,7 +166,7 @@ class File extends \Katu\Models\Model {
 	public function move(\Katu\Files\File $destination) {
 		$this->getFile()->move($destination);
 
-		$path = preg_replace('/^' . preg_quote(FILE_PATH, '/') . '/', null, $destination);
+		$path = preg_replace('/^' . preg_quote(\Katu\App::getFileDir(), '/') . '/', null, $destination);
 		$path = ltrim($path, '/');
 
 		$this->update('path', $path);

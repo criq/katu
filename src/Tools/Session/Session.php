@@ -12,7 +12,7 @@ class Session {
 	const DEFAULT_COOKIE_LIFETIME        = '10 years';
 
 	static function getPath() {
-		return new \Katu\Files\File(TMP_PATH, 'session');
+		return new \Katu\Files\File(\Katu\App::getTmpDir(), 'session');
 	}
 
 	static function makePath() {

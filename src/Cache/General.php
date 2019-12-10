@@ -120,7 +120,7 @@ class General {
 	}
 
 	public function getFile() {
-		return new \Katu\Files\File(TMP_PATH, static::DIR_NAME, $this->getSanitizedPath(), ['cache']);
+		return new \Katu\Files\File(\Katu\App::getTmpDir(), static::DIR_NAME, $this->getSanitizedPath(), ['cache']);
 	}
 
 	public function getMemoryKey() {

@@ -98,13 +98,13 @@ class File {
 	}
 
 	static function createTemporaryWithFileName($fileName) {
-		$file = new static(TMP_PATH, 'files', $fileName);
+		$file = new static(\Katu\App::getTmpDir(), 'files', $fileName);
 
 		return $file;
 	}
 
 	static function createTemporaryWithExtension($extension) {
-		$file = new static(TMP_PATH, 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
+		$file = new static(\Katu\App::getTmpDir(), 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 
 		return $file;
 	}

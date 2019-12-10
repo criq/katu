@@ -26,24 +26,20 @@ class App {
 		return new \Katu\Files\File(realpath(__DIR__ . '/../../../../'));
 	}
 
+	static function getFileDir() {
+		return new \Katu\Files\File(static::getBaseDir(), 'files');
+	}
+
+	static function getTmpDir() {
+		return new \Katu\Files\File(static::getBaseDir(), 'tmp');
+	}
+
 	static function init() {
 		if (!defined('LOG_PATH')) {
 			define('LOG_PATH', \Katu\Files\File::joinPaths(static::getBaseDir(), Errors\Handler::LOG_DIR));
 		}
 		if (!defined('ERROR_LOG')) {
 			define('ERROR_LOG', \Katu\Files\File::joinPaths(LOG_PATH, Errors\Handler::ERROR_LOG));
-		}
-		if (!defined('FILE_DIR')) {
-			define('FILE_DIR', 'files');
-		}
-		if (!defined('FILE_PATH')) {
-			define('FILE_PATH', rtrim(static::getBaseDir()) . '/' . FILE_DIR . '/');
-		}
-		if (!defined('TMP_DIR')) {
-			define('TMP_DIR', 'tmp');
-		}
-		if (!defined('TMP_PATH')) {
-			define('TMP_PATH', rtrim(static::getBaseDir()) . '/' . TMP_DIR . '/');
 		}
 
 		// Timezone.
@@ -85,7 +81,6 @@ class App {
 			*/
 
 			static::$app = new \Slim\App($config);
-			static::$app->add(new \pavlakis\cli\CliRequest);
 			#static::$app->add(new \Psr7Middlewares\Middleware\TrailingSlash(false));
 
 			// Add error middleware.

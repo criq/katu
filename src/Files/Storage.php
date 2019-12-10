@@ -29,7 +29,7 @@ class Storage {
 	}
 
 	static function getPath($name) {
-		return FILE_PATH . FileSystem::getPathForName($name);
+		return \Katu\App::getFileDir() . \Katu\File\System::getPathForName($name);
 	}
 
 	static function getSafeName($name) {

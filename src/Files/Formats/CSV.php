@@ -29,11 +29,7 @@ class CSV {
 
 		} else {
 
-			if (!defined('TMP_PATH')) {
-				throw new \Exception("Undefined TMP_PATH.");
-			}
-
-			$file = new \Katu\Files\File(TMP_PATH, 'csv', [\Katu\Tools\Random\Generator::getFileName(), 'csv']);
+			$file = new \Katu\Files\File(\Katu\App::getTmpDir(), 'csv', [\Katu\Tools\Random\Generator::getFileName(), 'csv']);
 			$file->touch();
 
 			if (!$file->isWritable()) {

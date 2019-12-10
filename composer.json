@@ -23,7 +23,6 @@
 		"mtdowling/cron-expression": "1.*",
 		"mustangostang/spyc": "@stable",
 		"oscarotero/psr7-middlewares": "@stable",
-		"pavlakis/slim-cli": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"ralouphie/mimey": "@stable",
 		"slim/extras": "@stable",
