@@ -4,7 +4,7 @@
 	"type": "library",
 	"require" : {
 		"php": ">=7",
-		"egulias/email-validator": "1.*",
+		"egulias/email-validator": "^2",
 		"facebook/graph-sdk": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
 		"gregwar/cache": "1.0.*",
@@ -23,6 +23,7 @@
 		"mtdowling/cron-expression": "1.*",
 		"mustangostang/spyc": "@stable",
 		"oscarotero/psr7-middlewares": "@stable",
+		"pavlakis/slim-cli": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"ralouphie/mimey": "@stable",
 		"slim/extras": "@stable",

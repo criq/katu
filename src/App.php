@@ -85,6 +85,7 @@ class App {
 			*/
 
 			static::$app = new \Slim\App($config);
+			static::$app->add(new \pavlakis\cli\CliRequest);
 			#static::$app->add(new \Psr7Middlewares\Middleware\TrailingSlash(false));
 
 			// Add error middleware.
@@ -198,22 +199,6 @@ class App {
 
 		} catch (\Exception $e) { throw $e; }
 
-	}
-
-
-
-
-
-	static function isDev() {
-		return Config::get('app', 'slim', 'mode') == 'development';
-	}
-
-	static function isTest() {
-		return Config::get('app', 'slim', 'mode') == 'testing';
-	}
-
-	static function isProd() {
-		return Config::get('app', 'slim', 'mode') == 'production';
 	}
 
 	static function isProfilerOn() {

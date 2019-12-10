@@ -105,7 +105,7 @@ class General {
 		$array = array_merge(['anonymous'], array_values(array_filter(explode('/', debug_backtrace()[$backtraceIndex]['file']))), ['line ' . debug_backtrace()[$backtraceIndex]['line']]);
 
 		return array_map(function($i) {
-			return new Cache\Path\Raw($i);
+			return new Path\Raw($i);
 		}, $array);
 	}
 
@@ -134,7 +134,7 @@ class General {
 
 	static function isApcSupported() {
 		try {
-			return \Katu\Config\Config::get('app', 'cache', 'supported', 'apc') && function_exists('apcu_exists');
+			return function_exists('apcu_exists');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return false;
 		}
@@ -152,7 +152,7 @@ class General {
 
 	static function isMemcachedSupported() {
 		try {
-			return \Katu\Config\Config::get('app', 'cache', 'supported', 'memcached') && class_exists('Memcached');
+			return class_exists('Memcached');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return false;
 		}
