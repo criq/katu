@@ -44,7 +44,7 @@ class Config {
 	}
 
 	static function getFiles() {
-		$dir = BASE_DIR . "/app/Config";
+		$dir = new \Katu\Files\File(\Katu\App::getBaseDir(), 'app', 'Config');
 		$files = [];
 
 		foreach (scandir($dir) as $file) {

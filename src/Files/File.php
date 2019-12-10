@@ -308,6 +308,10 @@ class File {
 		return $this->isFile() && ($this->getMime() == 'text/x-c++' || $this->getExtension() == 'php');
 	}
 
+	public function isReadable() {
+		return is_readable($this);
+	}
+
 	public function isWritable() {
 		return is_writable($this);
 	}

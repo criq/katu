@@ -14,14 +14,14 @@ class Env {
 	}
 
 	static function getPlatform() {
-		$paths = array(
-			BASE_DIR . '/.platform',
-			BASE_DIR . '/app/.platform',
-		);
+		$files = [
+			new \Katu\Files\File(\Katu\App::getBaseDir(), '.platform'),
+			new \Katu\Files\File(\Katu\App::getBaseDir(), 'app', '.platform'),
+		];
 
-		foreach ($paths as $path) {
-			if (file_exists($path) && is_readable($path)) {
-				return trim(file_get_contents($path));
+		foreach ($files as $file) {
+			if ($file->exists() && $file->isReadable()) {
+				return trim($file->get());
 			}
 		}
 
@@ -35,7 +35,7 @@ class Env {
 	static function getEnvProperties() {
 		return array(
 			'host' => $_SERVER['SERVER_NAME'],
-			'dir'  => BASE_DIR,
+			'dir'  => \Katu\App::getBaseDir(),
 		);
 	}
 
