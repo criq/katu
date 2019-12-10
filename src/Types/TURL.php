@@ -230,18 +230,12 @@ class TURL {
 		return $tmpFile;
 	}
 
-	public function ping($timeout = 1) {
-		$curl = new \Curl\Curl;
-
-		try {
-			$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
-		} catch (\ErrorException $e) {
-			// Nothing to do, open_basedir is probably set.
-		}
-
-		$curl->setOpt(CURLOPT_TIMEOUT, $timeout);
-
-		return $curl->get((string)$this);
+	public function ping($method = 'GET', $user = null) {
+		return (new \Katu\Tools\Curl\Exec($this))
+			->setMethod($method)
+			->setUser($user)
+			->exec()
+			;
 	}
 
 }
