@@ -84,7 +84,7 @@ abstract class View extends Base {
 			'tableSchema' => static::getConnection()->config->database,
 			'tableRegexp' => implode(static::SEPARATOR, [
 				static::getCachedTableNameBase(),
-				'[0-9]{14}',
+				'[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '}',
 				'([0-9A-Z]{' . static::TMP_LENGTH . '})',
 			]),
 		]);
@@ -94,15 +94,26 @@ abstract class View extends Base {
 
 	static function getCachedTableName() {
 		$query = static::getCachedTablesQuery();
+		$array = $query->getResult()->getArray();
 
-		$array = $query->getResult()->getColumnValues('TABLE_NAME');
-		if (!($array ?? null)) {
-			static::cache();
-			return static::getCachedTableName();
+		if ($array[0]['TABLE_NAME']) {
+			return new \Katu\PDO\Name($array[0]['TABLE_NAME']);
 		}
 
-		return new \Katu\PDO\Name($array[0]);
+		try {
 
+			// No cached table found, cache!
+			static::cache();
+
+			// Try again after caching.
+			return static::getCachedTableName();
+
+		} catch (\Katu\Exceptions\LockException $e) {
+
+			// Running, return original view name.
+			return static::getViewName();
+
+		}
 
 
 
@@ -285,32 +296,28 @@ abstract class View extends Base {
 	}
 
 	static function cache() {
-		try {
+		$class = static::getClass();
 
-			$class = static::getClass();
+		(new \Katu\Tools\Locks\Lock(3600, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], function($class) {
 
-			(new \Katu\Tools\Locks\Lock(3600, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], function($class) {
+			$class::materializeSourceViews();
+			$class::copy($class::getView(), $class::generateCachedTable());
+			$class::updateLastCachedTime();
 
-				$class::materializeSourceViews();
-				$class::copy($class::getView(), $class::generateCachedTable());
-				$class::updateLastCachedTime();
+		}))
+			->setUseLock(false)
+			->setArgs([$class])
+			->run()
+			;
 
-			}))
-				->setUseLock(false)
-				->setArgs([$class])
-				->run()
-				;
-
-		} catch (\Katu\Exceptions\LockException $e) {
-			// Nevermind.
-		}
+		return true;
 	}
 
 	static function cacheIfExpired() {
 		if (static::isCacheExpiredAdvance()) {
 			try {
 				return static::cache();
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				\App\Extensions\Errors\Handler::log($e);
 			}
 		}
@@ -376,7 +383,7 @@ abstract class View extends Base {
 			return new \Katu\Tools\DateTime\DateTime($array[0]['CREATE_TIME']);
 
 		// Load from table name.
-		} elseif (($array[0]['TABLE_NAME'] ?? null) && preg_match('/^' . static::getCachedTableNameBase() . static::SEPARATOR . '(?<datetime>[0-9]{14})' . '/', $array[0]['TABLE_NAME'], $match)) {
+		} elseif (($array[0]['TABLE_NAME'] ?? null) && preg_match('/^' . static::getCachedTableNameBase() . static::SEPARATOR . '(?<datetime>[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '})' . '/', $array[0]['TABLE_NAME'], $match)) {
 			return \Katu\Tools\DateTime\DateTime::createFromFormat(static::CACHE_DATETIME_FORMAT, $match['datetime']);
 		}
 
