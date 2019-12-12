@@ -68,7 +68,7 @@ abstract class View extends Base {
 	}
 
 	static function getCachedTablesSql() {
-		$sql = " SELECT TABLE_NAME
+		$sql = " SELECT *
 			FROM information_schema.tables
 			WHERE TABLE_SCHEMA = :tableSchema
 			AND TABLE_NAME REGEXP :tableRegexp
@@ -367,7 +367,13 @@ abstract class View extends Base {
 	static function getLastCachedDateTime() {
 		$query = static::getCachedTablesQuery();
 		$array = $query->getResult()->getArray();
-		if (($array[0]['TABLE_NAME'] ?? null) && preg_match('/^' . static::getCachedTableNameBase() . static::SEPARATOR . '(?<datetime>[0-9]{14})' . '/', $array[0]['TABLE_NAME'], $match)) {
+
+		// Has CREATE_TIME.
+		if (($array[0]['CREATE_TIME'] ?? null)) {
+			return new \Katu\Tools\DateTime\DateTime($array[0]['CREATE_TIME']);
+
+		// Load from table name.
+		} elseif (($array[0]['TABLE_NAME'] ?? null) && preg_match('/^' . static::getCachedTableNameBase() . static::SEPARATOR . '(?<datetime>[0-9]{14})' . '/', $array[0]['TABLE_NAME'], $match)) {
 			return \Katu\Tools\DateTime\DateTime::createFromFormat(static::CACHE_DATETIME_FORMAT, $match['datetime']);
 		}
 
