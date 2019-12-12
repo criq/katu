@@ -383,12 +383,7 @@ abstract class View extends Base {
 		$query = static::getCachedTablesQuery();
 		$array = $query->getResult()->getArray();
 
-		// Has CREATE_TIME.
-		if (($array[0]['CREATE_TIME'] ?? null)) {
-			return new \Katu\Tools\DateTime\DateTime($array[0]['CREATE_TIME']);
-
-		// Load from table name.
-		} elseif (($array[0]['TABLE_NAME'] ?? null) && preg_match('/^' . static::getCachedTableNameBase() . static::SEPARATOR . '(?<datetime>[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '})' . '/', $array[0]['TABLE_NAME'], $match)) {
+		if (($array[0]['TABLE_NAME'] ?? null) && preg_match('/^' . static::getCachedTableNameBase() . static::SEPARATOR . '(?<datetime>[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '})' . '/', $array[0]['TABLE_NAME'], $match)) {
 			return \Katu\Tools\DateTime\DateTime::createFromFormat(static::CACHE_DATETIME_FORMAT, $match['datetime']);
 		}
 
