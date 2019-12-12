@@ -8,6 +8,7 @@ abstract class View extends Base {
 	const SEPARATOR = '_';
 	const TMP_LENGTH = 8;
 	const PREFIX_CACHE = '_cache';
+	const CACHE_DATETIME_FORMAT = 'YmdHis';
 
 	static $_cache              = true;
 	static $_cacheTimeout       = 86400;
@@ -66,13 +67,18 @@ abstract class View extends Base {
 		return new \Katu\PDO\Table(static::getConnection(), static::getCachedTableName());
 	}
 
-	static function getCachedTableName() {
+	static function getCachedTablesSql() {
 		$sql = " SELECT TABLE_NAME
 			FROM information_schema.tables
 			WHERE TABLE_SCHEMA = :tableSchema
 			AND TABLE_NAME REGEXP :tableRegexp
-			ORDER BY TABLE_NAME DESC
-			LIMIT 0, 1 ";
+			ORDER BY TABLE_NAME DESC ";
+
+		return $sql;
+	}
+
+	static function getCachedTablesQuery() {
+		$sql = static::getCachedTablesSql();
 
 		$query = static::getConnection()->createQuery($sql, [
 			'tableSchema' => static::getConnection()->config->database,
@@ -82,6 +88,12 @@ abstract class View extends Base {
 				'([0-9A-Z]{' . static::TMP_LENGTH . '})',
 			]),
 		]);
+
+		return $query;
+	}
+
+	static function getCachedTableName() {
+		$query = static::getCachedTablesQuery();
 
 		$array = $query->getResult()->getColumnValues('TABLE_NAME');
 		if (!($array ?? null)) {
@@ -107,7 +119,7 @@ abstract class View extends Base {
 
 	static function generateCachedTableName() {
 		$name = implode(static::SEPARATOR, array_merge([static::getCachedTableNameBase()], [
-			(new \Katu\Tools\DateTime\DateTime)->format('YmdHis'),
+			(new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT),
 			\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
 		]));
 
@@ -145,7 +157,8 @@ abstract class View extends Base {
 				}
 
 				$lastUpdatedTime = $sourceTable->getLastUpdatedTime();
-				if (!is_null($lastUpdatedTime) && $lastUpdatedTime > static::getLastCachedTime()) {
+				$lastCachedDateTime = static::getLastCachedDateTime();
+				if ($lastUpdatedTime && $lastCachedDateTime && $lastUpdatedTime > $lastCachedDateTime->getTimestamp()) {
 					return true;
 				}
 
@@ -157,7 +170,9 @@ abstract class View extends Base {
 	}
 
 	static function getCacheAge() {
-		return time() - static::getLastCachedTime();
+		$lastCachedDateTime = static::getLastCachedDateTime();
+
+		return time() - ($lastCachedDateTime ? $lastCachedDateTime->getTimestamp() : 0);
 	}
 
 	static function getMaterializeAge() {
@@ -349,8 +364,14 @@ abstract class View extends Base {
 		return static::getLastCachedTemporaryFile()->set(microtime(true));
 	}
 
-	static function getLastCachedTime() {
-		return (float)static::getLastCachedTemporaryFile()->get();
+	static function getLastCachedDateTime() {
+		$query = static::getCachedTablesQuery();
+		$array = $query->getResult()->getArray();
+		if (($array[0]['TABLE_NAME'] ?? null) && preg_match('/^' . static::getCachedTableNameBase() . static::SEPARATOR . '(?<datetime>[0-9]{14})' . '/', $array[0]['TABLE_NAME'], $match)) {
+			return \Katu\Tools\DateTime\DateTime::createFromFormat(static::CACHE_DATETIME_FORMAT, $match['datetime']);
+		}
+
+		return false;
 	}
 
 	static function getLastMaterializedTemporaryFile() {
