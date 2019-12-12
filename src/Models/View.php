@@ -170,13 +170,14 @@ class View extends Base {
 	}
 
 	static function isMaterializable() {
-		if (!static::$_materializeHours || \Katu\Env::getPlatform() == 'dev') {
+		if (!static::$_materializeHours || \Katu\Config\Env::getPlatform() == 'dev') {
 			return true;
 		}
 
 		return in_array((int) (new \Katu\Tools\DateTime\DateTime)->format('h'), static::$_materializeHours);
 	}
 
+	// TODO - opravit
 	static function resetCache() {
 		return \Katu\Utils\Cache::reset(static::getCachedTableCacheName());
 	}
@@ -226,17 +227,16 @@ class View extends Base {
 
 			$class = static::getClass();
 
-			#return \Katu\Utils\Lock::run(['databases', static::getConnection()->config->database, 'views', 'cache', static::TABLE], 600, function($class) {
+			(new \Katu\Tools\Locks\Lock(3600, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], function($class) {
 
 				$class::materializeSourceViews();
-
-				$class = '\\' . ltrim($class, '\\');
 				$class::copy($class::getView(), $class::getCachedTable());
 				$class::updateLastCachedTime();
 
-				return true;
-
-			#}, $class);
+			}))
+				->setArgs([$class])
+				->run()
+				;
 
 		} catch (\Katu\Exceptions\LockException $e) {
 			// Nevermind.
@@ -256,20 +256,23 @@ class View extends Base {
 	static function materialize() {
 		try {
 
-			return \Katu\Utils\Lock::run(['databases', static::getConnection()->config->database, 'views', 'materialize', static::TABLE], 600, function($class) {
+			$class = static::getClass();
+
+			(new \Katu\Tools\Locks\Lock(3600, ['databases', static::getConnection()->config->database, 'views', 'materialize', $class], function($class) {
 
 				$class::materializeSourceViews();
-
-				$class = '\\' . ltrim($class, '\\');
 				$class::copy($class::getView(), $class::getMaterializedTable());
 				$class::updateLastMaterializedTime();
 
 				return true;
 
-			}, static::getClass());
+			}))
+				->setArgs([$class])
+				->run()
+				;
 
 		} catch (\Katu\Exceptions\LockException $e) {
-			\App\Extensions\Errors\Handler::log($e);
+			// Nevermind.
 		}
 	}
 
@@ -286,10 +289,7 @@ class View extends Base {
 	static function materializeSourceViews() {
 		foreach (static::getView()->getSourceViewsInMaterializedViews() as $view) {
 			foreach ($view->getModelNames() as $class) {
-
-				$class = '\\' . ltrim($class, '\\');
 				$class::materializeIfExpired();
-
 			}
 		}
 
