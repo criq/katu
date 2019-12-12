@@ -2,7 +2,12 @@
 
 namespace Katu\Models;
 
-class View extends Base {
+abstract class View extends Base {
+
+	const TABLE = null;
+	const SEPARATOR = '_';
+	const TMP_LENGTH = 8;
+	const PREFIX_CACHE = '_cache';
 
 	static $_cache              = true;
 	static $_cacheTimeout       = 86400;
@@ -50,16 +55,45 @@ class View extends Base {
 		return static::getColumn($name, $options);
 	}
 
+	static function getCachedTableNameBase() {
+		return implode(static::SEPARATOR, [
+			static::PREFIX_CACHE,
+			static::getViewName()->getName(),
+		]);
+	}
+
 	static function getCachedTable() {
 		return new \Katu\PDO\Table(static::getConnection(), static::getCachedTableName());
 	}
 
 	static function getCachedTableName() {
-		$name = implode('_', [
-			'_cache',
-			static::getViewName()->getName(),
+		$sql = " SELECT TABLE_NAME
+			FROM information_schema.tables
+			WHERE TABLE_SCHEMA = :tableSchema
+			AND TABLE_NAME REGEXP :tableRegexp
+			ORDER BY TABLE_NAME DESC
+			LIMIT 0, 1 ";
+
+		$query = static::getConnection()->createQuery($sql, [
+			'tableSchema' => static::getConnection()->config->database,
+			'tableRegexp' => implode(static::SEPARATOR, [
+				static::getCachedTableNameBase(),
+				'[0-9]{14}',
+				'([0-9A-Z]{' . static::TMP_LENGTH . '})',
+			]),
 		]);
 
+		$array = $query->getResult()->getColumnValues('TABLE_NAME');
+		if (!($array ?? null)) {
+			static::cache();
+			return static::getCachedTableName();
+		}
+
+		return new \Katu\PDO\Name($array[0]);
+
+
+		// TODO - ošéfovat
+		$name = static::getCachedTableNameBase();
 		if (strlen($name) > 64) {
 			return substr($name, 0, 60) . substr(sha1($name), 0, 4);
 		}
@@ -67,8 +101,21 @@ class View extends Base {
 		return new \Katu\PDO\Name($name);
 	}
 
-	static function getCachedTableCacheName() {
-		return ['!databases', '!' . static::getView()->getConnection()->name, '!views', '!cachedView', '!' . static::TABLE];
+	static function generateCachedTable() {
+		return new \Katu\PDO\Table(static::getConnection(), static::generateCachedTableName());
+	}
+
+	static function generateCachedTableName() {
+		$name = implode(static::SEPARATOR, array_merge([static::getCachedTableNameBase()], [
+			(new \Katu\Tools\DateTime\DateTime)->format('YmdHis'),
+			\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
+		]));
+
+		if (strlen($name) > 64) {
+			return substr($name, 0, 60) . substr(sha1($name), 0, 4);
+		}
+
+		return new \Katu\PDO\Name($name);
 	}
 
 	static function isCached() {
@@ -80,7 +127,7 @@ class View extends Base {
 	}
 
 	static function cachedTableExists() {
-		return in_array(static::getCachedTableName()->getName(), static::getConnection()->getTableNames());
+		return in_array(static::getCachedTableName(), static::getConnection()->getTableNames());
 	}
 
 	static function materializedTableExists() {
@@ -174,12 +221,7 @@ class View extends Base {
 			return true;
 		}
 
-		return in_array((int) (new \Katu\Tools\DateTime\DateTime)->format('h'), static::$_materializeHours);
-	}
-
-	// TODO - opravit
-	static function resetCache() {
-		return \Katu\Utils\Cache::reset(static::getCachedTableCacheName());
+		return in_array((int)(new \Katu\Tools\DateTime\DateTime)->format('h'), static::$_materializeHours);
 	}
 
 	static function getMaterializedTable() {
@@ -187,17 +229,19 @@ class View extends Base {
 	}
 
 	static function getMaterializedTableName() {
-		return implode('_', [
+		$name = implode(static::SEPARATOR, [
 			'mv',
 			preg_replace('#^view_#', null, static::getViewName()->getName()),
 		]);
+
+		return new \Katu\PDO\Name($name);
 	}
 
 	static function copy($sourceTable, $destinationTable) {
 		@set_time_limit(600);
 
 		// Get a temporary table.
-		$temporaryTableName = new \Katu\PDO\Name('_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(8)));
+		$temporaryTableName = new \Katu\PDO\Name('_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)));
 		$temporaryTable = new \Katu\PDO\Table($destinationTable->getConnection(), $temporaryTableName);
 
 		// Copy into temporary table view.
@@ -230,10 +274,11 @@ class View extends Base {
 			(new \Katu\Tools\Locks\Lock(3600, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], function($class) {
 
 				$class::materializeSourceViews();
-				$class::copy($class::getView(), $class::getCachedTable());
+				$class::copy($class::getView(), $class::generateCachedTable());
 				$class::updateLastCachedTime();
 
 			}))
+				->setUseLock(false)
 				->setArgs([$class])
 				->run()
 				;
