@@ -64,7 +64,19 @@ abstract class View extends Base {
 	}
 
 	static function getCachedTable() {
-		return new \Katu\PDO\Table(static::getConnection(), static::getCachedTableName());
+		try {
+
+			// Try cached table name.
+			$tableName = static::getCachedTableName();
+
+		} catch (\Throwable $e) {
+
+			// Some error happened, probably locked, return normal view.
+			$tableName = static::getViewName();
+
+		}
+
+		return new \Katu\PDO\Table(static::getConnection(), $tableName);
 	}
 
 	static function getCachedTablesSql() {
@@ -100,20 +112,13 @@ abstract class View extends Base {
 			return new \Katu\PDO\Name($array[0]['TABLE_NAME']);
 		}
 
-		try {
+		// No cached table found, cache!
+		static::cache();
 
-			// No cached table found, cache!
-			static::cache();
+		// Try again after caching.
+		return static::getCachedTableName();
 
-			// Try again after caching.
-			return static::getCachedTableName();
 
-		} catch (\Katu\Exceptions\LockException $e) {
-
-			// Running, return original view name.
-			return static::getViewName();
-
-		}
 
 
 
