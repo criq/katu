@@ -158,7 +158,10 @@ abstract class View extends Base {
 	}
 
 	static function cachedTableExists() {
-		return in_array(static::getCachedTableName(), static::getConnection()->getTableNames());
+		$query = static::getCachedTablesQuery();
+		$array = $query->getResult()->getArray();
+
+		return (bool)($array[0] ?? null);
 	}
 
 	static function materializedTableExists() {
