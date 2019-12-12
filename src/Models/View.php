@@ -96,7 +96,7 @@ abstract class View extends Base {
 		$query = static::getCachedTablesQuery();
 		$array = $query->getResult()->getArray();
 
-		if ($array[0]['TABLE_NAME']) {
+		if ($array[0]['TABLE_NAME'] ?? null) {
 			return new \Katu\PDO\Name($array[0]['TABLE_NAME']);
 		}
 
