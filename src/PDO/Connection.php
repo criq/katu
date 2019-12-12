@@ -54,7 +54,7 @@ class Connection {
 		return $this->connection->lastInsertId();
 	}
 
-	public function tableExists($tableName) {
+	public function tableExists(Name $tableName) {
 		return in_array($tableName, $this->getTableNames());
 	}
 

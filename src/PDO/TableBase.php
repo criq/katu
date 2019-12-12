@@ -70,7 +70,7 @@ class TableBase extends \Sexy\Expression {
 	}
 
 	public function exists() {
-		return $this->getConnection()->tableExists($this->name->name);
+		return $this->getConnection()->tableExists($this->name);
 	}
 
 	public function rename($name) {
