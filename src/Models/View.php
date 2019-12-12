@@ -104,6 +104,9 @@ abstract class View extends Base {
 		return new \Katu\PDO\Name($array[0]);
 
 
+
+
+
 		// TODO - ošéfovat
 		$name = static::getCachedTableNameBase();
 		if (strlen($name) > 64) {
@@ -398,17 +401,18 @@ abstract class View extends Base {
 			$dir->includeAllPhpFiles();
 		}
 
-		return array_values(array_filter(get_declared_classes(), function($class) {
-			return is_subclass_of($class, '\\Katu\\Models\\View') && defined("$class::TABLE");
-		}));
+		return array_map(function($i) {
+			return '\\' . ltrim($i, '\\');
+		}, array_values(array_filter(get_declared_classes(), function($class) {
+			return is_subclass_of($class, '\\Katu\\Models\\View') && defined("$class::TABLE") && $class::TABLE;
+		})));
 	}
 
 	static function cacheAndMaterializeAll() {
-		foreach (static::getAllViewClassNames() as $viewClass) {
-			$viewClassName = '\\' . $viewClass;
-			$viewClassName::cacheIfExpired();
-			if ($viewClassName::isMaterializable()) {
-				$viewClassName::materializeIfExpired();
+		foreach (static::getAllViewClassNames() as $class) {
+			$class::cacheIfExpired();
+			if ($class::isMaterializable()) {
+				$class::materializeIfExpired();
 			}
 		}
 	}
