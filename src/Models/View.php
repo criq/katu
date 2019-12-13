@@ -427,4 +427,17 @@ abstract class View extends Base {
 		}
 	}
 
+	static function deleteOldCachedTables() {
+		foreach (static::getAllViewClassNames() as $class) {
+			$query = $class::getCachedTablesQuery();
+			$array = $query->getResult()->getArray();
+			foreach (array_slice($array, 1) as $tableArray) {
+				$table = new \App\Classes\PDO\Table($class::getConnection(), new \Katu\PDO\Name($tableArray['TABLE_NAME']));
+				$table->delete();
+			}
+		}
+
+		return true;
+	}
+
 }
