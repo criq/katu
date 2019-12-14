@@ -4,6 +4,7 @@ namespace Katu\Models;
 
 abstract class View extends Base {
 
+	const TIMEOUT = 3600;
 	const TABLE = null;
 	const SEPARATOR = '_';
 	const TMP_LENGTH = 8;
@@ -275,7 +276,7 @@ abstract class View extends Base {
 	}
 
 	static function copy($sourceTable, $destinationTable) {
-		@set_time_limit(600);
+		@set_time_limit(static::TIMEOUT);
 
 		// Get a temporary table.
 		$temporaryTableName = new \Katu\PDO\Name('_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)));
@@ -306,7 +307,7 @@ abstract class View extends Base {
 	static function cache() {
 		$class = static::getClass();
 
-		(new \Katu\Tools\Locks\Lock(3600, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], function($class) {
+		(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], function($class) {
 
 			$class::materializeSourceViews();
 			$class::copy($class::getView(), $class::generateCachedTable());
@@ -332,7 +333,7 @@ abstract class View extends Base {
 
 			$class = static::getClass();
 
-			(new \Katu\Tools\Locks\Lock(3600, ['databases', static::getConnection()->config->database, 'views', 'materialize', $class], function($class) {
+			(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->config->database, 'views', 'materialize', $class], function($class) {
 
 				$class::materializeSourceViews();
 				$class::copy($class::getView(), $class::getMaterializedTable());
