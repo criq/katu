@@ -323,11 +323,7 @@ abstract class View extends Base {
 
 	static function cacheIfExpired() {
 		if (static::isCacheExpiredAdvance()) {
-			try {
-				return static::cache();
-			} catch (\Throwable $e) {
-				\App\Extensions\Errors\Handler::log($e);
-			}
+			return static::cache();
 		}
 	}
 
@@ -420,9 +416,13 @@ abstract class View extends Base {
 
 	static function cacheAndMaterializeAll() {
 		foreach (static::getAllViewClassNames() as $class) {
-			$class::cacheIfExpired();
-			if ($class::isMaterializable()) {
-				$class::materializeIfExpired();
+			try {
+				$class::cacheIfExpired();
+				if ($class::isMaterializable()) {
+					$class::materializeIfExpired();
+				}
+			} catch (\Throwable $e) {
+				\App\Extensions\Errors\Handler::log($e);
 			}
 		}
 	}

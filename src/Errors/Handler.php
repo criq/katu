@@ -73,11 +73,11 @@ class Handler {
 
 		try {
 			throw $exception;
-		} catch (Exceptions\NotFoundException $exception) {
+		} catch (\Katu\Exceptions\NotFoundException $exception) {
 			$controllerClass::renderNotFound();
-		} catch (Exceptions\UnauthorizedException $exception) {
+		} catch (\Katu\Exceptions\UnauthorizedException $exception) {
 			$controllerClass::renderUnauthorized();
-		} catch (Exceptions\UserErrorException $exception) {
+		} catch (\Katu\Exceptions\UserErrorException $exception) {
 			$controllerClass::renderError($exception->getMessage());
 		}
 	}
