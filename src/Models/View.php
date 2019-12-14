@@ -23,8 +23,6 @@ abstract class View extends Base {
 	static $_customIndices      = [];
 
 	static function getTable() {
-		static::cacheIfExpired();
-
 		return static::isCached() ? static::getCachedTable() : static::getView();
 	}
 
@@ -65,6 +63,8 @@ abstract class View extends Base {
 
 	static function getCachedTable() {
 		try {
+
+			static::cacheIfExpired();
 
 			// Try cached table name.
 			$tableName = static::getCachedTableName();
