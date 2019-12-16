@@ -12,7 +12,6 @@
 		"illuminate/support": "<=5.4.17",
 		"intervention/image": "2.*",
 		"ircmaxell/random-lib": "1.*",
-		"jabli/sexy": "v2.x-dev",
 		"jbroadway/urlify": "1.0.*@dev",
 		"jenssegers/agent": "@stable",
 		"jwage/easy-csv": "0.0.2",
@@ -34,6 +33,9 @@
 		"twig/extensions": "@stable",
 		"twig/twig": "@stable",
 		"vlucas/phpdotenv" : "@stable"
+	},
+	"require-dev": {
+		"jabli/sexy": "v2.x-dev"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
