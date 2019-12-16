@@ -34,9 +34,6 @@
 		"twig/twig": "@stable",
 		"vlucas/phpdotenv" : "@stable"
 	},
-	"require-dev": {
-		"jabli/sexy": "v2.x-dev"
-	},
 	"minimum-stability": "dev",
 	"autoload": {
 		"psr-4": {
