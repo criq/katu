@@ -119,14 +119,15 @@ class Connection {
 		return $query;
 	}
 
-	public function createQueryFromSql(\Sexy\Expression $sql) {
+	public function createQueryFromSql(\Sexy\Expression $sql, array $params = []) {
 		$query = new Query($this);
 		$query->setFromSql($sql);
+		$query->setBindValues($params);
 
 		return $query;
 	}
 
-	public function createClassQuery($class, $sql = null, $params = []) {
+	public function createClassQuery($class, $sql = null, array $params = []) {
 		$query = new Query($this, $sql, $params);
 		$query->setClass($class);
 

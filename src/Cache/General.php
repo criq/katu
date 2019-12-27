@@ -6,15 +6,15 @@ class General {
 
 	const DIR_NAME = 'cache';
 
-	protected $enableMemcached = true;
-	protected $enableApc = true;
+	// protected $enableMemcached = true;
+	// protected $enableApc = true;
 
-	protected $name;
+	protected $name; // TODO - force array of simple strings so the cache name generation is fast?
 	protected $timeout;
 	protected $callback;
 	protected $args = [];
 
-	protected static $memcached;
+	// protected static $memcached;
 
 	public function __construct($name = null, $timeout = null) {
 		$this->setName($name);
@@ -22,11 +22,15 @@ class General {
 	}
 
 	public function setName() {
-		if (count(func_get_args()) == 1 && is_array(func_get_arg(0)) && func_get_arg(0)) {
-			$this->name = func_get_arg(0);
+		$args = func_get_args();
+
+		if (count($args) == 1 && is_array($args[0]) && $args[0]) {
+			$name = func_get_arg(0);
 		} else {
-			$this->name = array_filter(func_get_args());
+			$name = $args;
 		}
+
+		$this->name = $name;
 
 		return $this;
 	}
@@ -75,135 +79,134 @@ class General {
 		return $this;
 	}
 
-	public function getArgs() {
-		return $this->args;
+	public function getArgs() : array {
+		return (array)$this->args;
 	}
 
-	public function getRawPathSegments() {
-		if ($this->getName()) {
-			$pathSegments = array_map(function($i) {
-				return new \Katu\Cache\Path\Raw($i);
-			}, $this->getName());
-		} else {
-			$pathSegments = $this->getAnonymousPathSegments();
-		}
+	public function getKey() : array {
+		$array = [
+			$this->name,
+			$this->args,
+		];
+		// var_dump($array);
 
-		// Add arguments.
-		foreach ($this->args as $arg) {
-			$pathSegments[] = new \Katu\Cache\Path\Raw($arg);
-		}
+		$checksum = crc32(serialize($array));
+		// var_dump($checksum);
 
-		// Add checksum.
-		$pathSegments[] = new \Katu\Cache\Path\Checksum(sha1(serialize($pathSegments)));
+		$array = array_flatten($array);
+		// var_dump($array);
 
-		return $pathSegments;
-	}
-
-	public function getAnonymousPathSegments() {
-		$backtraceIndex = 5;
-
-		$array = array_merge(['anonymous'], array_values(array_filter(explode('/', debug_backtrace()[$backtraceIndex]['file']))), ['line ' . debug_backtrace()[$backtraceIndex]['line']]);
-
-		return array_map(function($i) {
-			return new Path\Raw($i);
-		}, $array);
-	}
-
-	public function getSanitizedPathSegments() {
-		return array_map(function($i) {
+		$array = array_map(function($i) {
 			return (string)$i;
-		}, $this->getRawPathSegments());
+		}, $array);
+		// var_dump($array);
+
+		$array = array_map(function($i) {
+			$i = strtr($i, '\\', '/');
+			$i = strtr($i, '.', '_');
+			$i = mb_strtolower($i);
+			$i = preg_replace('/[^a-z0-9_\\/]/i', null, $i);
+			return $i;
+		}, $array);
+		// var_dump($array);
+
+		$array[] = 'crc32_' . $checksum;
+
+		return (array)$array;
 	}
 
-	public function getSanitizedPath() {
-		return implode('/', $this->getSanitizedPathSegments());
+	// TODO - must be fucking FAST
+	public function getFile() : \Katu\Files\File {
+		$array = $this->getKey();
+		$array[] = 'cache.txt';
+
+		$file = new \Katu\Files\File(\Katu\App::getTmpDir(), static::DIR_NAME, ...$array);
+		// var_dump($file);
+
+		return $file;
 	}
 
-	public function getFile() {
-		return new \Katu\Files\File(\Katu\App::getTmpDir(), static::DIR_NAME, $this->getSanitizedPath(), ['cache']);
-	}
+	// public function getMemoryKey() {
+	// 	$key = $this->getSanitizedPath();
+	// 	if (mb_strlen($key) > 250) {
+	// 		$key = sha1($key);
+	// 	}
 
-	public function getMemoryKey() {
-		$key = $this->getSanitizedPath();
-		if (mb_strlen($key) > 250) {
-			$key = sha1($key);
-		}
+	// 	return $key;
+	// }
 
-		return $key;
-	}
+	// static function isApcSupported() {
+	// 	try {
+	// 		return function_exists('apcu_exists');
+	// 	} catch (\Katu\Exceptions\MissingConfigException $e) {
+	// 		return false;
+	// 	}
+	// }
 
-	static function isApcSupported() {
-		try {
-			return function_exists('apcu_exists');
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return false;
-		}
-	}
+	// public function isApcEnabled() {
+	// 	return $this->enableApc && static::isApcSupported();
+	// }
 
-	public function isApcEnabled() {
-		return $this->enableApc && static::isApcSupported();
-	}
+	// static function getMaxApcSize() {
+	// 	$size = \Katu\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
 
-	static function getMaxApcSize() {
-		$size = \Katu\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
+	// 	return $size * .75;
+	// }
 
-		return $size * .75;
-	}
+	// static function isMemcachedSupported() {
+	// 	try {
+	// 		return class_exists('Memcached');
+	// 	} catch (\Katu\Exceptions\MissingConfigException $e) {
+	// 		return false;
+	// 	}
+	// }
 
-	static function isMemcachedSupported() {
-		try {
-			return class_exists('Memcached');
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return false;
-		}
-	}
+	// public function isMemcachedEnabled() {
+	// 	return $this->enableMemcached && static::isMemcachedSupported();
+	// }
 
-	public function isMemcachedEnabled() {
-		return $this->enableMemcached && static::isMemcachedSupported();
-	}
+	// static function getMemcahcedInstanceName() {
+	// 	return 'appCache';
+	// }
 
-	static function getMemcahcedInstanceName() {
-		return 'appCache';
-	}
+	// static function loadMemcached() {
+	// 	if (!static::$memcached) {
+	// 		static::$memcached = new \Memcached(static::getMemcahcedInstanceName());
+	// 		static::$memcached->addServer('localhost', 11211);
+	// 	}
 
-	static function loadMemcached() {
-		if (!static::$memcached) {
-			static::$memcached = new \Memcached(static::getMemcahcedInstanceName());
-			static::$memcached->addServer('localhost', 11211);
-		}
+	// 	return true;
+	// }
 
-		return true;
-	}
+	// public function getMemcached() {
+	// 	static::loadMemcached();
 
-	public function getMemcached() {
-		static::loadMemcached();
-
-		return static::$memcached;
-	}
+	// 	return static::$memcached;
+	// }
 
 	public function getResult() {
-		$memoryKey = $this->getMemoryKey();
+		// $memoryKey = $this->getMemoryKey();
 
-		// Try Memcached.
-		if ($this->isMemcachedEnabled()) {
+		// // Try Memcached.
+		// if ($this->isMemcachedEnabled()) {
 
-			$memcached = $this->getMemcached();
-			$res = $memcached->get($memoryKey);
-			if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
-				return $res;
-			}
+		// 	$memcached = $this->getMemcached();
+		// 	$res = $memcached->get($memoryKey);
+		// 	if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
+		// 		return $res;
+		// 	}
 
-		// Try APC.
-		} elseif ($this->isApcEnabled()) {
+		// // Try APC.
+		// } elseif ($this->isApcEnabled()) {
 
-			if (apcu_exists($memoryKey)) {
-				$res = apcu_fetch($memoryKey, $success);
-				if ($success) {
-					return $res;
-				}
-			}
+		// 	if (apcu_exists($memoryKey)) {
+		// 		$res = apcu_fetch($memoryKey, $success);
+		// 		if ($success) {
+		// 			return $res;
+		// 		}
+		// 	}
 
-		}
+		// }
 
 		// Try file.
 		$file = $this->getFile();
@@ -214,50 +217,61 @@ class General {
 		// Get result.
 		$res = call_user_func_array($this->getCallback(), $this->getArgs());
 
-		// Try to save into Memcached.
-		if ($this->isMemcachedEnabled()) {
+		// // Try to save into Memcached.
+		// if ($this->isMemcachedEnabled()) {
 
-			// Add to Memcached.
-			$memcached = $this->getMemcached();
-			try {
-				$timeout = $this->getTimeoutInSeconds();
-				if (!$memcached->set($memoryKey, $res, $timeout ? time() + $timeout : 0)) {
-					throw new \Exception;
-				}
-				return $res;
-			} catch (\Exception $e) {
-				$memcached->delete($memoryKey);
-			}
+		// 	// Add to Memcached.
+		// 	$memcached = $this->getMemcached();
+		// 	try {
+		// 		$timeout = $this->getTimeoutInSeconds();
+		// 		if (!$memcached->set($memoryKey, $res, $timeout ? time() + $timeout : 0)) {
+		// 			throw new \Exception;
+		// 		}
+		// 		return $res;
+		// 	} catch (\Exception $e) {
+		// 		$memcached->delete($memoryKey);
+		// 	}
 
-		// Try to save into APC.
-		} elseif ($this->isApcEnabled() && strlen(serialize($res)) <= static::getMaxApcSize()) {
+		// // Try to save into APC.
+		// } elseif ($this->isApcEnabled() && strlen(serialize($res)) <= static::getMaxApcSize()) {
 
-			// Add to APC.
-			try {
-				if (!apcu_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
-					throw new \Exception;
-				}
-				return $res;
-			} catch (\Exception $e) {
-				apcu_delete($memoryKey);
-			}
+		// 	// Add to APC.
+		// 	try {
+		// 		if (!apcu_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
+		// 			throw new \Exception;
+		// 		}
+		// 		return $res;
+		// 	} catch (\Exception $e) {
+		// 		apcu_delete($memoryKey);
+		// 	}
 
-		}
+		// }
 
 		// Try to save into file.
 		$this->getFile()->set(serialize($res));
+
 		return $res;
 	}
 
+	public function clear() {
+		$file = $this->getFile();
+		if ($file->exists()) {
+			$file->delete();
+		}
+
+		return true;
+	}
+
 	static function clearMemory() {
-		if (static::isMemcachedSupported()) {
-			static::loadMemcached();
-			return static::$memcached->flush();
-		}
-		if (static::isApcSupported()) {
-			apcu_clear_cache();
-			return true;
-		}
+		// if (static::isMemcachedSupported()) {
+		// 	static::loadMemcached();
+		// 	return static::$memcached->flush();
+		// }
+
+		// if (static::isApcSupported()) {
+		// 	apcu_clear_cache();
+		// 	return true;
+		// }
 
 		return null;
 	}
@@ -265,18 +279,17 @@ class General {
 	/****************************************************************************
 	 * Code sugar.
 	 */
-
 	static function get() {
 		$args = func_get_args();
 
-		$object = new static($args[0], $args[1]);
+		$cache = new static($args[0], $args[1]);
 		if (isset($args[2])) {
-			$object->setCallback($args[2]);
+			$cache->setCallback($args[2]);
 		}
 
-		call_user_func_array([$object, 'setArgs'], (array)array_slice($args, 3));
+		$cache->setArgs(...(array)array_slice($args, 3));
 
-		return $object->getResult();
+		return $cache->getResult();
 	}
 
 }

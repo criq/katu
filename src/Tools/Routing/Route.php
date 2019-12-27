@@ -31,6 +31,14 @@ class Route {
 		return $this->pattern;
 	}
 
+	public function getArgs() {
+		if (preg_match_all('/(?<arg>\{(?<name>[a-z]+)\})/i', $this->getPattern(), $matches, \PREG_PATTERN_ORDER)) {
+			return ($matches['name']);
+		}
+
+		return [];
+	}
+
 	public function getCallable() {
 		return implode(':', [
 			"\\App\\Controllers\\" . strtr($this->controller, '/', '\\'),

@@ -19,7 +19,7 @@ class File {
 
 	static function createFromName() {
 		$generateHashArray = function($value) {
-			$hash = sha1($value);
+			$hash = crc32($value);
 
 			$array = [
 				substr($hash, 0, 2),
@@ -85,7 +85,7 @@ class File {
 		}, $parts);
 
 		// Add checksum.
-		$parts[] = [sha1(var_export($args, true)), 'checksum'];
+		$parts[] = [crc32(var_export($args, true)), 'checksum'];
 
 		return new static(...$parts);
 	}
@@ -176,6 +176,8 @@ class File {
 	}
 
 	public function exists() {
+		clearstatcache();
+
 		return file_exists($this->getPath());
 	}
 
