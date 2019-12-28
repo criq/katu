@@ -257,6 +257,14 @@ class General {
 	}
 
 	public function clear() {
+		$memoryKey = $this->getMemoryKey();
+
+		// APC.
+		if ($this->isApcEnabled() && apcu_exists($memoryKey)) {
+			apcu_delete($memoryKey);
+		}
+
+		// File.
 		$file = $this->getFile();
 		if ($file->exists()) {
 			$file->delete();
