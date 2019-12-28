@@ -217,6 +217,7 @@ class General {
 
 		// Get result.
 		$res = call_user_func_array($this->getCallback(), $this->getArgs());
+		$serializedRes = serialize($res);
 
 		// // Try to save into Memcached.
 		// if ($this->isMemcachedEnabled()) {
@@ -236,7 +237,7 @@ class General {
 		// }
 
 		// Try to save into APC.
-		if ($this->isApcEnabled() && strlen(serialize($res)) <= static::getMaxApcSize()) {
+		if ($this->isApcEnabled() && strlen($serializedRes) <= static::getMaxApcSize()) {
 
 			// Add to APC.
 			try {
@@ -251,7 +252,7 @@ class General {
 		}
 
 		// Try to save into file.
-		$this->getFile()->set(serialize($res));
+		$this->getFile()->set($serializedRes);
 
 		return $res;
 	}
