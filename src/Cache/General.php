@@ -7,9 +7,9 @@ class General {
 	const DIR_NAME = 'cache';
 
 	// protected $enableMemcached = true;
-	// protected $enableApc = true;
+	protected $enableApc = true;
 
-	protected $name; // TODO - force array of simple strings so the cache name generation is fast?
+	protected $name;
 	protected $timeout;
 	protected $callback;
 	protected $args = [];
@@ -83,7 +83,7 @@ class General {
 		return (array)$this->args;
 	}
 
-	public function getKey() : array {
+	public function getKeyArray() : array {
 		$array = [
 			$this->name,
 			$this->args,
@@ -115,9 +115,17 @@ class General {
 		return (array)$array;
 	}
 
-	// TODO - must be fucking FAST
+	public function getMemoryKey() {
+		$key = implode('.', $this->getKeyArray());
+		if (mb_strlen($key) > 250) {
+			$key = sha1($key);
+		}
+
+		return $key;
+	}
+
 	public function getFile() : \Katu\Files\File {
-		$array = $this->getKey();
+		$array = $this->getKeyArray();
 		$array[] = 'cache.txt';
 
 		$file = new \Katu\Files\File(\Katu\App::getTmpDir(), static::DIR_NAME, ...$array);
@@ -126,32 +134,23 @@ class General {
 		return $file;
 	}
 
-	// public function getMemoryKey() {
-	// 	$key = $this->getSanitizedPath();
-	// 	if (mb_strlen($key) > 250) {
-	// 		$key = sha1($key);
-	// 	}
+	static function isApcSupported() {
+		try {
+			return function_exists('apcu_exists');
+		} catch (\Throwable $e) {
+			return false;
+		}
+	}
 
-	// 	return $key;
-	// }
+	public function isApcEnabled() {
+		return $this->enableApc && static::isApcSupported();
+	}
 
-	// static function isApcSupported() {
-	// 	try {
-	// 		return function_exists('apcu_exists');
-	// 	} catch (\Katu\Exceptions\MissingConfigException $e) {
-	// 		return false;
-	// 	}
-	// }
+	static function getMaxApcSize() {
+		$size = \Katu\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
 
-	// public function isApcEnabled() {
-	// 	return $this->enableApc && static::isApcSupported();
-	// }
-
-	// static function getMaxApcSize() {
-	// 	$size = \Katu\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
-
-	// 	return $size * .75;
-	// }
+		return $size * .75;
+	}
 
 	// static function isMemcachedSupported() {
 	// 	try {
@@ -185,7 +184,7 @@ class General {
 	// }
 
 	public function getResult() {
-		// $memoryKey = $this->getMemoryKey();
+		$memoryKey = $this->getMemoryKey();
 
 		// // Try Memcached.
 		// if ($this->isMemcachedEnabled()) {
@@ -196,17 +195,19 @@ class General {
 		// 		return $res;
 		// 	}
 
-		// // Try APC.
-		// } elseif ($this->isApcEnabled()) {
-
-		// 	if (apcu_exists($memoryKey)) {
-		// 		$res = apcu_fetch($memoryKey, $success);
-		// 		if ($success) {
-		// 			return $res;
-		// 		}
-		// 	}
-
 		// }
+
+		// Try APC.
+		if ($this->isApcEnabled()) {
+
+			if (apcu_exists($memoryKey)) {
+				$res = apcu_fetch($memoryKey, $success);
+				if ($success) {
+					return $res;
+				}
+			}
+
+		}
 
 		// Try file.
 		$file = $this->getFile();
@@ -232,20 +233,22 @@ class General {
 		// 		$memcached->delete($memoryKey);
 		// 	}
 
-		// // Try to save into APC.
-		// } elseif ($this->isApcEnabled() && strlen(serialize($res)) <= static::getMaxApcSize()) {
-
-		// 	// Add to APC.
-		// 	try {
-		// 		if (!apcu_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
-		// 			throw new \Exception;
-		// 		}
-		// 		return $res;
-		// 	} catch (\Exception $e) {
-		// 		apcu_delete($memoryKey);
-		// 	}
-
 		// }
+
+		// Try to save into APC.
+		if ($this->isApcEnabled() && strlen(serialize($res)) <= static::getMaxApcSize()) {
+
+			// Add to APC.
+			try {
+				if (!apcu_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
+					throw new \Exception;
+				}
+				return $res;
+			} catch (\Exception $e) {
+				apcu_delete($memoryKey);
+			}
+
+		}
 
 		// Try to save into file.
 		$this->getFile()->set(serialize($res));
@@ -268,10 +271,10 @@ class General {
 		// 	return static::$memcached->flush();
 		// }
 
-		// if (static::isApcSupported()) {
-		// 	apcu_clear_cache();
-		// 	return true;
-		// }
+		if (static::isApcSupported()) {
+			apcu_clear_cache();
+			return true;
+		}
 
 		return null;
 	}
