@@ -245,7 +245,7 @@ class General {
 					throw new \Exception;
 				}
 				return $res;
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				apcu_delete($memoryKey);
 			}
 
