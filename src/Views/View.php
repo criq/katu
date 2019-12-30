@@ -5,14 +5,28 @@ namespace Katu\Views;
 class View {
 
 	static function getTwig($options = []) {
+		$loader = static::getTwigLoader();
+		$twig   = new \Twig\Environment($loader, [
+			'cache'       => \Katu\Files\File::joinPaths(\Katu\App::getTmpDir(), 'twig'),
+			'auto_reload' => true,
+		]);
+
+		return $twig;
+	}
+
+	static function getTwigLoader() {
+		return new \Twig\Loader\FilesystemLoader(static::getTwigDirs());
+	}
+
+	static function getTwigDirs() {
 		$dirs = [];
 
-		if (isset($options['dirs']) && $options['dirs']) {
-			foreach ($options['dirs'] as $dir) {
-				$dirs[] = realpath($dir);
-			}
-			$dirs = array_filter($dirs);
-		}
+		// if (isset($options['dirs']) && $options['dirs']) {
+		// 	foreach ($options['dirs'] as $dir) {
+		// 		$dirs[] = realpath($dir);
+		// 	}
+		// 	$dirs = array_filter($dirs);
+		// }
 
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
 
@@ -27,13 +41,7 @@ class View {
 
 		}
 
-		$loader = new \Twig\Loader\FilesystemLoader($dirs);
-		$twig   = new \Twig\Environment($loader, [
-			'cache'       => \Katu\Files\File::joinPaths(\Katu\App::getTmpDir(), 'twig'),
-			'auto_reload' => true,
-		]);
-
-		return $twig;
+		return $dirs;
 	}
 
 	static function extendTwig(&$twig) {
