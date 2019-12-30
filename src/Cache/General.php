@@ -198,15 +198,11 @@ class General {
 		// }
 
 		// Try APC.
-		if ($this->isApcEnabled()) {
-
-			if (apcu_exists($memoryKey)) {
-				$res = apcu_fetch($memoryKey, $success);
-				if ($success) {
-					return $res;
-				}
+		if ($this->isApcEnabled() && apcu_exists($memoryKey)) {
+			$res = apcu_fetch($memoryKey, $success);
+			if ($success) {
+				return $res;
 			}
-
 		}
 
 		// Try file.
