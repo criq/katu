@@ -4,14 +4,18 @@ namespace Katu\Views;
 
 class View {
 
-	static function getTwig($options = []) {
-		$loader = static::getTwigLoader();
-		$twig   = new \Twig\Environment($loader, [
-			'cache'       => \Katu\Files\File::joinPaths(\Katu\App::getTmpDir(), 'twig'),
-			'auto_reload' => true,
-		]);
+	static function getTwig() {
+		return new \Twig\Environment(static::getTwigLoader(), static::getTwigConfig());
+	}
 
-		return $twig;
+	static function getTwigConfig() {
+		return [
+			'auto_reload' => false,
+			'cache' => (string)\Katu\Files\File::joinPaths(\Katu\App::getTmpDir(), 'twig'),
+			'debug' => false,
+			'optimizations' => -1,
+			'strict_variables' => false,
+		];
 	}
 
 	static function getTwigLoader() {
@@ -20,14 +24,6 @@ class View {
 
 	static function getTwigDirs() {
 		$dirs = [];
-
-		// if (isset($options['dirs']) && $options['dirs']) {
-		// 	foreach ($options['dirs'] as $dir) {
-		// 		$dirs[] = realpath($dir);
-		// 	}
-		// 	$dirs = array_filter($dirs);
-		// }
-
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
 
 			$dirs = [
@@ -332,8 +328,8 @@ class View {
 		return $data;
 	}
 
-	static function render($request, $response, $args, $template, $data, $options = []) {
-		$twig = static::getTwig($options);
+	static function render($request, $response, $args, $template, $data) {
+		$twig = static::getTwig();
 		static::extendTwig($twig);
 
 		$data = array_merge_recursive(static::getCommonData($request, $response, $args), $data);
@@ -341,8 +337,8 @@ class View {
 		return trim($twig->render($template, $data));
 	}
 
-	static function renderCondensed($request, $response, $args, $template, $templateData = []) {
-		$template = static::render($request, $response, $args, $template, $templateData);
+	static function renderCondensed($request, $response, $args, $template, $data = []) {
+		$template = static::render($request, $response, $args, $template, $data);
 
 		return preg_replace('#[\v\t]#', null, $template);
 	}
