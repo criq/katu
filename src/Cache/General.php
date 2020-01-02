@@ -97,7 +97,11 @@ class General {
 		// var_dump($array);
 
 		$array = array_map(function($i) {
-			return (string)$i;
+			try {
+				return (string)$i;
+			} catch (\Throwable $e) {
+				return sha1(serialize($i));
+			}
 		}, $array);
 		// var_dump($array);
 
