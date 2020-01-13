@@ -46,8 +46,4 @@ class Route {
 		]);
 	}
 
-	static function getCurrentName() {
-		return \Katu\App::get()->router()->getCurrentRoute()->getName();
-	}
-
 }
