@@ -2,36 +2,36 @@
 
 namespace Katu\Types;
 
-class TURL {
+class TURL
+{
 
 	const DEFAULT_SCHEME = 'http';
 
 	public $value;
 
-	public function __construct($value) {
+	public function __construct($value)
+	{
 		// Is already a URL object.
 		if ($value instanceof static) {
-
 			$this->value = (string)$value;
-
 		// Is just a string.
 		} else {
-
 			if (!static::isValid($value)) {
 				throw new \Exception("Invalid URL '" . $value . "'.");
 			}
 
 			$this->value = (string)trim($value);
-
 		}
 	}
 
-	public function __toString() {
+	public function __toString()
+	{
 		return $this->value;
 	}
 
-	static function make($url, $params = []) {
-		$params = array_filter((array)$params, function($i) {
+	public static function make($url, $params = [])
+	{
+		$params = array_filter((array)$params, function ($i) {
 			if (is_string($i)) {
 				return strlen($i);
 			}
@@ -41,7 +41,8 @@ class TURL {
 		return new static($url . ($params ? ('?' . http_build_query($params)) : null));
 	}
 
-	static function build($parts) {
+	public static function build($parts)
+	{
 		$url = '';
 
 		if (!isset($parts['host'])) {
@@ -67,11 +68,13 @@ class TURL {
 		return $url;
 	}
 
-	static function isValid($value) {
+	public static function isValid($value)
+	{
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== false;
 	}
 
-	static function makeValid($value) {
+	public static function makeValid($value)
+	{
 		$url = trim($value);
 		if (!$url) {
 			return false;
@@ -84,34 +87,39 @@ class TURL {
 		return $url;
 	}
 
-	public function getScheme() {
+	public function getScheme()
+	{
 		$parts = $this->getParts();
 
 		return $parts['scheme'];
 	}
 
-	public function getHost() {
+	public function getHost()
+	{
 		$parts = $this->getParts();
 
 		return $parts['host'];
 	}
 
-	public function getHostWithScheme() {
+	public function getHostWithScheme()
+	{
 		$parts = $this->getParts();
 
 		return $parts['scheme'] . '://' . $parts['host'];
 	}
 
-	public function get2ndLevelDomain() {
+	public function get2ndLevelDomain()
+	{
 		$parsed = parse_url($this->value);
 		if (!isset($parsed['host'])) {
-			throw new \Katu\Exception("Invalid URL host.");
+			throw new \Katu\Exceptions\InputErrorException("Invalid URL host.");
 		}
 
 		return implode('.', array_slice(explode('.', $parsed['host']), -2));
 	}
 
-	public function getParts() {
+	public function getParts()
+	{
 		$parts = parse_url($this->value);
 
 		if (!isset($parts['path'])) {
@@ -128,7 +136,8 @@ class TURL {
 		return $parts;
 	}
 
-	public function addQueryParam($name, $value, $overwrite = true) {
+	public function addQueryParam($name, $value, $overwrite = true)
+	{
 		$parts = $this->getParts();
 
 		if (!$overwrite && isset($parts['query'][$name])) {
@@ -142,7 +151,8 @@ class TURL {
 		return $this;
 	}
 
-	public function removeQueryParam($name) {
+	public function removeQueryParam($name)
+	{
 		$parts = $this->getParts();
 
 		unset($parts['query'][$name]);
@@ -152,7 +162,8 @@ class TURL {
 		return $this;
 	}
 
-	public function getQueryParams() {
+	public function getQueryParams()
+	{
 		$parts = $this->getParts();
 
 		if (isset($parts['query'])) {
@@ -162,7 +173,8 @@ class TURL {
 		return null;
 	}
 
-	public function getQueryParam($name) {
+	public function getQueryParam($name)
+	{
 		$params = $this->getQueryParams();
 
 		if (isset($params[$name])) {
@@ -172,7 +184,8 @@ class TURL {
 		return null;
 	}
 
-	public function getWithoutQuery() {
+	public function getWithoutQuery()
+	{
 		$parts = $this->getParts();
 
 		unset($parts['query']);
@@ -182,7 +195,8 @@ class TURL {
 		return $this;
 	}
 
-	public function getWithoutTrailingIndex() {
+	public function getWithoutTrailingIndex()
+	{
 		$parts = $this->getParts();
 
 		if (isset($parts['path'])) {
@@ -197,7 +211,8 @@ class TURL {
 		return $this;
 	}
 
-	public function get(&$curl = null) {
+	public function get(&$curl = null)
+	{
 		$url = $this;
 
 		if (is_null($curl)) {
@@ -219,10 +234,10 @@ class TURL {
 				return $response;
 			}
 		}
-
 	}
 
-	public function getAsTemporaryFile() {
+	public function getAsTemporaryFile()
+	{
 		$basename = (new \Katu\Files\File($this))->getBasename();
 		$tmpFile = new \Katu\Files\File(\Katu\App::getTmpDir(), 'url', \Katu\Tools\Random\Generator::getFileName(), $basename);
 		$tmpFile->set($this->get());
@@ -230,12 +245,12 @@ class TURL {
 		return $tmpFile;
 	}
 
-	public function ping($method = 'GET', $user = null) {
+	public function ping($method = 'GET', $user = null)
+	{
 		return (new \Katu\Tools\Curl\Exec($this))
 			->setMethod($method)
 			->setUser($user)
 			->exec()
 			;
 	}
-
 }
