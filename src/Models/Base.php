@@ -4,15 +4,18 @@ namespace Katu\Models;
 
 use \Sexy\Sexy as SX;
 
-class Base {
+class Base
+{
 
 	const DATABASE = 'app';
 
-	public function __toString() {
+	public function __toString()
+	{
 		return (string) $this->getId();
 	}
 
-	public function __call($name, $args) {
+	public function __call($name, $args)
+	{
 		// Bind getter.
 		if (preg_match('#^get(?<property>[a-z]+)$#i', $name, $match) && count($args) == 0) {
 			return $this->getBoundObject($match['property']);
@@ -21,23 +24,28 @@ class Base {
 		trigger_error('Undeclared class method ' . $name . '.');
 	}
 
-	static function getClass() {
+	public static function getClass()
+	{
 		return get_called_class();
 	}
 
-	static function getTopClass() {
+	public static function getTopClass()
+	{
 		return "\\" . ltrim(static::getClass(), "\\");
 	}
 
-	static function getAppClass() {
+	public static function getAppClass()
+	{
 		return implode(array_slice(explode('\\', static::getClass()), -1, 1));
 	}
 
-	public function getClassMethods() {
+	public function getClassMethods()
+	{
 		return get_class_methods($this);
 	}
 
-	static function getConnection() {
+	public static function getConnection()
+	{
 		if (!defined('static::DATABASE')) {
 			throw new \Exception("Undefined database.");
 		}
@@ -45,7 +53,8 @@ class Base {
 		return \Katu\PDO\Connection::getInstance(static::DATABASE);
 	}
 
-	static function getTableName() {
+	public static function getTableName()
+	{
 		if (!defined('static::TABLE')) {
 			throw new \Exception("Undefined table.");
 		}
@@ -53,51 +62,41 @@ class Base {
 		return new \Katu\PDO\Name(static::TABLE);
 	}
 
-	static function getTable() {
+	public static function getTable()
+	{
 		return new \Katu\PDO\Table(static::getConnection(), static::getTableName());
 	}
 
-	static function getColumn($name) {
+	public static function getColumn($name)
+	{
 		return new \Katu\PDO\Column(static::getTable(), new \Katu\PDO\Name($name));
 	}
 
-	static function createQuery() {
+	public static function createQuery()
+	{
 		// Sql expression.
-		if (
-			count(func_get_args()) == 1
-			&& func_get_arg(0) instanceof \Sexy\Expression
-		) {
-
+		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
 			$query = static::getConnection()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
-
 		// Raw sql and bind values.
-		} elseif (
-			count(func_get_args()) == 2
-		) {
-
+		} elseif (count(func_get_args()) == 2) {
 			$query = static::getConnection()->createClassQuery(static::getClass(), func_get_arg(0), func_get_arg(1));
-
 		// Raw sql.
-		} elseif (
-			count(func_get_args()) == 1
-		) {
-
+		} elseif (count(func_get_args()) == 1) {
 			$query = static::getConnection()->createClassQuery(static::getClass(), func_get_arg(0));
-
 		} else {
-
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments passed to query.");
-
 		}
 
 		return $query;
 	}
 
-	static function transaction($callback) {
+	public static function transaction($callback)
+	{
 		return call_user_func_array([static::getConnection(), 'transaction'], func_get_args());
 	}
 
-	static function filterParams($params) {
+	public static function filterParams($params)
+	{
 		$_params = [];
 
 		foreach ($params as $param => $value) {
@@ -109,7 +108,8 @@ class Base {
 		return $_params;
 	}
 
-	static function getBy($params = [], $expressions = [], $options = []) {
+	public static function getBy($params = [], $expressions = [], $options = [])
+	{
 		$pdo = static::getConnection();
 		$query = $pdo->createQuery();
 		$query->setClass(static::getClass());
@@ -137,31 +137,37 @@ class Base {
 		return $query->getResult();
 	}
 
-	static function getBySql($sql) {
+	public static function getBySql($sql)
+	{
 		return static::createQuery($sql)->getResult();
 	}
 
-	static function getCachedBySql($sql, $timeout = null) {
-		return Utils\Cache::get(function($sql) {
-			return PDO\Results\CachedClassResult::createFromClassResult(static::getBySql($sql));
-		}, $timeout, $sql);
-	}
+	// public static function getCachedBySql($sql, $timeout = null)
+	// {
+	// 	return Utils\Cache::get(function($sql) {
+	// 		return PDO\Results\CachedClassResult::createFromClassResult(static::getBySql($sql));
+	// 	}, $timeout, $sql);
+	// }
 
-	static function getOneBySql($sql) {
+	public static function getOneBySql($sql)
+	{
 		return static::getBySql($sql)->getOne();
 	}
 
-	static function getOneBy() {
+	public static function getOneBy()
+	{
 		$args = array_merge(func_get_args(), [['page' => SX::page(1, 1)]], [['setOptGetTotalRows' => false]]);
 
 		return call_user_func_array(['static', 'getBy'], $args)->getOne();
 	}
 
-	static function getAll($expressions = []) {
+	public static function getAll($expressions = [])
+	{
 		return static::getBy([], $expressions);
 	}
 
-	static function getFromAssoc($array) {
+	public static function getFromAssoc($array)
+	{
 		if (!$array) {
 			return false;
 		}
@@ -176,13 +182,15 @@ class Base {
 		return $object;
 	}
 
-	static function getIdProperties() {
-		return array_values(array_filter(array_map(function($i) {
+	public static function getIdProperties()
+	{
+		return array_values(array_filter(array_map(function ($i) {
 			return preg_match('#^(?<property>[a-zA-Z_]+)_?[Ii][Dd]$#', $i) ? $i : null;
 		}, static::getTable()->getColumnNames())));
 	}
 
-	public function getBoundObject($model) {
+	public function getBoundObject($model)
+	{
 		$nsModel = '\\App\\Models\\' . $model;
 		if (!class_exists($nsModel)) {
 			return null;
@@ -201,7 +209,8 @@ class Base {
 		return null;
 	}
 
-	static function getPropertyName($property) {
+	public static function getPropertyName($property)
+	{
 		$properties = array_merge(array_keys(get_class_vars(get_called_class())), static::getTable()->getColumnNames());
 
 		foreach ($properties as $_property) {
@@ -212,5 +221,4 @@ class Base {
 
 		return false;
 	}
-
 }

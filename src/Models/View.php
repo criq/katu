@@ -2,7 +2,8 @@
 
 namespace Katu\Models;
 
-abstract class View extends Base {
+abstract class View extends Base
+{
 
 	const TIMEOUT = 3600;
 	const TABLE = null;
@@ -11,35 +12,40 @@ abstract class View extends Base {
 	const PREFIX_CACHE = '_cache';
 	const CACHE_DATETIME_FORMAT = 'YmdHis';
 
-	static $_cache              = true;
-	static $_cacheTimeout       = 86400;
-	static $_cacheOnUpdate      = true;
-	static $_cacheAdvance       = .75;
-	static $_materialize        = false;
-	static $_materializeTimeout = 86400;
-	static $_materializeAdvance = 1;
-	static $_materializeHours   = [];
-	static $_autoIndices        = true;
-	static $_compositeIndex     = true;
-	static $_customIndices      = [];
+	public static $_cache              = true;
+	public static $_cacheTimeout       = 86400;
+	public static $_cacheOnUpdate      = true;
+	public static $_cacheAdvance       = .75;
+	public static $_materialize        = false;
+	public static $_materializeTimeout = 86400;
+	public static $_materializeAdvance = 1;
+	public static $_materializeHours   = [];
+	public static $_autoIndices        = true;
+	public static $_compositeIndex     = true;
+	public static $_customIndices      = [];
 
-	static function getTable() {
+	public static function getTable()
+	{
 		return static::isCached() ? static::getCachedTable() : static::getView();
 	}
 
-	static function getTableName() {
+	public static function getTableName()
+	{
 		return static::isCached() ? static::getCachedTableName() : static::getViewName();
 	}
 
-	static function getView() {
+	public static function getView()
+	{
 		return new \Katu\PDO\View(static::getConnection(), static::getViewName());
 	}
 
-	static function getViewName() {
+	public static function getViewName()
+	{
 		return new \Katu\PDO\Name(static::TABLE);
 	}
 
-	static function getColumn($name, $options = []) {
+	public static function getColumn($name, $options = [])
+	{
 		if (isset($options['cache']) && $options['cache'] === false) {
 			$table = static::getView();
 		} else {
@@ -49,38 +55,38 @@ abstract class View extends Base {
 		return new \Katu\PDO\Column($table, new \Katu\PDO\Name($name));
 	}
 
-	static function getViewColumn($name, $options = []) {
+	public static function getViewColumn($name, $options = [])
+	{
 		$options['cache'] = false;
 
 		return static::getColumn($name, $options);
 	}
 
-	static function getCachedTableNameBase() {
+	public static function getCachedTableNameBase()
+	{
 		return implode(static::SEPARATOR, [
 			static::PREFIX_CACHE,
 			static::getViewName()->getName(),
 		]);
 	}
 
-	static function getCachedTable() {
+	public static function getCachedTable()
+	{
 		try {
-
 			static::cacheIfExpired();
 
 			// Try cached table name.
 			$tableName = static::getCachedTableName();
-
 		} catch (\Throwable $e) {
-
 			// Some error happened, probably locked, return normal view.
 			$tableName = static::getViewName();
-
 		}
 
 		return new \Katu\PDO\Table(static::getConnection(), $tableName);
 	}
 
-	static function getCachedTablesSql() {
+	public static function getCachedTablesSql()
+	{
 		$sql = " SELECT *
 			FROM information_schema.tables
 			WHERE TABLE_SCHEMA = :tableSchema
@@ -90,7 +96,8 @@ abstract class View extends Base {
 		return $sql;
 	}
 
-	static function getCachedTablesQuery() {
+	public static function getCachedTablesQuery()
+	{
 		$sql = static::getCachedTablesSql();
 
 		$query = static::getConnection()->createQuery($sql, [
@@ -105,7 +112,8 @@ abstract class View extends Base {
 		return $query;
 	}
 
-	static function getCachedTableName() {
+	public static function getCachedTableName()
+	{
 		$query = static::getCachedTablesQuery();
 		$array = $query->getResult()->getArray();
 
@@ -119,11 +127,6 @@ abstract class View extends Base {
 		// Try again after caching.
 		return static::getCachedTableName();
 
-
-
-
-
-
 		// TODO - ošéfovat
 		$name = static::getCachedTableNameBase();
 		if (strlen($name) > 64) {
@@ -133,11 +136,13 @@ abstract class View extends Base {
 		return new \Katu\PDO\Name($name);
 	}
 
-	static function generateCachedTable() {
+	public static function generateCachedTable()
+	{
 		return new \Katu\PDO\Table(static::getConnection(), static::generateCachedTableName());
 	}
 
-	static function generateCachedTableName() {
+	public static function generateCachedTableName()
+	{
 		$name = implode(static::SEPARATOR, array_merge([static::getCachedTableNameBase()], [
 			(new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT),
 			\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
@@ -150,31 +155,34 @@ abstract class View extends Base {
 		return new \Katu\PDO\Name($name);
 	}
 
-	static function isCached() {
+	public static function isCached()
+	{
 		return static::$_cache;
 	}
 
-	static function isMaterialized() {
+	public static function isMaterialized()
+	{
 		return static::$_materialize;
 	}
 
-	static function cachedTableExists() {
+	public static function cachedTableExists()
+	{
 		$query = static::getCachedTablesQuery();
 		$array = $query->getResult()->getArray();
 
 		return (bool)($array[0] ?? null);
 	}
 
-	static function materializedTableExists() {
+	public static function materializedTableExists()
+	{
 		return in_array(static::getMaterializedTableName(), static::getConnection()->getTableNames());
 	}
 
-	static function cacheHasUpdatedTables() {
+	public static function cacheHasUpdatedTables()
+	{
 		if (static::$_cacheOnUpdate) {
-
 			$sourceTables = static::getView()->getSourceTables();
 			foreach ($sourceTables as $sourceTable) {
-
 				if (!$sourceTable->exists()) {
 					continue;
 				}
@@ -184,33 +192,36 @@ abstract class View extends Base {
 				if ($lastUpdatedTime && $lastCachedDateTime && $lastUpdatedTime > $lastCachedDateTime->getTimestamp()) {
 					return true;
 				}
-
 			}
-
 		}
 
 		return false;
 	}
 
-	static function getCacheAge() {
+	public static function getCacheAge()
+	{
 		$lastCachedDateTime = static::getLastCachedDateTime();
 
 		return time() - ($lastCachedDateTime ? $lastCachedDateTime->getTimestamp() : 0);
 	}
 
-	static function getMaterializeAge() {
+	public static function getMaterializeAge()
+	{
 		return time() - static::getLastMaterializedTime();
 	}
 
-	static function getCacheExpiryRatio() {
+	public static function getCacheExpiryRatio()
+	{
 		return static::getCacheAge() / static::$_cacheTimeout;
 	}
 
-	static function getMaterializeExpiryRatio() {
+	public static function getMaterializeExpiryRatio()
+	{
 		return static::getMaterializeAge() / static::$_materializeTimeout;
 	}
 
-	static function isCacheExpired($expiryRatio = 1) {
+	public static function isCacheExpired($expiryRatio = 1)
+	{
 		if (!static::isCached()) {
 			return false;
 		}
@@ -230,11 +241,13 @@ abstract class View extends Base {
 		return false;
 	}
 
-	static function isCacheExpiredAdvance() {
+	public static function isCacheExpiredAdvance()
+	{
 		return static::isCacheExpired(static::$_cacheAdvance);
 	}
 
-	static function isMaterializeExpired($expiryRatio = 1) {
+	public static function isMaterializeExpired($expiryRatio = 1)
+	{
 		if (!static::isMaterialized()) {
 			return false;
 		}
@@ -250,11 +263,13 @@ abstract class View extends Base {
 		return false;
 	}
 
-	static function isMaterializeExpiredAdvance($expiryRatio = 1) {
+	public static function isMaterializeExpiredAdvance($expiryRatio = 1)
+	{
 		return static::isMaterializeExpired(static::$_materializeAdvance);
 	}
 
-	static function isMaterializable() {
+	public static function isMaterializable()
+	{
 		if (!static::$_materializeHours || \Katu\Config\Env::getPlatform() == 'dev') {
 			return true;
 		}
@@ -262,11 +277,13 @@ abstract class View extends Base {
 		return in_array((int)(new \Katu\Tools\DateTime\DateTime)->format('h'), static::$_materializeHours);
 	}
 
-	static function getMaterializedTable() {
+	public static function getMaterializedTable()
+	{
 		return new \Katu\PDO\Table(static::getConnection(), static::getMaterializedTableName());
 	}
 
-	static function getMaterializedTableName() {
+	public static function getMaterializedTableName()
+	{
 		$name = implode(static::SEPARATOR, [
 			'mv',
 			preg_replace('#^view_#', null, static::getViewName()->getName()),
@@ -275,11 +292,14 @@ abstract class View extends Base {
 		return new \Katu\PDO\Name($name);
 	}
 
-	static function copy($sourceTable, $destinationTable) {
+	public static function copy($sourceTable, $destinationTable)
+	{
 		@set_time_limit(static::TIMEOUT);
 
 		// Get a temporary table.
-		$temporaryTableName = new \Katu\PDO\Name('_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)));
+		$temporaryTableName = new \Katu\PDO\Name(
+			'_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)),
+		);
 		$temporaryTable = new \Katu\PDO\Table($destinationTable->getConnection(), $temporaryTableName);
 
 		// Copy into temporary table view.
@@ -304,16 +324,21 @@ abstract class View extends Base {
 		return true;
 	}
 
-	static function cache() {
+	public static function cache()
+	{
 		$class = static::getClass();
 
-		(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], function($class) {
-
+		$callback = function ($class) {
 			$class::materializeSourceViews();
 			$class::copy($class::getView(), $class::generateCachedTable());
 			$class::updateLastCachedTime();
+		};
 
-		}))
+		(new \Katu\Tools\Locks\Lock(
+			static::TIMEOUT,
+			['databases', static::getConnection()->config->database, 'views', 'cache', $class],
+			$callback,
+		))
 			->setUseLock(false)
 			->setArgs([$class])
 			->run()
@@ -322,36 +347,41 @@ abstract class View extends Base {
 		return true;
 	}
 
-	static function cacheIfExpired() {
+	public static function cacheIfExpired()
+	{
 		if (static::isCacheExpiredAdvance()) {
 			return static::cache();
 		}
 	}
 
-	static function materialize() {
+	public static function materialize()
+	{
 		try {
-
 			$class = static::getClass();
 
-			(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->config->database, 'views', 'materialize', $class], function($class) {
-
+			$callback = function ($class) {
 				$class::materializeSourceViews();
 				$class::copy($class::getView(), $class::getMaterializedTable());
 				$class::updateLastMaterializedTime();
 
 				return true;
+			};
 
-			}))
+			(new \Katu\Tools\Locks\Lock(
+				static::TIMEOUT,
+				['databases', static::getConnection()->config->database, 'views', 'materialize', $class],
+				$callback,
+			))
 				->setArgs([$class])
 				->run()
 				;
-
 		} catch (\Katu\Exceptions\LockException $e) {
 			// Nevermind.
 		}
 	}
 
-	static function materializeIfExpired() {
+	public static function materializeIfExpired()
+	{
 		if (static::isMaterializeExpiredAdvance()) {
 			try {
 				return static::materialize();
@@ -361,7 +391,8 @@ abstract class View extends Base {
 		}
 	}
 
-	static function materializeSourceViews() {
+	public static function materializeSourceViews()
+	{
 		foreach (static::getView()->getSourceViewsInMaterializedViews() as $view) {
 			foreach ($view->getModelNames() as $class) {
 				$class::materializeIfExpired();
@@ -371,15 +402,24 @@ abstract class View extends Base {
 		return true;
 	}
 
-	static function getLastCachedTemporaryFile() {
-		return new \Katu\Files\Temporary(['!databases', '!' . static::getConnection()->config->database, '!views', '!cached', '!' . static::TABLE]);
+	public static function getLastCachedTemporaryFile()
+	{
+		return new \Katu\Files\Temporary([
+			'!databases',
+			'!' . static::getConnection()->config->database,
+			'!views',
+			'!cached',
+			'!' . static::TABLE,
+		]);
 	}
 
-	static function updateLastCachedTime() {
+	public static function updateLastCachedTime()
+	{
 		return static::getLastCachedTemporaryFile()->set(microtime(true));
 	}
 
-	static function getLastCachedDateTime() {
+	public static function getLastCachedDateTime()
+	{
 		$query = static::getCachedTablesQuery();
 		$array = $query->getResult()->getArray();
 
@@ -390,32 +430,43 @@ abstract class View extends Base {
 		return false;
 	}
 
-	static function getLastMaterializedTemporaryFile() {
-		return new \Katu\Files\Temporary(['!databases', '!' . static::getConnection()->config->database, '!views', '!materialized', '!' . static::TABLE]);
+	public static function getLastMaterializedTemporaryFile()
+	{
+		return new \Katu\Files\Temporary([
+			'!databases',
+			'!' . static::getConnection()->config->database,
+			'!views',
+			'!materialized',
+			'!' . static::TABLE,
+		]);
 	}
 
-	static function updateLastMaterializedTime() {
+	public static function updateLastMaterializedTime()
+	{
 		return static::getLastMaterializedTemporaryFile()->set(microtime(true));
 	}
 
-	static function getLastMaterializedTime() {
+	public static function getLastMaterializedTime()
+	{
 		return (float)static::getLastMaterializedTemporaryFile()->get();
 	}
 
-	static function getAllViewClassNames() {
+	public static function getAllViewClassNames()
+	{
 		$dir = (new \Katu\Files\File('app', 'Models'));
 		if ($dir->exists()) {
 			$dir->includeAllPhpFiles();
 		}
 
-		return array_map(function($i) {
+		return array_map(function ($i) {
 			return '\\' . ltrim($i, '\\');
-		}, array_values(array_filter(get_declared_classes(), function($class) {
+		}, array_values(array_filter(get_declared_classes(), function ($class) {
 			return is_subclass_of($class, '\\Katu\\Models\\View') && defined("$class::TABLE") && $class::TABLE;
 		})));
 	}
 
-	static function cacheAndMaterializeAll() {
+	public static function cacheAndMaterializeAll()
+	{
 		foreach (static::getAllViewClassNames() as $class) {
 			try {
 				$class::cacheIfExpired();
@@ -428,17 +479,20 @@ abstract class View extends Base {
 		}
 	}
 
-	static function deleteOldCachedTables() {
+	public static function deleteOldCachedTables()
+	{
 		foreach (static::getAllViewClassNames() as $class) {
 			$query = $class::getCachedTablesQuery();
 			$array = $query->getResult()->getArray();
 			foreach (array_slice($array, 1) as $tableArray) {
-				$table = new \App\Classes\PDO\Table($class::getConnection(), new \Katu\PDO\Name($tableArray['TABLE_NAME']));
+				$table = new \App\Classes\PDO\Table(
+					$class::getConnection(),
+					new \Katu\PDO\Name($tableArray['TABLE_NAME']),
+				);
 				$table->delete();
 			}
 		}
 
 		return true;
 	}
-
 }
