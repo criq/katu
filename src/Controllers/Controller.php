@@ -2,22 +2,23 @@
 
 namespace Katu\Controllers;
 
-class Controller {
+class Controller
+{
 
 	public $container;
 	public $data = [];
 
-	public function __construct(\Psr\Container\ContainerInterface $container) {
+	public function __construct(\Psr\Container\ContainerInterface $container)
+	{
 		$this->container = $container;
 	}
 
 	/****************************************************************************
 	 * Render.
 	 */
-
-	public function render($request, $response, $args, $template) {
+	public function render($request, $response, $args, $template)
+	{
 		try {
-
 			$viewClass = \Katu\App::getViewClass();
 			$template = $viewClass::render($request, $response, $args, $template, $this->data);
 
@@ -33,31 +34,33 @@ class Controller {
 			\Katu\Tools\Session\Flash::reset();
 
 			return $response;
-
 		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\TemplateException($e);
 		}
 	}
 
-	public function renderError($request, $response, $args, $status = 500) {
+	public function renderError($request, $response, $args, $status = 500)
+	{
 		return $this->render($request, $response, $args, 'Errors/' . $status . '.twig')
 			->withStatus($status)
 			;
 	}
 
-	public function renderNotFound($request, $response, $args, $status = 404) {
+	public function renderNotFound($request, $response, $args, $status = 404)
+	{
 		return $this->renderError($request, $response, $args, $status);
 	}
 
-	public function renderUnauthorized($request, $response, $args, $status = 401) {
+	public function renderUnauthorized($request, $response, $args, $status = 401)
+	{
 		return $this->renderError($request, $response, $args, $status);
 	}
 
 	/****************************************************************************
 	 * Redirect.
 	 */
-
-	public function redirect($urls, $status = 302) {
+	public function redirect($urls, $status = 302)
+	{
 		$urls = is_array($urls) ? $urls : [$urls];
 		$urls = array_values(array_filter($urls));
 
@@ -74,16 +77,18 @@ class Controller {
 	/****************************************************************************
 	 * Form submission.
 	 */
-
-	public function isSubmitted($request, $name = null) {
+	public function isSubmitted($request, $name = null)
+	{
 		return $request->getParsedBodyParam('formSubmitted') && $request->getParsedBodyParam('formName') == $name;
 	}
 
-	public function isSubmittedWithToken($request, $name = null) {
+	public function isSubmittedWithToken($request, $name = null)
+	{
 		return $this->isSubmitted($request, $name) && \Katu\Tools\Security\CSRF::isValidToken($request->getParsedBodyParam('formToken'));
 	}
 
-	public function isSubmittedByHuman($request, $name = null) {
+	public function isSubmittedByHuman($request, $name = null)
+	{
 		// Check basic form params.
 		if (!$this->isSubmittedWithToken($request, $name)) {
 			return false;
@@ -108,7 +113,8 @@ class Controller {
 		return true;
 	}
 
-	public function getSubmittedFormWithToken($request, $name = null) {
+	public function getSubmittedFormWithToken($request, $name = null)
+	{
 		if ($this->isSubmittedWithToken($request, $name)) {
 			return new \Katu\Tools\Forms\Evaluation($name);
 		}
@@ -119,8 +125,8 @@ class Controller {
 	/****************************************************************************
 	 * Errors
 	 */
-
-	public function addErrors(\Katu\Exceptions\Exception $e) {
+	public function addErrors(\Katu\Exceptions\Exception $e)
+	{
 		if (!isset($this->data['_errors'])) {
 			$this->data['_errors'] = new \Katu\Exceptions\ExceptionCollection;
 		}
@@ -130,8 +136,8 @@ class Controller {
 		return true;
 	}
 
-	public function hasErrors() {
+	public function hasErrors()
+	{
 		return (bool) (isset($this->data['_errors']) ? $this->data['_errors'] : false);
 	}
-
 }
