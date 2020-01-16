@@ -2,7 +2,8 @@
 
 namespace Katu\Tools\Locks;
 
-class Lock {
+class Lock
+{
 
 	const DIR_NAME = 'locks';
 
@@ -13,7 +14,8 @@ class Lock {
 	private $useLock = true;
 	private $excludedPlatforms = [];
 
-	public function __construct(int $timeout, $name = null, callable $callback = null) {
+	public function __construct(int $timeout, $name = null, callable $callback = null)
+	{
 		$this->timeout = $timeout;
 		$this->name = $name;
 		$this->callback = $callback;
@@ -24,51 +26,60 @@ class Lock {
 		}
 	}
 
-	public function setName($name) {
+	public function setName($name)
+	{
 		$this->name = $name;
 
 		return $this;
 	}
 
-	public function setTimeout(int $timeout) {
+	public function setTimeout(int $timeout)
+	{
 		$this->timeout = $timeout;
 
 		return $this;
 	}
 
-	public function setCallback(callable $callback) {
+	public function setCallback(callable $callback)
+	{
 		$this->callback = $callback;
 
 		return $this;
 	}
 
-	public function setArgs(array $args) {
+	public function setArgs(array $args)
+	{
 		$this->args = $args;
 
 		return $this;
 	}
 
-	public function setUseLock($useLock) {
+	public function setUseLock($useLock)
+	{
 		$this->useLock = $useLock;
 
 		return $this;
 	}
 
-	public function getUseLock() {
+	public function getUseLock()
+	{
 		return $this->useLock && !in_array(\Katu\Config\Env::getPlatform(), $this->excludedPlatforms);
 	}
 
-	public function excludePlatform($platform) {
+	public function excludePlatform($platform)
+	{
 		$this->excludedPlatforms[] = $platform;
 
 		return $this;
 	}
 
-	public function getFile() {
+	public function getFile()
+	{
 		return \Katu\Files\File::createFromName(\Katu\App::getTmpDir(), static::DIR_NAME, $this->name);
 	}
 
-	public function isLocked() {
+	public function isLocked()
+	{
 		$file = $this->getFile();
 		if (!$file->exists()) {
 			return false;
@@ -81,7 +92,8 @@ class Lock {
 		return false;
 	}
 
-	public function lock() {
+	public function lock()
+	{
 		if ($this->isLocked()) {
 			throw new \Katu\Exceptions\LockException;
 		}
@@ -91,7 +103,8 @@ class Lock {
 		return true;
 	}
 
-	public function unlock() {
+	public function unlock()
+	{
 		$file = $this->getFile();
 		if ($file->exists()) {
 			$file->delete();
@@ -100,7 +113,8 @@ class Lock {
 		return true;
 	}
 
-	public function run() {
+	public function run()
+	{
 		if ($this->getUseLock()) {
 			$this->lock();
 		}
@@ -115,5 +129,4 @@ class Lock {
 
 		return $res;
 	}
-
 }
