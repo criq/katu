@@ -2,13 +2,16 @@
 
 namespace Katu\Views;
 
-class View {
+class View
+{
 
-	static function getTwig() {
+	public static function getTwig()
+	{
 		return new \Twig\Environment(static::getTwigLoader(), static::getTwigConfig());
 	}
 
-	static function getTwigConfig() {
+	public static function getTwigConfig()
+	{
 		return [
 			'auto_reload' => false,
 			'cache' => (string)\Katu\Files\File::joinPaths(\Katu\App::getTmpDir(), 'twig'),
@@ -18,35 +21,36 @@ class View {
 		];
 	}
 
-	static function getTwigLoader() {
+	public static function getTwigLoader()
+	{
 		return new \Twig\Loader\FilesystemLoader(static::getTwigDirs());
 	}
 
-	static function getTwigDirs() {
+	public static function getTwigDirs()
+	{
 		$dirs = [];
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
-
 			$dirs = [
 				new \Katu\Files\File(\Katu\App::getBaseDir(), 'app', 'Views'),
 				new \Katu\Files\File(\Katu\Tools\Services\Composer\Composer::getDir(), substr(__DIR__, strcmp(\Katu\Tools\Services\Composer\Composer::getDir(), __DIR__))),
 			];
 
-			$dirs = array_unique(array_filter(array_map(function($dir) {
+			$dirs = array_unique(array_filter(array_map(function ($dir) {
 				return $dir->exists() ? $dir->getPath() : null;
 			}, $dirs)));
-
 		}
 
 		return $dirs;
 	}
 
-	static function extendTwig(&$twig) {
+	public static function extendTwig(&$twig)
+	{
 
 		/***************************************************************************
 		 * Image.
 		 */
 
-		$twig->addFunction(new \Twig\TwigFunction('getImage', function($uri) {
+		$twig->addFunction(new \Twig\TwigFunction('getImage', function ($uri) {
 			try {
 				return new \Katu\Tools\Images\Image($uri);
 			} catch (\Katu\Exceptions\ImageErrorException $e) {
@@ -58,25 +62,25 @@ class View {
 		 * Text.
 		 */
 
-		$twig->addFilter(new \Twig\TwigFilter('shorten', function($string, $length, $options = []) {
+		$twig->addFilter(new \Twig\TwigFilter('shorten', function ($string, $length, $options = []) {
 			$shorter = substr($string, 0, $length);
 
 			return $shorter;
 		}));
 
-		$twig->addFilter(new \Twig\TwigFilter('asArray', function($variable) {
+		$twig->addFilter(new \Twig\TwigFilter('asArray', function ($variable) {
 			return (array) $variable;
 		}));
 
-		$twig->addFilter(new \Twig\TwigFilter('unique', function($variable) {
+		$twig->addFilter(new \Twig\TwigFilter('unique', function ($variable) {
 			return array_unique($variable);
 		}));
 
-		$twig->addFilter(new \Twig\TwigFilter('joinInSentence', function($list, $delimiter, $lastDelimiter) {
+		$twig->addFilter(new \Twig\TwigFilter('joinInSentence', function ($list, $delimiter, $lastDelimiter) {
 			return (new \Katu\Types\TArray($list))->implodeInSentence($delimiter, $lastDelimiter);
 		}));
 
-		$twig->addFilter(new \Twig\TwigFilter('isValidDateTime', function($date) {
+		$twig->addFilter(new \Twig\TwigFilter('isValidDateTime', function ($date) {
 			try {
 				return (new \Katu\Tools\DateTime\DateTime($date))->isValid();
 			} catch (\Exception $e) {
@@ -84,11 +88,11 @@ class View {
 			}
 		}));
 
-		$twig->addFilter(new \Twig\TwigFilter('markdown', function($text) {
+		$twig->addFilter(new \Twig\TwigFilter('markdown', function ($text) {
 			return \Michelf\Markdown::defaultTransform($text);
 		}));
 
-		$twig->addFilter(new \Twig\TwigFilter('nbsp', function($text) {
+		$twig->addFilter(new \Twig\TwigFilter('nbsp', function ($text) {
 			$text = preg_replace('/\b([aiouksvz])(\s)/i', '\\1&nbsp;', $text);
 			$text = preg_replace('/([0-9])\s+(%)/i', '\\1&nbsp;\\2', $text);
 
@@ -99,60 +103,60 @@ class View {
 		 * Functions.
 		 */
 
-		$twig->addFunction(new \Twig\TwigFunction('dump', function() {
+		$twig->addFunction(new \Twig\TwigFunction('dump', function () {
 			foreach ((array) func_get_args() as $arg) {
 				var_dump($arg);
 			}
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getBaseDir', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getBaseDir', function () {
 			return \Katu\App::getBaseDir();
 		}));
 
 		// Deprecated.
-		$twig->addFunction(new \Twig\TwigFunction('geTURLFor', function() {
+		$twig->addFunction(new \Twig\TwigFunction('geTURLFor', function () {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getFor'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('url', function() {
+		$twig->addFunction(new \Twig\TwigFunction('url', function () {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getFor'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('urlDecoded', function() {
+		$twig->addFunction(new \Twig\TwigFunction('urlDecoded', function () {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getDecodedFor'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getCurrenTURL', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getCurrenTURL', function () {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getCurrent'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('makeUrl', function() {
+		$twig->addFunction(new \Twig\TwigFunction('makeUrl', function () {
 			return (string) call_user_func_array(['\Katu\Types\TURL', 'make'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getConfig', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getConfig', function () {
 			return call_user_func_array(['\Katu\Config', 'get'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getCookie', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getCookie', function () {
 			return call_user_func_array(['\Katu\Tools\Cookies\Cookie', 'get'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getSession', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getSession', function () {
 			return call_user_func_array(['\Katu\Tools\Session\Session', 'get'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getFlash', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getFlash', function () {
 			return call_user_func_array(['\Katu\Tools\Session\Flash', 'get'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getPages', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getPages', function () {
 			$pagination = func_get_arg(0);
 
 			return $pagination->getPaginationPages(func_get_arg(1));
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getPaginationUrl', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getPaginationUrl', function () {
 			$url       =          new \Katu\Types\TURL(func_get_arg(0));
 			$page      = (int)    func_get_arg(1);
 			$pageIdent = (string) func_get_arg(2);
@@ -166,22 +170,21 @@ class View {
 			return $url->value;
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getCsrfToken', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getCsrfToken', function () {
 			$params = (array) @func_get_arg(0);
 
 			return \Katu\Tools\Security\CSRF::getFreshToken($params);
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getFile', function() {
+		$twig->addFunction(new \Twig\TwigFunction('getFile', function () {
 			$args = array_merge([\Katu\App::getBaseDir()], func_get_args());
 			$path = \Katu\Files\File::joinPaths(...$args);
 
 			return new \Katu\Files\File($path);
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getHashedFile', function($path) {
+		$twig->addFunction(new \Twig\TwigFunction('getHashedFile', function ($path) {
 			try {
-
 				$placeholderFile = new \Katu\Files\File(\Katu\App::getBaseDir(), $path);
 				$platformDir = new \Katu\Files\File(preg_replace('/{platform}/', \Katu\Config\Env::getPlatform(), $placeholderFile->getDir()));
 
@@ -197,18 +200,17 @@ class View {
 					}
 				}
 
-				usort($matchedFiles, function($a, $b) {
+				usort($matchedFiles, function ($a, $b) {
 					return filemtime($a) > filemtime($b) ? -1 : 1;
 				});
 
 				return $matchedFiles[0] ?? false;
-
 			} catch (\Throwable $e) {
 				return false;
 			}
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('lipsum', function($sentences = 1) {
+		$twig->addFunction(new \Twig\TwigFunction('lipsum', function ($sentences = 1) {
 			try {
 				return implode(' ', \Katu\Tools\Random\LoremIpsum\Blabot::getSentences($sentences)->getArray());
 			} catch (\Throwable $e) {
@@ -230,31 +232,31 @@ class View {
 			return false;
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('start', function() {
-			if (\Katu\Tools\Profiler\Profiler::isOn()) {
-				$profiler = \Katu\Tools\Profiler\Profiler::init('twig');
+		// $twig->addFunction(new \Twig\TwigFunction('start', function () {
+		// 	if (\Katu\Tools\Profiler\Profiler::isOn()) {
+		// 		$profiler = \Katu\Tools\Profiler\Profiler::init('twig');
 
-				return static::render("Katu/Blocks/profilerStart");
-			}
-		}));
+		// 		return static::render("Katu/Blocks/profilerStart");
+		// 	}
+		// }));
 
-		$twig->addFunction(new \Twig\TwigFunction('stop', function() {
-			if (\Katu\Tools\Profiler\Profiler::isOn()) {
-				$profiler = \Katu\Tools\Profiler\Profiler::get('twig');
+		// $twig->addFunction(new \Twig\TwigFunction('stop', function () {
+		// 	if (\Katu\Tools\Profiler\Profiler::isOn()) {
+		// 		$profiler = \Katu\Tools\Profiler\Profiler::get('twig');
 
-				$res = static::render("Katu/Blocks/profilerEnd", ['profiler' => $profiler,]);
+		// 		$res = static::render("Katu/Blocks/profilerEnd", ['profiler' => $profiler,]);
 
-				$profiler->reset('twig');
+		// 		$profiler->reset('twig');
 
-				return $res;
-			}
-		}));
+		// 		return $res;
+		// 	}
+		// }));
 
 		return true;
-
 	}
 
-	static function getCommonData($request, $response, $args) {
+	public static function getCommonData($request, $response, $args)
+	{
 		$data['_site']['baseDir'] = \Katu\App::getBaseDir();
 		$data['_site']['baseUrl'] = \Katu\Config\Config::get('app', 'baseUrl');
 
@@ -328,7 +330,8 @@ class View {
 		return $data;
 	}
 
-	static function render($request, $response, $args, $template, $data) {
+	public static function render($request, $response, $args, $template, $data)
+	{
 		$twig = static::getTwig();
 		static::extendTwig($twig);
 
@@ -337,10 +340,10 @@ class View {
 		return trim($twig->render($template, $data));
 	}
 
-	static function renderCondensed($request, $response, $args, $template, $data = []) {
+	public static function renderCondensed($request, $response, $args, $template, $data = [])
+	{
 		$template = static::render($request, $response, $args, $template, $data);
 
 		return preg_replace('#[\v\t]#', null, $template);
 	}
-
 }
