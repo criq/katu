@@ -4,15 +4,16 @@ namespace Katu\PDO;
 
 use \PDO;
 
-class Connection {
+class Connection
+{
 
 	public $name;
 	public $config;
 	public $connection;
+	public static $connections = [];
 
-	static $connections = [];
-
-	public function __construct($name) {
+	public function __construct($name)
+	{
 		$this->name = $name;
 
 		try {
@@ -34,15 +35,18 @@ class Connection {
 		}
 	}
 
-	public function __sleep() {
+	public function __sleep()
+	{
 		return ['name', 'config'];
 	}
 
-	public function getName() {
+	public function getName()
+	{
 		return $this->name;
 	}
 
-	static function getInstance($name) {
+	public static function getInstance($name)
+	{
 		if (!isset(static::$connections[$name])) {
 			static::$connections[$name] = new self($name);
 		}
@@ -50,59 +54,67 @@ class Connection {
 		return static::$connections[$name];
 	}
 
-	public function getLastInsertId() {
+	public function getLastInsertId()
+	{
 		return $this->connection->lastInsertId();
 	}
 
-	public function tableExists(Name $tableName) {
+	public function tableExists(Name $tableName)
+	{
 		return in_array($tableName, $this->getTableNames());
 	}
 
-	public function getTables() {
+	public function getTables()
+	{
 		$pdo = $this;
 
-		return array_map(function($tableName) use($pdo) {
+		return array_map(function ($tableName) use ($pdo) {
 			return new Table($pdo, $tableName);
 		}, $this->getTableNames());
 	}
 
-	public function getTable($tableName) {
+	public function getTable($tableName)
+	{
 		return new Table($this, $tableName);
 	}
 
-	public function getTableNames() {
-		return \Katu\Cache\Runtime::get(['pdo', $this->name, 'tables'], function() {
+	public function getTableNames()
+	{
+		return \Katu\Cache\Runtime::get(['pdo', $this->name, 'tables'], function () {
 			$sql = " SHOW TABLES ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 
-			return array_map(function($i) {
+			return array_map(function ($i) {
 				$names = array_values($i);
 				return new \Katu\PDO\Name($names[0]);
 			}, $res);
 		});
 	}
 
-	public function getViews() {
+	public function getViews()
+	{
 		$pdo = $this;
 
-		return array_map(function($i) use($pdo) {
+		return array_map(function ($i) use ($pdo) {
 			return new View($pdo, $i);
 		}, $this->getViewNames());
 	}
 
-	public function getViewNames() {
-		return \Katu\Cache\Runtime::get(['pdo', $this->name, 'views'], function() {
+	public function getViewNames()
+	{
+		return \Katu\Cache\Runtime::get(['pdo', $this->name, 'views'], function () {
 			$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 
-			return array_map(function($i) {
+			return array_map(function ($i) {
 				$names = array_values($i);
 				return $names[0];
 			}, $res);
 		});
 	}
 
-	public function getViewReport() {
+	public function getViewReport()
+	{
 		$views = [];
 
 		foreach ($this->getViews() as $view) {
@@ -113,13 +125,15 @@ class Connection {
 		return $views;
 	}
 
-	public function createQuery($sql = null, $params = []) {
+	public function createQuery($sql = null, $params = [])
+	{
 		$query = new Query($this, $sql, $params);
 
 		return $query;
 	}
 
-	public function createQueryFromSql(\Sexy\Expression $sql, array $params = []) {
+	public function createQueryFromSql(\Sexy\Expression $sql, array $params = [])
+	{
 		$query = new Query($this);
 		$query->setFromSql($sql);
 		$query->setBindValues($params);
@@ -127,46 +141,48 @@ class Connection {
 		return $query;
 	}
 
-	public function createClassQuery($class, $sql = null, array $params = []) {
+	public function createClassQuery($class, $sql = null, array $params = [])
+	{
 		$query = new Query($this, $sql, $params);
 		$query->setClass($class);
 
 		return $query;
 	}
 
-	public function createClassQueryFromSql($class, \Sexy\Expression $sql) {
+	public function createClassQueryFromSql($class, \Sexy\Expression $sql)
+	{
 		$query = static::createQueryFromSql($sql);
 		$query->setClass($class);
 
 		return $query;
 	}
 
-	public function transaction($callback) {
+	public function transaction($callback)
+	{
 		try {
-
 			$this->begin();
 			$res = call_user_func_array($callback, array_slice(func_get_args(), 1));
 			$this->commit();
 
 			return $res;
-
 		} catch (\Exception $e) {
-
 			$this->rollback();
 			throw $e;
-
 		}
 	}
 
-	public function begin() {
+	public function begin()
+	{
 		return $this->connection->beginTransaction();
 	}
 
-	public function commit() {
+	public function commit()
+	{
 		return $this->connection->commit();
 	}
 
-	public function rollback() {
+	public function rollback()
+	{
 		return $this->connection->rollBack();
 	}
 
@@ -222,5 +238,4 @@ class Connection {
 			'compress' => 'gzip',
 		], $options));
 	} */
-
 }

@@ -398,11 +398,7 @@ class User extends \Katu\Models\Model
 	{
 		$userSettingClass = static::getUserSettingClass();
 
-		$userSetting = $userSettingClass::make($this, $name);
-		$userSetting->setValue($value);
-		$userSetting->save();
-
-		return true;
+		return $userSettingClass::getOrCreate($this, $name, $value);
 	}
 
 	public function getUserSetting($name)
@@ -419,6 +415,6 @@ class User extends \Katu\Models\Model
 	{
 		$userSetting = $this->getUserSetting($name);
 
-		return $userSetting ? $userSetting->value : null;
+		return $userSetting ? $userSetting->getValue() : null;
 	}
 }

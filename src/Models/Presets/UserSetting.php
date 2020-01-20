@@ -2,23 +2,25 @@
 
 namespace Katu\Models\Presets;
 
-class UserSetting extends \Katu\Models\Model {
+class UserSetting extends \Katu\Models\Model
+{
 
 	const TABLE = 'user_settings';
 
-	static function create($user, $name) {
-		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
-			'userId'      => (int)    ($user->getId()),
-			'name'        => (string) ($name),
-		));
+	public static function getOrCreate($user, $name, $value = null)
+	{
+		return static::upsert([
+			'userId'      => (int)   $user->getId(),
+			'name'        => (string)$name,
+		], [
+			'timeCreated' => (string)new \Katu\Tools\DateTime\DateTime,
+		], [
+			'value'       => \Katu\Files\Formats\JSON::encodeInline($value),
+		]);
 	}
 
-	static function make($user, $name) {
-		return static::getOneOrCreateWithList(array(
-			'userId'      => (int)    ($user->getId()),
-			'name'        => (string) ($name),
-		), $user, $name);
+	public function getValue()
+	{
+		return \Katu\Files\Formats\JSON::decodeAsArray($this->value);
 	}
-
 }

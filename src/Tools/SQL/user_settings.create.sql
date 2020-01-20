@@ -3,7 +3,7 @@ CREATE TABLE `user_settings` (
   `timeCreated` datetime NOT NULL,
   `userId` int(11) unsigned NOT NULL,
   `name` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
-  `value` longtext CHARACTER SET utf8 NOT NULL,
+  `value` json NULL,
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`),
   KEY `name` (`name`)
