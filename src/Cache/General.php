@@ -7,15 +7,15 @@ class General
 
 	const DIR_NAME = 'cache';
 
-	// protected $enableMemcached = true;
-	protected $enableApc = true;
+	protected $enableMemcached = true;
+	protected $enableApcu = true;
 
 	protected $name;
 	protected $timeout;
 	protected $callback;
 	protected $args = [];
 
-	// protected static $memcached;
+	protected static $memcached;
 
 	public function __construct($name = null, $timeout = null)
 	{
@@ -163,7 +163,7 @@ class General
 
 	public function isApcEnabled()
 	{
-		return $this->enableApc && static::isApcSupported();
+		return $this->enableApcu && static::isApcSupported();
 	}
 
 	public static function getMaxApcSize()
@@ -173,51 +173,54 @@ class General
 		return $size * .75;
 	}
 
-	// static function isMemcachedSupported() {
-	// 	try {
-	// 		return class_exists('Memcached');
-	// 	} catch (\Katu\Exceptions\MissingConfigException $e) {
-	// 		return false;
-	// 	}
-	// }
+	public static function isMemcachedSupported()
+	{
+		try {
+			return class_exists('Memcached');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return false;
+		}
+	}
 
-	// public function isMemcachedEnabled() {
-	// 	return $this->enableMemcached && static::isMemcachedSupported();
-	// }
+	public function isMemcachedEnabled()
+	{
+		return $this->enableMemcached && static::isMemcachedSupported();
+	}
 
-	// static function getMemcahcedInstanceName() {
-	// 	return 'appCache';
-	// }
+	public static function getMemcahcedInstanceName()
+	{
+		return 'appCache';
+	}
 
-	// static function loadMemcached() {
-	// 	if (!static::$memcached) {
-	// 		static::$memcached = new \Memcached(static::getMemcahcedInstanceName());
-	// 		static::$memcached->addServer('localhost', 11211);
-	// 	}
+	public static function loadMemcached()
+	{
+		if (!static::$memcached) {
+			static::$memcached = new \Memcached(static::getMemcahcedInstanceName());
+			static::$memcached->addServer('localhost', 11211);
+		}
 
-	// 	return true;
-	// }
+		return true;
+	}
 
-	// public function getMemcached() {
-	// 	static::loadMemcached();
+	public function getMemcached()
+	{
+		static::loadMemcached();
 
-	// 	return static::$memcached;
-	// }
+		return static::$memcached;
+	}
 
 	public function getResult()
 	{
 		$memoryKey = $this->getMemoryKey();
 
-		// // Try Memcached.
-		// if ($this->isMemcachedEnabled()) {
-
-		// 	$memcached = $this->getMemcached();
-		// 	$res = $memcached->get($memoryKey);
-		// 	if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
-		// 		return $res;
-		// 	}
-
-		// }
+		// Try Memcached.
+		if ($this->isMemcachedEnabled()) {
+			$memcached = $this->getMemcached();
+			$res = $memcached->get($memoryKey);
+			if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
+				return $res;
+			}
+		}
 
 		// Try APC.
 		if ($this->isApcEnabled() && \apcu_exists($memoryKey)) {
@@ -230,6 +233,7 @@ class General
 
 		// Try file.
 		$file = $this->getFile();
+		// var_dump($file);die;
 		if ($file->exists() && \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeoutInSeconds()) {
 			return unserialize($file->get());
 		}
@@ -238,22 +242,20 @@ class General
 		$res = call_user_func_array($this->getCallback(), $this->getArgs());
 		$serializedRes = serialize($res);
 
-		// // Try to save into Memcached.
-		// if ($this->isMemcachedEnabled()) {
-
-		// 	// Add to Memcached.
-		// 	$memcached = $this->getMemcached();
-		// 	try {
-		// 		$timeout = $this->getTimeoutInSeconds();
-		// 		if (!$memcached->set($memoryKey, $res, $timeout ? time() + $timeout : 0)) {
-		// 			throw new \Exception;
-		// 		}
-		// 		return $res;
-		// 	} catch (\Exception $e) {
-		// 		$memcached->delete($memoryKey);
-		// 	}
-
-		// }
+		// Try to save into Memcached.
+		if ($this->isMemcachedEnabled()) {
+			// Add to Memcached.
+			$memcached = $this->getMemcached();
+			try {
+				$timeout = $this->getTimeoutInSeconds();
+				if (!$memcached->set($memoryKey, $res, $timeout ? time() + $timeout : 0)) {
+					throw new \Exception;
+				}
+				return $res;
+			} catch (\Exception $e) {
+				$memcached->delete($memoryKey);
+			}
+		}
 
 		// Try to save into APC.
 		if ($this->isApcEnabled() && strlen($serializedRes) <= static::getMaxApcSize()) {
@@ -294,10 +296,10 @@ class General
 
 	public static function clearMemory()
 	{
-		// if (static::isMemcachedSupported()) {
-		// 	static::loadMemcached();
-		// 	return static::$memcached->flush();
-		// }
+		if (static::isMemcachedSupported()) {
+			static::loadMemcached();
+			return static::$memcached->flush();
+		}
 
 		if (static::isApcSupported()) {
 			\apcu_clear_cache();
