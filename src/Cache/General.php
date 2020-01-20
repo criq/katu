@@ -2,7 +2,8 @@
 
 namespace Katu\Cache;
 
-class General {
+class General
+{
 
 	const DIR_NAME = 'cache';
 
@@ -16,12 +17,14 @@ class General {
 
 	// protected static $memcached;
 
-	public function __construct($name = null, $timeout = null) {
+	public function __construct($name = null, $timeout = null)
+	{
 		$this->setName($name);
 		$this->setTimeout($timeout);
 	}
 
-	public function setName() {
+	public function setName()
+	{
 		$args = func_get_args();
 
 		if (count($args) == 1 && is_array($args[0]) && $args[0]) {
@@ -35,21 +38,25 @@ class General {
 		return $this;
 	}
 
-	public function getName() {
+	public function getName()
+	{
 		return $this->name;
 	}
 
-	public function setTimeout($timeout) {
+	public function setTimeout($timeout)
+	{
 		$this->timeout = $timeout;
 
 		return $this;
 	}
 
-	public function getTimeout() {
+	public function getTimeout()
+	{
 		return $this->timeout;
 	}
 
-	public function getTimeoutInSeconds() {
+	public function getTimeoutInSeconds()
+	{
 		$timeout = $this->getTimeout();
 
 		if (is_int($timeout)) {
@@ -63,27 +70,32 @@ class General {
 		return null;
 	}
 
-	public function setCallback($callback) {
+	public function setCallback($callback)
+	{
 		$this->callback = $callback;
 
 		return $this;
 	}
 
-	public function getCallback() {
+	public function getCallback()
+	{
 		return $this->callback;
 	}
 
-	public function setArgs() {
+	public function setArgs()
+	{
 		$this->args = func_get_args();
 
 		return $this;
 	}
 
-	public function getArgs() : array {
+	public function getArgs() : array
+	{
 		return (array)$this->args;
 	}
 
-	public function getKeyArray() : array {
+	public function getKeyArray() : array
+	{
 		$array = [
 			$this->name,
 			$this->args,
@@ -96,7 +108,7 @@ class General {
 		$array = array_flatten($array);
 		// var_dump($array);
 
-		$array = array_map(function($i) {
+		$array = array_map(function ($i) {
 			try {
 				return (string)$i;
 			} catch (\Throwable $e) {
@@ -105,7 +117,7 @@ class General {
 		}, $array);
 		// var_dump($array);
 
-		$array = array_map(function($i) {
+		$array = array_map(function ($i) {
 			$i = strtr($i, '\\', '/');
 			$i = strtr($i, '.', '_');
 			$i = mb_strtolower($i);
@@ -119,7 +131,8 @@ class General {
 		return (array)$array;
 	}
 
-	public function getMemoryKey() {
+	public function getMemoryKey()
+	{
 		$key = implode('.', $this->getKeyArray());
 		if (mb_strlen($key) > 250) {
 			$key = sha1($key);
@@ -128,7 +141,8 @@ class General {
 		return $key;
 	}
 
-	public function getFile() : \Katu\Files\File {
+	public function getFile() : \Katu\Files\File
+	{
 		$array = $this->getKeyArray();
 		$array[] = 'cache.txt';
 
@@ -138,7 +152,8 @@ class General {
 		return $file;
 	}
 
-	static function isApcSupported() {
+	public static function isApcSupported()
+	{
 		try {
 			return function_exists('apcu_exists');
 		} catch (\Throwable $e) {
@@ -146,11 +161,13 @@ class General {
 		}
 	}
 
-	public function isApcEnabled() {
+	public function isApcEnabled()
+	{
 		return $this->enableApc && static::isApcSupported();
 	}
 
-	static function getMaxApcSize() {
+	public static function getMaxApcSize()
+	{
 		$size = \Katu\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
 
 		return $size * .75;
@@ -187,7 +204,8 @@ class General {
 	// 	return static::$memcached;
 	// }
 
-	public function getResult() {
+	public function getResult()
+	{
 		$memoryKey = $this->getMemoryKey();
 
 		// // Try Memcached.
@@ -202,8 +220,9 @@ class General {
 		// }
 
 		// Try APC.
-		if ($this->isApcEnabled() && apcu_exists($memoryKey)) {
-			$res = apcu_fetch($memoryKey, $success);
+		if ($this->isApcEnabled() && \apcu_exists($memoryKey)) {
+			$success = null;
+			$res = \apcu_fetch($memoryKey, $success);
 			if ($success) {
 				return $res;
 			}
@@ -238,17 +257,15 @@ class General {
 
 		// Try to save into APC.
 		if ($this->isApcEnabled() && strlen($serializedRes) <= static::getMaxApcSize()) {
-
 			// Add to APC.
 			try {
-				if (!apcu_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
+				if (!\apcu_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
 					throw new \Exception;
 				}
 				return $res;
 			} catch (\Throwable $e) {
-				apcu_delete($memoryKey);
+				\apcu_delete($memoryKey);
 			}
-
 		}
 
 		// Try to save into file.
@@ -257,12 +274,13 @@ class General {
 		return $res;
 	}
 
-	public function clear() {
+	public function clear()
+	{
 		$memoryKey = $this->getMemoryKey();
 
 		// APC.
-		if ($this->isApcEnabled() && apcu_exists($memoryKey)) {
-			apcu_delete($memoryKey);
+		if ($this->isApcEnabled() && \apcu_exists($memoryKey)) {
+			\apcu_delete($memoryKey);
 		}
 
 		// File.
@@ -274,14 +292,15 @@ class General {
 		return true;
 	}
 
-	static function clearMemory() {
+	public static function clearMemory()
+	{
 		// if (static::isMemcachedSupported()) {
 		// 	static::loadMemcached();
 		// 	return static::$memcached->flush();
 		// }
 
 		if (static::isApcSupported()) {
-			apcu_clear_cache();
+			\apcu_clear_cache();
 			return true;
 		}
 
@@ -291,7 +310,8 @@ class General {
 	/****************************************************************************
 	 * Code sugar.
 	 */
-	static function get() {
+	public static function get()
+	{
 		$args = func_get_args();
 
 		$cache = new static($args[0], $args[1]);
@@ -303,5 +323,4 @@ class General {
 
 		return $cache->getResult();
 	}
-
 }
