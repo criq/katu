@@ -5,7 +5,7 @@ namespace Katu\Tools\System;
 class System
 {
 
-	public static function getNumberOfCpus()
+	public static function getNumberOfCpus() : int
 	{
 		return \Katu\Cache\General::get(['system', 'numberOfCpus'], 86400, function () {
 			$numCpus = 1;
@@ -36,19 +36,19 @@ class System
 		});
 	}
 
-	public static function getLoadAverage()
+	public static function getLoadAverage() : array
 	{
 		return sys_getloadavg();
 	}
 
-	public static function getLoadAveragePerCpu()
+	public static function getLoadAveragePerCpu() : array
 	{
 		return array_map(function ($i) {
 			return $i / static::getNumberOfCpus();
 		}, static::getLoadAverage());
 	}
 
-	public static function assertMaxLoadAverage($loadAverage)
+	public static function assertMaxLoadAverage(float $loadAverage) : bool
 	{
 		if (static::getLoadAveragePerCpu()[0] > $loadAverage) {
 			throw new \Katu\Exceptions\LoadAverageExceededException("System load average per CPU is higher than " . $loadAverage . ".");
