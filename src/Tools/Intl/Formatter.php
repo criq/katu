@@ -2,16 +2,19 @@
 
 namespace Katu\Tools\Intl;
 
-class Formatter {
+class Formatter
+{
 
-	static function getPreferredLocales() {
+	public static function getPreferredLocales()
+	{
 		$app = \Katu\App::get();
 		$headers = $app->getContainer()->get('request')->getHeader('Accept-Language');
 
 		return ($headers[0] ?? null) ? \Katu\Types\TLocale::getPreferredFromRequest($headers[0]) : [];
 	}
 
-	static function getPreferredLocale($locale = null) {
+	public static function getPreferredLocale($locale = null)
+	{
 		if ($locale) {
 			return $locale;
 		}
@@ -24,13 +27,15 @@ class Formatter {
 		return false;
 	}
 
-	static function getLocalNumber($locale, $number) {
+	public static function getLocalNumber($locale, $number)
+	{
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::DECIMAL);
 
 		return $numberFormatter->format($number);
 	}
 
-	static function getLocalReadableNumber($locale, $number) {
+	public static function getLocalReadableNumber($locale, $number)
+	{
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::DECIMAL);
 		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 3);
 		$numberFormatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, false);
@@ -48,24 +53,30 @@ class Formatter {
 		return $numberFormatter->format($number);
 	}
 
-	static function getLocalPercent($locale, $number) {
+	public static function getLocalPercent($locale, $number)
+	{
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::PERCENT);
 
 		return $numberFormatter->format($number);
 	}
 
-	static function getLocalCurrency($locale, $number, $currency) {
+	public static function getLocalCurrency($locale, $number, $currency)
+	{
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
+		if ((int)$number == (float)$number) {
+			$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
+			$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
+		}
 
 		return $numberFormatter->formatCurrency($number, $currency);
 	}
 
-	static function getLocalWholeCurrency($locale, $number, $currency) {
+	public static function getLocalWholeCurrency($locale, $number, $currency)
+	{
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
 		$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
 		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
 
 		return $numberFormatter->format($number);
 	}
-
 }
