@@ -62,6 +62,7 @@ class Formatter
 
 	public static function getLocalCurrency($locale, $number, $currency)
 	{
+		$number = (string)$number;
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
 		if ((int)$number == (float)$number) {
 			$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
@@ -73,6 +74,7 @@ class Formatter
 
 	public static function getLocalWholeCurrency($locale, $number, $currency)
 	{
+		$number = (string)$number;
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
 		$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
 		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
