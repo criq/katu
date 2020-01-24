@@ -6,13 +6,15 @@ use \App\Models\File;
 use \App\Models\FileAttachment;
 use \Sexy\Sexy as SX;
 
-class Model extends Base {
+class Model extends Base
+{
 
 	const CACHE_IN_MEMORY_BY_PRIMARY_KEY = false;
 
 	protected $__updated = false;
 
-	public function __call($name, $args) {
+	public function __call($name, $args)
+	{
 		// Setter.
 		if (preg_match('#^set(?<property>[a-z0-9]+)$#i', $name, $match) && count($args) == 1) {
 			$property = $this->getPropertyName($match['property']);
@@ -33,13 +35,14 @@ class Model extends Base {
 		return parent::__call($name, $args);
 	}
 
-	static function insert($bindValues = []) {
+	public static function insert($bindValues = [])
+	{
 		$query = static::getConnection()->createQuery();
 
-		$columns = array_map(function($i) {
+		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
 		}, array_keys($bindValues));
-		$values  = array_map(function($i) {
+		$values  = array_map(function ($i) {
 			return ':' . $i;
 		}, array_keys($bindValues));
 
@@ -47,7 +50,7 @@ class Model extends Base {
 
 		$query->setSql($sql);
 		$query->setBindValues($bindValues);
-		$result = $query->getResult();
+		$query->getResult();
 
 		static::change();
 
@@ -59,13 +62,14 @@ class Model extends Base {
 		}
 	}
 
-	static function insertMultiple($items = []) {
+	public static function insertMultiple($items = [])
+	{
 		$items = array_values($items);
 
 		$query = static::getConnection()->createQuery();
 
-		$columns = array_map(function($i) {
-			return new PDO\Name($i);
+		$columns = array_map(function ($i) {
+			return new \Katu\PDO\Name($i);
 		}, array_keys($items[0]));
 
 		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ";
@@ -97,7 +101,8 @@ class Model extends Base {
 		return static::get(static::getConnection()->getLastInsertId());
 	}
 
-	static function upsert($getByParams, $insertParams = [], $updateParams = []) {
+	public static function upsert($getByParams, $insertParams = [], $updateParams = [])
+	{
 		$object = static::getOneBy($getByParams);
 		if ($object) {
 			foreach ($updateParams as $name => $value) {
@@ -111,7 +116,8 @@ class Model extends Base {
 		return $object;
 	}
 
-	public function update($property, $value = null) {
+	public function update($property, $value = null)
+	{
 		if (property_exists($this, $property)) {
 			if ($this->$property !== $value) {
 				$this->$property = $value;
@@ -126,7 +132,8 @@ class Model extends Base {
 		return false;
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		$query = static::getConnection()->createQuery();
 
 		// Delete file attachments.
@@ -148,10 +155,10 @@ class Model extends Base {
 		return $res;
 	}
 
-	public function save() {
+	public function save()
+	{
 		if ($this->isUpdated()) {
-
-			$columnsNames = array_map(function($columnName) {
+			$columnsNames = array_map(function ($columnName) {
 				return $columnName->getName();
 			}, static::getTable()->getColumnNames());
 
@@ -168,7 +175,6 @@ class Model extends Base {
 			}
 
 			if ($set) {
-
 				$query = static::getConnection()->createQuery();
 
 				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
@@ -177,7 +183,6 @@ class Model extends Base {
 				$query->setBindValues($bindValues);
 				$query->setBindValue(static::getIdColumnName(), $this->getId());
 				$query->getResult();
-
 			}
 
 			static::change();
@@ -188,17 +193,20 @@ class Model extends Base {
 		return true;
 	}
 
-	static function change() {
+	public static function change()
+	{
 		static::getTable()->touch();
 
 		return null;
 	}
 
-	public function isUpdated() {
+	public function isUpdated()
+	{
 		return (bool) $this->__updated;
 	}
 
-	static function getAppModels() {
+	public static function getAppModels()
+	{
 		$dir = \Katu\App::getBaseDir() . '/app/Models/';
 		$ns = '\\App\\Models';
 
@@ -220,15 +228,16 @@ class Model extends Base {
 		return $models;
 	}
 
-	static function getIdColumn() {
+	public static function getIdColumn()
+	{
 		return static::getColumn(static::getIdColumnName());
 	}
 
-	static function getIdColumnName() {
+	public static function getIdColumnName()
+	{
 		$table = static::getTable();
 
-		return \Katu\Cache\General::get(['databases', $table->getConnection()->name, 'tables', 'idColumn', $table->name->name], 86400, function() use($table) {
-
+		return \Katu\Cache\General::get(['databases', $table->getConnection()->name, 'tables', 'idColumn', $table->name->name], 86400, function () use ($table) {
 			foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
 				if (isset($row['Key']) && $row['Key'] == 'PRI') {
 					return $row['Field'];
@@ -236,24 +245,26 @@ class Model extends Base {
 			}
 
 			return false;
-
 		});
 	}
 
-	public function getId() {
+	public function getId()
+	{
 		return $this->{static::getIdColumnName()};
 	}
 
-	public function getTransmittableId() {
+	public function getTransmittableId()
+	{
 		return base64_encode(\Katu\Files\Formats\JSON::encodeStandard([
 			'class' => $this->getClass(),
 			'id'    => $this->getId(),
 		]));
 	}
 
-	static function getFromTransmittableId($transmittableId) {
+	public static function getFromTransmittableId($transmittableId)
+	{
 		try {
-			$array = Utils\JSON::decodeAsArray(base64_decode($transmittableId));
+			$array = \Katu\Files\Formats\JSON::decodeAsArray(base64_decode($transmittableId));
 			$class = '\\' . ltrim($array['class'], '\\');
 
 			return $class::get($array['id']);
@@ -262,13 +273,12 @@ class Model extends Base {
 		}
 	}
 
-	static function get($primaryKey) {
-		$callback = function($class, $primaryKey) {
-
+	public static function get($primaryKey)
+	{
+		$callback = function ($class, $primaryKey) {
 			return $class::getOneBy([
 				$class::getIdColumnName() => $primaryKey,
 			]);
-
 		};
 
 		if (static::CACHE_IN_MEMORY_BY_PRIMARY_KEY) {
@@ -278,21 +288,24 @@ class Model extends Base {
 		}
 	}
 
-	public function exists() {
+	public function exists()
+	{
 		return (bool) static::get($this->getId());
 	}
 
-	static function getOneOrCreateWithArray($getBy, $array = []) {
+	public static function getOneOrCreateWithArray($getBy, $array = [])
+	{
 		$object = static::getOneBy($getBy);
 		if (!$object) {
 			$properties = array_merge($getBy, $array);
-			$object = static::create($properties);
+			$object = static::insert($properties);
 		}
 
 		return $object;
 	}
 
-	static function getOneOrCreateWithList($getBy) {
+	public static function getOneOrCreateWithList($getBy)
+	{
 		$object = static::getOneBy($getBy);
 		if (!$object) {
 			$object = call_user_func_array(['static', 'create'], array_slice(func_get_args(), 1));
@@ -301,7 +314,8 @@ class Model extends Base {
 		return $object;
 	}
 
-	public function setUniqueColumnValue($column, $chars = null, $length = null) {
+	public function setUniqueColumnValue($column, $chars = null, $length = null)
+	{
 		if (is_null($chars)) {
 			$chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 		}
@@ -325,7 +339,8 @@ class Model extends Base {
 		}
 	}
 
-	public function setUniqueColumnSlug($column, $source, $force = false, $constraints = []) {
+	public function setUniqueColumnSlug($column, $source, $force = false, $constraints = [])
+	{
 		// Generate slug.
 		$slug = (new \Katu\Types\TString(trim(implode(' ', (array) $source))))->getForUrl([
 			'maxLength' => 245,
@@ -354,12 +369,9 @@ class Model extends Base {
 
 		// Nothing, keep the slug.
 		if (!$res->getCount()) {
-
 			$this->update($column, $slug);
-
 		// There are some, get a new slug.
 		} else {
-
 			$suffixes = [];
 			foreach ($res->getArray() as $item) {
 				preg_match('#' . $preg . '#', $item[$column], $match);
@@ -383,7 +395,6 @@ class Model extends Base {
 				$slug,
 				$proposedSuffix,
 			])));
-
 		}
 
 		$this->save();
@@ -391,7 +402,8 @@ class Model extends Base {
 		return true;
 	}
 
-	static function checkUniqueColumnValue($whereExpressions, $excludeObject = null) {
+	public static function checkUniqueColumnValue($whereExpressions, $excludeObject = null)
+	{
 		$sql = SX::select(static::getTable())
 			->from(static::getTable())
 			->addExpressions([
@@ -406,7 +418,8 @@ class Model extends Base {
 		return !static::getBySql($sql)->getTotal();
 	}
 
-	public function getFileAttachments($params = [], $expressions = []) {
+	public function getFileAttachments($params = [], $expressions = [])
+	{
 		$params['objectModel'] = $this->getClass();
 		$params['objectId']    = $this->getId();
 
@@ -417,7 +430,8 @@ class Model extends Base {
 		return FileAttachment::getBy($params, $expressions);
 	}
 
-	public function refreshFileAttachmentsFromFileIds($user, $fileIds) {
+	public function refreshFileAttachmentsFromFileIds($user, $fileIds)
+	{
 		$this->getFileAttachments()->each('delete');
 
 		foreach ((array) $fileIds as $key => $fileId) {
@@ -432,7 +446,8 @@ class Model extends Base {
 		return true;
 	}
 
-	public function refreshFileAttachmentPositions() {
+	public function refreshFileAttachmentPositions()
+	{
 		$position = 0;
 
 		// Refresh the ones with position.
@@ -458,7 +473,8 @@ class Model extends Base {
 		return true;
 	}
 
-	public function getImageFileAttachments($expressions = []) {
+	public function getImageFileAttachments($expressions = [])
+	{
 		$sql = SX::select(FileAttachment::getTable())
 			->from(FileAttachment::getTable())
 			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
@@ -479,7 +495,8 @@ class Model extends Base {
 		return FileAttachment::getBySql($sql);
 	}
 
-	public function getImageFile() {
+	public function getImageFile()
+	{
 		$imageAttachments = $this->getImageFileAttachments();
 		if ($imageAttachments->getTotal()) {
 			return $imageAttachments[0]->getFile();
@@ -488,7 +505,8 @@ class Model extends Base {
 		return false;
 	}
 
-	public function getImagePath() {
+	public function getImagePath()
+	{
 		$file = $this->getImageFile();
 
 		// Is file.
@@ -496,17 +514,17 @@ class Model extends Base {
 			return $file->getPath();
 
 		// Is URL.
-		} elseif (Types\TURL::isValid($file)) {
+		} elseif (\Katu\Types\TURL::isValid($file)) {
 			return $file;
 		}
 
 		return false;
 	}
 
-	public function hasImage() {
+	public function hasImage()
+	{
 		$path = $this->getImagePath();
 
 		return $path && file_exists($path);
 	}
-
 }
