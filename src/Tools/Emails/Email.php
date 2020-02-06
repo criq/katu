@@ -2,7 +2,8 @@
 
 namespace Katu\Tools\Emails;
 
-class Email {
+class Email
+{
 
 	public $subject;
 	public $plain = '';
@@ -18,17 +19,20 @@ class Email {
 
 	public $attachments = [];
 
-	public function __construct($subject = null) {
+	public function __construct($subject = null)
+	{
 		$this->setSubject($subject);
 
 		return $this;
 	}
 
-	public function __toString() {
+	public function __toString()
+	{
 		return (string) $this->html;
 	}
 
-	static function resolveEmailAddress($emailAddress) {
+	public static function resolveEmailAddress($emailAddress)
+	{
 		if ($emailAddress instanceof \Katu\Models\Presets\EmailAddress) {
 			$originalEmailAddress = $emailAddress->emailAddress;
 		} elseif ($emailAddress instanceof \Katu\Types\TEmailAddress) {
@@ -38,7 +42,6 @@ class Email {
 		}
 
 		try {
-
 			$fakeEmailAddresses = (array) \Katu\Config\Config::get('app', 'email', 'useFakeEmailAddress');
 			$emailAddresses = [];
 			foreach ($fakeEmailAddresses as $fakeEmailAddress) {
@@ -47,37 +50,39 @@ class Email {
 			}
 
 			return $emailAddresses;
-
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-
 			return [$originalEmailAddress];
-
 		}
 	}
 
-	public function setSubject($subject) {
+	public function setSubject($subject)
+	{
 		$this->subject = $subject;
 
 		return $this;
 	}
 
-	public function setPlain($plain) {
+	public function setPlain($plain)
+	{
 		$this->plain = $plain;
 
 		return $this;
 	}
 
-	public function setText($text) {
+	public function setText($text)
+	{
 		return $this->setPlain($text);
 	}
 
-	public function setHtml($html) {
+	public function setHtml($html)
+	{
 		$this->html = $html;
 
 		return $this;
 	}
 
-	public function setBody($html, $plain = null) {
+	public function setBody($html, $plain = null)
+	{
 		$this->setHtml($html);
 
 		if ($plain) {
@@ -89,34 +94,39 @@ class Email {
 		return $this;
 	}
 
-	public function setFromEmailAddress($fromEmailAddress) {
+	public function setFromEmailAddress($fromEmailAddress)
+	{
 		$emailAddresses = static::resolveEmailAddress($fromEmailAddress);
 		$this->fromEmailAddress = $emailAddresses[0];
 
 		return $this;
 	}
 
-	public function setFromName($fromName) {
+	public function setFromName($fromName)
+	{
 		$this->fromName = $fromName;
 
 		return $this;
 	}
 
-	public function setFrom($fromEmailAddress, $fromName = null) {
+	public function setFrom($fromEmailAddress, $fromName = null)
+	{
 		$this->setFromEmailAddress($fromEmailAddress);
 		$this->setFromName($fromName);
 
 		return $this;
 	}
 
-	public function setReplyTo($emailAddress) {
+	public function setReplyTo($emailAddress)
+	{
 		$emailAddresses = static::resolveEmailAddress($emailAddress);
 		$this->addHeader('Reply-To', $emailAddresses[0]);
 
 		return $this;
 	}
 
-	public function addTo($toEmailAddress, $toName = null) {
+	public function addTo($toEmailAddress, $toName = null)
+	{
 		foreach (static::resolveEmailAddress($toEmailAddress) as $emailAddress) {
 			$this->to[$emailAddress] = $toName;
 		}
@@ -124,7 +134,8 @@ class Email {
 		return $this;
 	}
 
-	public function addCc($toEmailAddress, $toName = null) {
+	public function addCc($toEmailAddress, $toName = null)
+	{
 		foreach (static::resolveEmailAddress($toEmailAddress) as $emailAddress) {
 			$this->cc[$emailAddress] = $toName;
 		}
@@ -132,10 +143,10 @@ class Email {
 		return $this;
 	}
 
-	public function addHeader($name, $value) {
+	public function addHeader($name, $value)
+	{
 		$this->headers[$name] = $value;
 
 		return $this;
 	}
-
 }
