@@ -2,31 +2,30 @@
 
 namespace Katu\Tools\Emails\ThirdParty;
 
-class Sendgrid extends \Katu\Tools\Emails\ThirdParty {
+class Sendgrid extends \Katu\Tools\Emails\ThirdParty
+{
 
 	public $attachments = [];
 
-	static function getDefaultApi() {
-		$app = \Katu\App::get();
-
+	public static function getDefaultApi()
+	{
 		try {
 			$key = \Katu\Config\Config::get('app', 'email', 'useSendgridKey');
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$key = 'live';
 		}
 
 		try {
-			return new \Sendgrid(\Katu\Config\Config::get('sendgrid', 'api', 'keys', $key));
+			return new \SendGrid(\Katu\Config\Config::get('sendgrid', 'api', 'keys', $key));
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return new \Sendgrid(\Katu\Config\Config::get('sendgrid', 'api', 'key'));
+			return new \SendGrid(\Katu\Config\Config::get('sendgrid', 'api', 'key'));
 		}
-
 	}
 
-	public function getEmail($message = []) {
-		$from = new \SendGrid\Mail\From($this->fromEmailAddress, $this->fromName);
-		$email = new \SendGrid\Mail\Mail($from);
-
+	public function getEmail()
+	{
+		$email = new \SendGrid\Mail\Mail;
+		$email->setFrom($this->fromEmailAddress, $this->fromName);
 		$email->setSubject($this->subject);
 		$email->addContent('text/html', $this->html);
 		$email->addContent('text/plain', $this->plain ?: strip_tags($this->html));
@@ -39,9 +38,7 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty {
 		/**********************************************************************
 		 * Personalizations.
 		 */
-
 		foreach ($this->to as $toEmailAddress => $toName) {
-
 			$personalization = new \SendGrid\Mail\Personalization;
 			$personalization->addTo(new \SendGrid\Mail\To($toEmailAddress, $toName));
 
@@ -52,13 +49,11 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty {
 			}
 
 			$email->addPersonalization($personalization);
-
 		}
 
 		/**********************************************************************
 		 * Attachments.
 		 */
-
 		foreach ($this->attachments as $attachment) {
 			$email->addAttachment($attachment['file'], $attachment['name'], $attachment['cid']);
 		}
@@ -66,7 +61,8 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty {
 		return $email;
 	}
 
-	public function send() {
+	public function send()
+	{
 		$args = [];
 		if (isset($args[0]) && $args[0] instanceof \SendGrid) {
 			$sendgridApi = $args[0];
@@ -78,5 +74,4 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty {
 
 		return $sendgridApi->send($email);
 	}
-
 }
