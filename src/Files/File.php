@@ -2,23 +2,27 @@
 
 namespace Katu\Files;
 
-class File {
+class File
+{
 
 	public $path;
 
 	const TYPE_FILE = 'file';
 	const TYPE_DIR  = 'dir';
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->path = static::joinPaths(...func_get_args());
 	}
 
-	public function __toString() {
+	public function __toString()
+	{
 		return $this->getPath();
 	}
 
-	static function createFromName() {
-		$generateHashArray = function($value) {
+	public static function createFromName()
+	{
+		$generateHashArray = function ($value) {
 			$hash = crc32($value);
 
 			$array = [
@@ -34,33 +38,25 @@ class File {
 		$parts = [];
 
 		foreach ($args as $arg) {
-
 			// Existing directory.
 			try {
-
 				$dir = new static($arg);
 				if ($dir->isDir() && $dir->exists()) {
 					$parts[] = $dir;
 				} else {
 					throw new \Exception;
 				}
-
 			} catch (\Throwable $e) {
-
 				// URL.
 				try {
-
 					$url = new \Katu\Types\TURL($arg);
 					$parts[] = $url->getScheme();
 					$parts[] = $url->getHost();
 					$parts[] = trim($url->getParts()['path'], '/');
 					$parts[] = $generateHashArray(\Katu\Files\Formats\JSON::encodeStandard($url->getQueryParams()));
-
 				} catch (\Throwable $e) {
-
 					// Numbers and strings.
 					if (is_string($arg) || is_int($arg) || is_float($arg)) {
-
 						$arg = (new \Katu\Types\TString($arg))->normalizeSpaces()->trim();
 						$arg = preg_replace('/\v/m', ' ', $arg);
 						$arg = preg_split('/[\/\\\]/', $arg);
@@ -71,16 +67,13 @@ class File {
 					} else {
 						$parts[] = $generateHashArray(serialize($arg));
 					}
-
 				}
-
 			}
-
 		}
 
 		// Downcode.
 		$parts = array_filter(array_flatten($parts));
-		$parts = array_map(function($part) {
+		$parts = array_map(function ($part) {
 			return \URLify::downcode($part);
 		}, $parts);
 
@@ -90,26 +83,30 @@ class File {
 		return new static(...$parts);
 	}
 
-	static function joinPaths() {
-		return implode('/', array_map(function($i) {
+	public static function joinPaths()
+	{
+		return implode('/', array_map(function ($i) {
 			$implodedFilename = implode('.', (array)$i);
 			return rtrim($implodedFilename, '/');
 		}, func_get_args()));
 	}
 
-	static function createTemporaryWithFileName($fileName) {
+	public static function createTemporaryWithFileName($fileName)
+	{
 		$file = new static(\Katu\App::getTmpDir(), 'files', $fileName);
 
 		return $file;
 	}
 
-	static function createTemporaryWithExtension($extension) {
+	public static function createTemporaryWithExtension($extension)
+	{
 		$file = new static(\Katu\App::getTmpDir(), 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 
 		return $file;
 	}
 
-	static function createTemporaryFromSrc($src, $extension) {
+	public static function createTemporaryFromSrc($src, $extension)
+	{
 		if ($extension) {
 			$file = static::createTemporaryWithExtension($extension);
 		} else {
@@ -121,7 +118,8 @@ class File {
 		return $file;
 	}
 
-	static function createTemporaryFromUrl($url, $extension = null) {
+	public static function createTemporaryFromUrl($url, $extension = null)
+	{
 		$url = new \Katu\Types\TURL($url);
 
 		$curl = new \Curl\Curl;
@@ -142,7 +140,8 @@ class File {
 		return static::createTemporaryFromSrc($src, $extension);
 	}
 
-	public function getPath() {
+	public function getPath()
+	{
 		if (file_exists($this->path)) {
 			return realpath($this->path);
 		}
@@ -155,7 +154,8 @@ class File {
 		return $this->path;
 	}
 
-	public function getURL() {
+	public function getURL()
+	{
 		try {
 			$publicRoot = \Katu\Config\Config::get('app', 'publicRoot');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
@@ -164,7 +164,7 @@ class File {
 
 		$publicPath = realpath(new static(\Katu\App::getBaseDir(), $publicRoot));
 		if (preg_match('#^' . $publicPath . '(.*)$#', $this->getPath(), $match)) {
-			return new \Katu\Types\TURL(implode('/', array_map(function($i) {
+			return new \Katu\Types\TURL(implode('/', array_map(function ($i) {
 				return trim($i, '/');
 			}, [
 				\Katu\Config\Config::get('app', 'baseUrl'),
@@ -175,13 +175,15 @@ class File {
 		return null;
 	}
 
-	public function exists() {
+	public function exists()
+	{
 		clearstatcache();
 
 		return file_exists($this->getPath());
 	}
 
-	public function get() {
+	public function get()
+	{
 		try {
 			return file_get_contents($this);
 		} catch (\Throwable $e) {
@@ -189,7 +191,8 @@ class File {
 		}
 	}
 
-	public function getLines() {
+	public function getLines()
+	{
 		try {
 			return file($this);
 		} catch (\Throwable $e) {
@@ -197,7 +200,8 @@ class File {
 		}
 	}
 
-	public function set($data) {
+	public function set($data)
+	{
 		try {
 			$this->getDir()->makeDir();
 			return file_put_contents($this, $data, LOCK_EX);
@@ -206,11 +210,13 @@ class File {
 		}
 	}
 
-	public function append($data) {
+	public function append($data)
+	{
 		return file_put_contents($this, $data, LOCK_EX | FILE_APPEND);
 	}
 
-	public function getType() {
+	public function getType()
+	{
 		clearstatcache();
 
 		if (!$this->exists()) {
@@ -226,13 +232,15 @@ class File {
 		return false;
 	}
 
-	public function getSize() {
+	public function getSize()
+	{
 		clearstatcache();
 
-		return new FileSize(filesize($this));
+		return new \Katu\Files\Size(filesize($this));
 	}
 
-	public function getMime() {
+	public function getMime()
+	{
 		clearstatcache();
 
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -242,11 +250,13 @@ class File {
 		return $mime;
 	}
 
-	public function getPathInfo() {
+	public function getPathInfo()
+	{
 		return pathinfo($this->getPath());
 	}
 
-	public function getExtension() {
+	public function getExtension()
+	{
 		$pathinfo = $this->getPathInfo();
 
 		if (isset($pathinfo['extension'])) {
@@ -256,15 +266,18 @@ class File {
 		return false;
 	}
 
-	public function getDir() {
+	public function getDir()
+	{
 		return new self(dirname($this));
 	}
 
-	public function getBasename() {
+	public function getBasename()
+	{
 		return basename($this);
 	}
 
-	public function getFiles($filters = []) {
+	public function getFiles($filters = [])
+	{
 		$files = [];
 
 		foreach (scandir($this) as $file) {
@@ -275,7 +288,7 @@ class File {
 		}
 
 		if (isset($filters['regexp'])) {
-			$files = array_filter($files, function($i) use($filters) {
+			$files = array_filter($files, function ($i) use ($filters) {
 				return preg_match($filters['regexp'], $i);
 			});
 		}
@@ -283,7 +296,8 @@ class File {
 		return $files;
 	}
 
-	public function getDirs() {
+	public function getDirs()
+	{
 		$files = [];
 
 		foreach (scandir($this) as $file) {
@@ -298,27 +312,33 @@ class File {
 		return $files;
 	}
 
-	public function isFile() {
+	public function isFile()
+	{
 		return $this->getType() == static::TYPE_FILE;
 	}
 
-	public function isDir() {
+	public function isDir()
+	{
 		return $this->getType() == static::TYPE_DIR;
 	}
 
-	public function isPhpFile() {
+	public function isPhpFile()
+	{
 		return $this->isFile() && ($this->getMime() == 'text/x-c++' || $this->getExtension() == 'php');
 	}
 
-	public function isReadable() {
+	public function isReadable()
+	{
 		return is_readable($this);
 	}
 
-	public function isWritable() {
+	public function isWritable()
+	{
 		return is_writable($this);
 	}
 
-	public function makeDir($mode = 0777, $recursive = true) {
+	public function makeDir($mode = 0777, $recursive = true)
+	{
 		try {
 			return @mkdir($this, $mode, $recursive);
 		} catch (\Throwable $e) {
@@ -326,18 +346,21 @@ class File {
 		}
 	}
 
-	public function touch() {
+	public function touch()
+	{
 		$dir = $this->getDir();
 		$dir->makeDir();
 
 		return touch($this);
 	}
 
-	public function chmod($mode) {
+	public function chmod($mode)
+	{
 		return chmod($this, $mode);
 	}
 
-	public function copy(File $destination) {
+	public function copy(File $destination)
+	{
 		if (!$this->exists()) {
 			throw (new \Katu\Exceptions\ErrorException("Source file doesn't exist."))
 				->setAbbr('sourceFileUnavailable')
@@ -354,14 +377,16 @@ class File {
 		return true;
 	}
 
-	public function move(File $destination) {
+	public function move(File $destination)
+	{
 		$this->copy($destination);
 		$this->delete();
 
 		return true;
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		clearstatcache();
 
 		if ($this->isDir()) {
@@ -382,7 +407,8 @@ class File {
 		}
 	}
 
-	public function getDateTimeModified() {
+	public function getDateTimeModified()
+	{
 		try {
 			return new \Katu\Tools\DateTime\DateTime('@' . filemtime((string)$this));
 		} catch (\Throwable $e) {
@@ -390,7 +416,8 @@ class File {
 		}
 	}
 
-	public function eachRecursive($callback) {
+	public function eachRecursive($callback)
+	{
 		$iterator = new \RecursiveDirectoryIterator($this, \RecursiveDirectoryIterator::SKIP_DOTS);
 		$files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 
@@ -399,16 +426,27 @@ class File {
 		}
 	}
 
-	public function includeOnce() {
+	public function includeOnce()
+	{
 		return include_once $this;
 	}
 
-	public function includeAllPhpFiles() {
-		return $this->eachRecursive(function($i) {
+	public function includeAllPhpFiles()
+	{
+		return $this->eachRecursive(function ($i) {
 			if ($i->isPhpFile()) {
 				$i->includeOnce();
 			}
 		});
 	}
 
+	public function getHash($function = 'sha1') {
+		return hash($function, $this->get());
+	}
+
+	public function getHashedURL($function = 'sha1', $paramName = 'hash') {
+		return (new \Katu\Types\TURL($this->getURL()))
+			->addQueryParam($paramName, $this->getHash())
+			;
+	}
 }

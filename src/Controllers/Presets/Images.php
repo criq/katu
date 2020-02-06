@@ -2,13 +2,12 @@
 
 namespace Katu\Controllers\Presets;
 
-class Images extends \Katu\Controllers\Controller {
+class Images extends \Katu\Controllers\Controller
+{
 
-	static function getVersionSrcFile($request, $response, $args) {
+	public static function getVersionSrcFile($request, $response, $args)
+	{
 		try {
-
-			$app = \Katu\App::get();
-
 			$fileClass = \Katu\App::getExtendedClass('\\App\\Models\\File', '\\Katu\\Models\\File');
 			$file = $fileClass::getOneBy([
 				'id' => $args['fileId'],
@@ -34,17 +33,14 @@ class Images extends \Katu\Controllers\Controller {
 				->withHeader('Cache-Control', 'max-age=604800, public')
 				->write($imageVersion->getFile()->get())
 				;
-
 		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\Exception;
 		}
 	}
 
-	static function getVersionSrcUrl($request, $response, $args) {
+	public static function getVersionSrcUrl($request, $response, $args)
+	{
 		try {
-
-			$app = \Katu\App::get();
-
 			try {
 				$url = new \Katu\Types\TURL(trim($request->getParam('url')));
 			} catch (\Exception $e) {
@@ -66,10 +62,8 @@ class Images extends \Katu\Controllers\Controller {
 				->withHeader('Cache-Control', 'max-age=604800, public')
 				->write($imageVersion->getFile()->get())
 				;
-
 		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\Exception;
 		}
 	}
-
 }
