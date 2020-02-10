@@ -2,15 +2,16 @@
 
 namespace Katu\Files\Formats;
 
-class CSV {
+class CSV
+{
 
 	public $file;
 	public $writer;
 	public $reader;
 
-	public function __construct($file = null, $options = []) {
+	public function __construct($file = null, $options = [])
+	{
 		if ($file) {
-
 			if (is_string($file)) {
 				$file = new \Katu\Files\File($file);
 			}
@@ -26,9 +27,7 @@ class CSV {
 			}
 
 			$this->file = $file;
-
 		} else {
-
 			$file = new \Katu\Files\File(\Katu\App::getTmpDir(), 'csv', [\Katu\Tools\Random\Generator::getFileName(), 'csv']);
 			$file->touch();
 
@@ -37,7 +36,6 @@ class CSV {
 			}
 
 			$this->file = $file;
-
 		}
 
 		$this->writer = new \EasyCSV\Writer($this->file);
@@ -54,7 +52,13 @@ class CSV {
 		}
 	}
 
-	static function readToArray($file, $options = []) {
+	public function __toString()
+	{
+		return $this->getAsString();
+	}
+
+	public static function readToArray($file, $options = [])
+	{
 		$options['readOnly'] = true;
 		$csv = new static($file, $options);
 		$rows = [];
@@ -66,7 +70,8 @@ class CSV {
 		return $rows;
 	}
 
-	static function setFromAssoc($array, $options = []) {
+	public static function setFromAssoc(array $array, $options = [])
+	{
 		$csv = new static(null, $options);
 		$line = 0;
 
@@ -80,22 +85,26 @@ class CSV {
 		return $csv;
 	}
 
-	public function add() {
+	public function add()
+	{
 		return $this->writer->writeRow(is_array(@func_get_arg(0)) ? func_get_arg(0) : func_get_args());
 	}
 
-	public function save($saveAs) {
-		FileSystem::touch($saveAs);
+	public function save($file)
+	{
+		$file = new \Katu\Files\File($file);
+		$file->touch();
 
-		return file_put_contents($saveAs, file_get_contents($this->file));
+		return file_put_contents($file, file_get_contents($this->file));
 	}
 
-	public function getAsString() {
+	public function getAsString()
+	{
 		return $this->file->get();
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		return @unlink($this->file);
 	}
-
 }
