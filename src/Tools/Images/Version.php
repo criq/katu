@@ -2,26 +2,25 @@
 
 namespace Katu\Tools\Images;
 
-class Version {
-
+class Version
+{
 	const SEPARATOR = ".";
-
-	protected $name = null;
-	protected $filters = [];
-	protected $quality = 100;
 	protected $extension;
+	protected $filters = [];
+	protected $name = null;
+	protected $quality = 100;
 
-	public function __construct($name = null) {
+	public function __construct($name = null)
+	{
 		$this->name = (string)$name;
 	}
 
-	static function createFromConfig() {
+	public static function createFromConfig()
+	{
 		$args = func_get_args();
 
 		try {
-
 			if (isset($args[0]) && is_string($args[0])) {
-
 				$name = $args[0];
 
 				$config = \Katu\Config\Config::get('image', 'versions', $name);
@@ -46,28 +45,26 @@ class Version {
 				}
 
 				return $version;
-
 			}
 
 			throw new \Katu\Exceptions\MissingConfigException;
-
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-
 			$versionClass = '\\App\\Extensions\\Image\\Version';
 			if (class_exists($versionClass)) {
 				$version = call_user_func_array([$versionClass, 'createFromConfig'], func_get_args());
 
 				return $version;
 			}
-
 		}
 	}
 
-	public function getName() {
+	public function getName()
+	{
 		return $this->name ?: $this->getHash();
 	}
 
-	public function getArray() {
+	public function getArray()
+	{
 		$array = [];
 
 		foreach ($this->filters as $filter) {
@@ -80,31 +77,37 @@ class Version {
 		return $array;
 	}
 
-	public function getHash() {
+	public function getHash()
+	{
 		return sha1(\Katu\Files\Formats\JSON::encodeStandard($this->getArray()));
 	}
 
-	public function setQuality($quality) {
+	public function setQuality($quality)
+	{
 		$this->quality = $quality;
 
 		return $this;
 	}
 
-	public function getQuality() {
+	public function getQuality()
+	{
 		return $this->quality;
 	}
 
-	public function setExtension($extension) {
+	public function setExtension($extension)
+	{
 		$this->extension = $extension;
 
 		return $this;
 	}
 
-	public function getExtension() {
+	public function getExtension()
+	{
 		return $this->extension;
 	}
 
-	public function getDir() {
+	public function getDir()
+	{
 		$dir = new \Katu\Files\File(\Katu\App::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'publicDir'), 'image', 'versions', $this->getName());
 		if (!$dir->isWritable()) {
 			try {
@@ -117,14 +120,15 @@ class Version {
 		return $dir;
 	}
 
-	public function addFilter(Filter $filter) {
+	public function addFilter(Filter $filter)
+	{
 		$this->filters[] = $filter;
 
 		return $this;
 	}
 
-	public function getFilters() {
+	public function getFilters()
+	{
 		return $this->filters;
 	}
-
 }

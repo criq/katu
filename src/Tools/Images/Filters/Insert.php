@@ -2,9 +2,10 @@
 
 namespace Katu\Tools\Images\Filters;
 
-class Insert extends \Katu\Tools\Images\Filter {
-
-	public function apply($image) {
+class Insert extends \Katu\Tools\Images\Filter
+{
+	public function apply($image)
+	{
 		$image->insert(
 			(new \Katu\Files\File($this->params['source']))->getPath(),
 			isset($this->params['position']) ? $this->params['position'] : null,
@@ -14,5 +15,4 @@ class Insert extends \Katu\Tools\Images\Filter {
 
 		return true;
 	}
-
 }

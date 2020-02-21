@@ -2,8 +2,8 @@
 
 namespace Katu\Tools\Images;
 
-abstract class Source {
-
+abstract class Source
+{
 	protected $input;
 
 	abstract public function getDir();
@@ -11,11 +11,13 @@ abstract class Source {
 	abstract public function getURI();
 	abstract public function getURL();
 
-	public function __construct($input) {
+	public function __construct($input)
+	{
 		$this->input = $input;
 	}
 
-	static function createFromInput($input) {
+	public static function createFromInput($input)
+	{
 		// Image.
 		if ($input instanceof Image) {
 			return $input->getSource();
@@ -47,7 +49,6 @@ abstract class Source {
 
 		// String.
 		} elseif (is_string($input)) {
-
 			try {
 				return new Sources\URL(new \Katu\Types\TURL($input));
 			} catch (\Exception $e) {
@@ -64,18 +65,18 @@ abstract class Source {
 			} catch (\Exception $e) {
 				// Nevermind.
 			}
-
 		}
 
 		return false;
 	}
 
-	public function getInput() {
+	public function getInput()
+	{
 		return $this->input;
 	}
 
-	public function getHash() {
+	public function getHash()
+	{
 		return sha1($this->getUri());
 	}
-
 }
