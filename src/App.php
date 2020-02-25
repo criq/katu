@@ -2,39 +2,47 @@
 
 namespace Katu;
 
-class App {
+class App
+{
+	public static $app = null;
 
-	static $app = null;
-
-	static function getExtendedClass($appClassName, $fallbackName) {
+	public static function getExtendedClass($appClassName, $fallbackName)
+	{
 		return class_exists($appClassName) ? $appClassName : $fallbackName;
 	}
 
-	static function getControllerClass() {
+	public static function getControllerClass()
+	{
 		return static::getExtendedClass('\\App\\Extensions\\Controllers\\Controller', '\\Katu\\Controllers\\Controller');
 	}
 
-	static function getViewClass() {
+	public static function getViewClass()
+	{
 		return static::getExtendedClass('\\App\\Extensions\\Views\\View', '\\Katu\\Views\\View');
 	}
 
-	static function getErrorHandlerClass() {
+	public static function getErrorHandlerClass()
+	{
 		return static::getExtendedClass('\\App\\Extensions\\Errors\\Handler', '\\Katu\\Errors\\Handler');
 	}
 
-	static function getBaseDir() {
+	public static function getBaseDir()
+	{
 		return new \Katu\Files\File(realpath(__DIR__ . '/../../../../'));
 	}
 
-	static function getFileDir() {
+	public static function getFileDir()
+	{
 		return new \Katu\Files\File(static::getBaseDir(), 'files');
 	}
 
-	static function getTmpDir() {
+	public static function getTmpDir()
+	{
 		return new \Katu\Files\File(static::getBaseDir(), 'tmp');
 	}
 
-	static function init() {
+	public static function init()
+	{
 		// Timezone.
 		try {
 			date_default_timezone_set(\Katu\Config\Config::get('app', 'timezone'));
@@ -48,9 +56,9 @@ class App {
 		return true;
 	}
 
-	static function get() {
+	public static function get()
+	{
 		if (!static::$app) {
-
 			static::init();
 
 			try {
@@ -59,7 +67,7 @@ class App {
 				$config = [];
 			}
 
-			$config['errorHandler'] = function($c) {
+			$config['errorHandler'] = function ($c) {
 				$errorHandlerClass = static::getErrorHandlerClass();
 				return new $errorHandlerClass;
 			};
@@ -83,13 +91,13 @@ class App {
 			// Add profiler middleware.
 			// TODO - updatovat
 			#$app->add(new Middleware\Profiler());
-
 		}
 
 		return static::$app;
 	}
 
-	static function run() {
+	public static function run()
+	{
 		$app = static::get();
 
 		// TODO - obnovit
@@ -138,12 +146,9 @@ class App {
 		*/
 
 		try {
-
 			try {
-
 				// Set up routes.
 				foreach ((array)\Katu\Config\Config::get('routes') as $name => $route) {
-
 					$pattern  = $route->getPattern();
 					if (!$pattern) {
 						throw new \Katu\Exceptions\RouteException("Invalid pattern for route " . $name . ".");
@@ -160,9 +165,7 @@ class App {
 					} elseif ($route->name) {
 						$slimRoute->setName($route->name);
 					}
-
 				}
-
 			} catch (\Katu\Exceptions\RouteException $e) {
 				throw $e;
 			} catch (\Exception $e) {
@@ -184,13 +187,14 @@ class App {
 
 			// Run the app.
 			$app->run();
-
-		} catch (\Exception $e) { throw $e; }
-
+		} catch (\Exception $e) {
+			throw $e;
+		}
 	}
 
-	static function isProfilerOn() {
-		return \Katu\Cache\Runtime::get('profiler.on', function() {
+	public static function isProfilerOn()
+	{
+		return \Katu\Cache\Runtime::get('profiler.on', function () {
 			try {
 				return \Katu\Config\Config::get('app', 'profiler');
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
@@ -199,8 +203,9 @@ class App {
 		});
 	}
 
-	static function getConnection($name = null) {
-		$names = array_keys(Config::getDb());
+	public static function getConnection($name = null)
+	{
+		$names = array_keys(\Katu\Config\Config::getDb());
 
 		if ($name) {
 			if (!in_array($name, $names)) {
@@ -216,5 +221,4 @@ class App {
 
 		return PDO\Connection::getInstance($names[0]);
 	}
-
 }
