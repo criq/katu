@@ -12,21 +12,22 @@ class TEmailAddress
 			throw new \Katu\Exceptions\InputErrorException("Invalid e-mail address.");
 		}
 
-		$this->value = (string) (trim($value));
+		$this->value = (string)trim($value);
 	}
 
-	public function __toString()
+	public function __toString() : string
 	{
-		return (string) $this->value;
+		return (string)$this->value;
 	}
 
-	public static function isValid($value)
+	public static function isValid($value) : bool
 	{
 		$validator = new \Egulias\EmailValidator\EmailValidator;
-		return $validator->isValid($value, new \Egulias\EmailValidator\Validation\RFCValidation);
+
+		return (bool)$validator->isValid($value, new \Egulias\EmailValidator\Validation\RFCValidation);
 	}
 
-	public function getDomain()
+	public function getDomain() : string
 	{
 		return explode('@', $this->value)[1];
 	}
