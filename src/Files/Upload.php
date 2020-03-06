@@ -33,7 +33,7 @@ class Upload
 		}
 
 		$upload = new self($uploadedFiles[$key]);
-		if ($upload->error == UPLOAD_ERR_NO_FILE) {
+		if ($upload->error === UPLOAD_ERR_NO_FILE) {
 			return false;
 		}
 
