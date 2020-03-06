@@ -168,4 +168,9 @@ class Upload
 	{
 		return min(\Katu\Files\Size::createFromIni(ini_get('upload_max_filesize')), \Katu\Files\Size::createFromIni(ini_get('post_max_size')));
 	}
+
+	public function getFile() : \Katu\Files\File
+	{
+		return new \Katu\Files\File($this->path);
+	}
 }
