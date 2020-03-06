@@ -1,19 +1,19 @@
 <?php
 
-namespace Katu\Form;
+namespace Katu\Tools\Forms;
 
-use \Katu\App;
 use \Katu\Tools\Session\Session;
 use \Katu\Tools\Session\Flash;
 
-class Evaluation {
-
+class Evaluation
+{
+	public $errors = [];
 	public $name = null;
 	public $params = [];
-	public $errors = [];
 
-	public function __construct($name = null) {
-		$app = App::get();
+	public function __construct($name = null)
+	{
+		$app = \Katu\App::get();
 
 		// Set form name.
 		$this->name = $name;
@@ -22,11 +22,13 @@ class Evaluation {
 		$this->params = $app->request->params();
 	}
 
-	public function getParam($param) {
+	public function getParam($param)
+	{
 		return isset($this->params[$param]) ? $this->params[$param] : null;
 	}
 
-	public function addError($error) {
+	public function addError($error)
+	{
 		if ($error instanceof \Exception) {
 			if ($error->getMessage()) {
 				$this->errors[] = new Error($error->getMessage());
@@ -46,7 +48,8 @@ class Evaluation {
 		return false;
 	}
 
-	public function addFieldError($type, $fields, $error) {
+	public function addFieldError($type, $fields, $error)
+	{
 		if (trim($error)) {
 			$this->errors[] = new FieldError($type, $fields, $error);
 
@@ -56,11 +59,13 @@ class Evaluation {
 		return false;
 	}
 
-	public function hasErrors() {
+	public function hasErrors()
+	{
 		return (bool) count($this->errors);
 	}
 
-	public function setFlash() {
+	public function setFlash()
+	{
 		foreach ($this->errors as $error) {
 			// Set errors.
 			Flash::add('forms.' . $this->name . '.errors', $error->error);
@@ -75,11 +80,11 @@ class Evaluation {
 		}
 	}
 
-	public function setSession() {
+	public function setSession()
+	{
 		// Set values.
 		foreach ($this->params as $key => $value) {
 			Session::set('forms.' . $this->name . '.values.' . $key, $value);
 		}
 	}
-
 }

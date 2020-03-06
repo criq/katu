@@ -192,7 +192,12 @@ class App
 		}
 	}
 
-	public static function isProfilerOn()
+	public static function getRequest() : \Slim\Http\Request
+	{
+		return static::get()->getContainer()->request;
+	}
+
+	public static function isProfilerOn() : bool
 	{
 		return \Katu\Cache\Runtime::get('profiler.on', function () {
 			try {
@@ -203,22 +208,22 @@ class App
 		});
 	}
 
-	public static function getConnection($name = null)
-	{
-		$names = array_keys(\Katu\Config\Config::getDb());
+	// public static function getConnection($name = null)
+	// {
+	// 	$names = array_keys(\Katu\Config\Config::getDb());
 
-		if ($name) {
-			if (!in_array($name, $names)) {
-				throw new Exceptions\DatabaseConnectionException("Invalid database connection name.");
-			}
+	// 	if ($name) {
+	// 		if (!in_array($name, $names)) {
+	// 			throw new Exceptions\DatabaseConnectionException("Invalid database connection name.");
+	// 		}
 
-			return PDO\Connection::getInstance($name);
-		} else {
-			if (count($names) > 1) {
-				throw new Exceptions\DatabaseConnectionException("Ambiguous database connection name.");
-			}
-		}
+	// 		return PDO\Connection::getInstance($name);
+	// 	} else {
+	// 		if (count($names) > 1) {
+	// 			throw new Exceptions\DatabaseConnectionException("Ambiguous database connection name.");
+	// 		}
+	// 	}
 
-		return PDO\Connection::getInstance($names[0]);
-	}
+	// 	return PDO\Connection::getInstance($names[0]);
+	// }
 }

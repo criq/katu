@@ -1,13 +1,15 @@
-{% if errors %}
-	<div class="alert alert-danger">
-		<strong>{% block errorsTitle %}Error!{% endblock errorsTitle %}</strong>
-		{% for error in errors %}
+{% if _errors %}
+	<div class="errors">
+		<h3>
+			{% block errorsTitle %}Error!{% endblock errorsTitle %}
+		</h3>
+		{% for error in _errors %}
 			{% if error is iterable %}
 				{% for _error in error %}
-					<br />{{ _error|raw }}
+					<p>{{ _error|raw }}</p>
 				{% endfor %}
 			{% else %}
-				<br />{{ error|raw }}
+				<p>{{ error|raw }}</p>
 			{% endif %}
 		{% endfor %}
 	</div>

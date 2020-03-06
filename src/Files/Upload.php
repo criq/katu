@@ -2,21 +2,22 @@
 
 namespace Katu\Files;
 
-class Upload {
-
+class Upload
+{
 	const ERROR_OK       = 0;
 	const ERROR_NO_FILE  = 1;
 	const ERROR_SIZE     = 2;
 	const ERROR_PROGRESS = 3;
 	const ERROR_SERVER   = 4;
 
-	public $path;
-	public $fileName;
-	public $fileType;
-	public $fileSize;
 	public $error;
+	public $fileName;
+	public $fileSize;
+	public $fileType;
+	public $path;
 
-	public function __construct(\Slim\Http\UploadedFile $upload) {
+	public function __construct(\Slim\Http\UploadedFile $upload)
+	{
 		$this->path     = (string)$upload->file;
 		$this->fileName = (string)$upload->getClientFilename();
 		$this->fileType = (string)$upload->getClientMediaType();
@@ -24,12 +25,14 @@ class Upload {
 		$this->error    = (int)   $upload->getError();
 	}
 
-	static function get($key) {
-		if (!isset($_FILES[$key])) {
+	public static function get(string $key)
+	{
+		$uploadedFiles = \Katu\App::getRequest()->getUploadedFiles();
+		if (!isset($uploadedFiles[$key])) {
 			return false;
 		}
 
-		$upload = new self($_FILES[$key]);
+		$upload = new self($uploadedFiles[$key]);
 		if ($upload->error == UPLOAD_ERR_NO_FILE) {
 			return false;
 		}
@@ -37,124 +40,132 @@ class Upload {
 		return $upload;
 	}
 
-	public function isInError() {
-		return (bool) $this->getErrorId();
+	public function isInError() : bool
+	{
+		return (bool)$this->getErrorId();
 	}
 
-	public function isType($types) {
-		return in_array($this->fileType, (array) $types);
+	public function isType($types) : bool
+	{
+		return in_array($this->fileType, (array)$types);
 	}
 
-	public function isSupportedImage() {
-		return in_array($this->fileType, Models\File::getSupportedImageTypes());
+	public function isSupportedImage() : bool
+	{
+		return in_array($this->fileType, \Katu\Models\Presets\File::getSupportedImageTypes());
 	}
 
-	public function getHash() {
+	public function getHash() : string
+	{
 		return sha1(file_get_contents($this->path));
 	}
 
-	public function getErrorNumber() {
+	public function getErrorNumber() : int
+	{
 		return $this->error;
 	}
 
-	public function getErrorMessage() {
+	public function getErrorMessage() : string
+	{
 		switch ($this->getErrorNumber()) {
-
 			// 0
-			case UPLOAD_ERR_OK :
+			case UPLOAD_ERR_OK:
 				return false;
-			break;
+				break;
 
 			// 1
-			case UPLOAD_ERR_INI_SIZE :
+			case UPLOAD_ERR_INI_SIZE:
 				return 'The uploaded file exceeds the upload_max_filesize directive in php.ini.';
-			break;
+				break;
 
 			// 2
-			case UPLOAD_ERR_FORM_SIZE :
+			case UPLOAD_ERR_FORM_SIZE:
 				return 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.';
-			break;
+				break;
 
 			// 3
-			case UPLOAD_ERR_PARTIAL :
+			case UPLOAD_ERR_PARTIAL:
 				return 'The uploaded file was only partially uploaded.';
-			break;
+				break;
 
 			// 4
-			case UPLOAD_ERR_NO_FILE :
+			case UPLOAD_ERR_NO_FILE:
 				return 'No file was uploaded.';
-			break;
+				break;
 
 			// 6
-			case UPLOAD_ERR_NO_TMP_DIR :
+			case UPLOAD_ERR_NO_TMP_DIR:
 				return 'Missing a temporary folder.';
-			break;
+				break;
 
 			// 7
-			case UPLOAD_ERR_CANT_WRITE :
+			case UPLOAD_ERR_CANT_WRITE:
 				return 'Failed to write file to disk.';
-			break;
+				break;
 
 			// 8
-			case UPLOAD_ERR_EXTENSION :
+			case UPLOAD_ERR_EXTENSION:
 				return 'A PHP extension stopped the file upload.';
-			break;
-
+				break;
 		}
 	}
 
-	public function getErrorId() {
+	public function getErrorId() : int
+	{
 		switch ($this->getErrorNumber()) {
-
 			// 0
-			case UPLOAD_ERR_OK :
+			case UPLOAD_ERR_OK:
 				return static::ERROR_OK;
-			break;
+				break;
 
 			// 1
-			case UPLOAD_ERR_INI_SIZE :
+			case UPLOAD_ERR_INI_SIZE:
 				return static::ERROR_SIZE;
-			break;
+				break;
 
 			// 2
-			case UPLOAD_ERR_FORM_SIZE :
+			case UPLOAD_ERR_FORM_SIZE:
 				return static::ERROR_SIZE;
-			break;
+				break;
 
 			// 3
-			case UPLOAD_ERR_PARTIAL :
+			case UPLOAD_ERR_PARTIAL:
 				return static::ERROR_PROGRESS;
-			break;
+				break;
 
 			// 4
-			case UPLOAD_ERR_NO_FILE :
+			case UPLOAD_ERR_NO_FILE:
 				return static::ERROR_NO_FILE;
-			break;
+				break;
 
 			// 6
-			case UPLOAD_ERR_NO_TMP_DIR :
+			case UPLOAD_ERR_NO_TMP_DIR:
 				return static::ERROR_SERVER;
-			break;
+				break;
 
 			// 7
-			case UPLOAD_ERR_CANT_WRITE :
+			case UPLOAD_ERR_CANT_WRITE:
 				return static::ERROR_SERVER;
-			break;
+				break;
 
 			// 8
-			case UPLOAD_ERR_EXTENSION :
+			case UPLOAD_ERR_EXTENSION:
 				return static::ERROR_SERVER;
-			break;
-
+				break;
 		}
 	}
 
-	public function getException() {
-		return new \Exception($this->getErrorMessage(), $this->getErrorId());
+	public function getException()
+	{
+		if ($this->getErrorId()) {
+			return new \Exception($this->getErrorMessage(), $this->getErrorId());
+		}
+
+		return false;
 	}
 
-	static function getMaxSize() {
+	public static function getMaxSize()
+	{
 		return min(\Katu\Files\Size::createFromIni(ini_get('upload_max_filesize')), \Katu\Files\Size::createFromIni(ini_get('post_max_size')));
 	}
-
 }

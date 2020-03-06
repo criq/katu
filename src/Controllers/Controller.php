@@ -113,15 +113,6 @@ class Controller
 		return true;
 	}
 
-	public function getSubmittedFormWithToken($request, $name = null)
-	{
-		if ($this->isSubmittedWithToken($request, $name)) {
-			return new \Katu\Tools\Forms\Evaluation($name);
-		}
-
-		return false;
-	}
-
 	/****************************************************************************
 	 * Errors
 	 */
