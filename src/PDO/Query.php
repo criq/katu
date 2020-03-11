@@ -2,25 +2,28 @@
 
 namespace Katu\PDO;
 
-class Query {
-
+class Query
+{
+	public $bindValues = [];
+	public $class;
+	public $page;
 	public $pdo;
 	public $sql;
-	public $bindValues = [];
-	public $page;
-	public $class;
 
-	public function __construct(Connection $pdo, $sql = '', $bindValues = []) {
+	public function __construct(Connection $pdo, $sql = '', $bindValues = [])
+	{
 		$this->pdo = $pdo;
 		$this->sql = $sql;
 		$this->bindValues = $bindValues;
 	}
 
-	public function setSql($sql) {
+	public function setSql($sql)
+	{
 		return $this->sql = $sql;
 	}
 
-	public function setFromSql(\Sexy\Expression $sql) {
+	public function setFromSql(\Sexy\Expression $sql)
+	{
 		$this->sql = $sql->getSql();
 		$this->bindValues = $sql->getBindValues();
 
@@ -30,23 +33,28 @@ class Query {
 		}
 	}
 
-	public function setBindValue($bindValue, $value) {
+	public function setBindValue($bindValue, $value)
+	{
 		return $this->bindValues[$bindValue] = $value;
 	}
 
-	public function setBindValues($bindValues) {
+	public function setBindValues($bindValues)
+	{
 		return $this->bindValues = array_merge($this->bindValues, $bindValues);
 	}
 
-	public function setPage($page) {
+	public function setPage($page)
+	{
 		return $this->page = $page;
 	}
 
-	public function setClass($class) {
+	public function setClass($class)
+	{
 		return $this->class = $class;
 	}
 
-	public function getStatement() {
+	public function getStatement()
+	{
 		$statement = $this->pdo->connection->prepare($this->sql);
 
 		foreach ($this->bindValues as $bindValue => $value) {
@@ -64,7 +72,8 @@ class Query {
 		return $statement;
 	}
 
-	public function getResult() {
+	public function getResult()
+	{
 		$stopwatch = new \Katu\Tools\Profiler\Stopwatch();
 
 		if ($this->class) {
@@ -79,5 +88,4 @@ class Query {
 
 		return $result;
 	}
-
 }
