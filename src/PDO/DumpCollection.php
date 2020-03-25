@@ -32,7 +32,7 @@ class DumpCollection implements \Iterator, \ArrayAccess
 		$dumps = [];
 
 		foreach (static::getAll() as $dump) {
-			if (!isset($dumps[$dump->database])) {
+			if (!($dumps[$dump->database] ?? null)) {
 				$dumps[$dump->database] = new static;
 			}
 			$dumps[$dump->database][] = $dump;
@@ -46,7 +46,7 @@ class DumpCollection implements \Iterator, \ArrayAccess
 		$weeks = [];
 
 		foreach ($this as $dump) {
-			if (!isset($weeks[$dump->datetime->format('YW')])) {
+			if (!($weeks[$dump->datetime->format('YW')] ?? null)) {
 				$weeks[$dump->datetime->format('YW')] = new DumpWeek($dump->datetime);
 			}
 			$weeks[$dump->datetime->format('YW')][] = $dump;

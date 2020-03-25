@@ -46,7 +46,7 @@ class Connection
 
 	public static function getInstance($name)
 	{
-		if (!isset(static::$connections[$name])) {
+		if (!(static::$connections[$name] ?? null)) {
 			static::$connections[$name] = new static($name);
 		}
 
@@ -166,56 +166,56 @@ class Connection
 		return $this->connection->rollBack();
 	}
 
-	/* public function dump($options = []) {
-		$extension = 'sql';
-		$dumpOptions = [];
+	// public function dump($options = []) {
+	// 	$extension = 'sql';
+	// 	$dumpOptions = [];
 
-		if (isset($options['compress']) && $options['compress'] == 'gzip') {
-			$extension = 'sql.gz';
-			$dumpOptions['compress'] = 'Gzip';
-		}
+	// 	if (isset($options['compress']) && $options['compress'] == 'gzip') {
+	// 		$extension = 'sql.gz';
+	// 		$dumpOptions['compress'] = 'Gzip';
+	// 	}
 
-		if (isset($options['fileName']) && $options['fileName']) {
-			$fileName = $options['fileName'];
-		} else {
-			$fileName = \Katu\File\System::joinPaths(\Katu\App::getBaseDir(), 'databases', $this->config->database, implode('.', [(new \Katu\Tools\DateTime\DateTime())->format('YmdHis'), $extension]));
-		}
+	// 	if (isset($options['fileName']) && $options['fileName']) {
+	// 		$fileName = $options['fileName'];
+	// 	} else {
+	// 		$fileName = \Katu\File\System::joinPaths(\Katu\App::getBaseDir(), 'databases', $this->config->database, implode('.', [(new \Katu\Tools\DateTime\DateTime())->format('YmdHis'), $extension]));
+	// 	}
 
-		if (isset($options['addDropTable']) && $options['addDropTable']) {
-			$dumpOptions['add-drop-table'] = true;
-		}
+	// 	if (isset($options['addDropTable']) && $options['addDropTable']) {
+	// 		$dumpOptions['add-drop-table'] = true;
+	// 	}
 
-		$dumpOptions['exclude-tables'] = [];
+	// 	$dumpOptions['exclude-tables'] = [];
 
-		if (isset($options['skipCache']) && $options['skipCache']) {
-			foreach ($this->getTableNames() as $tableName) {
-				if (preg_match('#^_cache_#', $tableName)) {
-					$dumpOptions['exclude-tables'][] = $tableName;
-				}
-			}
-		}
+	// 	if (isset($options['skipCache']) && $options['skipCache']) {
+	// 		foreach ($this->getTableNames() as $tableName) {
+	// 			if (preg_match('#^_cache_#', $tableName)) {
+	// 				$dumpOptions['exclude-tables'][] = $tableName;
+	// 			}
+	// 		}
+	// 	}
 
-		try {
+	// 	try {
 
-			\Katu\Utils\FileSystem::touch($fileName);
+	// 		\Katu\Utils\FileSystem::touch($fileName);
 
-			$dump = new \Ifsnop\Mysqldump\Mysqldump($this->config->database, $this->config->user, $this->config->password, $this->config->host, $this->config->type, $dumpOptions);
-			$dump->start($fileName);
+	// 		$dump = new \Ifsnop\Mysqldump\Mysqldump($this->config->database, $this->config->user, $this->config->password, $this->config->host, $this->config->type, $dumpOptions);
+	// 		$dump->start($fileName);
 
-		} catch (\Exception $e) {
+	// 	} catch (\Exception $e) {
 
-			\Katu\Errors\Handler::log($e);
+	// 		\Katu\Errors\Handler::log($e);
 
-			@unlink($fileName);
+	// 		@unlink($fileName);
 
-		}
-	} */
+	// 	}
+	// }
 
-	/* public function backup($options = []) {
-		return $this->dump(array_merge([
-			'skipCache' => true,
-			'addDropTable' => true,
-			'compress' => 'gzip',
-		], $options));
-	} */
+	// public function backup($options = []) {
+	// 	return $this->dump(array_merge([
+	// 		'skipCache' => true,
+	// 		'addDropTable' => true,
+	// 		'compress' => 'gzip',
+	// 	], $options));
+	// }
 }
