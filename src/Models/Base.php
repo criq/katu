@@ -71,7 +71,7 @@ abstract class Base
 	{
 		// Sexy SQL expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
-			$query = static::getConnection()->createClassQueryFromSql(static::getClassName(), func_get_arg(0));
+			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0));
 		// Raw SQL and bind values.
 		} elseif (count(func_get_args()) == 2) {
 			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0), func_get_arg(1));
@@ -106,10 +106,6 @@ abstract class Base
 
 	public static function getBy($params = [], $expressions = [], $options = [])
 	{
-		$pdo = static::getConnection();
-		$query = $pdo->createQuery();
-		$query->setClassName(static::getClassName());
-
 		$sql = SX::select();
 		$sql->addExpressions($expressions);
 		$sql->from(static::getTable());
@@ -127,6 +123,14 @@ abstract class Base
 		if (isset($options['setOptGetTotalRows'])) {
 			$sql->setOptGetTotalRows($options['setOptGetTotalRows']);
 		}
+
+
+
+
+
+		$pdo = static::getConnection();
+		$query = $pdo->createQuery();
+		$query->setClassName(static::getClassName());
 
 		$query->setFromSql($sql);
 

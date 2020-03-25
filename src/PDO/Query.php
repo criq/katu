@@ -10,27 +10,26 @@ class Query
 	public $pdo;
 	public $sql;
 
-	public function __construct(Connection $pdo, $sql = null, array $bindValues = [])
+	public function __construct(Connection $pdo, $sql, array $bindValues = [])
 	{
 		$this->pdo = $pdo;
-		$this->sql = $sql;
-		$this->bindValues = $bindValues;
+
+		if ($sql instanceof \Sexy\Expression) {
+			$this->sql = $sql->getSql();
+			$this->bindValues = $sql->getBindValues();
+			$page = $sql->getPage();
+			if ($page) {
+				$this->setPage($page);
+			}
+		} else {
+			$this->sql = $sql;
+			$this->bindValues = $bindValues;
+		}
 	}
 
 	public function setSql($sql)
 	{
 		return $this->sql = $sql;
-	}
-
-	public function setFromSql(\Sexy\Select $sql)
-	{
-		$this->sql = $sql->getSql();
-		$this->bindValues = $sql->getBindValues();
-
-		$page = $sql->getPage();
-		if ($page) {
-			$this->setPage($page);
-		}
 	}
 
 	public function setBindValue($bindValue, $value)

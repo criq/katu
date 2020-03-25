@@ -339,7 +339,7 @@ class User extends \Katu\Models\Model
 				->groupBy(new \Sexy\GroupBy($rolePermissionClass::getColumn('permission')))
 				;
 
-			return static::getConnection()->createQueryFromSql($sql)->getResult()->getColumnValues('permission');
+			return static::getConnection()->createQuery($sql)->getResult()->getColumnValues('permission');
 		}
 
 		return false;

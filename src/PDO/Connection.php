@@ -124,33 +124,14 @@ class Connection
 		return $views;
 	}
 
-	public function createQuery($sql = null, $params = [])
+	public function createQuery($sql, array $params = [])
 	{
-		$query = new Query($this, $sql, $params);
-
-		return $query;
+		return new Query($this, $sql, $params);
 	}
 
-	public function createQueryFromSql(\Sexy\Expression $sql, array $params = [])
+	public function createClassQuery(\Katu\Tools\Classes\ClassName $className, $sql, array $params = [])
 	{
-		$query = new Query($this);
-		$query->setFromSql($sql);
-		$query->setBindValues($params);
-
-		return $query;
-	}
-
-	public function createClassQuery(\Katu\Tools\Classes\ClassName $className, $sql = null, array $params = [])
-	{
-		$query = new Query($this, $sql, $params);
-		$query->setClassName($className);
-
-		return $query;
-	}
-
-	public function createClassQueryFromSql(\Katu\Tools\Classes\ClassName $className, \Sexy\Expression $sql)
-	{
-		$query = static::createQueryFromSql($sql);
+		$query = $this->createQuery($sql, $params);
 		$query->setClassName($className);
 
 		return $query;

@@ -36,8 +36,6 @@ class Model extends Base
 
 	public static function insert($bindValues = [])
 	{
-		$query = static::getConnection()->createQuery();
-
 		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
 		}, array_keys($bindValues));
@@ -47,8 +45,7 @@ class Model extends Base
 
 		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ( " . implode(", ", $values) . " ) ";
 
-		$query->setSql($sql);
-		$query->setBindValues($bindValues);
+		$query = static::getConnection()->createQuery($sql, $bindValues);
 		$query->getResult();
 
 		static::change();
@@ -65,7 +62,6 @@ class Model extends Base
 	{
 		$items = array_values($items);
 
-		$query = static::getConnection()->createQuery();
 
 		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
@@ -91,8 +87,7 @@ class Model extends Base
 
 		$sql .= implode(", ", $sqlRows);
 
-		$query->setSql($sql);
-		$query->setBindValues($bindValues);
+		$query = static::getConnection()->createQuery($sql, $bindValues);
 		$query->getResult();
 
 		static::change();
@@ -133,8 +128,6 @@ class Model extends Base
 
 	public function delete()
 	{
-		$query = static::getConnection()->createQuery();
-
 		// Delete file attachments.
 		if (class_exists('\\App\\Models\\FileAttachment')) {
 			foreach ($this->getFileAttachments() as $fileAttachment) {
@@ -144,8 +137,9 @@ class Model extends Base
 
 		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIdColumnName() . " = :" . static::getIdColumnName();
 
-		$query->setSql($sql);
-		$query->setBindValue(static::getIdColumnName(), $this->getId());
+		$query = static::getConnection()->createQuery($sql, [
+			static::getIdColumnName() => $this->getId(),
+		]);
 
 		$res = $query->getResult();
 
@@ -174,12 +168,9 @@ class Model extends Base
 			}
 
 			if ($set) {
-				$query = static::getConnection()->createQuery();
-
 				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
 
-				$query->setSql($sql);
-				$query->setBindValues($bindValues);
+				$query = static::getConnection()->createQuery($sql, $bindValues);
 				$query->setBindValue(static::getIdColumnName(), $this->getId());
 				$query->getResult();
 			}
@@ -364,7 +355,7 @@ class Model extends Base
 			->where(SX::cmpRegexp(static::getColumn($column), $preg))
 			->addExpressions($constraints)
 			;
-		$res = static::getConnection()->createQueryFromSql($sql)->getResult();
+		$res = static::getConnection()->createQuery($sql)->getResult();
 
 		// Nothing, keep the slug.
 		if (!$res->getCount()) {
