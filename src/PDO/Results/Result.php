@@ -2,18 +2,16 @@
 
 namespace Katu\PDO\Results;
 
-use \PDO;
-
 class Result implements \Iterator, \ArrayAccess
 {
 	protected $iteratorArray = null;
 	protected $iteratorPosition = 0;
-	public $pdo;
+	public $connection;
 	public $statement;
 
-	public function __construct($pdo, $statement)
+	public function __construct(\Katu\PDO\Connection $connection, $statement)
 	{
-		$this->pdo = $pdo;
+		$this->connection = $connection;
 		$this->statement = $statement;
 
 		try {
@@ -33,7 +31,7 @@ class Result implements \Iterator, \ArrayAccess
 				$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['table'] . '.create.sql');
 				if ($sqlFile->exists()) {
 					// There is a file, let's create the table.
-					$createQuery = $this->pdo->createQuery($sqlFile->get());
+					$createQuery = $this->connection->createQuery($sqlFile->get());
 					$createQuery->getResult();
 
 					$this->statement->execute();
@@ -155,7 +153,7 @@ class Result implements \Iterator, \ArrayAccess
 					$this->iteratorArray[] = $row;
 				}
 			} else {
-				while ($row = $this->statement->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT)) {
+				while ($row = $this->statement->fetch(\PDO::FETCH_ASSOC, \PDO::FETCH_ORI_NEXT)) {
 					$this->iteratorArray[] = $row;
 				}
 			}

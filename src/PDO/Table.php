@@ -15,7 +15,7 @@ class Table extends TableBase
 
 		return $res[0]['Create Table'];
 	}
-	
+
 	public function touch()
 	{
 		$file = static::getLastUpdatedTemporaryFile();

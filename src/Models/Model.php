@@ -34,18 +34,18 @@ class Model extends Base
 		return parent::__call($name, $args);
 	}
 
-	public static function insert($bindValues = [])
+	public static function insert($values = [])
 	{
 		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
-		}, array_keys($bindValues));
+		}, array_keys($values));
 		$values  = array_map(function ($i) {
 			return ':' . $i;
-		}, array_keys($bindValues));
+		}, array_keys($values));
 
 		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ( " . implode(", ", $values) . " ) ";
 
-		$query = static::getConnection()->createQuery($sql, $bindValues);
+		$query = static::getConnection()->createQuery($sql, $values);
 		$query->getResult();
 
 		static::change();
@@ -62,32 +62,31 @@ class Model extends Base
 	{
 		$items = array_values($items);
 
-
 		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
 		}, array_keys($items[0]));
 
 		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ";
 
-		$bindValues = [];
+		$values = [];
 		$sqlRows = [];
 		foreach ($items as $row => $values) {
 			$sqlRowParams = [];
 			foreach ($values as $key => $value) {
-				$bindValueKey = implode('_', [
+				$valueKey = implode('_', [
 					'row',
 					$row,
 					$key,
 				]);
-				$bindValues[$bindValueKey] = $value;
-				$sqlRowParams[] = ":" . $bindValueKey;
+				$values[$valueKey] = $value;
+				$sqlRowParams[] = ":" . $valueKey;
 			}
 			$sqlRows[] = " ( " . implode(', ', $sqlRowParams) . " ) ";
 		}
 
 		$sql .= implode(", ", $sqlRows);
 
-		$query = static::getConnection()->createQuery($sql, $bindValues);
+		$query = static::getConnection()->createQuery($sql, $values);
 		$query->getResult();
 
 		static::change();
@@ -155,23 +154,23 @@ class Model extends Base
 				return $columnName->getName();
 			}, static::getTable()->getColumnNames());
 
-			$bindValues = [];
+			$values = [];
 			foreach (get_object_vars($this) as $name => $value) {
 				if (in_array($name, $columnsNames) && $name != static::getIdColumnName()) {
-					$bindValues[$name] = $value;
+					$values[$name] = $value;
 				}
 			}
 
 			$set = [];
-			foreach ($bindValues as $name => $value) {
+			foreach ($values as $name => $value) {
 				$set[] = (new \Katu\PDO\Name($name)) . " = :" . $name;
 			}
 
 			if ($set) {
 				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
 
-				$query = static::getConnection()->createQuery($sql, $bindValues);
-				$query->setBindValue(static::getIdColumnName(), $this->getId());
+				$query = static::getConnection()->createQuery($sql, $values);
+				$query->setValue(static::getIdColumnName(), $this->getId());
 				$query->getResult();
 			}
 

@@ -2,16 +2,14 @@
 
 namespace Katu\PDO\Results;
 
-use \Sexy\Sexy as SX;
-
 class PaginatedResult extends Result
 {
-	public function __construct($pdo, $statement, $page)
+	public function __construct(\Katu\PDO\Connection $connection, $statement, $page)
 	{
-		parent::__construct($pdo, $statement);
+		parent::__construct($connection, $statement);
 
 		if (strpos($this->statement->queryString, 'SQL_CALC_FOUND_ROWS')) {
-			$total = $this->pdo->createQuery("SELECT FOUND_ROWS() AS total")->getResult()->statement->fetchColumn();
+			$total = $this->connection->createQuery("SELECT FOUND_ROWS() AS total")->getResult()->statement->fetchColumn();
 		} else {
 			$total = $this->statement->rowCount();
 		}
@@ -20,7 +18,7 @@ class PaginatedResult extends Result
 		if ($page) {
 			$this->page = $page;
 		} else {
-			$page = SX::page(1, $total ?: 1);
+			$page = new \Sexy\Page(1, $total ?: 1);
 		}
 
 		$this->pagination = new \Katu\Types\TPagination($total, $page->perPage, $page->page);

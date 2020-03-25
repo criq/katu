@@ -4,26 +4,26 @@ namespace Katu\PDO;
 
 class Query
 {
-	public $bindValues = [];
 	public $className;
+	public $connection;
 	public $page;
-	public $pdo;
 	public $sql;
+	public $values = [];
 
-	public function __construct(Connection $pdo, $sql, array $bindValues = [])
+	public function __construct(Connection $connection, $sql, array $values = [])
 	{
-		$this->pdo = $pdo;
+		$this->connection = $connection;
 
 		if ($sql instanceof \Sexy\Expression) {
 			$this->sql = $sql->getSql();
-			$this->bindValues = $sql->getBindValues();
+			$this->values = $sql->getValues();
 			$page = $sql->getPage();
 			if ($page) {
 				$this->setPage($page);
 			}
 		} else {
 			$this->sql = $sql;
-			$this->bindValues = $bindValues;
+			$this->values = $values;
 		}
 	}
 
@@ -32,14 +32,14 @@ class Query
 		return $this->sql = $sql;
 	}
 
-	public function setBindValue($bindValue, $value)
+	public function setValue($name, $value)
 	{
-		return $this->bindValues[$bindValue] = $value;
+		return $this->values[$name] = $value;
 	}
 
-	public function setBindValues($bindValues)
+	public function setValues($values)
 	{
-		return $this->bindValues = array_merge($this->bindValues, $bindValues);
+		return $this->values = array_merge($this->values, $values);
 	}
 
 	public function setPage($page)
@@ -54,17 +54,17 @@ class Query
 
 	public function getStatement()
 	{
-		$statement = $this->pdo->connection->prepare($this->sql);
+		$statement = $this->connection->connection->prepare($this->sql);
 
-		foreach ($this->bindValues as $bindValue => $value) {
+		foreach ($this->values as $name => $value) {
 			if (is_string($value)) {
-				$statement->bindValue($bindValue, $value, \PDO::PARAM_STR);
+				$statement->bindValue($name, $value, \PDO::PARAM_STR);
 			} elseif (is_int($value)) {
-				$statement->bindValue($bindValue, $value, \PDO::PARAM_INT);
+				$statement->bindValue($name, $value, \PDO::PARAM_INT);
 			} elseif (is_float($value)) {
-				$statement->bindValue($bindValue, $value, \PDO::PARAM_STR);
+				$statement->bindValue($name, $value, \PDO::PARAM_STR);
 			} else {
-				$statement->bindValue($bindValue, $value, \PDO::PARAM_STR);
+				$statement->bindValue($name, $value, \PDO::PARAM_STR);
 			}
 		}
 
@@ -76,11 +76,11 @@ class Query
 		$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 
 		if ($this->className) {
-			$result = new Results\ClassResult($this->pdo, $this->getStatement(), $this->page, $this->className);
+			$result = new Results\ClassResult($this->connection, $this->getStatement(), $this->page, $this->className);
 		} elseif ($this->page) {
-			$result = new Results\PaginatedResult($this->pdo, $this->getStatement(), $this->page);
+			$result = new Results\PaginatedResult($this->connection, $this->getStatement(), $this->page);
 		} else {
-			$result = new Results\Result($this->pdo, $this->getStatement());
+			$result = new Results\Result($this->connection, $this->getStatement());
 		}
 
 		\Katu\Tools\Profiler\Profiler::add(new \Katu\Tools\Profiler\Query($this, $stopwatch));

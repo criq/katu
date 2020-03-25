@@ -6,9 +6,9 @@ class ClassResult extends PaginatedResult
 {
 	public $className;
 
-	public function __construct($pdo, $statement, $page, \Katu\Tools\Classes\ClassName $className)
+	public function __construct(\Katu\PDO\Connection $connection, $statement, $page, \Katu\Tools\Classes\ClassName $className)
 	{
-		parent::__construct($pdo, $statement, $page);
+		parent::__construct($connection, $statement, $page);
 
 		$this->className = $className;
 	}
