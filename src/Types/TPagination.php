@@ -43,13 +43,14 @@ class TPagination
 
 	public static function getRequestPageExpression(\Slim\Http\Request $request, int $perPage = null)
 	{
-		var_dump($request);die;
-		return new \Sexy\Page(static::getPageFromRequest($app->request->params()), is_null($perPage) ? static::getAppPerPage() : $perPage);
+		$params = \Katu\Tools\Routing\URL::getCurrent()->getQueryParams();
+
+		return new \Sexy\Page(static::getPageFromRequest($params), is_null($perPage) ? static::getAppPerPage() : $perPage);
 	}
 
 	public static function getPageFromRequest($params)
 	{
-		if (!isset($params[static::getAppPageIdent()])) {
+		if (!($params[static::getAppPageIdent()] ?? null)) {
 			return 1;
 		}
 
