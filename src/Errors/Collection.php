@@ -2,19 +2,20 @@
 
 namespace Katu\Errors;
 
-class Collection implements \Iterator, \ArrayAccess {
-
+class Collection implements \Iterator, \ArrayAccess
+{
+	protected $iteratorPosition = 0;
 	public $errors = [];
 
-	protected $iteratorPosition = 0;
-
-	public function __construct($error = null) {
+	public function __construct($error = null)
+	{
 		if ($error) {
 			$this->errors[] = $error;
 		}
 	}
 
-	public function addError($error) {
+	public function addError($error)
+	{
 		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
 			foreach ($error as $exception) {
 				$this->addError($exception);
@@ -26,14 +27,13 @@ class Collection implements \Iterator, \ArrayAccess {
 		return true;
 	}
 
-	public function getNamedArray() {
+	public function getNamedArray()
+	{
 		$array = [];
 
 		foreach ($this->errors as $error) {
-
 			// Katu Exception.
 			if ($error instanceof \Katu\Exceptions\Exception) {
-
 				// Has error names.
 				if ($error->getErrorNames()) {
 					foreach ($error->getErrorNames() as $errorName) {
@@ -47,7 +47,6 @@ class Collection implements \Iterator, \ArrayAccess {
 				} else {
 					$array[] = $error;
 				}
-
 			} elseif ($error instanceof \Exception) {
 				$array[] = $error->getMessage();
 			} else {
@@ -58,7 +57,8 @@ class Collection implements \Iterator, \ArrayAccess {
 		return $array;
 	}
 
-	public function getNamed($errorName) {
+	public function getNamed($errorName)
+	{
 		$name = \Katu\Exceptions\Exception::getErrorName($errorName);
 		$array = $this->getNamedArray();
 
@@ -69,31 +69,39 @@ class Collection implements \Iterator, \ArrayAccess {
 		return false;
 	}
 
-	/* Iterator **************************************************************/
-
-	public function rewind() {
+	/****************************************************************************
+	 * Iterator.
+	 */
+	public function rewind()
+	{
 		$this->iteratorPosition = 0;
 	}
 
-	public function current() {
+	public function current()
+	{
 		return $this->errors[$this->iteratorPosition];
 	}
 
-	public function key() {
+	public function key()
+	{
 		return $this->iteratorPosition;
 	}
 
-	public function next() {
+	public function next()
+	{
 		++$this->iteratorPosition;
 	}
 
-	public function valid() {
+	public function valid()
+	{
 		return isset($this->errors[$this->iteratorPosition]);
 	}
 
-	/* ArrayAccess ***********************************************************/
-
-	public function offsetSet($offset, $value) {
+	/****************************************************************************
+	 * ArrayAccess.
+	 */
+	public function offsetSet($offset, $value)
+	{
 		if (is_null($offset)) {
 			$this->errors[] = $value;
 		} else {
@@ -101,20 +109,22 @@ class Collection implements \Iterator, \ArrayAccess {
 		}
 	}
 
-	public function offsetExists($offset) {
+	public function offsetExists($offset)
+	{
 		$array = $this->getNamedArray();
 
 		return isset($array[$offset]);
 	}
 
-	public function offsetUnset($offset) {
+	public function offsetUnset($offset)
+	{
 		unset($this->errors[$offset]);
 	}
 
-	public function offsetGet($offset) {
+	public function offsetGet($offset)
+	{
 		$array = $this->getNamedArray();
 
 		return isset($array[$offset]) ? $array[$offset] : null;
 	}
-
 }

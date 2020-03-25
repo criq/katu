@@ -4,17 +4,14 @@ namespace Katu\Cache;
 
 class General
 {
-
 	const DIR_NAME = 'cache';
 
-	protected $enableMemcached = true;
+	protected $args = [];
+	protected $callback;
 	protected $enableApcu = true;
-
+	protected $enableMemcached = true;
 	protected $name;
 	protected $timeout;
-	protected $callback;
-	protected $args = [];
-
 	protected static $memcached;
 
 	public function __construct($name = null, $timeout = null)

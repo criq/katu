@@ -2,33 +2,41 @@
 
 namespace Katu\PDO;
 
-class TableBase extends \Sexy\Expression {
-
+abstract class TableBase extends \Sexy\Expression
+{
 	public $connection;
 	public $name;
 
-	public function __construct(Connection $connection, Name $name) {
+	abstract public function getCreateSyntax();
+
+	public function __construct(Connection $connection, Name $name)
+	{
 		$this->connection = $connection;
 		$this->name = $name;
 	}
 
-	public function __toString() {
+	public function __toString()
+	{
 		return $this->getSql();
 	}
 
-	public function getConnection() {
+	public function getConnection()
+	{
 		return $this->connection;
 	}
 
-	public function getSql(&$context = []) {
+	public function getSql(&$context = [])
+	{
 		return implode('.', [new Name($this->getConnection()->config->database), $this->name]);
 	}
 
-	public function getName() {
+	public function getName()
+	{
 		return $this->name;
 	}
 
-	public function getColumns() {
+	public function getColumns()
+	{
 		$columns = [];
 
 		foreach ($this->getColumnNames() as $columnName) {
@@ -38,42 +46,46 @@ class TableBase extends \Sexy\Expression {
 		return $columns;
 	}
 
-	public function getColumn(string $column) {
+	public function getColumn(string $column)
+	{
 		return new Column($this, new Name($column));
 	}
 
-	public function getColumnDescriptions() {
+	public function getColumnDescriptions()
+	{
 		$table = $this;
 
-		return \Katu\Cache\General::get(['databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name], 86400, function($table) {
-
+		return \Katu\Cache\General::get(['databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name], '1 day', function ($table) {
 			$columns = [];
 			foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
 				$columns[$properties['Field']] = $properties;
 			}
 
 			return $columns;
-
 		}, $table);
 	}
 
-	public function getColumnDescription($columnName) {
+	public function getColumnDescription($columnName)
+	{
 		$descriptions = $this->getColumnDescriptions();
 
 		return $descriptions[$columnName instanceof Name ? $columnName->name : $columnName];
 	}
 
-	public function getColumnNames() {
-		return array_values(array_map(function($i) {
+	public function getColumnNames()
+	{
+		return array_values(array_map(function ($i) {
 			return new Name($i['Field']);
 		}, $this->getColumnDescriptions()));
 	}
 
-	public function exists() {
+	public function exists()
+	{
 		return $this->getConnection()->tableExists($this->name);
 	}
 
-	public function rename($name) {
+	public function rename($name)
+	{
 		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
@@ -82,7 +94,8 @@ class TableBase extends \Sexy\Expression {
 		return $res;
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		$sql = " DROP TABLE " . $this->name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
@@ -91,7 +104,8 @@ class TableBase extends \Sexy\Expression {
 		return $res;
 	}
 
-	public function copy($destinationTable, $options = []) {
+	public function copy($destinationTable, $options = [])
+	{
 		// Delete the original table.
 		try {
 			$destinationTable->delete();
@@ -101,15 +115,12 @@ class TableBase extends \Sexy\Expression {
 
 		$sql = $this->getCreateSyntax();
 		if (preg_match('/^CREATE ALGORITHM/', $sql)) {
-
 			// View.
 			$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
-
 		} else {
-
 			// Table.
-			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function($i) use($destinationTable) {
+			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function ($i) use ($destinationTable) {
 				return " CREATE TABLE `" . $destinationTable->name->name . "` ";
 			}, $sql);
 
@@ -121,14 +132,12 @@ class TableBase extends \Sexy\Expression {
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 			// Create table and copy the data.
-			$sql = " INSERT " . (($options['insertIgnore'] ?? null) ? " IGNORE " : NULL) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
+			$sql = " INSERT " . (($options['insertIgnore'] ?? null) ? " IGNORE " : null) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
-
 		}
 
 		// Disable NULL.
 		if (isset($options['disableNull']) && $options['disableNull']) {
-
 		}
 
 		// Create automatic indices.
@@ -148,7 +157,7 @@ class TableBase extends \Sexy\Expression {
 
 			// Composite index.
 			if ($indexableColumns && $options['compositeIndex']) {
-				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', array_map(function($i) {
+				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', array_map(function ($i) {
 					return $i->name;
 				}, $indexableColumns)) . "); ";
 
@@ -187,9 +196,9 @@ class TableBase extends \Sexy\Expression {
 		return true;
 	}
 
-	public function getUsedInViews() {
-		return \Katu\Cache\General::get($this->getUsedInViewsCacheName(), null, function($table) {
-
+	public function getUsedInViews()
+	{
+		return \Katu\Cache\General::get($this->getUsedInViewsCacheName(), null, function ($table) {
 			$views = [];
 
 			foreach ($this->getConnection()->getViewNames() as $viewName) {
@@ -200,18 +209,18 @@ class TableBase extends \Sexy\Expression {
 			}
 
 			return $views;
-
 		}, $this);
 	}
 
-	public function getUsedInViewsCacheName() {
+	public function getUsedInViewsCacheName()
+	{
 		return ['databases', $this->getConnection()->name, 'tables', 'usedInViews', $this->name];
 	}
 
-	public function getTotalUsage($timeout = null) {
-		return \Katu\Cache\General::get($this->getTotalUsageCacheName(), $timeout, function($table) {
-
-			$stopwatch = new \Katu\Utils\Stopwatch();
+	public function getTotalUsage($timeout = null)
+	{
+		return \Katu\Cache\General::get($this->getTotalUsageCacheName(), $timeout, function ($table) {
+			$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 
 			$sql = " SELECT COUNT(1) AS total FROM " . $table->name;
 			$res = $table->getConnection()->createQuery($sql)->getResult()->getArray();
@@ -220,16 +229,16 @@ class TableBase extends \Sexy\Expression {
 				'rows' => (int) $res[0]['total'],
 				'duration' => $stopwatch->getDuration(),
 			];
-
 		}, $this);
 	}
 
-	public function getTotalUsageCacheName() {
+	public function getTotalUsageCacheName()
+	{
 		return ['databases', $this->getConnection()->name, 'tables', 'totalRows', $this->name];
 	}
 
-	public function getLastUpdatedTemporaryFile() {
+	public function getLastUpdatedTemporaryFile()
+	{
 		return \Katu\Files\Temporary::createFromName('databases', $this->getConnection()->name, 'tables', 'updated', $this->name);
 	}
-
 }

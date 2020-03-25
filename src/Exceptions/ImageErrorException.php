@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class ImageErrorException extends ErrorException {
-
+class ImageErrorException extends ErrorException
+{
 }

@@ -2,22 +2,37 @@
 
 namespace Katu\PDO;
 
-class Table extends TableBase {
+class Table extends TableBase
+{
+	public function getCreateSyntax()
+	{
+		$sql = " SHOW CREATE TABLE " . $this->name;
+		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-	public function touch() {
+		if (isset($res[0]['View'])) {
+			return $res[0]['Create View'];
+		}
+
+		return $res[0]['Create Table'];
+	}
+	
+	public function touch()
+	{
 		$file = static::getLastUpdatedTemporaryFile();
 		$file->touch();
 
 		return true;
 	}
 
-	public function getLastUpdatedTime() {
+	public function getLastUpdatedTime()
+	{
 		$file = static::getLastUpdatedTemporaryFile();
 
 		return $file->getDateTimeModified();
 	}
 
-	public function getType() {
+	public function getType()
+	{
 		$sql = " SHOW CREATE TABLE " . $this->name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
@@ -28,23 +43,13 @@ class Table extends TableBase {
 		return 'table';
 	}
 
-	public function isTable() {
+	public function isTable()
+	{
 		return $this->getType() == 'table';
 	}
 
-	public function isView() {
+	public function isView()
+	{
 		return $this->getType() == 'view';
 	}
-
-	public function getCreateSyntax() {
-		$sql = " SHOW CREATE TABLE " . $this->name;
-		$res = $this->getConnection()->createQuery($sql)->getResult();
-
-		if (isset($res[0]['View'])) {
-			return $res[0]['Create View'];
-		}
-
-		return $res[0]['Create Table'];
-	}
-
 }

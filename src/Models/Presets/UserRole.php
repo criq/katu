@@ -2,42 +2,26 @@
 
 namespace Katu\Models\Presets;
 
-class UserRole extends \Katu\Models\Model {
-
+class UserRole extends \Katu\Models\Model
+{
 	const TABLE = 'user_roles';
 
-	static function create($user, $role) {
-		if (!static::checkCrudParams($user, $role)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
-
-		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
-			'userId'      => (int)    ($user->getId()),
-			'roleId'      => (int)    ($role->getId()),
-		));
+	public static function create(User $user, Role $role)
+	{
+		return static::insert([
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'userId' => $user->getId(),
+			'roleId' => $role->getId(),
+		]);
 	}
 
-	static function make($user, $role) {
-		return static::getOneOrCreateWithList(array(
-			'userId' => (int) ($user->getId()),
-			'roleId' => (int) ($role->getId()),
-		), $user, $role);
+	public static function make($user, $role)
+	{
+		return static::upsert([
+			'userId' => $user->getId(),
+			'roleId' => $role->getId(),
+		], [
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+		]);
 	}
-
-	static function checkCrudParams($user, $role) {
-		if (!$user || !($user instanceof User)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid user."))
-				->addErrorName('user')
-				;
-		}
-		if (!$role || !($role instanceof Role)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid role."))
-				->addErrorName('role')
-				;
-		}
-
-		return true;
-	}
-
 }

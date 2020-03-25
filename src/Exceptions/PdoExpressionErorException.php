@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class PDOExpressionErorException extends ErrorException {
-
+class PDOExpressionErorException extends ErrorException
+{
 }

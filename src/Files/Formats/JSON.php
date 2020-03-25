@@ -2,34 +2,36 @@
 
 namespace Katu\Files\Formats;
 
-class JSON {
+class JSON
+{
+	// public static function respond($var, $options = [])
+	// {
+	// 	$app = \Katu\App::get();
 
-	static function respond($var, $options = []) {
-		$app = \Katu\App::get();
+	// 	$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
 
-		$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
+	// 	if (isset($options['format']) && $options['format'] == 'standard') {
+	// 		$body = static::encodeStandard($var);
+	// 	} else {
+	// 		$body = static::encode($var);
+	// 	}
 
-		if (isset($options['format']) && $options['format'] == 'standard') {
-			$body = static::encodeStandard($var);
-		} else {
-			$body = static::encode($var);
-		}
+	// 	$app->response->setBody(\Katu\Controllers\Controller::prepareBody($body));
 
-		$app->response->setBody(\Katu\Controllers\Controller::prepareBody($body));
+	// 	return true;
+	// }
 
-		return true;
-	}
+	// static function respondError($var = null, $options = []) {
+	// 	static::respond($var);
 
-	static function respondError($var = null, $options = []) {
-		static::respond($var);
+	// 	$app = \Katu\App::get();
+	// 	$app->response->setStatus(500);
 
-		$app = \Katu\App::get();
-		$app->response->setStatus(500);
+	// 	return true;
+	// }
 
-		return true;
-	}
-
-	static function getEncodeBitmask() {
+	public static function getEncodeBitmask()
+	{
 		return
 			  (defined('JSON_PRETTY_PRINT')      ? JSON_PRETTY_PRINT      : null)
 			| (defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : null)
@@ -37,31 +39,36 @@ class JSON {
 		;
 	}
 
-	static function getInlineEncodeBitmask() {
+	public static function getInlineEncodeBitmask()
+	{
 		return
 			  (defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : null)
 			| (defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : null)
 		;
 	}
 
-	static function encode($var) {
+	public static function encode($var)
+	{
 		return json_encode($var, static::getEncodeBitmask());
 	}
 
-	static function encodeInline($var) {
+	public static function encodeInline($var)
+	{
 		return json_encode($var, static::getInlineEncodeBitmask());
 	}
 
-	static function encodeStandard($var) {
+	public static function encodeStandard($var)
+	{
 		return json_encode($var);
 	}
 
-	static function decodeAsObjects($var) {
+	public static function decodeAsObjects($var)
+	{
 		return @json_decode($var, false);
 	}
 
-	static function decodeAsArray($var) {
+	public static function decodeAsArray($var)
+	{
 		return @json_decode($var, true);
 	}
-
 }

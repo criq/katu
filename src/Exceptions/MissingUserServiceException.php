@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class MissingUserServiceException extends UnauthorizedException {
-
+class MissingUserServiceException extends UnauthorizedException
+{
 }

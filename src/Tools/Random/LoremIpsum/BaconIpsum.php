@@ -2,16 +2,16 @@
 
 namespace Katu\Tools\Random\LoremIpsum;
 
-class BaconIpsum extends \Katu\Tools\Random\LoremIpsum {
-
-	static function loadSentences() {
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], static::TIMEOUT, function() {
-
+class BaconIpsum extends \Katu\Tools\Random\LoremIpsum
+{
+	public static function loadSentences()
+	{
+		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], static::TIMEOUT, function () {
 			$url = \Katu\Types\TURL::make('https://baconipsum.com/api/', [
-				'type'             => 'meat-and-filler',
-				'sentences'        => static::LOAD_SENTENCES,
+				'type' => 'meat-and-filler',
+				'sentences' => static::LOAD_SENTENCES,
 				'start-with-lorem' => 1,
-				'format'           => 'json',
+				'format' => 'json',
 			]);
 			$res = \Katu\Cache\URL::get($url, static::TIMEOUT);
 
@@ -20,8 +20,6 @@ class BaconIpsum extends \Katu\Tools\Random\LoremIpsum {
 			}
 
 			return [];
-
 		});
 	}
-
 }

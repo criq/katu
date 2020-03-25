@@ -2,14 +2,15 @@
 
 namespace Katu\PDO\Results;
 
-class CachedClassResult implements \Iterator, \ArrayAccess {
-
+class CachedClassResult implements \Iterator, \ArrayAccess
+{
+	protected $iteratorArray = null;
+	protected $iteratorPosition = 0;
 	public $page;
 	public $pagination;
-	protected $iteratorPosition = 0;
-	protected $iteratorArray = null;
 
-	static function createFromClassResult($result) {
+	public static function createFromClassResult($result)
+	{
 		$object = new static;
 		$object->page = $result->page;
 		$object->pagination = $result->pagination;
@@ -18,55 +19,69 @@ class CachedClassResult implements \Iterator, \ArrayAccess {
 		return $object;
 	}
 
-	public function getCount() {
+	public function getCount()
+	{
 		return count($this->iteratorArray);
 	}
 
-	public function getTotal() {
+	public function getTotal()
+	{
 		return $this->pagination->total;
 	}
 
-	public function getPages() {
+	public function getPages()
+	{
 		return $this->pagination->pages;
 	}
 
-	public function getPage() {
+	public function getPage()
+	{
 		return $this->pagination->page;
 	}
 
-	public function getPerPage() {
+	public function getPerPage()
+	{
 		return $this->pagination->perPage;
 	}
 
-	public function getArray() {
+	public function getArray()
+	{
 		return $this->iteratorArray;
 	}
 
-	/* Iterator *****************************************************************/
-
-	public function rewind() {
+	/****************************************************************************
+	 * Iterator.
+	 */
+	public function rewind()
+	{
 		$this->iteratorPosition = 0;
 	}
 
-	public function current() {
+	public function current()
+	{
 		return $this->iteratorArray[$this->iteratorPosition];
 	}
 
-	public function key() {
+	public function key()
+	{
 		return $this->iteratorPosition;
 	}
 
-	public function next() {
+	public function next()
+	{
 		++$this->iteratorPosition;
 	}
 
-	public function valid() {
+	public function valid()
+	{
 		return isset($this->iteratorArray[$this->iteratorPosition]);
 	}
 
-	/* ArrayAccess **************************************************************/
-
-	public function offsetSet($offset, $value) {
+	/****************************************************************************
+	 * ArrayAccess.
+	 */
+	public function offsetSet($offset, $value)
+	{
 		if (is_null($offset)) {
 			$this->iteratorArray[] = $value;
 		} else {
@@ -74,16 +89,18 @@ class CachedClassResult implements \Iterator, \ArrayAccess {
 		}
 	}
 
-	public function offsetExists($offset) {
+	public function offsetExists($offset)
+	{
 		return isset($this->iteratorArray[$offset]);
 	}
 
-	public function offsetUnset($offset) {
+	public function offsetUnset($offset)
+	{
 		unset($this->iteratorArray[$offset]);
 	}
 
-	public function offsetGet($offset) {
+	public function offsetGet($offset)
+	{
 		return isset($this->iteratorArray[$offset]) ? $this->iteratorArray[$offset] : null;
 	}
-
 }

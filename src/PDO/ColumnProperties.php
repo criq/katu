@@ -2,23 +2,24 @@
 
 namespace Katu\PDO;
 
-class ColumnProperties {
-
-	public $name;
-	public $type;
-	public $length;
-	public $filter;
-	public $options;
-	public $key;
+class ColumnProperties
+{
 	public $default;
+	public $filter;
+	public $isAi;
+	public $isMulti;
 	public $isNull;
 	public $isPrimary;
 	public $isUnique;
-	public $isMulti;
 	public $isUnsigned;
-	public $isAi;
+	public $key;
+	public $length;
+	public $name;
+	public $options;
+	public $type;
 
-	public function __construct($description) {
+	public function __construct($description)
+	{
 		$this->name = $description['Field'];
 
 		if (preg_match('#^(?<type>tinyint|smallint|mediumint|int|bigint)\((?<length>[0-9]+)\)#', $description['Type'], $match)) {
@@ -38,7 +39,7 @@ class ColumnProperties {
 			$this->filter = FILTER_SANITIZE_STRING;
 		} elseif (preg_match('#^(?<type>enum)\((?<options>.*)\)#', $description['Type'], $match)) {
 			$this->type = 'enum';
-			$this->options = array_map(function($i) {
+			$this->options = array_map(function ($i) {
 				return (string) trim($i, '\'');
 			}, explode(',', $match['options']));
 			$this->filter = FILTER_SANITIZE_STRING;
@@ -60,5 +61,4 @@ class ColumnProperties {
 		$this->isUnsigned = (bool) (strpos($description['Type'], 'unsigned') !== false);
 		$this->isAi       = (bool) ($description['Extra'] == 'auto_increment');
 	}
-
 }

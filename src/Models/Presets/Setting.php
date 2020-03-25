@@ -2,41 +2,30 @@
 
 namespace Katu\Models\Presets;
 
-class Setting extends \Katu\Models\Model {
-
+class Setting extends \Katu\Models\Model
+{
 	const TABLE = 'settings';
 
-	static function create($creator, $name, $value, $isSystem, $description = null) {
-		if (!static::checkCrudParams($creator, $name, $value, $isSystem)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
-
-		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
-			'creatorId'   => (int)    ($creator->getId()),
-			'name'        => (string) (trim($name)),
-			'value'       => (string) (trim($value)),
-			'isSystem'    => (string) ($isSystem ? '1' : '0'),
-			'description' => (string) (trim($description)),
-		));
-	}
-
-	static function checkCrudParams($creator, $name, $value, $isSystem) {
-		if (!$creator || !($creator instanceof \App\Models\User)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid setting creator."))
-				->addErrorName('creator')
-				;
-		}
+	public static function create(User $creator, string $name, $value, bool $isSystem, string $description = null) : Setting
+	{
 		if (!static::checkName($name)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid setting name."))
 				->addErrorName('name')
 				;
 		}
 
-		return true;
+		return static::insert([
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'creatorId' => $creator->getId(),
+			'name' => trim($name),
+			'value' => \Katu\Files\Formats\JSON::encodeStandard(trim($value)),
+			'isSystem' => $isSystem ? '1' : '0',
+			'description' => trim($description) ?: null,
+		]);
 	}
 
-	static function checkName($name, $object = null) {
+	public static function checkName(string $name, \Katu\Models\Model $object = null)
+	{
 		if (!trim($name)) {
 			throw (new \Katu\Exceptions\InputErrorException("Missing setting name."))
 				->addErrorName('name')
@@ -57,7 +46,8 @@ class Setting extends \Katu\Models\Model {
 		return true;
 	}
 
-	public function setName($name) {
+	public function setName(string $name)
+	{
 		if (!static::checkName($name, $this)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid setting name."))
 				->addErrorName('name')
@@ -69,17 +59,20 @@ class Setting extends \Katu\Models\Model {
 		return true;
 	}
 
-	public function getValue() {
+	public function getValue()
+	{
 		return \Katu\Files\Formats\JSON::decodeAsArray($this->value);
 	}
 
-	static function getObject($name) {
-		return static::getOneBy(array(
+	public static function getObject($name)
+	{
+		return static::getOneBy([
 			'name' => trim($name),
-		));
+		]);
 	}
 
-	static function getByName($name) {
+	public static function getByName($name)
+	{
 		$setting = static::getObject($name);
 		if (!$setting) {
 			throw new \Katu\Exceptions\MissingSettingException("Missing setting " . $name . ".");
@@ -88,7 +81,8 @@ class Setting extends \Katu\Models\Model {
 		return $setting->getValue();
 	}
 
-	static function getAllAsAssoc() {
+	public static function getAllAsAssoc()
+	{
 		$settings = array();
 
 		foreach (static::getAll() as $setting) {
@@ -98,7 +92,11 @@ class Setting extends \Katu\Models\Model {
 		return $settings;
 	}
 
-	public function userCanEdit($user) {
+	/****************************************************************************
+	 * Permissions.
+	 */
+	public function userCanEdit($user)
+	{
 		if (!$user) {
 			return false;
 		}
@@ -106,7 +104,8 @@ class Setting extends \Katu\Models\Model {
 		return $user->hasPermission('settings.edit');
 	}
 
-	public function userCanDelete($user) {
+	public function userCanDelete($user)
+	{
 		if (!$user) {
 			return false;
 		}
@@ -117,5 +116,4 @@ class Setting extends \Katu\Models\Model {
 
 		return $user->hasPermission('settings.delete');
 	}
-
 }

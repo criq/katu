@@ -2,32 +2,34 @@
 
 namespace Katu\Tools\Security;
 
-use \Katu\Tools\Session\Session;
-
-class CSRF {
-
-	static function getFreshToken($params = array()) {
+class CSRF
+{
+	public static function getFreshToken($params = [])
+	{
 		$token = new \Katu\Tools\Forms\Token($params);
 
 		$tokens = static::getValidTokens();
 		$tokens[] = $token;
 
-		Session::set('csrf.tokens', $tokens);
+		\Katu\Tools\Session\Session::set('csrf.tokens', $tokens);
 
 		return $token;
 	}
 
-	static function getAllTokens() {
-		return (array) Session::get('csrf.tokens');
+	public static function getAllTokens()
+	{
+		return (array) \Katu\Tools\Session\Session::get('csrf.tokens');
 	}
 
-	static function getValidTokens() {
-		return array_values(array_filter(static::getAllTokens(), function($token) {
+	public static function getValidTokens()
+	{
+		return array_values(array_filter(static::getAllTokens(), function ($token) {
 			return $token->isValid();
 		}));
 	}
 
-	static function getValidTokenByToken($tokenToken) {
+	public static function getValidTokenByToken($tokenToken)
+	{
 		foreach (static::getValidTokens() as $token) {
 			if ($token->token == $tokenToken && $token->isValid()) {
 				return $token;
@@ -37,7 +39,8 @@ class CSRF {
 		return false;
 	}
 
-	static function isValidToken($tokenToken) {
+	public static function isValidToken($tokenToken)
+	{
 		$token = static::getValidTokenByToken($tokenToken);
 		if (!$token) {
 			return false;
@@ -45,5 +48,4 @@ class CSRF {
 
 		return $token->isValid();
 	}
-
 }

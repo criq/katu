@@ -6,10 +6,9 @@ use \PDO;
 
 class Connection
 {
-
-	public $name;
 	public $config;
 	public $connection;
+	public $name;
 	public static $connections = [];
 
 	public function __construct($name)

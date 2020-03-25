@@ -2,14 +2,12 @@
 
 namespace Katu\Email\ThirdParty\Mandrill;
 
-class Status {
-
-	private $id;
-	private $emailAddress;
+class Status
+{
 	private $status;
-	private $rejectReason;
 
-	public function __construct($status = []) {
+	public function __construct($status = [])
+	{
 		if (isset($status['_id'])) {
 			$this->id = $status['_id'];
 		}
@@ -24,8 +22,8 @@ class Status {
 		}
 	}
 
-	public function isSuccessful() {
+	public function isSuccessful()
+	{
 		return in_array($this->status, ['sent', 'queued']);
 	}
-
 }

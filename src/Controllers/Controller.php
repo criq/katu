@@ -4,7 +4,6 @@ namespace Katu\Controllers;
 
 class Controller
 {
-
 	public $container;
 	public $data = [];
 
@@ -16,14 +15,14 @@ class Controller
 	/****************************************************************************
 	 * Render.
 	 */
-	public function render($request, $response, $args, $template)
+	public function render(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, string $template)
 	{
 		try {
 			$viewClass = \Katu\App::getViewClass();
 			$template = $viewClass::render($request, $response, $args, $template, $this->data);
 
 			$headers = $request->getHeader('Accept-Encoding');
-			if (isset($headers[0]) && in_array('gzip', array_map('trim', (array)explode(',', $headers[0])))) {
+			if (($headers[0] ?? null) && in_array('gzip', array_map('trim', (array)explode(',', $headers[0])))) {
 				$template = gzencode($template);
 				$response = $response->withHeader('Content-Encoding', 'gzip');
 			}
@@ -39,19 +38,19 @@ class Controller
 		}
 	}
 
-	public function renderError($request, $response, $args, $status = 500)
+	public function renderError(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, $status = 500)
 	{
 		return $this->render($request, $response, $args, 'Errors/' . $status . '.twig')
 			->withStatus($status)
 			;
 	}
 
-	public function renderNotFound($request, $response, $args, $status = 404)
+	public function renderNotFound(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, $status = 404)
 	{
 		return $this->renderError($request, $response, $args, $status);
 	}
 
-	public function renderUnauthorized($request, $response, $args, $status = 401)
+	public function renderUnauthorized(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, $status = 401)
 	{
 		return $this->renderError($request, $response, $args, $status);
 	}
@@ -77,17 +76,17 @@ class Controller
 	/****************************************************************************
 	 * Form submission.
 	 */
-	public function isSubmitted($request, $name = null)
+	public function isSubmitted(\Slim\Http\Request $request, string $name = null)
 	{
-		return $request->getParsedBodyParam('formSubmitted') && $request->getParsedBodyParam('formName') == $name;
+		return $request->getParam('formSubmitted') && $request->getParam('formName') == $name;
 	}
 
-	public function isSubmittedWithToken($request, $name = null)
+	public function isSubmittedWithToken(\Slim\Http\Request $request, string $name = null)
 	{
-		return $this->isSubmitted($request, $name) && \Katu\Tools\Security\CSRF::isValidToken($request->getParsedBodyParam('formToken'));
+		return $this->isSubmitted($request, $name) && \Katu\Tools\Security\CSRF::isValidToken($request->getParam('formToken'));
 	}
 
-	public function isSubmittedByHuman($request, $name = null)
+	public function isSubmittedByHuman(\Slim\Http\Request $request, string $name = null)
 	{
 		// Check basic form params.
 		if (!$this->isSubmittedWithToken($request, $name)) {
@@ -95,7 +94,7 @@ class Controller
 		}
 
 		// Get the token.
-		$token = \Katu\Tools\Security\CSRF::getValidTokenByToken($request->getParsedBodyParam('formToken'));
+		$token = \Katu\Tools\Security\CSRF::getValidTokenByToken($request->getParam('formToken'));
 		if (!$token) {
 			return false;
 		}
@@ -106,7 +105,7 @@ class Controller
 		}
 
 		// Check captcha. Should be empty.
-		if ($request->getParsedBodyParam('yourName_' . $token->secret) !== '') {
+		if ($request->getParam('yourName_' . $token->secret) !== '') {
 			return false;
 		}
 
@@ -114,11 +113,11 @@ class Controller
 	}
 
 	/****************************************************************************
-	 * Errors
+	 * Errors.
 	 */
 	public function addErrors(\Katu\Exceptions\Exception $e)
 	{
-		if (!isset($this->data['_errors'])) {
+		if (!$this->data['_errors'] ?? null) {
 			$this->data['_errors'] = new \Katu\Exceptions\ExceptionCollection;
 		}
 
@@ -129,6 +128,6 @@ class Controller
 
 	public function hasErrors()
 	{
-		return (bool) (isset($this->data['_errors']) ? $this->data['_errors'] : false);
+		return (bool)$this->data['_errors'] ?? null;
 	}
 }

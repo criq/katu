@@ -4,7 +4,6 @@ namespace Katu\Tools\Emails\ThirdParty;
 
 class Sendgrid extends \Katu\Tools\Emails\ThirdParty
 {
-
 	public $attachments = [];
 
 	public static function getDefaultApi()

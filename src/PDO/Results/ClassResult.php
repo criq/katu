@@ -2,17 +2,17 @@
 
 namespace Katu\PDO\Results;
 
-use \PDO;
-
-class ClassResult extends PaginatedResult {
-
-	public function __construct($pdo, $statement, $page, $class) {
+class ClassResult extends PaginatedResult
+{
+	public function __construct($pdo, $statement, $page, $class)
+	{
 		parent::__construct($pdo, $statement, $page);
 
 		$this->class = $class;
 	}
 
-	public function getObjects($class = null) {
+	public function getObjects($class = null)
+	{
 		if (!$class && $this->class) {
 			$class = $this->class;
 		}
@@ -22,7 +22,8 @@ class ClassResult extends PaginatedResult {
 		return $this->iteratorArray;
 	}
 
-	public function getOne($class = null, $offset = 0) {
+	public function getOne($class = null, $offset = 0)
+	{
 		if (!$class && $this->class) {
 			$class = $this->class;
 		}
@@ -40,7 +41,8 @@ class ClassResult extends PaginatedResult {
 		return $object;
 	}
 
-	public function getRandomOne($class = null) {
+	public function getRandomOne($class = null)
+	{
 		if ($this->getCount()) {
 			return $this->getOne($class, rand(0, $this->getCount() - 1));
 		}
@@ -48,7 +50,8 @@ class ClassResult extends PaginatedResult {
 		return false;
 	}
 
-	public function getPropertyValues($property) {
+	public function getPropertyValues($property)
+	{
 		$values = array();
 
 		foreach ($this as $object) {
@@ -58,9 +61,11 @@ class ClassResult extends PaginatedResult {
 		return $values;
 	}
 
-	/* ArrayAccess ***********************************************************/
-
-	public function setIteratorArray($class = null) {
+	/****************************************************************************
+	 * ArrayAccess.
+	 */
+	public function setIteratorArray($class = null)
+	{
 		if (is_null($this->iteratorArray)) {
 			if (!$class && $this->class) {
 				$class = $this->class;
@@ -72,5 +77,4 @@ class ClassResult extends PaginatedResult {
 			}
 		}
 	}
-
 }

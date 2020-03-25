@@ -2,11 +2,12 @@
 
 namespace Katu\Utils\Callback;
 
-class Collection {
-
+class Collection
+{
 	public $callbackCollection;
 
-	public function __construct() {
+	public function __construct()
+	{
 		// One arg, an array of callbacks.
 		if (count(func_get_args()) == 1 && is_array(func_get_arg(0))) {
 			foreach (func_get_arg(0) as $name => $callable) {
@@ -23,7 +24,8 @@ class Collection {
 		}
 	}
 
-	public function add($name, $callable) {
+	public function add($name, $callable)
+	{
 		if (!$name) {
 			throw new \Exception("Missing callback name.");
 		}
@@ -38,16 +40,17 @@ class Collection {
 		}
 	}
 
-	public function exists($name) {
+	public function exists($name)
+	{
 		return isset($this->callbackCollection[$name]);
 	}
 
-	public function call($name, $args = []) {
+	public function call($name, $args = [])
+	{
 		if (!$this->exists($name)) {
 			throw new \Exception("Callback doesn't exist.");
 		}
 
 		return $this->callbackCollection[$name]->call($args);
 	}
-
 }

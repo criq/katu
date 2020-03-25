@@ -2,18 +2,19 @@
 
 namespace Katu\Types;
 
-class TPagination {
-
+class TPagination
+{
 	const PAGINATION_ALL_PAGES_LIMIT = 10;
-	const PAGINATION_ENDS_OFFSET     = 0;
-	const PAGINATION_CURRENT_OFFSET  = 3;
+	const PAGINATION_ENDS_OFFSET = 0;
+	const PAGINATION_CURRENT_OFFSET = 3;
 
 	public $total;
 	public $perPage;
 	public $page;
 	public $pages;
 
-	public function __construct($total, $perPage, $page) {
+	public function __construct($total, $perPage, $page)
+	{
 		if ((int) $total < 0) {
 			throw new \Exception("Invalid total.");
 		}
@@ -24,27 +25,31 @@ class TPagination {
 			throw new \Exception("Invalid page.");
 		}
 
-		$this->total   = (int) $total;
-		$this->perPage = (int) $perPage;
-		$this->page    = (int) $page;
-		$this->pages   = (int) ceil($total / $perPage);
+		$this->total   = (int)$total;
+		$this->perPage = (int)$perPage;
+		$this->page    = (int)$page;
+		$this->pages   = (int)ceil($total / $perPage);
 	}
 
-	static function getAppPageIdent() {
+	public static function getAppPageIdent()
+	{
 		return \Katu\Config\Config::get('app', 'pagination', 'pageIdent');
 	}
 
-	static function getAppPerPage() {
+	public static function getAppPerPage()
+	{
 		return \Katu\Config\Config::get('app', 'pagination', 'perPage');
 	}
 
-	static function getRequestPageExpression($perPage = null) {
+	public static function getRequestPageExpression($perPage = null)
+	{
 		$app = \Katu\App::get();
 
 		return new \Sexy\Page(static::getPageFromRequest($app->request->params()), is_null($perPage) ? static::getAppPerPage() : $perPage);
 	}
 
-	static function getPageFromRequest($params) {
+	public static function getPageFromRequest($params)
+	{
 		if (!isset($params[static::getAppPageIdent()])) {
 			return 1;
 		}
@@ -53,38 +58,41 @@ class TPagination {
 			return 1;
 		}
 
-		return (int) $params[static::getAppPageIdent()];
+		return (int)$params[static::getAppPageIdent()];
 	}
 
-	public function getMinPage() {
-		return (int) 1;
+	public function getMinPage()
+	{
+		return 1;
 	}
 
-	public function getMaxPage() {
+	public function getMaxPage()
+	{
 		return (int) (ceil($this->total / $this->perPage));
 	}
 
-	public function getPaginationPages($options = array()) {
-		$options = array_merge(array(
+	public function getPaginationPages($options = [])
+	{
+		$options = array_merge([
 			'allPagesLimit' => static::PAGINATION_ALL_PAGES_LIMIT,
 			'endsOffset'    => static::PAGINATION_ENDS_OFFSET,
 			'currentOffset' => static::PAGINATION_CURRENT_OFFSET,
-		), $options);
+		], $options);
 
 		if (!$this->total) {
-			return array();
+			return [];
 		}
 
 		if ($this->getMaxPage() <= $options['allPagesLimit']) {
 			return range($this->getMinPage(), $this->getMaxPage());
 		}
 
-		$pages = array();
+		$pages = [];
 		$pages = array_merge($pages, range($this->getMinPage(), $this->getMinPage() + $options['endsOffset']));
 		$pages = array_merge($pages, range($this->page - $options['currentOffset'], $this->page + $options['currentOffset']));
 		$pages = array_merge($pages, range($this->getMaxPage() - $options['endsOffset'], $this->getMaxPage()));
 
-		$pages = array_unique(array_filter($pages, function($i){
+		$pages = array_unique(array_filter($pages, function ($i) {
 			return ($i > 0 && $i <= $this->getMaxPage()) ? true : false;
 		}));
 		natsort($pages);
@@ -92,5 +100,4 @@ class TPagination {
 
 		return $pages;
 	}
-
 }

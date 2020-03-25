@@ -2,11 +2,11 @@
 
 namespace Katu\Tools\Random\LoremIpsum;
 
-class FillText extends \Katu\Tools\Random\LoremIpsum {
-
-	static function loadSentences() {
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], static::TIMEOUT, function() {
-
+class FillText extends \Katu\Tools\Random\LoremIpsum
+{
+	public static function loadSentences()
+	{
+		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], static::TIMEOUT, function () {
 			$url = \Katu\Types\TURL::make('http://www.filltext.com/', [
 				'rows' => 1,
 				'lorem' => '{lorem|200}',
@@ -20,8 +20,6 @@ class FillText extends \Katu\Tools\Random\LoremIpsum {
 			}
 
 			return $sentences;
-
 		});
 	}
-
 }

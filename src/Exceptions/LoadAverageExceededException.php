@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class LoadAverageExceededException extends ErrorException {
-
+class LoadAverageExceededException extends ErrorException
+{
 }

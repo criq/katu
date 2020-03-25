@@ -2,31 +2,34 @@
 
 namespace Katu\Tools\Curl;
 
-class Exec {
-
+class Exec
+{
+	public $isSilent = true;
 	public $method = 'GET';
 	public $url;
 	public $user;
 
-	public $isSilent = true;
-
-	public function __construct(\Katu\Types\TURL $url) {
+	public function __construct(\Katu\Types\TURL $url)
+	{
 		$this->url = $url;
 	}
 
-	public function setMethod(string $method) {
+	public function setMethod(string $method)
+	{
 		$this->method = $method;
 
 		return $this;
 	}
 
-	public function setUser(\Katu\Models\Presets\User $user = null) {
+	public function setUser(\Katu\Models\Presets\User $user = null)
+	{
 		$this->user = $user;
 
 		return $this;
 	}
 
-	public function getCommand() {
+	public function getCommand()
+	{
 		$segments = [
 			'curl',
 			'--request ' . $this->method,
@@ -45,8 +48,8 @@ class Exec {
 		return implode(' ', $segments);
 	}
 
-	public function exec() {
+	public function exec()
+	{
 		return exec($this->getCommand());
 	}
-
 }

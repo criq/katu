@@ -2,16 +2,16 @@
 
 namespace Katu\Tools\Cron;
 
-class Cron {
-
-	static function getCurrent() {
+class Cron
+{
+	public static function getCurrent()
+	{
 		$crons = [];
 
 		$time = new \Katu\Tools\DateTime\DateTime;
 		$time->setTime($time->format('H'), $time->format('i'), 0);
 
 		try {
-
 			$paths = array_filter((array)\Katu\Config\Config::get('cron', 'paths'));
 			foreach ($paths as $path => $spec) {
 				if (is_array($spec)) {
@@ -23,13 +23,11 @@ class Cron {
 					$crons[] = new Path($path);
 				}
 			}
-
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			// Nevermind.
 		}
 
 		try {
-
 			$routes = array_filter((array)\Katu\Config\Config::get('cron', 'routes'));
 			foreach ($routes as $route => $spec) {
 				if (is_array($spec)) {
@@ -41,7 +39,6 @@ class Cron {
 					$crons[] = new Route($route);
 				}
 			}
-
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			// Nevermind.
 		}
@@ -49,7 +46,8 @@ class Cron {
 		return $crons;
 	}
 
-	static function runCurrent() {
+	public static function runCurrent()
+	{
 		$crons = static::getCurrent();
 		foreach ($crons as $cron) {
 			$cron->run();
@@ -57,5 +55,4 @@ class Cron {
 
 		return true;
 	}
-
 }

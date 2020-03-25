@@ -2,38 +2,39 @@
 
 namespace Katu\Tools\Emails\ThirdParty;
 
-class Mandrill extends \Katu\Tools\Emails\ThirdParty {
-
-	public $content = [];
-	public $attachments = [];
-
+class Mandrill extends \Katu\Tools\Emails\ThirdParty
+{
 	public $async = false;
+	public $attachments = [];
+	public $content = [];
 
-	static function getDefaultApi() {
-		$app = \Katu\App::get();
-
+	public static function getDefaultApi()
+	{
 		try {
-			$key = \Katu\Config::get('app', 'email', 'useMandrillKey');
+			$key = \Katu\Config\Config::get('app', 'email', 'useMandrillKey');
 		} catch (\Exception $e) {
 			$key = 'live';
 		}
 
-		return new \Mandrill(\Katu\Config::get('mandrill', 'api', 'keys', $key));
+		return new \Mandrill(\Katu\Config\Config::get('mandrill', 'api', 'keys', $key));
 	}
 
-	public function setContent($name, $value) {
+	public function setContent($name, $value)
+	{
 		$this->content[$name] = $value;
 
 		return $this;
 	}
 
-	public function setAsync($async = true) {
+	public function setAsync($async = true)
+	{
 		$this->async = (bool) $async;
 
 		return $this;
 	}
 
-	public function getMessage($message) {
+	public function getMessage($message)
+	{
 		$message['subject']    = $this->subject;
 		$message['html']       = $this->html;
 		$message['text']       = $this->plain;
@@ -73,7 +74,8 @@ class Mandrill extends \Katu\Tools\Emails\ThirdParty {
 		return $message;
 	}
 
-	public function getContent() {
+	public function getContent()
+	{
 		$content = [];
 
 		foreach ($this->content as $name => $value) {
@@ -86,7 +88,8 @@ class Mandrill extends \Katu\Tools\Emails\ThirdParty {
 		return $content;
 	}
 
-	public function getVariables() {
+	public function getVariables()
+	{
 		$variables = [];
 
 		foreach ($this->variables as $name => $value) {
@@ -99,7 +102,8 @@ class Mandrill extends \Katu\Tools\Emails\ThirdParty {
 		return $variables;
 	}
 
-	public function getRecipientVariables() {
+	public function getRecipientVariables()
+	{
 		$variables = [];
 
 		foreach ($this->recipientVariables as $recipient => $vars) {
@@ -119,7 +123,8 @@ class Mandrill extends \Katu\Tools\Emails\ThirdParty {
 		return $variables;
 	}
 
-	public function send() {
+	public function send()
+	{
 		$args = [];
 		if (isset($args[0]) && $args[0] instanceof \Mandrill) {
 			$mandrillApi = $args[0];
@@ -139,5 +144,4 @@ class Mandrill extends \Katu\Tools\Emails\ThirdParty {
 			return $mandrillApi->messages->send($this->getMessage($message));
 		}
 	}
-
 }

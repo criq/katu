@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class InputErrorException extends ErrorException {
-
+class InputErrorException extends ErrorException
+{
 }

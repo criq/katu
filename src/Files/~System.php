@@ -1,101 +1,98 @@
 <?php
 
-namespace Katu\File;
+// namespace Katu\Files;
 
-use \Katu\Classes\FileSystemPathSegments;
+// class System
+// {
+// 	public static function getTree($dir)
+// 	{
+// 		if (!function_exists('__scandirr')) {
 
-class System {
+// 			function __scandirr($dir, &$files = array()) {
+// 				foreach (scandir($dir) as $file) {
+// 					$path = $dir . '/' . $file;
+// 					if ($file != '.' && $file != '..') {
+// 						if (is_dir($path)) {
+// 							$files[] = realpath($path);
+// 							$files[] = __scandirr($path, $files);
+// 						} else {
+// 							$files[] = realpath($path);
+// 						}
+// 					}
+// 				}
+// 			}
 
-	static $names = [];
+// 		}
 
-	static function getTree($dir) {
-		if (!function_exists('__scandirr')) {
+// 		__scandirr($dir, $files);
 
-			function __scandirr($dir, &$files = array()) {
-				foreach (scandir($dir) as $file) {
-					$path = $dir . '/' . $file;
-					if ($file != '.' && $file != '..') {
-						if (is_dir($path)) {
-							$files[] = realpath($path);
-							$files[] = __scandirr($path, $files);
-						} else {
-							$files[] = realpath($path);
-						}
-					}
-				}
-			}
+// 		return array_values(array_filter($files));
+// 	}
 
-		}
+// 	static function getSize($path) {
+// 		clearstatcache();
 
-		__scandirr($dir, $files);
+// 		return filesize($path);
+// 	}
 
-		return array_values(array_filter($files));
-	}
+// 	static function getMime($path) {
+// 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+// 		$mime = finfo_file($finfo, $path);
+// 		finfo_close($finfo);
 
-	static function getSize($path) {
-		clearstatcache();
+// 		return $mime;
+// 	}
 
-		return filesize($path);
-	}
+// 	static function touch($path) {
+// 		@mkdir(dirname($path), 0777, true);
 
-	static function getMime($path) {
-		$finfo = finfo_open(FILEINFO_MIME_TYPE);
-		$mime = finfo_file($finfo, $path);
-		finfo_close($finfo);
+// 		return touch($path);
+// 	}
 
-		return $mime;
-	}
+// 	static function getDirs($parentDir) {
+// 		$dirs = [];
 
-	static function touch($path) {
-		@mkdir(dirname($path), 0777, true);
+// 		foreach (scandir($parentDir) as $file) {
+// 			if (!in_array($file, ['.', '..'])) {
+// 				$path = static::joinPaths($parentDir, $file);
+// 				if (is_dir($path)) {
+// 					$dirs[] = $path;
+// 				}
+// 			}
+// 		}
 
-		return touch($path);
-	}
+// 		return $dirs;
+// 	}
 
-	static function getDirs($parentDir) {
-		$dirs = [];
+// 	static function deleteDir($dir) {
+// 		$it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+// 		$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
 
-		foreach (scandir($parentDir) as $file) {
-			if (!in_array($file, ['.', '..'])) {
-				$path = static::joinPaths($parentDir, $file);
-				if (is_dir($path)) {
-					$dirs[] = $path;
-				}
-			}
-		}
+// 		foreach ($files as $file) {
+// 			if ($file->isDir()) {
+// 				rmdir($file->getRealPath());
+// 			} else {
+// 				unlink($file->getRealPath());
+// 			}
+// 		}
 
-		return $dirs;
-	}
+// 		rmdir($dir);
+// 	}
 
-	static function deleteDir($dir) {
-		$it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
-		$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
+// 	static function getDiskSpace() {
+// 		return new FileSize(disk_total_space(\Katu\App::getBaseDir()));
+// 	}
 
-		foreach ($files as $file) {
-			if ($file->isDir()) {
-				rmdir($file->getRealPath());
-			} else {
-				unlink($file->getRealPath());
-			}
-		}
+// 	static function getFreeDiskSpace() {
+// 		return new FileSize(disk_free_space(\Katu\App::getBaseDir()));
+// 	}
 
-		rmdir($dir);
-	}
+// 	static function getDiskUsage() {
+// 		return 1 - (static::getFreeDiskSpace()->size / static::getDiskSpace()->size);
+// 	}
 
-	static function getDiskSpace() {
-		return new FileSize(disk_total_space(\Katu\App::getBaseDir()));
-	}
+// 	static function getSpaceAboveFreeTreshold($treshold) {
+// 		return new FileSize(static::getDiskSpace()->size - (static::getDiskSpace()->size * $treshold) - static::getFreeDiskSpace()->size);
+// 	}
 
-	static function getFreeDiskSpace() {
-		return new FileSize(disk_free_space(\Katu\App::getBaseDir()));
-	}
-
-	static function getDiskUsage() {
-		return 1 - (static::getFreeDiskSpace()->size / static::getDiskSpace()->size);
-	}
-
-	static function getSpaceAboveFreeTreshold($treshold) {
-		return new FileSize(static::getDiskSpace()->size - (static::getDiskSpace()->size * $treshold) - static::getFreeDiskSpace()->size);
-	}
-
-}
+// }

@@ -11,8 +11,8 @@ class File extends \Katu\Models\Model
 	public static function create(\Katu\Models\Presets\User $creator = null, string $path, string $fileName, string $fileType, int $fileSize) : File
 	{
 		return static::insert([
-			'timeCreated' => (string)\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat(),
-			'creatorId'   =>         $creator ? $creator->getId() : null,
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'creatorId'   => $creator ? $creator->getId() : null,
 			'path'        => (string)$path,
 			'name'        => (string)$fileName,
 			'type'        => (string)$fileType,

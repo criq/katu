@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class TemplateException extends Exception {
-
+class TemplateException extends Exception
+{
 }

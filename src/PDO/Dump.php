@@ -2,19 +2,21 @@
 
 namespace Katu\PDO;
 
-class Dump {
-
+class Dump
+{
 	public $database;
-	public $file;
 	public $datetime;
+	public $file;
 
-	public function __construct($file, $datetime) {
+	public function __construct($file, $datetime)
+	{
 		$this->database = $file->getDir()->getBasename();
 		$this->file     = $file;
 		$this->datetime = $datetime;
 	}
 
-	static function getAll() {
+	public static function getAll()
+	{
 		$dumps = [];
 
 		$dirs = (new \Katu\Files\File(\Katu\App::getBaseDir(), 'databases'))->getDirs();
@@ -39,9 +41,8 @@ class Dump {
 		return $dumps;
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		return @unlink($this->file);
 	}
-
 }
-

@@ -2,9 +2,10 @@
 
 namespace Katu\Tools\Services\Composer;
 
-class Composer {
-
-	static function getJSON() {
+class Composer
+{
+	public static function getJSON()
+	{
 		$path = \Katu\Files\File::joinPaths(\Katu\App::getBaseDir(), 'composer.json');
 		if (!file_exists($path)) {
 			throw new \Exception("Missing composer.json file.");
@@ -17,7 +18,8 @@ class Composer {
 		return \Katu\Files\Formats\JSON::decodeAsArray(file_get_contents($path));
 	}
 
-	static function getDir() {
+	public static function getDir()
+	{
 		$json = self::getJSON();
 		if (isset($json['config']['vendor-dir'])) {
 			return new \Katu\Files\File(\Katu\Files\File::joinPaths(\Katu\App::getBaseDir(), $json['config']['vendor-dir']));
@@ -25,5 +27,4 @@ class Composer {
 
 		return new \Katu\Files\File(\Katu\Files\File::joinPaths(\Katu\App::getBaseDir(), 'vendor'));
 	}
-
 }

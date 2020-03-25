@@ -2,14 +2,15 @@
 
 namespace Katu\Tools\Cookies;
 
-class Cookie {
-
-	const DEFAULT_LIFETIME = '10 years';
+class Cookie
+{
+	const DEFAULT_HTTPONLY = true;
+	const DEFAULT_LIFETIME = '1 year';
 	const DEFAULT_PATH     = '/';
 	const DEFAULT_SECURE   = false;
-	const DEFAULT_HTTPONLY = true;
 
-	static function set($name, $value = null, $lifetime = null, $path = null, $domain = null) {
+	public static function set($name, $value = null, $lifetime = null, $path = null, $domain = null)
+	{
 		$config = static::getConfig();
 
 		$name = strtr($name, '.', '_');
@@ -20,7 +21,8 @@ class Cookie {
 		return setcookie($name, $value, $lifetime, $path, $domain);
 	}
 
-	static function get($name = null) {
+	public static function get($name = null)
+	{
 		$name = strtr($name, '.', '_');
 
 		if (!$name) {
@@ -30,11 +32,13 @@ class Cookie {
 		return isset($_COOKIE[$name]) ? $_COOKIE[$name] : null;
 	}
 
-	static function remove($name) {
+	public static function remove($name)
+	{
 		return static::set($name, null, -86400);
 	}
 
-	static function getDefaultConfig() {
+	public static function getDefaultConfig()
+	{
 		return [
 			'lifetime' => abs((new \Katu\Tools\DateTime\DateTime('+ ' . static::DEFAULT_LIFETIME))->getAge()),
 			'path'     => static::DEFAULT_PATH,
@@ -44,7 +48,8 @@ class Cookie {
 		];
 	}
 
-	static function getConfig() {
+	public static function getConfig()
+	{
 		try {
 			$config = \Katu\Config\Config::get('app', 'cookie');
 		} catch (\Exception $e) {
@@ -54,8 +59,8 @@ class Cookie {
 		return array_merge(static::getDefaultConfig(), $config);
 	}
 
-	static function getDefautDomain() {
+	public static function getDefautDomain()
+	{
 		return '.' . \Katu\Tools\Routing\URL::getBase()->get2ndLevelDomain();
 	}
-
 }

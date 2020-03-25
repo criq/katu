@@ -4,14 +4,14 @@ namespace Katu\Models\Presets;
 
 use \Sexy\Sexy as SX;
 
-class AccessToken extends \Katu\Models\Model {
-
-	const TABLE = 'access_tokens';
-
+class AccessToken extends \Katu\Models\Model
+{
 	const EXPIRES = 86400;
 	const LENGTH = 128;
+	const TABLE = 'access_tokens';
 
-	static function create($user) {
+	public static function create(\Katu\Models\Presets\User $user)
+	{
 		return static::insert([
 			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
 			'timeExpires' => (string) (\Katu\Tools\DateTime\DateTime::get('+ ' . static::EXPIRES . ' seconds')->getDbDateTimeFormat()),
@@ -20,11 +20,8 @@ class AccessToken extends \Katu\Models\Model {
 		]);
 	}
 
-	static function makeValidForUser($user) {
-		if (!static::checkCrudParams($user)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
-
+	public static function makeValidForUser(\Katu\Models\Presets\User $user)
+	{
 		$sql = SX::select()
 			->from(static::getTable())
 			->where(SX::eq(static::getColumn('userId'), (int)$user->getId()))
@@ -39,18 +36,8 @@ class AccessToken extends \Katu\Models\Model {
 		return $object;
 	}
 
-	static function checkCrudParams($user) {
-		if (!$user || !($user instanceof User)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid user."))
-				->addErrorName('user')
-				;
-		}
-
-		return true;
-	}
-
-	public function getRemainingTime() {
+	public function getRemainingTime()
+	{
 		return (new \Katu\Tools\DateTime\DateTime($this->timeExpires))->getTimestamp() - (new \Katu\Tools\DateTime\DateTime())->getTimestamp();
 	}
-
 }

@@ -2,21 +2,24 @@
 
 namespace Katu\Utils;
 
-class Password {
-
+class Password
+{
 	const DELIMITER = '$';
 
-	static function getHashable($password, $salt) {
+	public static function getHashable($password, $salt)
+	{
 		return $password . $salt;
 	}
 
-	static function encode($hash, $password) {
-		$salt = Random::getString();
+	public static function encode($hash, $password)
+	{
+		$salt = \Katu\Tools\Random\Generator::getString();
 
 		return static::DELIMITER . implode(static::DELIMITER, array($hash, $salt, hash($hash, static::getHashable($password, $salt))));
 	}
 
-	static function verify($attempt, $token) {
+	public static function verify($attempt, $token)
+	{
 		$analyzed = static::analyzeHashed($token);
 		if (!$analyzed) {
 			return false;
@@ -25,7 +28,8 @@ class Password {
 		return hash($analyzed['hash'], static::getHashable($attempt, $analyzed['salt'])) == $analyzed['hashed'];
 	}
 
-	static function analyzeHashed($token) {
+	public static function analyzeHashed($token)
+	{
 		if (!$token) {
 			return false;
 		}
@@ -44,5 +48,4 @@ class Password {
 			'hashed'    => $hashed,
 		);
 	}
-
 }

@@ -46,7 +46,7 @@ class App
 		// Timezone.
 		try {
 			date_default_timezone_set(\Katu\Config\Config::get('app', 'timezone'));
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			// Just use default timezone.
 		}
 
@@ -63,7 +63,7 @@ class App
 
 			try {
 				$config = \Katu\Config\Config::get('app', 'slim');
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				$config = [];
 			}
 
@@ -100,51 +100,6 @@ class App
 	{
 		$app = static::get();
 
-		// TODO - obnovit
-		/*
-		// Redirect to canonical host.
-		try {
-			if ($app->request->getMethod() == 'GET' && \Katu\Config\Config::get('app', 'redirectToCanonicalHost')) {
-				$currenTURL = \Katu\Tools\Routing\URL::getCurrent();
-				$currentHost = $currenTURL->getHost();
-				$canonicalUrl = new Types\TURL(\Katu\Config\Config::get('app', 'baseUrl'));
-				$canonicalHost = $canonicalUrl->getHost();
-
-				if ($currentHost != $canonicalHost) {
-					$canonicalParts = $currenTURL->getParts();
-					$canonicalParts['host'] = $canonicalHost;
-
-					$redirecTURL = Types\TURL::build($canonicalParts);
-
-					return header('Location: ' . (string) $redirecTURL, 301); die;
-				}
-			}
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			// Nothing to do.
-		}
-
-		// Catch all.
-		$catchAll = function() {
-
-			$app = static::get();
-
-			// Map URL to controller method.
-			$parts = array_filter(explode('/', $app->request->getResourceUri()));
-			if ($parts) {
-				$controller = '\App\Controllers\\' . implode('\\', array_map('ucfirst', count($parts) > 1 ? array_slice($parts, 0, -1) : $parts));
-				$method     = count($parts) > 1 ? array_slice($parts, -1) : 'index';
-				$callable   = $controller . '::' . (is_array($method) ? $method[0] : $method);
-
-				if (is_callable($callable)) {
-					return call_user_func_array($callable, array());
-				} else {
-					throw new Exceptions\ControllerMethodNotFoundException("Invalid controller method.");
-				}
-			}
-
-		};
-		*/
-
 		try {
 			try {
 				// Set up routes.
@@ -168,15 +123,9 @@ class App
 				}
 			} catch (\Katu\Exceptions\RouteException $e) {
 				throw $e;
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				// Nothing to do, no custom routes defined.
 			}
-
-			// Catch-all.
-			// TODO - obnovit
-			/*
-			$app->map('.+', $catchAll)->via('GET', 'POST');
-			*/
 
 			// Autoload.
 			if (class_exists('\\App\\Extensions\\Autoload')) {
@@ -187,7 +136,7 @@ class App
 
 			// Run the app.
 			$app->run();
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			throw $e;
 		}
 	}
@@ -207,23 +156,4 @@ class App
 			}
 		});
 	}
-
-	// public static function getConnection($name = null)
-	// {
-	// 	$names = array_keys(\Katu\Config\Config::getDb());
-
-	// 	if ($name) {
-	// 		if (!in_array($name, $names)) {
-	// 			throw new Exceptions\DatabaseConnectionException("Invalid database connection name.");
-	// 		}
-
-	// 		return PDO\Connection::getInstance($name);
-	// 	} else {
-	// 		if (count($names) > 1) {
-	// 			throw new Exceptions\DatabaseConnectionException("Ambiguous database connection name.");
-	// 		}
-	// 	}
-
-	// 	return PDO\Connection::getInstance($names[0]);
-	// }
 }

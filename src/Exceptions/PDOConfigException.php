@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class PDOConfigException extends MissingConfigException {
-
+class PDOConfigException extends MissingConfigException
+{
 }

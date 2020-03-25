@@ -2,36 +2,40 @@
 
 namespace Katu\Utils\Payments;
 
-class PayU {
-
-	public $posId;
-	public $posAuthKey;
-	public $keyOne;
-	public $keyTwo;
-
+class PayU
+{
 	const BASE_URL = 'https://secure.payu.com/paygw';
 
-	public function __construct($posId, $posAuthKey, $keyOne, $keyTwo) {
+	public $keyOne;
+	public $keyTwo;
+	public $posAuthKey;
+	public $posId;
+
+	public function __construct($posId, $posAuthKey, $keyOne, $keyTwo)
+	{
 		$this->posId      = $posId;
 		$this->posAuthKey = $posAuthKey;
 		$this->keyOne     = $keyOne;
 		$this->keyTwo     = $keyTwo;
 	}
 
-	static function createWithDefaultConfig() {
+	public static function createWithDefaultConfig()
+	{
 		return new static(
-			\Katu\Config::get('payu', 'posId'),
-			\Katu\Config::get('payu', 'posAuthKey'),
-			\Katu\Config::get('payu', 'keyOne'),
-			\Katu\Config::get('payu', 'keyTwo')
+			\Katu\Config\Config::get('payu', 'posId'),
+			\Katu\Config\Config::get('payu', 'posAuthKey'),
+			\Katu\Config\Config::get('payu', 'keyOne'),
+			\Katu\Config\Config::get('payu', 'keyTwo')
 		);
 	}
 
-	public function getEndpoinTURL($endpoint, $encoding = 'UTF') {
+	public function getEndpoinTURL($endpoint, $encoding = 'UTF')
+	{
 		return static::BASE_URL . '/' . $encoding . '/' . $endpoint;
 	}
 
-	public function getNewPaymenTURL($params) {
+	public function getNewPaymenTURL($params)
+	{
 		$url = $this->getEndpoinTURL('NewPayment');
 
 		$params = array(
@@ -64,7 +68,8 @@ class PayU {
 		return \Katu\Types\TURL::make($url, $params);
 	}
 
-	public function getPaymentStatus($sessionId, $encoding = 'UTF') {
+	public function getPaymentStatus($sessionId, $encoding = 'UTF')
+	{
 		$url = static::BASE_URL . '/' . $encoding . '/Payment/get/xml';
 		$params = array(
 			'pos_id'     => $this->posId,
@@ -96,5 +101,4 @@ class PayU {
 
 		return \Katu\Files\Formats\JSON::decodeAsObjects(\Katu\Files\Formats\JSON::encode($response))->trans;
 	}
-
 }

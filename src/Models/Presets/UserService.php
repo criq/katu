@@ -2,44 +2,49 @@
 
 namespace Katu\Models\Presets;
 
-class UserService extends \Katu\Models\Model {
-
+class UserService extends \Katu\Models\Model
+{
 	const TABLE = 'user_services';
 
-	static function getUserClass() {
-		return '\\Katu\\Models\\Presets\\User';
+	public static function getUserClassName() : \Katu\Tools\Classes\ClassName
+	{
+		return new \Katu\Tools\Classes\ClassName('Katu', 'Models', 'Presets', 'User');
 	}
 
-	static function create($user, $serviceName, $serviceUserId) {
+	public static function create(User $user, string $serviceName, string $serviceUserId)
+	{
 		return static::insert([
-			'timeCreated'   => (string)(new \Katu\Tools\DateTime\DateTime),
-			'userId'        => (int)$user->getId(),
-			'serviceName'   => (string)$serviceName,
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'userId' => $user->getId(),
+			'serviceName' => (string)$serviceName,
 			'serviceUserId' => (string)$serviceUserId,
 		]);
 	}
 
-	static function getByServiceAndId($serviceName, $serviceUserId) {
+	public static function getByServiceAndId(string $serviceName, string $serviceUserId)
+	{
 		return static::getBy([
-			'serviceName'   => (string)$serviceName,
+			'serviceName' => (string)$serviceName,
 			'serviceUserId' => (string)$serviceUserId,
 		]);
 	}
 
-	static function getOneByServiceAndId($serviceName, $serviceUserId) {
+	public static function getOneByServiceAndId(string $serviceName, string $serviceUserId)
+	{
 		return static::getByServiceAndId($serviceName, $serviceUserId)->getOne();
 	}
 
-	public function getUser() {
-		$class = static::getUserClass();
+	public function getUser()
+	{
+		$class = (string)static::getUserClassName();
 
 		return $class::get($this->userId);
 	}
 
-	public function setServiceAccessToken($serviceAccessToken) {
+	public function setServiceAccessToken($serviceAccessToken)
+	{
 		$this->update('serviceAccessToken', $serviceAccessToken);
 
 		return true;
 	}
-
 }

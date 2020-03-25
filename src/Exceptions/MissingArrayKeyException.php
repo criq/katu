@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class MissingArrayKeyException extends \Exception {
-
+class MissingArrayKeyException extends Exception
+{
 }

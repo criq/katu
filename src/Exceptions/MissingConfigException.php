@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class MissingConfigException extends \Exception {
-
+class MissingConfigException extends \Exception
+{
 }

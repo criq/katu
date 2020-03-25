@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class UserErrorException extends ErrorException {
-
+class UserErrorException extends ErrorException
+{
 }

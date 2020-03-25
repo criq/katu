@@ -2,18 +2,19 @@
 
 namespace Katu\PDO;
 
-class View extends Table {
-
-	public function getCreateSyntax() {
+class View extends Table
+{
+	public function getCreateSyntax()
+	{
 		$sql = " SHOW CREATE TABLE " . $this->getName();
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		return $res[0]['Create View'];
 	}
 
-	public function getSourceTables() {
-		$tableNames = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400, function($table) {
-
+	public function getSourceTables()
+	{
+		$tableNames = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400, function ($table) {
 			$tableNames = [];
 
 			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
@@ -25,7 +26,6 @@ class View extends Table {
 			}
 
 			return array_values(array_filter(array_unique($tableNames)));
-
 		}, $this);
 
 		$tables = [];
@@ -36,7 +36,8 @@ class View extends Table {
 		return $tables;
 	}
 
-	public function getSourceMaterializedViewNames() {
+	public function getSourceMaterializedViewNames()
+	{
 		if (preg_match_all('#`(mv_[a-z0-9_]+)`#', $this->getCreateSyntax(), $matches)) {
 			return array_values(array_unique($matches[1]));
 		}
@@ -44,17 +45,19 @@ class View extends Table {
 		return false;
 	}
 
-	public function getSourceViewsInMaterializedViews() {
+	public function getSourceViewsInMaterializedViews()
+	{
 		$views = [];
 
 		foreach (array_filter((array) $this->getSourceMaterializedViewNames()) as $tableName) {
-			$views[] = new static($this->getConnection(), preg_replace('/^mv_/', 'view_', $tableName));
+			$views[] = new static($this->getConnection(), new Name(preg_replace('/^mv_/', 'view_', $tableName)));
 		}
 
 		return $views;
 	}
 
-	public function getModelNames() {
+	public function getModelNames()
+	{
 		$modelNames = [];
 
 		foreach (\Katu\Models\View::getAllViewClassNames() as $class) {
@@ -66,5 +69,4 @@ class View extends Table {
 
 		return $modelNames;
 	}
-
 }

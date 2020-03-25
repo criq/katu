@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class RouteException extends Exception {
-
+class RouteException extends Exception
+{
 }

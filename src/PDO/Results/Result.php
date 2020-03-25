@@ -4,20 +4,19 @@ namespace Katu\PDO\Results;
 
 use \PDO;
 
-class Result implements \Iterator, \ArrayAccess {
-
+class Result implements \Iterator, \ArrayAccess
+{
+	protected $iteratorArray = null;
+	protected $iteratorPosition = 0;
 	public $pdo;
 	public $statement;
 
-	protected $iteratorPosition = 0;
-	protected $iteratorArray = null;
-
-	public function __construct($pdo, $statement) {
+	public function __construct($pdo, $statement)
+	{
 		$this->pdo = $pdo;
 		$this->statement = $statement;
 
 		try {
-
 			$this->statement->execute();
 
 			if (!preg_match("/^0+$/", $this->statement->errorCode())) {
@@ -27,16 +26,12 @@ class Result implements \Iterator, \ArrayAccess {
 					$this->statement->queryString,
 				]), $error[1]);
 			}
-
 		} catch (\Exception $e) {
-
 			// Non-existing table.
 			if ($e->getCode() == 1146 && preg_match('/Table \'(.+)\.(?<table>.+)\' doesn\'t exist/', $e->getMessage(), $match)) {
-
 				// Create the table.
 				$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['table'] . '.create.sql');
 				if ($sqlFile->exists()) {
-
 					// There is a file, let's create the table.
 					$createQuery = $this->pdo->createQuery($sqlFile->get());
 					$createQuery->getResult();
@@ -47,42 +42,43 @@ class Result implements \Iterator, \ArrayAccess {
 						$error = $this->statement->errorInfo();
 						throw new \Exception($error[2], $error[1]);
 					}
-
 				} else {
 					throw $e;
 				}
-
 			} else {
 				throw $e;
 			}
-
 		}
-
 	}
 
-	public function getCount() {
+	public function getCount()
+	{
 		$this->setIteratorArray();
 
 		return count($this->iteratorArray);
 	}
 
-	public function getTotal() {
+	public function getTotal()
+	{
 		return $this->getCount();
 	}
 
-	public function getArray() {
+	public function getArray()
+	{
 		$this->setIteratorArray();
 
 		return $this->iteratorArray;
 	}
 
-	public function getObjects($class) {
+	public function getObjects($class)
+	{
 		$this->setIteratorArray($class);
 
 		return $this->iteratorArray;
 	}
 
-	public function getColumnValues($column) {
+	public function getColumnValues($column)
+	{
 		$values = [];
 
 		foreach ($this as $row) {
@@ -96,11 +92,13 @@ class Result implements \Iterator, \ArrayAccess {
 		return $values;
 	}
 
-	public function getIds() {
+	public function getIds()
+	{
 		return $this->getColumnValues('id');
 	}
 
-	public function each($callback) {
+	public function each($callback)
+	{
 		$res = [];
 		foreach ($this as $item) {
 			if (is_string($callback) && method_exists($item, $callback)) {
@@ -113,35 +111,43 @@ class Result implements \Iterator, \ArrayAccess {
 		return $res;
 	}
 
-	/* Iterator *****************************************************************/
-
-	public function rewind() {
+	/****************************************************************************
+	 * Iterator.
+	 */
+	public function rewind()
+	{
 		$this->iteratorPosition = 0;
 	}
 
-	public function current() {
+	public function current()
+	{
 		$this->setIteratorArray();
 
 		return $this->iteratorArray[$this->iteratorPosition];
 	}
 
-	public function key() {
+	public function key()
+	{
 		return $this->iteratorPosition;
 	}
 
-	public function next() {
+	public function next()
+	{
 		++$this->iteratorPosition;
 	}
 
-	public function valid() {
+	public function valid()
+	{
 		$this->setIteratorArray();
 
 		return isset($this->iteratorArray[$this->iteratorPosition]);
 	}
 
-	/* ArrayAccess **************************************************************/
-
-	public function setIteratorArray($class = null) {
+	/****************************************************************************
+	 * ArrayAccess.
+	 */
+	public function setIteratorArray($class = null)
+	{
 		if (is_null($this->iteratorArray)) {
 			$this->iteratorArray = [];
 			if ($class) {
@@ -156,7 +162,8 @@ class Result implements \Iterator, \ArrayAccess {
 		}
 	}
 
-	public function offsetSet($offset, $value) {
+	public function offsetSet($offset, $value)
+	{
 		$this->setIteratorArray();
 
 		if (is_null($offset)) {
@@ -166,22 +173,24 @@ class Result implements \Iterator, \ArrayAccess {
 		}
 	}
 
-	public function offsetExists($offset) {
+	public function offsetExists($offset)
+	{
 		$this->setIteratorArray();
 
 		return isset($this->iteratorArray[$offset]);
 	}
 
-	public function offsetUnset($offset) {
+	public function offsetUnset($offset)
+	{
 		$this->setIteratorArray();
 
 		unset($this->iteratorArray[$offset]);
 	}
 
-	public function offsetGet($offset) {
+	public function offsetGet($offset)
+	{
 		$this->setIteratorArray();
 
 		return isset($this->iteratorArray[$offset]) ? $this->iteratorArray[$offset] : null;
 	}
-
 }

@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class NoPrimaryKeyReturnedException extends MissingConfigException {
-
+class NoPrimaryKeyReturnedException extends MissingConfigException
+{
 }

@@ -2,28 +2,30 @@
 
 namespace Katu\Models\Presets;
 
-class EmailAddress extends \Katu\Models\Model {
-
+class EmailAddress extends \Katu\Models\Model
+{
 	const TABLE = 'email_addresses';
 
-	static $columnNames = [
+	public static $columnNames = [
 		'timeCreated' => 'timeCreated',
 		'emailAddress' => 'emailAddress',
 	];
 
-	static function create($emailAddress) {
-		if (!static::checkCrudParams($emailAddress)) {
+	public static function create(string $emailAddress) : EmailAddress
+	{
+		if (!static::checkEmailAddress($emailAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
-		return static::insert(array(
+		return static::insert([
 			static::$columnNames['timeCreated']  => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
 			static::$columnNames['emailAddress'] => (string) (trim($emailAddress)),
-		));
+		]);
 	}
 
-	static function make($emailAddress) {
-		if (!static::checkCrudParams($emailAddress)) {
+	public static function make(string $emailAddress) : EmailAddress
+	{
+		if (!static::checkEmailAddress($emailAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
@@ -32,18 +34,8 @@ class EmailAddress extends \Katu\Models\Model {
 		), $emailAddress);
 	}
 
-	static function checkCrudParams($emailAddress) {
-		if (!static::checkEmailAddress($emailAddress)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
-				->setAbbr('invalidEmailAddress')
-				->addErrorName('emailAddress')
-				;
-		}
-
-		return true;
-	}
-
-	static function checkEmailAddress($emailAddress) {
+	public static function checkEmailAddress(string $emailAddress) : bool
+	{
 		if (!trim($emailAddress)) {
 			throw (new \Katu\Exceptions\InputErrorException("Missing e-mail address."))
 				->setAbbr('missingEmailAddress')
@@ -63,8 +55,8 @@ class EmailAddress extends \Katu\Models\Model {
 		return true;
 	}
 
-	static function isValid($emailAddress) {
+	public static function isValid($emailAddress) : bool
+	{
 		return \Katu\Types\TEmailAddress::isValid($emailAddress);
 	}
-
 }

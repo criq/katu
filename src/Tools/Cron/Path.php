@@ -2,16 +2,17 @@
 
 namespace Katu\Tools\Cron;
 
-class Path {
-
+class Path
+{
 	public $path;
 
-	public function __construct($path) {
+	public function __construct($path)
+	{
 		$this->path = $path;
 	}
 
-	public function run() {
-		return (new \Katu\Types\TURL(Url::joinPaths(Url::getBase(), $this->path)))->ping();
+	public function run()
+	{
+		return (new \Katu\Types\TURL(\Katu\Tools\Routing\URL::joinPaths(\Katu\Tools\Routing\URL::getBase(), $this->path)))->ping();
 	}
-
 }

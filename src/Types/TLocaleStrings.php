@@ -2,17 +2,18 @@
 
 namespace Katu\Types;
 
-class TLocaleStrings implements \Iterator, \ArrayAccess {
-
+class TLocaleStrings implements \Iterator, \ArrayAccess
+{
 	public $strings = [];
-
 	protected $iteratorPosition = 0;
 
-	public function add(TPreferredLocale $acceptedLocale) {
+	public function add(TPreferredLocale $acceptedLocale)
+	{
 		$this->strings[] = $acceptedLocale;
 	}
 
-	public function getLocaleArray() {
+	public function getLocaleArray()
+	{
 		$array = new \Katu\Types\TArray;
 
 		foreach ($this as $localeString) {
@@ -22,7 +23,8 @@ class TLocaleStrings implements \Iterator, \ArrayAccess {
 		return $array;
 	}
 
-	public function getLanguageArray() {
+	public function getLanguageArray()
+	{
 		$array = new \Katu\Types\TArray;
 
 		foreach ($this as $localeString) {
@@ -32,7 +34,8 @@ class TLocaleStrings implements \Iterator, \ArrayAccess {
 		return $array;
 	}
 
-	public function getPreferredString() {
+	public function getPreferredString()
+	{
 		$preferredLocales = \Katu\Tools\Intl\Formatter::getPreferredLocales();
 
 		// Exact match.
@@ -54,31 +57,39 @@ class TLocaleStrings implements \Iterator, \ArrayAccess {
 		return false;
 	}
 
-	/* Iterator **************************************************************/
-
-	public function rewind() {
+	/****************************************************************************
+	 * Iterator.
+	 */
+	public function rewind()
+	{
 		$this->iteratorPosition = 0;
 	}
 
-	public function current() {
+	public function current()
+	{
 		return $this->strings[$this->iteratorPosition];
 	}
 
-	public function key() {
+	public function key()
+	{
 		return $this->iteratorPosition;
 	}
 
-	public function next() {
+	public function next()
+	{
 		++$this->iteratorPosition;
 	}
 
-	public function valid() {
+	public function valid()
+	{
 		return isset($this->strings[$this->iteratorPosition]);
 	}
 
-	/* ArrayAccess ***********************************************************/
-
-	public function offsetSet($offset, $value) {
+	/****************************************************************************
+	 * ArrayAccess.
+	 */
+	public function offsetSet($offset, $value)
+	{
 		if (is_null($offset)) {
 			$this->strings[] = $value;
 		} else {
@@ -86,16 +97,18 @@ class TLocaleStrings implements \Iterator, \ArrayAccess {
 		}
 	}
 
-	public function offsetExists($offset) {
+	public function offsetExists($offset)
+	{
 		return isset($this->strings[$offset]);
 	}
 
-	public function offsetUnset($offset) {
+	public function offsetUnset($offset)
+	{
 		unset($this->strings[$offset]);
 	}
 
-	public function offsetGet($offset) {
+	public function offsetGet($offset)
+	{
 		return isset($this->strings[$offset]) ? $this->strings[$offset] : null;
 	}
-
 }

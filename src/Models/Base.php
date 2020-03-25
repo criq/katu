@@ -4,10 +4,10 @@ namespace Katu\Models;
 
 use \Sexy\Sexy as SX;
 
-class Base
+abstract class Base
 {
-
 	const DATABASE = 'app';
+	const TABLE = null;
 
 	public function __toString()
 	{

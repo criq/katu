@@ -2,7 +2,11 @@
 {% set nextCopy  = options.nextCopy|default("Next") %}
 {% set pageIdent = options.pageIdent|default("page") %}
 
-{% set pages = getPages(pagination, { allPagesLimit: options.allPagesLimit, endsOffset: options.endsOffset, currentOffset: options.currentOffset }) %}
+{% set pages = getPages(pagination, {
+	allPagesLimit: options.allPagesLimit,
+	endsOffset: options.endsOffset,
+	currentOffset: options.currentOffset
+}) %}
 
 {% if pages|length > 1 %}
 	<p class="pagination">

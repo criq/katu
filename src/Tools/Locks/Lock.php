@@ -4,15 +4,14 @@ namespace Katu\Tools\Locks;
 
 class Lock
 {
-
 	const DIR_NAME = 'locks';
 
-	private $timeout;
-	private $name;
-	private $callback;
 	private $args = [];
-	private $useLock = true;
+	private $callback;
 	private $excludedPlatforms = [];
+	private $name;
+	private $timeout;
+	private $useLock = true;
 
 	public function __construct(int $timeout, $name = null, callable $callback = null)
 	{

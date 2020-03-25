@@ -4,20 +4,15 @@ namespace Katu\Tools\Emails;
 
 class Email
 {
-
-	public $subject;
-	public $plain = '';
-	public $html = '';
-
+	public $attachments = [];
+	public $cc = [];
 	public $fromEmailAddress;
 	public $fromName;
-
-	public $to = [];
-	public $cc = [];
-
 	public $headers = [];
-
-	public $attachments = [];
+	public $html = '';
+	public $plain = '';
+	public $subject;
+	public $to = [];
 
 	public function __construct($subject = null)
 	{

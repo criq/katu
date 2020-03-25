@@ -2,11 +2,12 @@
 
 namespace Katu\Cache;
 
-class Runtime {
+class Runtime
+{
+	public static $cache = [];
 
-	static $cache = [];
-
-	static function get($name, $callback = null) {
+	public static function get($name, $callback = null)
+	{
 		$args = array_slice(func_get_args(), 2);
 		$key = new \Katu\Tools\Keys\Hash([$name, $args]);
 
@@ -24,8 +25,8 @@ class Runtime {
 		return null;
 	}
 
-	static function clear() {
+	public static function clear()
+	{
 		return static::$cache = [];
 	}
-
 }

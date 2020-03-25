@@ -2,15 +2,17 @@
 
 namespace Katu\PDO;
 
-class DumpDateCollection extends DumpCollection {
-
+class DumpDateCollection extends DumpCollection
+{
 	public $datetime;
 
-	public function __construct($datetime) {
+	public function __construct($datetime)
+	{
 		$this->datetime = $datetime;
 	}
 
-	public function getMondayDateTime() {
+	public function getMondayDateTime()
+	{
 		$datetime = clone $this->datetime;
 		$datetime->modify('this week Monday');
 		$datetime->setTime(0, 0, 0);
@@ -18,12 +20,13 @@ class DumpDateCollection extends DumpCollection {
 		return $datetime;
 	}
 
-	public function getAgeInDays() {
+	public function getAgeInDays()
+	{
 		return (new \Katu\Tools\DateTime\DateTime)->diff($this->getMondayDateTime())->days;
 	}
 
-	public function getAgeInWeeks() {
+	public function getAgeInWeeks()
+	{
 		return $this->getAgeInDays() / 7;
 	}
-
 }

@@ -4,10 +4,9 @@ namespace Katu\Files\Formats;
 
 class CSV
 {
-
 	public $file;
-	public $writer;
 	public $reader;
+	public $writer;
 
 	public function __construct($file = null, $options = [])
 	{

@@ -4,7 +4,6 @@ namespace Katu\Types;
 
 class TLocale
 {
-
 	public $language;
 	public $country;
 

@@ -6,52 +6,51 @@ use \Sexy\Sexy as SX;
 
 class User extends \Katu\Models\Model
 {
-
 	const TABLE = 'users';
 
 	public static $columnNames = [
-		'timeCreated' => 'timeCreated',
 		'emailAddressId' => 'emailAddressId',
+		'timeCreated' => 'timeCreated',
 	];
 
-	public static function getAccessTokenClass()
+	public static function getAccessTokenClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return '\\App\\Models\\AccessToken';
+		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'AccessToken');
 	}
 
-	public static function getEmailAddressClass()
+	public static function getEmailAddressClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return '\\App\\Models\\EmailAddress';
+		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'EmailAddress');
 	}
 
-	public static function getRoleClass()
+	public static function getRoleClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return '\\App\\Models\\Role';
+		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'Role');
 	}
 
-	public static function getRolePermissionClass()
+	public static function getRolePermissionClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return '\\App\\Models\\RolePermission';
+		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'RolePermission');
 	}
 
-	public static function getUserRoleClass()
+	public static function getUserRoleClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return '\\App\\Models\\UserRole';
+		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'UserRole');
 	}
 
-	public static function getUserPermissionClass()
+	public static function getUserPermissionClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return '\\App\\Models\\UserPermission';
+		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'UserPermission');
 	}
 
-	public static function getUserServiceClass()
+	public static function getUserServiceClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return '\\App\\Models\\UserService';
+		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'UserService');
 	}
 
-	public static function getUserSettingClass()
+	public static function getUserSettingClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return '\\App\\Models\\UserSetting';
+		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'UserSetting');
 	}
 
 	public static function create()
@@ -63,7 +62,7 @@ class User extends \Katu\Models\Model
 
 	public static function createWithEmailAddress($emailAddress)
 	{
-		$emailAddressClass = static::getEmailAddressClass();
+		$emailAddressClass = (string)static::getEmailAddressClassName();
 
 		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
@@ -95,7 +94,7 @@ class User extends \Katu\Models\Model
 
 	public static function getByAccessToken(array $tokens = []) : User
 	{
-		$accessTokenClass = static::getAccessTokenClass();
+		$accessTokenClass = (string)static::getAccessTokenClassName();
 
 		if (is_string($tokens)) {
 			$tokens = [$tokens];
@@ -117,38 +116,38 @@ class User extends \Katu\Models\Model
 
 	public function getValidAccessToken()
 	{
-		$accessTokenClass = static::getAccessTokenClass();
+		$accessTokenClass = (string)static::getAccessTokenClassName();
 
 		return $accessTokenClass::makeValidForUser($this);
 	}
 
 	public function addUserService($serviceName, $serviceUserId)
 	{
-		$userServiceClass = static::getUserServiceClass();
+		$userServiceClass = (string)static::getUserServiceClassName();
 
 		return $userServiceClass::create($this, $serviceName, $serviceUserId);
 	}
 
 	public function makeUserService($serviceName, $serviceUserId)
 	{
-		$userServiceClass = static::getUserServiceClass();
+		$userServiceClass = (string)static::getUserServiceClassName();
 
 		return $userServiceClass::upsert([
-			'userId'        => (int)$this->getId(),
-			'serviceName'   => (string)$serviceName,
+			'userId' => $this->getId(),
+			'serviceName' => (string)$serviceName,
 			'serviceUserId' => (string)$serviceUserId,
 		], [
-			'timeCreated'   => (string)(new \Katu\Tools\DateTime\DateTime),
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
 		]);
 	}
 
 	public function getDefaultUserServiceByName($serviceName)
 	{
-		$userServiceClass = static::getUserServiceClass();
+		$userServiceClass = (string)static::getUserServiceClassName();
 
 		return $userServiceClass::getOneBy([
-			'userId'      => (int)    ($this->getId()),
-			'serviceName' => (string) ($serviceName),
+			'userId' => $this->getId(),
+			'serviceName' => (string)$serviceName,
 		]);
 	}
 
@@ -159,7 +158,7 @@ class User extends \Katu\Models\Model
 
 	public function getEmailAddress()
 	{
-		$emailAddressClass = static::getEmailAddressClass();
+		$emailAddressClass = (string)static::getEmailAddressClassName();
 
 		return $emailAddressClass::get($this->{static::$columnNames['emailAddressId']});
 	}
@@ -171,7 +170,7 @@ class User extends \Katu\Models\Model
 
 	public function setEmailAddress($emailAddress)
 	{
-		$emailAddressClass = static::getEmailAddressClass();
+		$emailAddressClass = (string)static::getEmailAddressClassName();
 
 		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
@@ -227,14 +226,14 @@ class User extends \Katu\Models\Model
 
 	public function addRole($role)
 	{
-		$userRoleClass = static::getUserRoleClass();
+		$userRoleClass = (string)static::getUserRoleClassName();
 
 		return $userRoleClass::make($this, $role);
 	}
 
 	public function addRolesByIds($roleIds)
 	{
-		$roleClass = static::getRoleClass();
+		$roleClass = (string)static::getRoleClassName();
 
 		$roles = [];
 
@@ -258,17 +257,17 @@ class User extends \Katu\Models\Model
 
 	public function hasRole($role)
 	{
-		$userRoleClass = static::getUserRoleClass();
+		$userRoleClass = (string)static::getUserRoleClassName();
 
 		return (bool)$userRoleClass::getOneBy([
-			'userId' => (int) ($this->getId()),
-			'roleId' => (int) ($role->getId()),
+			'userId' => $this->getId(),
+			'roleId' => $role->getId(),
 		]);
 	}
 
 	public function getUserRoles()
 	{
-		$userRoleClass = static::getUserRoleClass();
+		$userRoleClass = (string)static::getUserRoleClassName();
 
 		return $userRoleClass::getBy([
 			'userId' => $this->getId(),
@@ -277,7 +276,7 @@ class User extends \Katu\Models\Model
 
 	public function deleteAllRoles()
 	{
-		$userRoleClass = static::getUserRoleClass();
+		$userRoleClass = (string)static::getUserRoleClassName();
 
 		foreach ($userRoleClass::getBy([
 			'userId' => $this->getId(),
@@ -290,7 +289,7 @@ class User extends \Katu\Models\Model
 
 	public function addUserPermission($permission)
 	{
-		$userPermissionClass = static::getUserPermissionClass();
+		$userPermissionClass = (string)static::getUserPermissionClassName();
 
 		return $userPermissionClass::make($this, $permission);
 	}
@@ -306,7 +305,7 @@ class User extends \Katu\Models\Model
 
 	public function deleteAllUserPermissions()
 	{
-		$userPermissionClass = static::getUserPermissionClass();
+		$userPermissionClass = (string)static::getUserPermissionClassName();
 
 		foreach ($userPermissionClass::getBy([
 			'userId' => $this->getId(),
@@ -329,8 +328,8 @@ class User extends \Katu\Models\Model
 
 	public function getRolePermissions()
 	{
-		$userRoleClass = static::getUserRoleClass();
-		$rolePermissionClass = static::getRolePermissionClass();
+		$userRoleClass = (string)static::getUserRoleClassName();
+		$rolePermissionClass = (string)static::getRolePermissionClassName();
 
 		if (class_exists($rolePermissionClass)) {
 			$sql = (new \Sexy\Select($rolePermissionClass::getColumn('permission')))
@@ -348,11 +347,11 @@ class User extends \Katu\Models\Model
 
 	public function getUserPermissions()
 	{
-		$userPermissionClass = static::getUserPermissionClass();
+		$userPermissionClass = (string)static::getUserPermissionClassName();
 
 		if (class_exists($userPermissionClass)) {
 			return $userPermissionClass::getBy([
-				'userId' => (int) ($this->getId()),
+				'userId' => $this->getId(),
 			])->getPropertyValues('permission');
 		}
 
@@ -396,14 +395,14 @@ class User extends \Katu\Models\Model
 
 	public function setUserSetting($name, $value)
 	{
-		$userSettingClass = static::getUserSettingClass();
+		$userSettingClass = (string)static::getUserSettingClassName();
 
 		return $userSettingClass::getOrCreate($this, $name, $value);
 	}
 
 	public function getUserSetting($name)
 	{
-		$userSettingClass = static::getUserSettingClass();
+		$userSettingClass = (string)static::getUserSettingClassName();
 
 		return $userSettingClass::getOneBy([
 			'userId' => $this->getId(),

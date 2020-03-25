@@ -2,20 +2,21 @@
 
 namespace Katu\Tools\Session;
 
-class Session {
-
+class Session
+{
 	const KEY = 'katu.session';
-
-	const DEFAULT_NAME                   = 'session';
-	const DEFAULT_SID_LENGTH             = 32;
+	const DEFAULT_NAME = 'session';
+	const DEFAULT_SID_LENGTH = 32;
 	const DEFAULT_SID_BITS_PER_CHARACTER = 6;
-	const DEFAULT_COOKIE_LIFETIME        = '10 years';
+	const DEFAULT_COOKIE_LIFETIME = '1 year';
 
-	static function getPath() {
+	public static function getPath()
+	{
 		return new \Katu\Files\File(\Katu\App::getTmpDir(), 'session');
 	}
 
-	static function makePath() {
+	public static function makePath()
+	{
 		try {
 			return static::getPath()->makeDir();
 		} catch (\Exception $e) {
@@ -23,7 +24,8 @@ class Session {
 		}
 	}
 
-	static function getDefaultConfig() {
+	public static function getDefaultConfig()
+	{
 		return [
 			'save_path'              => (string)static::getPath(),
 			'name'                   => static::DEFAULT_NAME,
@@ -33,7 +35,8 @@ class Session {
 		];
 	}
 
-	static function getConfig() {
+	public static function getConfig()
+	{
 		try {
 			$config = \Katu\Config\Config::get('app', 'session');
 		} catch (\Exception $e) {
@@ -43,14 +46,16 @@ class Session {
 		return array_merge(static::getDefaultConfig(), $config);
 	}
 
-	static function start() {
+	public static function start()
+	{
 		if (!session_id()) {
 			static::makePath();
 			session_start(static::getConfig());
 		}
 	}
 
-	static function init() {
+	public static function init()
+	{
 		if (!session_id()) {
 			static::setCookieParams();
 			static::start();
@@ -63,7 +68,8 @@ class Session {
 		return true;
 	}
 
-	static function get($key = null) {
+	public static function get($key = null)
+	{
 		static::init();
 
 		if (!$key) {
@@ -77,7 +83,8 @@ class Session {
 		return $_SESSION[static::KEY][$key];
 	}
 
-	static function set() {
+	public static function set()
+	{
 		static::init();
 
 		$_SESSION[static::KEY][func_get_arg(0)] = func_get_arg(1);
@@ -85,7 +92,8 @@ class Session {
 		return true;
 	}
 
-	static function add($key, $value, $instance = null) {
+	public static function add($key, $value, $instance = null)
+	{
 		static::init();
 
 		if ($value) {
@@ -99,7 +107,8 @@ class Session {
 		return true;
 	}
 
-	static function reset() {
+	public static function reset()
+	{
 		static::init();
 
 		if (func_get_args()) {
@@ -113,7 +122,8 @@ class Session {
 		return true;
 	}
 
-	static function setCookieParams($config = array()) {
+	public static function setCookieParams($config = [])
+	{
 		try {
 			$config = \Katu\Config\Config::get('app', 'cookie');
 		} catch (\Exception $e) {
@@ -124,5 +134,4 @@ class Session {
 
 		return session_set_cookie_params($config['lifetime'], $config['path'], $config['domain'], $config['secure'], $config['httponly']);
 	}
-
 }

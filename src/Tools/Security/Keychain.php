@@ -2,10 +2,11 @@
 
 namespace Katu\Tools\Security;
 
-class Keychain {
-
-	static function get() {
-		return \Katu\Cache\Runtime::get('keychain', function($args) {
+class Keychain
+{
+	public static function get()
+	{
+		return \Katu\Cache\Runtime::get('keychain', function ($args) {
 			try {
 				return call_user_func_array([new \Katu\Types\TArray(static::getAll()), 'getValueByArgs'], $args);
 			} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
@@ -14,8 +15,9 @@ class Keychain {
 		}, func_get_args());
 	}
 
-	static function getAll() {
-		return \Katu\Cache\Runtime::get('keychain', function() {
+	public static function getAll()
+	{
+		return \Katu\Cache\Runtime::get('keychain', function () {
 			$file = new \Katu\Files\File(\Katu\App::getBaseDir(), 'app', 'Keychains', [\Katu\Config\Env::getPlatform(), 'yaml']);
 			if (!$file->exists()) {
 				throw new \Exception("Missing keychain file.");
@@ -27,5 +29,4 @@ class Keychain {
 			return \Katu\Files\Formats\YAML::decode($file);
 		});
 	}
-
 }

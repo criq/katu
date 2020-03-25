@@ -5,6 +5,7 @@ namespace Katu\Tools\Images;
 class Version
 {
 	const SEPARATOR = ".";
+
 	protected $extension;
 	protected $filters = [];
 	protected $name = null;

@@ -4,11 +4,10 @@ namespace Katu\Files;
 
 class File
 {
+	const TYPE_DIR  = 'dir';
+	const TYPE_FILE = 'file';
 
 	public $path;
-
-	const TYPE_FILE = 'file';
-	const TYPE_DIR  = 'dir';
 
 	public function __construct()
 	{
@@ -440,13 +439,15 @@ class File
 		});
 	}
 
-	public function getHash($function = 'sha1') {
+	public function getHash($function = 'sha1')
+	{
 		return hash($function, $this->get());
 	}
 
-	public function getHashedURL($function = 'sha1', $paramName = 'hash') {
+	public function getHashedURL($function = 'sha1', $paramName = 'hash')
+	{
 		return (new \Katu\Types\TURL($this->getURL()))
-			->addQueryParam($paramName, $this->getHash())
+			->addQueryParam($paramName, $this->getHash($function))
 			;
 	}
 }

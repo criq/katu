@@ -2,11 +2,12 @@
 
 namespace Katu\Config;
 
-class Config {
-
+class Config
+{
 	const FILENAME_REGEXP = "/^(?<name>[a-z0-9]+)(\.(?<platform>[a-z0-9]+))?\.(?<type>php|yaml)$/i";
 
-	static function get() {
+	public static function get()
+	{
 		$args = func_get_args();
 
 		try {
@@ -16,9 +17,9 @@ class Config {
 		}
 	}
 
-	static function getAll() {
-		return \Katu\Cache\Runtime::get('config', function() {
-
+	public static function getAll()
+	{
+		return \Katu\Cache\Runtime::get('config', function () {
 			$config = [];
 
 			foreach (static::getFiles() as $file) {
@@ -36,11 +37,11 @@ class Config {
 			$config = array_merge_recursive($config, $_SERVER['CONFIG'] ?? []);
 
 			return $config;
-
 		});
 	}
 
-	static function getFiles() {
+	public static function getFiles()
+	{
 		$dir = new \Katu\Files\File(\Katu\App::getBaseDir(), 'app', 'Config');
 		$files = [];
 
@@ -52,5 +53,4 @@ class Config {
 
 		return $files;
 	}
-
 }

@@ -2,17 +2,16 @@
 
 namespace Katu\Utils\Google;
 
-use \Katu\Config;
-
-class UrlShortener {
-
-	static function getApiKey() {
-		return Config::get('google', 'api', 'key');
+class UrlShortener
+{
+	public static function getApiKey()
+	{
+		return \Katu\Config\Config::get('google', 'api', 'key');
 	}
 
-	static function shorten($url) {
-		return \Katu\Utils\Cache::get(function($url) {
-
+	public static function shorten($url, $timeout = '1 year')
+	{
+		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], $timeout, function ($url) {
 			$apiUrl = \Katu\Types\TURL::make('https://www.googleapis.com/urlshortener/v1/url', [
 				'key' => static::getApiKey(),
 			]);
@@ -28,8 +27,6 @@ class UrlShortener {
 			}
 
 			return false;
-
-		}, 86400 * 365, $url);
+		}, $url);
 	}
-
 }

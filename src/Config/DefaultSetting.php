@@ -2,21 +2,23 @@
 
 namespace Katu\Utils;
 
-class DefaultSetting {
-
-	public $name;
-	public $value;
+class DefaultSetting
+{
 	public $description;
 	public $isSystem;
+	public $name;
+	public $value;
 
-	public function __construct($name, $value, $isSystem = true, $description = null) {
+	public function __construct($name, $value, $isSystem = true, $description = null)
+	{
 		$this->name        = $name;
 		$this->value       = $value;
 		$this->description = $description;
 		$this->isSystem    = $isSystem;
 	}
 
-	public function make($creator) {
+	public function make($creator)
+	{
 		try {
 			$setting = \App\Models\Setting::getByName($this->name);
 		} catch (\Katu\Exceptions\MissingSettingException $e) {
@@ -25,5 +27,4 @@ class DefaultSetting {
 
 		return $setting;
 	}
-
 }

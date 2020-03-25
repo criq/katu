@@ -2,55 +2,37 @@
 
 namespace Katu\Models\Presets;
 
-class FileAttachment extends \Katu\Models\Model {
-
+class FileAttachment extends \Katu\Models\Model
+{
 	const TABLE = 'file_attachments';
 
-	static function create($creator, $object, $file) {
-		if (!static::checkCrudParams($creator, $object, $file)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
-
-		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
-			'creatorId'   => (int)    ($creator ? $creator->getId() : null),
-			'objectModel' => (string) ($object->getClass()),
-			'objectId'    => (int)    ($object->getId()),
-			'fileId'      => (int)    ($file->getId()),
-		));
+	public static function create(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment
+	{
+		return static::insert([
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'creatorId' => $creator ? $creator->getId() : null,
+			'objectModel' => $object->getClass(),
+			'objectId' => $object->getId(),
+			'fileId' => $file->getId(),
+		]);
 	}
 
-	static function make($creator, $object, $file) {
-		if (!static::checkCrudParams($creator, $object, $file)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
-
-		return static::getOneOrCreateWithList(array(
-			'objectModel' => (string) ($object->getClass()),
-			'objectId'    => (int)    ($object->getId()),
-			'fileId'      => (int)    ($file->getId()),
-		), $creator, $object, $file);
+	public static function make(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file)
+	{
+		return static::upsert([
+			'objectModel' => $object->getClass(),
+			'objectId' => $object->getId(),
+			'fileId' => $file->getId(),
+		], [
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'creatorId' => $creator ? $creator->getId() : null,
+		]);
 	}
 
-	static function checkCrudParams($creator, $object, $file) {
-		if (!is_a($object, '\Katu\Model')) {
-			throw (new \Katu\Exceptions\InputErrorException("Object is not a model."))
-				->addErrorName('object')
-				;
-		}
-		if (!$file) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid file."))
-				->addErrorName('file')
-				;
-		}
-
-		return true;
-	}
-
-	public function getObject() {
+	public function getObject()
+	{
 		$class = $this->objectModel;
 
 		return $class::get($this->objectId);
 	}
-
 }

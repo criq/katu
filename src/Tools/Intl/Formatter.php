@@ -4,7 +4,6 @@ namespace Katu\Tools\Intl;
 
 class Formatter
 {
-
 	public static function getPreferredLocales()
 	{
 		$app = \Katu\App::get();

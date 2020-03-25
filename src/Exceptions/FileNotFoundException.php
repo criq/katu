@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class FileNotFoundException extends NotFoundException {
-
+class FileNotFoundException extends NotFoundException
+{
 }

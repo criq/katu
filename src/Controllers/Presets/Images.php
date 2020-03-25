@@ -4,7 +4,6 @@ namespace Katu\Controllers\Presets;
 
 class Images extends \Katu\Controllers\Controller
 {
-
 	public static function getVersionSrcFile($request, $response, $args)
 	{
 		try {

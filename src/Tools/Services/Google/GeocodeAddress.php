@@ -2,23 +2,23 @@
 
 namespace Katu\Tools\Services\Google;
 
-class GeocodeAddress {
-
-	public $language;
-	public $number;
-	public $premise;
-	public $street;
-	public $neighborhood;
-	public $part;
+class GeocodeAddress
+{
 	public $city;
+	public $country;
 	public $county;
 	public $district;
-	public $country;
-	public $zip;
 	public $formatted;
+	public $language;
 	public $latlng;
+	public $neighborhood;
+	public $number;
+	public $part;
+	public $premise;
+	public $street;
+	public $zip;
 
-	static $mapping = array(
+	public static $mapping = [
 		'street_number'               => 'number',
 		'premise'                     => 'premise',
 		'route'                       => 'street',
@@ -29,9 +29,10 @@ class GeocodeAddress {
 		'administrative_area_level_1' => 'district',
 		'country'                     => 'country',
 		'postal_code'                 => 'zip',
-	);
+	];
 
-	public function __construct($language, $geo) {
+	public function __construct($language, $geo)
+	{
 		$this->language = $language;
 
 		foreach ($geo->address_components as $component) {
@@ -47,8 +48,8 @@ class GeocodeAddress {
 		$this->latlng = new \Katu\Types\Geo\TLatLng($geo->geometry->location->lat, $geo->geometry->location->lng);
 	}
 
-	public function isStreetLevel() {
+	public function isStreetLevel()
+	{
 		return !is_null($this->number) && !is_null($this->street);
 	}
-
 }

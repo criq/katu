@@ -4,7 +4,6 @@ namespace Katu\Tools\System;
 
 class System
 {
-
 	public static function getNumberOfCpus() : int
 	{
 		return \Katu\Cache\General::get(['system', 'numberOfCpus'], 86400, function () {

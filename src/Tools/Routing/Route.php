@@ -2,36 +2,41 @@
 
 namespace Katu\Tools\Routing;
 
-class Route {
-
-	protected $name;
-	protected $pattern;
+class Route
+{
 	protected $controller;
 	protected $function;
 	protected $methods = ['GET', 'POST'];
+	protected $name;
+	protected $pattern;
 
-	public function __construct($pattern, $controller, $function, $methods = null) {
+	public function __construct($pattern, $controller, $function, $methods = null)
+	{
 		$this->pattern    = $pattern;
 		$this->controller = $controller;
 		$this->function   = $function;
 		$this->methods    = $methods ?: $this->methods;
 	}
 
-	public function setName($name) {
+	public function setName($name)
+	{
 		$this->name = $name;
 
 		return $this;
 	}
 
-	public function getMethods() {
+	public function getMethods()
+	{
 		return $this->methods;
 	}
 
-	public function getPattern() {
+	public function getPattern()
+	{
 		return $this->pattern;
 	}
 
-	public function getArgs() {
+	public function getArgs()
+	{
 		if (preg_match_all('/(?<arg>\{(?<name>[a-z]+)\})/i', $this->getPattern(), $matches, \PREG_PATTERN_ORDER)) {
 			return ($matches['name']);
 		}
@@ -39,11 +44,11 @@ class Route {
 		return [];
 	}
 
-	public function getCallable() {
+	public function getCallable()
+	{
 		return implode(':', [
 			"\\App\\Controllers\\" . strtr($this->controller, '/', '\\'),
 			$this->function,
 		]);
 	}
-
 }

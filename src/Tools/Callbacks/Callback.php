@@ -2,11 +2,12 @@
 
 namespace Katu\Utils\Callback;
 
-class Callback {
-
+class Callback
+{
 	public $callable;
 
-	public function __construct($callable = null) {
+	public function __construct($callable = null)
+	{
 		if (!is_callable($callable)) {
 			throw new \Exception("Not a callable.");
 		}
@@ -14,8 +15,8 @@ class Callback {
 		$this->callable = $callable;
 	}
 
-	public function call() {
+	public function call()
+	{
 		return call_user_func_array($this->callable, func_get_args());
 	}
-
 }

@@ -305,7 +305,7 @@ class View
 				];
 			}
 		} catch (\Throwable $e) {
-			/* Doesn't exist. */
+			// Doesn't exist.
 		}
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();

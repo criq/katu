@@ -8,7 +8,6 @@ use \Sexy\Sexy as SX;
 
 class Model extends Base
 {
-
 	const CACHE_IN_MEMORY_BY_PRIMARY_KEY = false;
 
 	protected $__updated = false;
@@ -424,10 +423,10 @@ class Model extends Base
 		$params['objectId']    = $this->getId();
 
 		if (!isset($expressions['orderBy'])) {
-			$expressions['orderBy'] = FileAttachment::getColumn('position');
+			$expressions['orderBy'] = \Katu\Models\Presets\FileAttachment::getColumn('position');
 		}
 
-		return FileAttachment::getBy($params, $expressions);
+		return \Katu\Models\Presets\FileAttachment::getBy($params, $expressions);
 	}
 
 	public function refreshFileAttachmentsFromFileIds($user, $fileIds)
@@ -435,7 +434,7 @@ class Model extends Base
 		$this->getFileAttachments()->each('delete');
 
 		foreach ((array) $fileIds as $key => $fileId) {
-			$file = File::get($fileId);
+			$file = \Katu\Models\Presets\File::get($fileId);
 			if ($file) {
 				$fileAttachment = $file->attachTo($user, $this);
 				$fileAttachment->update('position', $key + 1);
@@ -452,9 +451,9 @@ class Model extends Base
 
 		// Refresh the ones with position.
 		foreach ($this->getFileAttachments([
-			SX::cmpNotEq(FileAttachment::getColumn('position'), 0),
+			SX::cmpNotEq(\Katu\Models\Presets\FileAttachment::getColumn('position'), 0),
 		], [
-			'orderBy' => FileAttachment::getColumn('position'),
+			'orderBy' => \Katu\Models\Presets\FileAttachment::getColumn('position'),
 		]) as $fileAttachment) {
 			$fileAttachment->setPosition(++$position);
 			$fileAttachment->save();
@@ -462,9 +461,9 @@ class Model extends Base
 
 		// Refresh the ones without position.
 		foreach ($this->getFileAttachments([
-			SX::eq(FileAttachment::getColumn('position'), 0),
+			SX::eq(\Katu\Models\Presets\FileAttachment::getColumn('position'), 0),
 		], [
-			'orderBy' => FileAttachment::getColumn('timeCreated'),
+			'orderBy' => \Katu\Models\Presets\FileAttachment::getColumn('timeCreated'),
 		]) as $fileAttachment) {
 			$fileAttachment->setPosition(++$position);
 			$fileAttachment->save();
@@ -475,24 +474,24 @@ class Model extends Base
 
 	public function getImageFileAttachments($expressions = [])
 	{
-		$sql = SX::select(FileAttachment::getTable())
-			->from(FileAttachment::getTable())
-			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
-			->whereIn(File::getColumn('type'), [
+		$sql = SX::select(\Katu\Models\Presets\FileAttachment::getTable())
+			->from(\Katu\Models\Presets\FileAttachment::getTable())
+			->joinColumns(\Katu\Models\Presets\FileAttachment::getColumn('fileId'), \Katu\Models\Presets\File::getColumn('id'))
+			->whereIn(\Katu\Models\Presets\File::getColumn('type'), [
 				'image/jpeg',
 				'image/png',
 				'image/gif',
 			])
-			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
-			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())
+			->whereEq(\Katu\Models\Presets\FileAttachment::getColumn('objectModel'), (string) $this->getClass())
+			->whereEq(\Katu\Models\Presets\FileAttachment::getColumn('objectId'), (int) $this->getId())
 			->orderBy([
-				SX::orderBy(FileAttachment::getColumn('position')),
-				SX::orderBy(FileAttachment::getColumn('timeCreated'), SX::kw('desc')),
+				SX::orderBy(\Katu\Models\Presets\FileAttachment::getColumn('position')),
+				SX::orderBy(\Katu\Models\Presets\FileAttachment::getColumn('timeCreated'), SX::kw('desc')),
 			])
 			->addExpressions($expressions)
 			;
 
-		return FileAttachment::getBySql($sql);
+		return \Katu\Models\Presets\FileAttachment::getBySql($sql);
 	}
 
 	public function getImageFile()
@@ -510,7 +509,7 @@ class Model extends Base
 		$file = $this->getImageFile();
 
 		// Is file.
-		if ($file instanceof \App\Models\File) {
+		if ($file instanceof \Katu\Models\Presets\File) {
 			return $file->getPath();
 
 		// Is URL.

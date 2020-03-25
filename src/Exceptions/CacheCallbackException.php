@@ -2,6 +2,6 @@
 
 namespace Katu\Exceptions;
 
-class CacheCallbackException extends Exception {
-
+class CacheCallbackException extends Exception
+{
 }

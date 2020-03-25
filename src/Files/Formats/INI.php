@@ -2,9 +2,10 @@
 
 namespace Katu\Files\Formats;
 
-class INI {
-
-	static function parse($path) {
+class INI
+{
+	public static function parse($path)
+	{
 		$src = @parse_ini_file($path, true);
 		if ($src === false) {
 			throw new \Exception("Invalid INI file.");
@@ -25,5 +26,4 @@ class INI {
 
 		return $ini;
 	}
-
 }

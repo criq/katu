@@ -2,11 +2,12 @@
 
 namespace Katu\Tools\Session;
 
-class Flash extends Session {
-
+class Flash extends Session
+{
 	const KEY = 'katu.flash';
 
-	static function set() {
+	public static function set()
+	{
 		static::init();
 
 		if (count(func_get_args()) == 1) {
@@ -17,5 +18,4 @@ class Flash extends Session {
 
 		return true;
 	}
-
 }

@@ -4,25 +4,24 @@ namespace Katu\Models;
 
 abstract class View extends Base
 {
-
-	const TIMEOUT = 3600;
-	const TABLE = null;
-	const SEPARATOR = '_';
-	const TMP_LENGTH = 8;
-	const PREFIX_CACHE = '_cache';
 	const CACHE_DATETIME_FORMAT = 'YmdHis';
+	const PREFIX_CACHE = '_cache';
+	const SEPARATOR = '_';
+	const TABLE = null;
+	const TIMEOUT = 3600;
+	const TMP_LENGTH = 8;
 
-	public static $_cache              = true;
-	public static $_cacheTimeout       = 86400;
-	public static $_cacheOnUpdate      = true;
-	public static $_cacheAdvance       = .75;
-	public static $_materialize        = false;
-	public static $_materializeTimeout = 86400;
-	public static $_materializeAdvance = 1;
-	public static $_materializeHours   = [];
 	public static $_autoIndices        = true;
+	public static $_cache              = true;
+	public static $_cacheAdvance       = .75;
+	public static $_cacheOnUpdate      = true;
+	public static $_cacheTimeout       = 86400;
 	public static $_compositeIndex     = true;
 	public static $_customIndices      = [];
+	public static $_materialize        = false;
+	public static $_materializeAdvance = 1;
+	public static $_materializeHours   = [];
+	public static $_materializeTimeout = 86400;
 
 	public static function getTable()
 	{
@@ -485,7 +484,7 @@ abstract class View extends Base
 			$query = $class::getCachedTablesQuery();
 			$array = $query->getResult()->getArray();
 			foreach (array_slice($array, 1) as $tableArray) {
-				$table = new \App\Classes\PDO\Table(
+				$table = new \Katu\PDO\Table(
 					$class::getConnection(),
 					new \Katu\PDO\Name($tableArray['TABLE_NAME']),
 				);

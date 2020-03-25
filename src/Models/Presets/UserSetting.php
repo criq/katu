@@ -4,18 +4,17 @@ namespace Katu\Models\Presets;
 
 class UserSetting extends \Katu\Models\Model
 {
-
 	const TABLE = 'user_settings';
 
-	public static function getOrCreate($user, $name, $value = null)
+	public static function getOrCreate(User $user, string $name, $value = null)
 	{
 		return static::upsert([
-			'userId'      => (int)   $user->getId(),
-			'name'        => (string)$name,
+			'userId' => $user->getId(),
+			'name' => trim($name),
 		], [
 			'timeCreated' => (string)new \Katu\Tools\DateTime\DateTime,
 		], [
-			'value'       => \Katu\Files\Formats\JSON::encodeInline($value),
+			'value' => \Katu\Files\Formats\JSON::encodeStandard($value),
 		]);
 	}
 
