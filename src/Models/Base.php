@@ -79,15 +79,15 @@ abstract class Base
 	{
 		// Sexy SQL expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
-			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0));
+			$query = static::getConnection()->selectClass(static::getClassName(), func_get_arg(0));
 
 		// Raw SQL and bind values.
 		} elseif (count(func_get_args()) == 2) {
-			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0), func_get_arg(1));
+			$query = static::getConnection()->selectClass(static::getClassName(), func_get_arg(0), func_get_arg(1));
 
 		// Raw SQL.
 		} elseif (count(func_get_args()) == 1) {
-			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0));
+			$query = static::getConnection()->selectClass(static::getClassName(), func_get_arg(0));
 
 		// Anything else.
 		} else {

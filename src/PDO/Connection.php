@@ -126,20 +126,25 @@ class Connection
 
 	public function select(\Sexy\Select $select) : Query
 	{
-		return new Query($this, $select->getSql(), $select->getParams());
+		$query = new Query($this, $select->getSql(), $select->getParams());
+		if ($select->getPage()) {
+			$query->setPage($select->getPage());
+		}
+
+		return $query;
 	}
 
-	public function createQuery(string $sql, array $params = []) : Query
-	{
-		return new Query($this, $sql, $params);
-	}
-
-	public function createClassQuery(\Katu\Tools\Classes\ClassName $className, \Sexy\Select $select) : Query
+	public function selectClass(\Katu\Tools\Classes\ClassName $className, \Sexy\Select $select) : Query
 	{
 		$query = $this->select($select);
 		$query->setClassName($className);
 
 		return $query;
+	}
+
+	public function createQuery(string $sql, array $params = []) : Query
+	{
+		return new Query($this, $sql, $params);
 	}
 
 	public function transaction($callback)
