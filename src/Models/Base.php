@@ -69,18 +69,19 @@ abstract class Base
 
 	public static function createQuery() : \Katu\PDO\Query
 	{
-		// Sql expression.
+		// Sexy SQL expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
 			$query = static::getConnection()->createClassQueryFromSql(static::getClassName(), func_get_arg(0));
-		// Raw sql and bind values.
+		// Raw SQL and bind values.
 		} elseif (count(func_get_args()) == 2) {
 			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0), func_get_arg(1));
-		// Raw sql.
+		// Raw SQL.
 		} elseif (count(func_get_args()) == 1) {
 			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0));
 		} else {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments passed to query.");
 		}
+		// echo ($query->sql);die;
 
 		return $query;
 	}
