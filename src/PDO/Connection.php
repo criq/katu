@@ -2,8 +2,6 @@
 
 namespace Katu\PDO;
 
-use \PDO;
-
 class Connection
 {
 	public $config;
@@ -24,7 +22,7 @@ class Connection
 		// Try to connect.
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->connection = new PDO($this->config->getPDODSN(), $this->config->user, $this->config->password);
+				$this->connection = new \PDO($this->config->getPDODSN(), $this->config->user, $this->config->password);
 				break;
 			} catch (\ErrorException $e) {
 				if (strpos($e->getMessage(), 'driver does not support setting attributes.')) {
@@ -65,10 +63,10 @@ class Connection
 
 	public function getTables()
 	{
-		$pdo = $this;
+		$connection = $this;
 
-		return array_map(function ($tableName) use ($pdo) {
-			return new Table($pdo, $tableName);
+		return array_map(function ($tableName) use ($connection) {
+			return new Table($connection, $tableName);
 		}, $this->getTableNames());
 	}
 
@@ -92,10 +90,10 @@ class Connection
 
 	public function getViews()
 	{
-		$pdo = $this;
+		$connection = $this;
 
-		return array_map(function ($i) use ($pdo) {
-			return new View($pdo, $i);
+		return array_map(function ($i) use ($connection) {
+			return new View($connection, $i);
 		}, $this->getViewNames());
 	}
 
