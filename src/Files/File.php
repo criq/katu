@@ -33,7 +33,7 @@ class File
 			return $array;
 		};
 
-		$args = array_flatten(func_get_args());
+		$args = (new \Katu\Types\TArray(func_get_args()))->flatten()->getArray();
 		$parts = [];
 
 		foreach ($args as $arg) {
@@ -71,7 +71,7 @@ class File
 		}
 
 		// Downcode.
-		$parts = array_filter(array_flatten($parts));
+		$parts = array_filter((new \Katu\Types\TArray($parts))->flatten()->getArray());
 		$parts = array_map(function ($part) {
 			return \URLify::downcode($part);
 		}, $parts);

@@ -16,7 +16,7 @@ class Blabot extends \Katu\Tools\Random\LoremIpsum
 				}
 			});
 
-			return new \Katu\Types\TArray(array_flatten($sets));
+			return (new \Katu\Types\TArray($sets))->flatten()->getArray();
 		});
 	}
 }
