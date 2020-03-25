@@ -8,27 +8,27 @@ class TPagination
 	const PAGINATION_ENDS_OFFSET = 0;
 	const PAGINATION_CURRENT_OFFSET = 3;
 
-	public $total;
-	public $perPage;
 	public $page;
 	public $pages;
+	public $perPage;
+	public $total;
 
-	public function __construct($total, $perPage, $page)
+	public function __construct(int $total, int $perPage, int $page)
 	{
-		if ((int) $total < 0) {
+		if ((int)$total < 0) {
 			throw new \Exception("Invalid total.");
 		}
-		if ((int) $perPage < 1) {
+		if ((int)$perPage < 1) {
 			throw new \Exception("Invalid per page.");
 		}
-		if ((int) $page < 1) {
+		if ((int)$page < 1) {
 			throw new \Exception("Invalid page.");
 		}
 
-		$this->total   = (int)$total;
+		$this->total = (int)$total;
 		$this->perPage = (int)$perPage;
-		$this->page    = (int)$page;
-		$this->pages   = (int)ceil($total / $perPage);
+		$this->page = (int)$page;
+		$this->pages = (int)ceil($total / $perPage);
 	}
 
 	public static function getAppPageIdent()
@@ -41,10 +41,9 @@ class TPagination
 		return \Katu\Config\Config::get('app', 'pagination', 'perPage');
 	}
 
-	public static function getRequestPageExpression($perPage = null)
+	public static function getRequestPageExpression(\Slim\Http\Request $request, int $perPage = null)
 	{
-		$app = \Katu\App::get();
-
+		var_dump($request);die;
 		return new \Sexy\Page(static::getPageFromRequest($app->request->params()), is_null($perPage) ? static::getAppPerPage() : $perPage);
 	}
 
@@ -75,8 +74,8 @@ class TPagination
 	{
 		$options = array_merge([
 			'allPagesLimit' => static::PAGINATION_ALL_PAGES_LIMIT,
-			'endsOffset'    => static::PAGINATION_ENDS_OFFSET,
 			'currentOffset' => static::PAGINATION_CURRENT_OFFSET,
+			'endsOffset' => static::PAGINATION_ENDS_OFFSET,
 		], $options);
 
 		if (!$this->total) {
