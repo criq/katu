@@ -38,11 +38,11 @@ class Model extends Base
 			return new \Katu\PDO\Name($i);
 		}, array_keys($values));
 
-		$values  = array_map(function ($i) {
+		$placeholders = array_map(function ($i) {
 			return ':' . $i;
 		}, array_keys($values));
 
-		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ( " . implode(", ", $values) . " ) ";
+		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ( " . implode(", ", $placeholders) . " ) ";
 
 		$query = static::getConnection()->createQuery($sql, $values);
 		$query->getResult();

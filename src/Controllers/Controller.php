@@ -117,7 +117,7 @@ class Controller
 	 */
 	public function addErrors(\Katu\Exceptions\Exception $e)
 	{
-		if (!$this->data['_errors'] ?? null) {
+		if (!($this->data['_errors'] ?? null)) {
 			$this->data['_errors'] = new \Katu\Exceptions\ExceptionCollection;
 		}
 
