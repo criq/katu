@@ -29,14 +29,9 @@ abstract class Base
 		return get_called_class();
 	}
 
-	public static function getTopClass()
+	public static function getClassName()
 	{
-		return "\\" . ltrim(static::getClass(), "\\");
-	}
-
-	public static function getAppClass()
-	{
-		return implode(array_slice(explode('\\', static::getClass()), -1, 1));
+		return new \Katu\Tools\Classes\ClassName(static::getClass());
 	}
 
 	public function getClassMethods()
@@ -44,7 +39,7 @@ abstract class Base
 		return get_class_methods($this);
 	}
 
-	public static function getConnection()
+	public static function getConnection() : \Katu\PDO\Connection
 	{
 		if (!defined('static::DATABASE')) {
 			throw new \Exception("Undefined database.");
@@ -53,7 +48,7 @@ abstract class Base
 		return \Katu\PDO\Connection::getInstance(static::DATABASE);
 	}
 
-	public static function getTableName()
+	public static function getTableName() : \Katu\PDO\Name
 	{
 		if (!defined('static::TABLE')) {
 			throw new \Exception("Undefined table.");
@@ -62,27 +57,27 @@ abstract class Base
 		return new \Katu\PDO\Name(static::TABLE);
 	}
 
-	public static function getTable()
+	public static function getTable() : \Katu\PDO\Table
 	{
 		return new \Katu\PDO\Table(static::getConnection(), static::getTableName());
 	}
 
-	public static function getColumn($name)
+	public static function getColumn($name) : \Katu\PDO\Column
 	{
 		return new \Katu\PDO\Column(static::getTable(), new \Katu\PDO\Name($name));
 	}
 
-	public static function createQuery()
+	public static function createQuery() : \Katu\PDO\Query
 	{
 		// Sql expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
-			$query = static::getConnection()->createClassQueryFromSql(static::getClass(), func_get_arg(0));
+			$query = static::getConnection()->createClassQueryFromSql(static::getClassName(), func_get_arg(0));
 		// Raw sql and bind values.
 		} elseif (count(func_get_args()) == 2) {
-			$query = static::getConnection()->createClassQuery(static::getClass(), func_get_arg(0), func_get_arg(1));
+			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0), func_get_arg(1));
 		// Raw sql.
 		} elseif (count(func_get_args()) == 1) {
-			$query = static::getConnection()->createClassQuery(static::getClass(), func_get_arg(0));
+			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0));
 		} else {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments passed to query.");
 		}

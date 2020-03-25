@@ -2,7 +2,7 @@
 
 namespace Katu\PDO\Results;
 
-use \Sexy\Page;
+use \Sexy\Sexy as SX;
 
 class PaginatedResult extends Result
 {
@@ -20,7 +20,7 @@ class PaginatedResult extends Result
 		if ($page) {
 			$this->page = $page;
 		} else {
-			$page = new Page(1, $total ?: 1);
+			$page = SX::page(1, $total ?: 1);
 		}
 
 		$this->pagination = new \Katu\Types\TPagination($total, $page->perPage, $page->page);

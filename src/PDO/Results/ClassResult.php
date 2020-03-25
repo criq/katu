@@ -4,47 +4,41 @@ namespace Katu\PDO\Results;
 
 class ClassResult extends PaginatedResult
 {
-	public function __construct($pdo, $statement, $page, $class)
+	public $className;
+
+	public function __construct($pdo, $statement, $page, \Katu\Tools\Classes\ClassName $className)
 	{
 		parent::__construct($pdo, $statement, $page);
 
-		$this->class = $class;
+		$this->className = $className;
 	}
 
-	public function getObjects($class = null)
+	public function getObjects(\Katu\Tools\Classes\ClassName $className = null)
 	{
-		if (!$class && $this->class) {
-			$class = $this->class;
+		if (!$className && $this->className) {
+			$className = $this->className;
 		}
 
-		$this->setIteratorArray($class);
+		$this->setIteratorArray($className);
 
 		return $this->iteratorArray;
 	}
 
-	public function getOne($class = null, $offset = 0)
+	public function getOne(\Katu\Tools\Classes\ClassName $className = null, int $offset = 0)
 	{
-		if (!$class && $this->class) {
-			$class = $this->class;
+		if (!$className && $this->className) {
+			$className = $this->className;
 		}
 
-		$objects = $this->getObjects();
-		if (!isset($objects[$offset])) {
-			return false;
-		}
+		$objects = $this->getObjects($className);
 
-		$object = $objects[$offset];
-		if ($object && method_exists($object, 'save')) {
-			$object->save();
-		}
-
-		return $object;
+		return $objects[$offset] ?? null;
 	}
 
-	public function getRandomOne($class = null)
+	public function getRandomOne(\Katu\Tools\Classes\ClassName $className = null)
 	{
 		if ($this->getCount()) {
-			return $this->getOne($class, rand(0, $this->getCount() - 1));
+			return $this->getOne($className, rand(0, $this->getCount() - 1));
 		}
 
 		return false;
@@ -52,7 +46,7 @@ class ClassResult extends PaginatedResult
 
 	public function getPropertyValues($property)
 	{
-		$values = array();
+		$values = [];
 
 		foreach ($this as $object) {
 			$values[] = $object->$property;
@@ -64,15 +58,15 @@ class ClassResult extends PaginatedResult
 	/****************************************************************************
 	 * ArrayAccess.
 	 */
-	public function setIteratorArray($class = null)
+	public function setIteratorArray(\Katu\Tools\Classes\ClassName $className = null)
 	{
 		if (is_null($this->iteratorArray)) {
-			if (!$class && $this->class) {
-				$class = $this->class;
+			if (!$className && $this->className) {
+				$className = $this->className;
 			}
 
 			$this->iteratorArray = [];
-			while ($object = $this->statement->fetchObject($class)) {
+			while ($object = $this->statement->fetchObject((string)$className)) {
 				$this->iteratorArray[] = $object;
 			}
 		}

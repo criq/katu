@@ -70,9 +70,9 @@ class Result implements \Iterator, \ArrayAccess
 		return $this->iteratorArray;
 	}
 
-	public function getObjects($class)
+	public function getObjects(\Katu\Tools\Classes\ClassName $className)
 	{
-		$this->setIteratorArray($class);
+		$this->setIteratorArray($className);
 
 		return $this->iteratorArray;
 	}
@@ -146,12 +146,12 @@ class Result implements \Iterator, \ArrayAccess
 	/****************************************************************************
 	 * ArrayAccess.
 	 */
-	public function setIteratorArray($class = null)
+	public function setIteratorArray(\Katu\Tools\Classes\ClassName $className = null)
 	{
 		if (is_null($this->iteratorArray)) {
 			$this->iteratorArray = [];
-			if ($class) {
-				while ($row = $this->statement->fetchObject($class)) {
+			if ($className) {
+				while ($row = $this->statement->fetchObject((string)$className)) {
 					$this->iteratorArray[] = $row;
 				}
 			} else {

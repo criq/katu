@@ -5,12 +5,12 @@ namespace Katu\PDO;
 class Query
 {
 	public $bindValues = [];
-	public $class;
+	public $className;
 	public $page;
 	public $pdo;
 	public $sql;
 
-	public function __construct(Connection $pdo, $sql = '', $bindValues = [])
+	public function __construct(Connection $pdo, $sql = null, array $bindValues = [])
 	{
 		$this->pdo = $pdo;
 		$this->sql = $sql;
@@ -48,9 +48,9 @@ class Query
 		return $this->page = $page;
 	}
 
-	public function setClass($class)
+	public function setClassName(\Katu\Tools\Classes\ClassName $className)
 	{
-		return $this->class = $class;
+		return $this->className = $className;
 	}
 
 	public function getStatement()
@@ -74,10 +74,10 @@ class Query
 
 	public function getResult()
 	{
-		$stopwatch = new \Katu\Tools\Profiler\Stopwatch();
+		$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 
-		if ($this->class) {
-			$result = new Results\ClassResult($this->pdo, $this->getStatement(), $this->page, $this->class);
+		if ($this->className) {
+			$result = new Results\ClassResult($this->pdo, $this->getStatement(), $this->page, $this->className);
 		} elseif ($this->page) {
 			$result = new Results\PaginatedResult($this->pdo, $this->getStatement(), $this->page);
 		} else {

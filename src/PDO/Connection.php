@@ -39,7 +39,7 @@ class Connection
 		return ['name', 'config'];
 	}
 
-	public function getName()
+	public function getName() : string
 	{
 		return $this->name;
 	}
@@ -47,7 +47,7 @@ class Connection
 	public static function getInstance($name)
 	{
 		if (!isset(static::$connections[$name])) {
-			static::$connections[$name] = new self($name);
+			static::$connections[$name] = new static($name);
 		}
 
 		return static::$connections[$name];
@@ -140,18 +140,18 @@ class Connection
 		return $query;
 	}
 
-	public function createClassQuery($class, $sql = null, array $params = [])
+	public function createClassQuery(\Katu\Tools\Classes\ClassName $className, $sql = null, array $params = [])
 	{
 		$query = new Query($this, $sql, $params);
-		$query->setClass($class);
+		$query->setClassName($className);
 
 		return $query;
 	}
 
-	public function createClassQueryFromSql($class, \Sexy\Expression $sql)
+	public function createClassQueryFromSql(\Katu\Tools\Classes\ClassName $className, \Sexy\Expression $sql)
 	{
 		$query = static::createQueryFromSql($sql);
-		$query->setClass($class);
+		$query->setClassName($className);
 
 		return $query;
 	}
