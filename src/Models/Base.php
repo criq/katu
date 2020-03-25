@@ -108,7 +108,7 @@ abstract class Base
 	{
 		$pdo = static::getConnection();
 		$query = $pdo->createQuery();
-		$query->setClass(static::getClass());
+		$query->setClassName(static::getClassName());
 
 		$sql = SX::select();
 		$sql->addExpressions($expressions);
