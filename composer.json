@@ -15,6 +15,7 @@
 		"jenssegers/agent": "@stable",
 		"jwage/easy-csv": "0.0.2",
 		"league/color-extractor": "@stable",
+		"mandrill/mandrill": "dev-master",
 		"michelf/php-markdown": "1.*",
 		"mischiefcollective/colorjizz": "@stable",
 		"monolog/monolog": "^1",
