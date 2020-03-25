@@ -110,7 +110,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 			$values[] = $value;
 		}
 
-		return $values;
+		return new static($values);
 	}
 
 	public function reverse()

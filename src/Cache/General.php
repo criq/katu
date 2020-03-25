@@ -97,13 +97,13 @@ class General
 			$this->name,
 			$this->args,
 		];
-		// var_dump($array);
+		// var_dump($array);die;
 
 		$checksum = crc32(serialize($array));
-		// var_dump($checksum);
+		// var_dump($checksum);die;
 
-		$array = array_flatten($array);
-		// var_dump($array);
+		$array = (new \Katu\Types\TArray($array))->flatten()->getArray();
+		// var_dump($array);die;
 
 		$array = array_map(function ($i) {
 			try {
@@ -112,7 +112,7 @@ class General
 				return sha1(serialize($i));
 			}
 		}, $array);
-		// var_dump($array);
+		// var_dump($array);die;
 
 		$array = array_map(function ($i) {
 			$i = strtr($i, '\\', '/');
@@ -121,7 +121,7 @@ class General
 			$i = preg_replace('/[^a-z0-9_\\/]/i', null, $i);
 			return $i;
 		}, $array);
-		// var_dump($array);
+		// var_dump($array);die;
 
 		$array[] = 'crc32_' . $checksum;
 
