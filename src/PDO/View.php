@@ -18,7 +18,7 @@ class View extends Table
 			$tableNames = [];
 
 			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
-			$res = $table->getConnection()->createQuery($sql)->getResult()->getArray();
+			$res = $table->getConnection()->select($sql)->getResult()->getArray();
 			foreach ($res as $row) {
 				if (!preg_match('#^<.+>$#', $row['table'])) {
 					$tableNames[] = new \Katu\PDO\Name($row['table']);

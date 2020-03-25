@@ -17,17 +17,17 @@ class Config
 
 	public function __construct($host, $user, $password, $database, $charset)
 	{
-		$this->type     = static::TYPE;
-		$this->host     = $host;
-		$this->user     = $user;
-		$this->password = $password;
-		$this->database = $database;
 		$this->charset  = $charset;
+		$this->database = $database;
+		$this->host = $host;
+		$this->password = $password;
+		$this->type = static::TYPE;
+		$this->user = $user;
 	}
 
 	public static function createFromConfig($config)
 	{
-		$class = '\\Katu\\PDO\\Config\\' . $config['type'];
+		$class = (string)new \Katu\Tools\Classes\ClassName('Katu', 'PDO', 'Config', $config['type']);
 		if (!class_exists($class)) {
 			throw new \Katu\Exceptions\PDOConfigException("Invalid PDO type.");
 		}
@@ -38,12 +38,12 @@ class Config
 	public function getPDOArray()
 	{
 		return [
-			'driver'   => static::DRIVER,
-			'host'     => $this->host,
-			'user'     => $this->user,
+			'charset' => $this->charset,
+			'dbname' => $this->database,
+			'driver' => static::DRIVER,
+			'host' => $this->host,
 			'password' => $this->password,
-			'dbname'   => $this->database,
-			'charset'  => $this->charset,
+			'user' => $this->user,
 		];
 	}
 

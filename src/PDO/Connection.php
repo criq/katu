@@ -124,14 +124,19 @@ class Connection
 		return $views;
 	}
 
-	public function createQuery($sql, array $params = [])
+	public function select(\Sexy\Select $select) : Query
+	{
+		return new Query($this, $select->getSql(), $select->getParams());
+	}
+
+	public function createQuery(string $sql, array $params = []) : Query
 	{
 		return new Query($this, $sql, $params);
 	}
 
-	public function createClassQuery(\Katu\Tools\Classes\ClassName $className, $sql, array $params = [])
+	public function createClassQuery(\Katu\Tools\Classes\ClassName $className, \Sexy\Select $select) : Query
 	{
-		$query = $this->createQuery($sql, $params);
+		$query = $this->select($select);
 		$query->setClassName($className);
 
 		return $query;

@@ -16,9 +16,17 @@ abstract class Base
 
 	public function __call($name, $args)
 	{
-		// Bind getter.
-		if (preg_match('#^get(?<property>[a-z]+)$#i', $name, $match) && count($args) == 0) {
-			return $this->getBoundObject($match['property']);
+		// Getter.
+		if (preg_match('/^get(?<property>[a-z0-9]+)$/i', $name, $match)) {
+			$property = $this->getPropertyName($match['property']);
+
+			// Not found, maybe just added.
+			if (!$property) {
+				\Katu\Cache\General::clearMemory();
+				$property = $this->getPropertyName($match['property']);
+			}
+
+			return $this->{$property} ?? null;
 		}
 
 		trigger_error('Undeclared class method ' . $name . '.');
@@ -67,41 +75,46 @@ abstract class Base
 		return new \Katu\PDO\Column(static::getTable(), new \Katu\PDO\Name($name));
 	}
 
-	public static function createQuery() : \Katu\PDO\Query
+	public static function select() : \Katu\PDO\Query
 	{
 		// Sexy SQL expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
 			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0));
+
 		// Raw SQL and bind values.
 		} elseif (count(func_get_args()) == 2) {
 			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0), func_get_arg(1));
+
 		// Raw SQL.
 		} elseif (count(func_get_args()) == 1) {
 			$query = static::getConnection()->createClassQuery(static::getClassName(), func_get_arg(0));
+
+		// Anything else.
 		} else {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments passed to query.");
 		}
+
 		// echo ($query->sql);die;
 
 		return $query;
 	}
 
-	public static function transaction($callback)
+	public static function transaction()
 	{
-		return call_user_func_array([static::getConnection(), 'transaction'], func_get_args());
+		return static::getConnection()->transaction(...func_get_args());
 	}
 
 	public static function filterParams($params)
 	{
-		$_params = [];
+		$filteredParams = [];
 
 		foreach ($params as $param => $value) {
 			if (is_string($param)) {
-				$_params[$param] = $value;
+				$filteredParams[$param] = $value;
 			}
 		}
 
-		return $_params;
+		return $filteredParams;
 	}
 
 	public static function getBy($params = [], $expressions = [], $options = [])
@@ -124,22 +137,15 @@ abstract class Base
 			$sql->setOptGetTotalRows($options['setOptGetTotalRows']);
 		}
 
-
-
-
-
-		$pdo = static::getConnection();
-		$query = $pdo->createQuery();
+		$query = static::getConnection()->select($sql);
 		$query->setClassName(static::getClassName());
-
-		$query->setFromSql($sql);
 
 		return $query->getResult();
 	}
 
 	public static function getBySql($sql)
 	{
-		return static::createQuery($sql)->getResult();
+		return static::select($sql)->getResult();
 	}
 
 	// public static function getCachedBySql($sql, $timeout = null)
@@ -156,9 +162,17 @@ abstract class Base
 
 	public static function getOneBy()
 	{
-		$args = array_merge(func_get_args(), [['page' => SX::page(1, 1)]], [['setOptGetTotalRows' => false]]);
+		$args = array_merge(func_get_args(), [
+			[
+				'page' => SX::page(1, 1)
+			],
+		], [
+			[
+				'setOptGetTotalRows' => false,
+			],
+		]);
 
-		return call_user_func_array(['static', 'getBy'], $args)->getOne();
+		return static::getBy(...$args)->getOne();
 	}
 
 	public static function getAll($expressions = [])
@@ -189,33 +203,33 @@ abstract class Base
 		}, static::getTable()->getColumnNames())));
 	}
 
-	public function getBoundObject($model)
-	{
-		$nsModel = '\\App\\Models\\' . $model;
-		if (!class_exists($nsModel)) {
-			return null;
-		}
+	// public function getBoundObject($model)
+	// {
+	// 	$nsModel = '\\App\\Models\\' . $model;
+	// 	if (!class_exists($nsModel)) {
+	// 		return null;
+	// 	}
 
-		foreach (static::getIdProperties() as $property) {
-			$proposedModel = '\\App\\Models\\' . ucfirst(preg_replace('#^(.+)_?[Ii][Dd]$#', '\\1', $property));
-			if ($proposedModel && $nsModel == $proposedModel) {
-				$object = $proposedModel::get($this->{$property});
-				if ($object) {
-					return $object;
-				}
-			}
-		}
+	// 	foreach (static::getIdProperties() as $property) {
+	// 		$proposedModel = '\\App\\Models\\' . ucfirst(preg_replace('#^(.+)_?[Ii][Dd]$#', '\\1', $property));
+	// 		if ($proposedModel && $nsModel == $proposedModel) {
+	// 			$object = $proposedModel::get($this->{$property});
+	// 			if ($object) {
+	// 				return $object;
+	// 			}
+	// 		}
+	// 	}
 
-		return null;
-	}
+	// 	return null;
+	// }
 
 	public static function getPropertyName($property)
 	{
 		$properties = array_merge(array_keys(get_class_vars(get_called_class())), static::getTable()->getColumnNames());
 
-		foreach ($properties as $_property) {
-			if (strtolower($_property) === strtolower($property)) {
-				return $_property;
+		foreach ($properties as $p) {
+			if (strtolower($p) === strtolower($property)) {
+				return $p;
 			}
 		}
 

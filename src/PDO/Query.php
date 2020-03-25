@@ -7,56 +7,56 @@ class Query
 	public $className;
 	public $connection;
 	public $page;
+	public $params = [];
 	public $sql;
-	public $values = [];
 
-	public function __construct(Connection $connection, $sql, array $values = [])
+	public function __construct(Connection $connection, string $sql, array $params = [])
 	{
 		$this->connection = $connection;
-
-		if ($sql instanceof \Sexy\Expression) {
-			$this->sql = $sql->getSql();
-			$this->values = $sql->getValues();
-			$page = $sql->getPage();
-			if ($page) {
-				$this->setPage($page);
-			}
-		} else {
-			$this->sql = $sql;
-			$this->values = $values;
-		}
+		$this->params = $params;
+		$this->sql = $sql;
 	}
 
-	public function setSql($sql)
+	public function setSql(string $sql) : Query
 	{
-		return $this->sql = $sql;
+		$this->sql = $sql;
+
+		return $this;
 	}
 
-	public function setValue($name, $value)
+	public function setParam($name, $value) : Query
 	{
-		return $this->values[$name] = $value;
+		$this->params[$name] = $value;
+
+		return $this;
 	}
 
-	public function setValues($values)
+	public function setParams($params) : Query
 	{
-		return $this->values = array_merge($this->values, $values);
+		$this->params = array_merge($this->params, $params);
+
+		return $this;
 	}
 
-	public function setPage($page)
+	public function setPage($page) : Query
 	{
-		return $this->page = $page;
+		$this->page = $page;
+
+		return $this;
 	}
 
-	public function setClassName(\Katu\Tools\Classes\ClassName $className)
+	public function setClassName(\Katu\Tools\Classes\ClassName $className) : Query
 	{
-		return $this->className = $className;
+		$this->className = $className;
+
+		return $this;
 	}
 
 	public function getStatement()
 	{
 		$statement = $this->connection->connection->prepare($this->sql);
 
-		foreach ($this->values as $name => $value) {
+		foreach ($this->params as $name => $value) {
 			if (is_string($value)) {
 				$statement->bindValue($name, $value, \PDO::PARAM_STR);
 			} elseif (is_int($value)) {

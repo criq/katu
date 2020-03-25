@@ -2,8 +2,6 @@
 
 namespace Katu\Models;
 
-use \App\Models\File;
-use \App\Models\FileAttachment;
 use \Sexy\Sexy as SX;
 
 class Model extends Base
@@ -15,7 +13,7 @@ class Model extends Base
 	public function __call($name, $args)
 	{
 		// Setter.
-		if (preg_match('#^set(?<property>[a-z0-9]+)$#i', $name, $match) && count($args) == 1) {
+		if (preg_match('/^set(?<property>[a-z0-9]+)$/i', $name, $match) && count($args) == 1) {
 			$property = $this->getPropertyName($match['property']);
 
 			// Not found, maybe just added.
@@ -31,7 +29,7 @@ class Model extends Base
 			}
 		}
 
-		return parent::__call($name, $args);
+		return parent::__call(...func_get_args());
 	}
 
 	public static function insert($values = [])
@@ -39,6 +37,7 @@ class Model extends Base
 		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
 		}, array_keys($values));
+
 		$values  = array_map(function ($i) {
 			return ':' . $i;
 		}, array_keys($values));
@@ -170,7 +169,7 @@ class Model extends Base
 				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
 
 				$query = static::getConnection()->createQuery($sql, $values);
-				$query->setValue(static::getIdColumnName(), $this->getId());
+				$query->setParam(static::getIdColumnName(), $this->getId());
 				$query->getResult();
 			}
 
@@ -191,7 +190,7 @@ class Model extends Base
 
 	public function isUpdated()
 	{
-		return (bool) $this->__updated;
+		return (bool)$this->__updated;
 	}
 
 	public static function getAppModels()
@@ -354,7 +353,7 @@ class Model extends Base
 			->where(SX::cmpRegexp(static::getColumn($column), $preg))
 			->addExpressions($constraints)
 			;
-		$res = static::getConnection()->createQuery($sql)->getResult();
+		$res = static::getConnection()->select($sql)->getResult();
 
 		// Nothing, keep the slug.
 		if (!$res->getCount()) {

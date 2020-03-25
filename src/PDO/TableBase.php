@@ -117,7 +117,7 @@ abstract class TableBase extends \Sexy\Expression
 		if (preg_match('/^CREATE ALGORITHM/', $sql)) {
 			// View.
 			$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
-			$destinationTable->getConnection()->createQuery($sql)->getResult();
+			$destinationTable->getConnection()->select($sql)->getResult();
 		} else {
 			// Table.
 			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function ($i) use ($destinationTable) {
@@ -129,11 +129,11 @@ abstract class TableBase extends \Sexy\Expression
 				$sql = $callback($sql);
 			}
 
-			$destinationTable->getConnection()->createQuery($sql)->getResult();
+			$destinationTable->getConnection()->select($sql)->getResult();
 
 			// Create table and copy the data.
 			$sql = " INSERT " . (($options['insertIgnore'] ?? null) ? " IGNORE " : null) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
-			$destinationTable->getConnection()->createQuery($sql)->getResult();
+			$destinationTable->getConnection()->select($sql)->getResult();
 		}
 
 		// Disable NULL.
@@ -162,7 +162,7 @@ abstract class TableBase extends \Sexy\Expression
 				}, $indexableColumns)) . "); ";
 
 				try {
-					$destinationTable->getConnection()->createQuery($sql)->getResult();
+					$destinationTable->getConnection()->select($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -172,7 +172,7 @@ abstract class TableBase extends \Sexy\Expression
 			foreach ($indexableColumns as $indexableColumn) {
 				try {
 					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . $indexableColumn->name . ") ";
-					$destinationTable->getConnection()->createQuery($sql)->getResult();
+					$destinationTable->getConnection()->select($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -184,7 +184,7 @@ abstract class TableBase extends \Sexy\Expression
 			foreach ($options['customIndices'] as $customIndex) {
 				try {
 					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
-					$destinationTable->getConnection()->createQuery($sql)->getResult();
+					$destinationTable->getConnection()->select($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -223,7 +223,7 @@ abstract class TableBase extends \Sexy\Expression
 			$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 
 			$sql = " SELECT COUNT(1) AS total FROM " . $table->name;
-			$res = $table->getConnection()->createQuery($sql)->getResult()->getArray();
+			$res = $table->getConnection()->select($sql)->getResult()->getArray();
 
 			return [
 				'rows' => (int) $res[0]['total'],

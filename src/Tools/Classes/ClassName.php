@@ -6,20 +6,23 @@ class ClassName
 {
 	protected $src;
 
-	public function __construct($src)
+	public function __construct()
 	{
-		if (is_object($src)) {
-			$this->src = [get_class($src)];
-		} elseif (is_string($src)) {
-			$this->src = [$src];
+		if (is_object(func_get_arg(0))) {
+			$this->src = [get_class(func_get_arg(0))];
 		} else {
-			$this->src = (array)$src;
+			$this->src = (new \Katu\Types\TArray(func_get_args()))->flatten()->getArray();
 		}
 	}
 
 	public function __toString() : string
 	{
 		return (string)$this->getFullName();
+	}
+
+	public function exists() : bool
+	{
+		return class_exists($this);
 	}
 
 	public function getFullName() : string

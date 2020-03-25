@@ -9,7 +9,8 @@ class PaginatedResult extends Result
 		parent::__construct($connection, $statement);
 
 		if (strpos($this->statement->queryString, 'SQL_CALC_FOUND_ROWS')) {
-			$total = $this->connection->createQuery("SELECT FOUND_ROWS() AS total")->getResult()->statement->fetchColumn();
+			$sql = " SELECT FOUND_ROWS() AS total ";
+			$total = $this->connection->createQuery($sql)->getResult()->statement->fetchColumn();
 		} else {
 			$total = $this->statement->rowCount();
 		}
