@@ -44,7 +44,10 @@ class TString
 
 		\URLify::$remove_list = [];
 
-		return \URLify::filter($this->string, isset($options['maxLength']) ? $options['maxLength'] : 255, isset($options['language']) ? $options['language'] : null);
+		$maxLength = $options['maxLength'] ?? 255;
+		$language = $options['language'] ?? 'en';
+
+		return \URLify::filter($this->string, $maxLength, $language);
 	}
 
 	public function getAsFloat()
