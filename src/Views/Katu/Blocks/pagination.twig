@@ -1,34 +1,26 @@
-{% set prevCopy  = options.prevCopy|default("Previous") %}
-{% set nextCopy  = options.nextCopy|default("Next") %}
-{% set pageIdent = options.pageIdent|default("page") %}
+{% set templatePages = pagination.getTemplatePages %}
 
-{% set pages = getPages(pagination, {
-	allPagesLimit: options.allPagesLimit,
-	endsOffset: options.endsOffset,
-	currentOffset: options.currentOffset
-}) %}
-
-{% if pages|length > 1 %}
+{% if templatePages|length > 1 %}
 	<p class="pagination">
 
 		<span class="segment prev">
 			{% if pagination.page > 1 %}
-				<a class="node skip prev active" href="{{ getPaginationUrl(url, pagination.page - 1, pageIdent) }}">{{ prevCopy }}</a>
+				<a class="node skip prev active" href="{{ pagination.getPageURL(url, pagination.page - 1) }}">{{ pagination.getCopy.prev }}</a>
 			{% else %}
-				<span class="node skip prev inactive">{{ prevCopy }}</span>
+				<span class="node skip prev inactive">{{ pagination.getCopy.prev }}</span>
 			{% endif %}
 		</span>
 
 		<span class="segment pages">
-			{% for key, page in pages %}
+			{% for key, page in templatePages %}
 
 				{% if page != pagination.page %}
-					<a class="node page active" href="{{ getPaginationUrl(url, page, pageIdent) }}">{{ page }}</a>
+					<a class="node page active" href="{{ pagination.getPageURL(url, page) }}">{{ page }}</a>
 				{% else %}
 					<span class="node page inactive current">{{ page }}</span>
 				{% endif %}
 
-				{% if page + 1 != pages[key + 1] and page + 1 <= pagination.getMaxPage %}
+				{% if page + 1 != templatePages[key + 1] and page + 1 <= pagination.getMaxPage %}
 					<span class="node hellip">&hellip;</span>
 				{% endif %}
 
@@ -37,9 +29,9 @@
 
 		<span class="segment next">
 			{% if pagination.page < pagination.getMaxPage %}
-				<a class="node skip next active" href="{{ getPaginationUrl(url, pagination.page + 1, pageIdent) }}">{{ nextCopy }}</a>
+				<a class="node skip next active" href="{{ pagination.getPageURL(url, pagination.page + 1) }}">{{ pagination.getCopy.next }}</a>
 			{% else %}
-				<span class="node skip next active">{{ nextCopy }}</span>
+				<span class="node skip next active">{{ pagination.getCopy.next }}</span>
 			{% endif %}
 		</span>
 

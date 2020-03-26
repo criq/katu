@@ -17,6 +17,19 @@ class Config
 		}
 	}
 
+	public static function getWithDefault()
+	{
+		$args = func_get_args();
+		$argConfig = array_slice($args, 0, -1);
+		$argDefault = array_slice($args, -1, 1);
+
+		try {
+			return static::get(...$argConfig);
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return $argDefault;
+		}
+	}
+
 	public static function getAll()
 	{
 		return \Katu\Cache\Runtime::get('config', function () {

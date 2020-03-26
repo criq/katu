@@ -4,7 +4,6 @@ namespace Katu\Views;
 
 class View
 {
-
 	public static function getTwig()
 	{
 		return new \Twig\Environment(static::getTwigLoader(), static::getTwigConfig());
@@ -148,26 +147,6 @@ class View
 
 		$twig->addFunction(new \Twig\TwigFunction('getFlash', function () {
 			return call_user_func_array(['\Katu\Tools\Session\Flash', 'get'], func_get_args());
-		}));
-
-		$twig->addFunction(new \Twig\TwigFunction('getPages', function () {
-			$pagination = func_get_arg(0);
-
-			return $pagination->getPaginationPages(func_get_arg(1));
-		}));
-
-		$twig->addFunction(new \Twig\TwigFunction('getPaginationUrl', function () {
-			$url       =          new \Katu\Types\TURL(func_get_arg(0));
-			$page      = (int)    func_get_arg(1);
-			$pageIdent = (string) func_get_arg(2);
-
-			$url->removeQueryParam($pageIdent);
-
-			if ($page > 1) {
-				$url->addQueryParam($pageIdent, $page);
-			}
-
-			return $url->value;
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getCsrfToken', function () {
