@@ -7,6 +7,11 @@ class UserPasswordToken extends \Katu\Models\Model
 	const EXPIRES = '1 hour';
 	const TABLE = 'user_password_tokens';
 
+	public static function getUserClassName()
+	{
+		return new \Katu\Tools\Classes\ClassName('Katu', 'Models', 'Presets', 'User');
+	}
+
 	public static function create(User $user)
 	{
 		return static::insert([
@@ -15,6 +20,13 @@ class UserPasswordToken extends \Katu\Models\Model
 			'userId' => $user->getId(),
 			'token' => \Katu\Tools\Random\Generator::getString(static::getColumn('token')->getProperties()->length),
 		]);
+	}
+
+	public function getUser()
+	{
+		$class = (string)static::getUserClassName();
+
+		return $class::get($this->userId);
 	}
 
 	public function isValid()
