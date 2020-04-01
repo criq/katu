@@ -32,7 +32,7 @@ class Handler
 				$message,
 				"file: " . $file,
 				"line: " . $line,
-				"context: " . @var_export($context, true),
+				"context: " . print_r($context, true),
 			]), $code);
 		});
 
