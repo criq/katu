@@ -52,17 +52,21 @@ class Handler
 		});
 	}
 
+	public static function getLogger()
+	{
+		$logger = new \Monolog\Logger('KatuLogger');
+		$logger->pushHandler(new \Monolog\Handler\StreamHandler((string)static::getErrorLog()));
+
+		return $logger;
+	}
+
 	public static function log($message, $code = 0, $file = null, $line = null)
 	{
-		$log = new \Monolog\Logger('KatuLogger');
-		$log->pushHandler(new \Monolog\Handler\StreamHandler((string)static::getErrorLog()));
-		$log->addError($message, [
+		return static::getLogger()->error($message, [
 			'code' => $code,
 			'file' => $file,
 			'line' => $line,
 		]);
-
-		return true;
 	}
 
 	public static function handleException($exception, $request = null, $response = null)

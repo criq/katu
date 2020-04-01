@@ -23,12 +23,12 @@ abstract class View extends Base
 	public static $_materializeHours   = [];
 	public static $_materializeTimeout = 86400;
 
-	public static function getTable()
+	public static function getTable() : \Katu\PDO\Table
 	{
 		return static::isCached() ? static::getCachedTable() : static::getView();
 	}
 
-	public static function getTableName()
+	public static function getTableName() : \Katu\PDO\Name
 	{
 		return static::isCached() ? static::getCachedTableName() : static::getViewName();
 	}
@@ -38,12 +38,12 @@ abstract class View extends Base
 		return new \Katu\PDO\View(static::getConnection(), static::getViewName());
 	}
 
-	public static function getViewName()
+	public static function getViewName() : \Katu\PDO\Name
 	{
 		return new \Katu\PDO\Name(static::TABLE);
 	}
 
-	public static function getColumn($name, $options = [])
+	public static function getColumn($name, $options = []) : \Katu\PDO\Column
 	{
 		if (isset($options['cache']) && $options['cache'] === false) {
 			$table = static::getView();
