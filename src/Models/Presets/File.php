@@ -190,7 +190,7 @@ class File extends \Katu\Models\Model
 		return true;
 	}
 
-	public function attachTo($creator, $object)
+	public function attachTo(\Katu\Models\Presets\User $creator = null, \Katu\Models\Model $object)
 	{
 		return \Katu\Models\Presets\FileAttachment::make($creator, $object, $this);
 	}

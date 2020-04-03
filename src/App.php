@@ -6,24 +6,24 @@ class App
 {
 	public static $app = null;
 
-	public static function getExtendedClass($appClassName, $fallbackName)
+	public static function getExtendedClass($appClassName, $fallbackClassName)
 	{
-		return class_exists($appClassName) ? $appClassName : $fallbackName;
+		return class_exists((string)$appClassName) ? $appClassName : $fallbackClassName;
 	}
 
-	public static function getControllerClass()
+	public static function getControllerClassName()
 	{
-		return static::getExtendedClass('\\App\\Extensions\\Controllers\\Controller', '\\Katu\\Controllers\\Controller');
+		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Controllers', 'Controller'), new \Katu\Tools\Classes\ClassName('Katu', 'Controllers', 'Controller'));
 	}
 
-	public static function getViewClass()
+	public static function getViewClassName()
 	{
-		return static::getExtendedClass('\\App\\Extensions\\Views\\View', '\\Katu\\Views\\View');
+		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Views', 'View'), new \Katu\Tools\Classes\ClassName('Katu', 'Views', 'View'));
 	}
 
-	public static function getErrorHandlerClass()
+	public static function getErrorHandlerClassName()
 	{
-		return static::getExtendedClass('\\App\\Extensions\\Errors\\Handler', '\\Katu\\Errors\\Handler');
+		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Errors', 'Handler'), new \Katu\Tools\Classes\ClassName('Katu', 'Errors', 'Handler'));
 	}
 
 	public static function getBaseDir()
@@ -81,7 +81,8 @@ class App
 			}
 
 			$config['errorHandler'] = function ($c) {
-				$errorHandlerClass = static::getErrorHandlerClass();
+				$errorHandlerClass = (string)static::getErrorHandlerClassName();
+
 				return new $errorHandlerClass;
 			};
 

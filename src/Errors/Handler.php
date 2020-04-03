@@ -80,7 +80,7 @@ class Handler
 
 	public static function resolveException($exception, $request = null, $response = null)
 	{
-		$controllerClass = \Katu\App::getControllerClass();
+		$controllerClass = (string)\Katu\App::getControllerClassName();
 
 		try {
 			throw $exception;
