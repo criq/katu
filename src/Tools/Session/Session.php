@@ -12,7 +12,7 @@ class Session
 
 	public static function getPath()
 	{
-		return new \Katu\Files\File(\Katu\App::getTmpDir(), 'session');
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'session');
 	}
 
 	public static function makePath()

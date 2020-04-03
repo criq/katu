@@ -238,7 +238,7 @@ class TURL
 	public function getAsTemporaryFile()
 	{
 		$basename = (new \Katu\Files\File($this))->getBasename();
-		$tmpFile = new \Katu\Files\File(\Katu\App::getTmpDir(), 'url', \Katu\Tools\Random\Generator::getFileName(), $basename);
+		$tmpFile = new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'url', \Katu\Tools\Random\Generator::getFileName(), $basename);
 		$tmpFile->set($this->get());
 
 		return $tmpFile;

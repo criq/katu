@@ -6,6 +6,7 @@ use \Katu\Tools\Random\Generator;
 
 class File extends \Katu\Models\Model
 {
+	const DEFAULT_DIR = 'files';
 	const TABLE = 'files';
 
 	public static function create(\Katu\Models\Presets\User $creator = null, string $path, string $fileName, string $fileType, int $fileSize) : File
@@ -27,7 +28,7 @@ class File extends \Katu\Models\Model
 		}
 
 		// Check the writability of files folder.
-		if (!is_writable(static::getDirPath())) {
+		if (!static::getDir()->isWritable()) {
 			throw new \Katu\Exceptions\InputErrorException("File folder isn't writable.");
 		}
 
@@ -56,7 +57,7 @@ class File extends \Katu\Models\Model
 		}
 
 		// Check the writability of files folder.
-		if (!is_writable(static::getDirPath())) {
+		if (!static::getDir()->isWritable()) {
 			throw new \Katu\Exceptions\InputErrorException("File folder isn't writable.");
 		}
 
@@ -105,12 +106,16 @@ class File extends \Katu\Models\Model
 
 	public static function getDirName()
 	{
-		return \Katu\Config\Config::get('app', 'files', 'dir');
+		try {
+			return \Katu\Config\Config::get('app', 'files', 'dir');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			return static::DEFAULT_DIR;
+		}
 	}
 
-	public static function getDirPath()
+	public static function getDir()
 	{
-		return realpath(\Katu\App::getBaseDir() . '/' . static::getDirName());
+		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::getDirName());
 	}
 
 	public function getName()
@@ -156,8 +161,8 @@ class File extends \Katu\Models\Model
 				}
 			}
 
-			$dstPath = static::getDirPath() . '/' . $path;
-			if (file_exists($dstPath)) {
+			$dstFile = new \Katu\Files\File(static::getDir(), $path);
+			if ($dstFile->exists()) {
 				continue;
 			}
 
@@ -202,7 +207,7 @@ class File extends \Katu\Models\Model
 
 	public function getPath()
 	{
-		return static::getDirPath() . '/' . $this->path;
+		return new \Katu\Files\File(static::getDir(), $this->path);
 	}
 
 	public static function getSupportedImageTypes()

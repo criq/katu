@@ -13,7 +13,7 @@ class View
 	{
 		return [
 			'auto_reload' => false,
-			'cache' => (string)\Katu\Files\File::joinPaths(\Katu\App::getTmpDir(), 'twig'),
+			'cache' => (string)\Katu\Files\File::joinPaths(\Katu\App::getTemporaryDir(), 'twig'),
 			'debug' => false,
 			'optimizations' => -1,
 			'strict_variables' => false,

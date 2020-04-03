@@ -33,12 +33,25 @@ class App
 
 	public static function getFileDir()
 	{
-		return new \Katu\Files\File(static::getBaseDir(), 'files');
+		return \Katu\Models\Presets\File::getDir();
 	}
 
-	public static function getTmpDir()
+	public static function getTemporaryDir()
 	{
-		return new \Katu\Files\File(static::getBaseDir(), 'tmp');
+		try {
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'dir'));
+		} catch (\Throwable $e) {
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_DIR);
+		}
+	}
+
+	public static function getPublicTemporaryDir()
+	{
+		try {
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'publicDir'));
+		} catch (\Throwable $e) {
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_PUBLIC_DIR_NAME);
+		}
 	}
 
 	public static function init()
