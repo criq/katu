@@ -6,7 +6,7 @@ class Version
 {
 	const SEPARATOR = ".";
 
-	protected $extension;
+	protected $extension = 'jpg';
 	protected $filters = [];
 	protected $name = null;
 	protected $quality = 100;
