@@ -92,14 +92,14 @@ class File
 
 	public static function createTemporaryWithFileName($fileName)
 	{
-		$file = new static(\Katu\App::getTmpDir(), 'files', $fileName);
+		$file = new static(\Katu\App::getTemporaryDir(), 'files', $fileName);
 
 		return $file;
 	}
 
 	public static function createTemporaryWithExtension($extension)
 	{
-		$file = new static(\Katu\App::getTmpDir(), 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
+		$file = new static(\Katu\App::getTemporaryDir(), 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 
 		return $file;
 	}

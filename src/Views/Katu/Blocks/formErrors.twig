@@ -1,7 +1,7 @@
 {% if _errors %}
 	<div class="errors">
 		<h3>
-			{% block errorsTitle %}Error!{% endblock errorsTitle %}
+			{% block errorsTitle %}Došlo k chybě!{% endblock errorsTitle %}
 		</h3>
 		{% for error in _errors %}
 			{% if error is iterable %}

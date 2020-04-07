@@ -13,7 +13,7 @@ class View
 	{
 		return [
 			'auto_reload' => false,
-			'cache' => (string)\Katu\Files\File::joinPaths(\Katu\App::getTmpDir(), 'twig'),
+			'cache' => (string)\Katu\Files\File::joinPaths(\Katu\App::getTemporaryDir(), 'twig'),
 			'debug' => false,
 			'optimizations' => -1,
 			'strict_variables' => false,
@@ -289,11 +289,11 @@ class View
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();
 
-		if (class_exists('\App\Models\User')) {
+		if (class_exists('\\App\\Models\\User')) {
 			$data['_user'] = \App\Models\User::getCurrent();
 		}
 
-		if (class_exists('\App\Models\Setting')) {
+		if (class_exists('\App\\Models\\Setting')) {
 			$data['_settings'] = \App\Models\Setting::getAllAsAssoc();
 		}
 

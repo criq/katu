@@ -74,7 +74,7 @@ class Lock
 
 	public function getFile()
 	{
-		return \Katu\Files\File::createFromName(\Katu\App::getTmpDir(), static::DIR_NAME, $this->name);
+		return \Katu\Files\File::createFromName(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->name);
 	}
 
 	public function isLocked()

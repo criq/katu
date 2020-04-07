@@ -27,7 +27,7 @@ class CSV
 
 			$this->file = $file;
 		} else {
-			$file = new \Katu\Files\File(\Katu\App::getTmpDir(), 'csv', [\Katu\Tools\Random\Generator::getFileName(), 'csv']);
+			$file = new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'csv', [\Katu\Tools\Random\Generator::getFileName(), 'csv']);
 			$file->touch();
 
 			if (!$file->isWritable()) {

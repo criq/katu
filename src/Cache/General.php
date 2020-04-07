@@ -143,7 +143,7 @@ class General
 		$array = $this->getKeyArray();
 		$array[] = 'cache.txt';
 
-		$file = new \Katu\Files\File(\Katu\App::getTmpDir(), static::DIR_NAME, ...$array);
+		$file = new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, ...$array);
 		// var_dump($file);
 
 		return $file;

@@ -6,24 +6,24 @@ class App
 {
 	public static $app = null;
 
-	public static function getExtendedClass($appClassName, $fallbackName)
+	public static function getExtendedClass($appClassName, $fallbackClassName)
 	{
-		return class_exists($appClassName) ? $appClassName : $fallbackName;
+		return class_exists((string)$appClassName) ? $appClassName : $fallbackClassName;
 	}
 
-	public static function getControllerClass()
+	public static function getControllerClassName()
 	{
-		return static::getExtendedClass('\\App\\Extensions\\Controllers\\Controller', '\\Katu\\Controllers\\Controller');
+		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Controllers', 'Controller'), new \Katu\Tools\Classes\ClassName('Katu', 'Controllers', 'Controller'));
 	}
 
-	public static function getViewClass()
+	public static function getViewClassName()
 	{
-		return static::getExtendedClass('\\App\\Extensions\\Views\\View', '\\Katu\\Views\\View');
+		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Views', 'View'), new \Katu\Tools\Classes\ClassName('Katu', 'Views', 'View'));
 	}
 
-	public static function getErrorHandlerClass()
+	public static function getErrorHandlerClassName()
 	{
-		return static::getExtendedClass('\\App\\Extensions\\Errors\\Handler', '\\Katu\\Errors\\Handler');
+		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Errors', 'Handler'), new \Katu\Tools\Classes\ClassName('Katu', 'Errors', 'Handler'));
 	}
 
 	public static function getBaseDir()
@@ -33,12 +33,25 @@ class App
 
 	public static function getFileDir()
 	{
-		return new \Katu\Files\File(static::getBaseDir(), 'files');
+		return \Katu\Models\Presets\File::getDir();
 	}
 
-	public static function getTmpDir()
+	public static function getTemporaryDir()
 	{
-		return new \Katu\Files\File(static::getBaseDir(), 'tmp');
+		try {
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'dir'));
+		} catch (\Throwable $e) {
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_DIR);
+		}
+	}
+
+	public static function getPublicTemporaryDir()
+	{
+		try {
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'publicDir'));
+		} catch (\Throwable $e) {
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_PUBLIC_DIR_NAME);
+		}
 	}
 
 	public static function init()
@@ -68,7 +81,8 @@ class App
 			}
 
 			$config['errorHandler'] = function ($c) {
-				$errorHandlerClass = static::getErrorHandlerClass();
+				$errorHandlerClass = (string)static::getErrorHandlerClassName();
+
 				return new $errorHandlerClass;
 			};
 

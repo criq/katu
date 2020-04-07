@@ -6,7 +6,7 @@ class Version
 {
 	const SEPARATOR = ".";
 
-	protected $extension;
+	protected $extension = 'jpg';
 	protected $filters = [];
 	protected $name = null;
 	protected $quality = 100;
@@ -109,7 +109,7 @@ class Version
 
 	public function getDir()
 	{
-		$dir = new \Katu\Files\File(\Katu\App::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'publicDir'), 'image', 'versions', $this->getName());
+		$dir = new \Katu\Files\File(\Katu\App::getPublicTemporaryDir(), 'image', 'versions', $this->getName());
 		if (!$dir->isWritable()) {
 			try {
 				$dir->makeDir();

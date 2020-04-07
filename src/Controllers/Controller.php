@@ -18,7 +18,7 @@ class Controller
 	public function render(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, string $template)
 	{
 		try {
-			$viewClass = \Katu\App::getViewClass();
+			$viewClass = (string)\Katu\App::getViewClassName();
 			$template = $viewClass::render($request, $response, $args, $template, $this->data);
 
 			$headers = $request->getHeader('Accept-Encoding');
