@@ -4,47 +4,47 @@ namespace Katu\Tools\DateTime;
 
 class DateTime extends \DateTime
 {
+	public function __construct($time = null, \DateTimeZone $timezone = null)
+	{
+		if (!$timezone) {
+			$timezone = static::getLocalTimeZone();
+		}
+
+		return parent::__construct($time, $timezone);
+	}
 
 	public function __toString()
 	{
 		return $this->getDbDateTimeFormat();
 	}
 
-	public static function get($string = null)
+	public function getLocalTimeZone()
 	{
-		if (is_int($string)) {
-			return new DateTime('@' . $string);
-		}
-
-		return new DateTime($string);
+		return new \DateTimeZone(\Katu\Config\Config::get('app', 'timezone'));
 	}
 
-	public static function createFromTimestamp($timestamp)
+	public static function get($time = null, \DateTimeZone $timezone = null)
+	{
+		if (is_int($time)) {
+			return new static('@' . $time, $timezone);
+		}
+
+		return new static($time, $timezone);
+	}
+
+	public static function createFromTimestamp(int $timestamp)
 	{
 		return new static('@' . $timestamp);
 	}
 
-	public static function createFromDateTime($dateTime)
+	public static function createFromDateTime(\DateTime $dateTime)
 	{
-		if ($dateTime) {
-			return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
-		} else {
-			return false;
-		}
-	}
-
-	public static function createFromFormat($format, $string, $dateTimeZone = null)
-	{
-		if ($dateTimeZone) {
-			return static::createFromDateTime(\DateTime::createFromFormat($format, $string, $dateTimeZone));
-		} else {
-			return static::createFromDateTime(\DateTime::createFromFormat($format, $string));
-		}
+		return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
 	}
 
 	public function toLocalTimezone()
 	{
-		return $this->setTimezone(new \DateTimeZone(\Katu\Config\Config::get('app', 'timezone')));
+		return $this->setTimezone(static::getLocalTimeZone());
 	}
 
 	public function getDbDateFormat()
