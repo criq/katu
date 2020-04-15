@@ -19,7 +19,7 @@ class File
 		return $this->getPath();
 	}
 
-	public static function createFromName()
+	public static function createFromName() : File
 	{
 		$generateHashArray = function ($value) {
 			$hash = crc32($value);
@@ -90,21 +90,21 @@ class File
 		}, func_get_args()));
 	}
 
-	public static function createTemporaryWithFileName($fileName)
+	public static function createTemporaryWithFileName(string $fileName) : File
 	{
 		$file = new static(\Katu\App::getTemporaryDir(), 'files', $fileName);
 
 		return $file;
 	}
 
-	public static function createTemporaryWithExtension($extension)
+	public static function createTemporaryWithExtension(string $extension) : File
 	{
 		$file = new static(\Katu\App::getTemporaryDir(), 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 
 		return $file;
 	}
 
-	public static function createTemporaryFromSrc($src, $extension)
+	public static function createTemporaryFromSrc($src, string $extension) : File
 	{
 		if ($extension) {
 			$file = static::createTemporaryWithExtension($extension);
@@ -117,7 +117,7 @@ class File
 		return $file;
 	}
 
-	public static function createTemporaryFromUrl($url, $extension = null)
+	public static function createTemporaryFromURL($url, string $extension = null) : File
 	{
 		$url = new \Katu\Types\TURL($url);
 
