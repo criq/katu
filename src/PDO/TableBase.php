@@ -68,7 +68,7 @@ abstract class TableBase extends \Sexy\Expression
 	public function getColumnDescription($columnName)
 	{
 		$descriptions = $this->getColumnDescriptions();
-
+		
 		return $descriptions[$columnName instanceof Name ? $columnName->name : $columnName];
 	}
 

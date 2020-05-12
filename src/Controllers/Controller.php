@@ -38,19 +38,19 @@ class Controller
 		}
 	}
 
-	public function renderError(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, $status = 500)
+	public function renderError(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 500)
 	{
 		return $this->render($request, $response, $args, 'Errors/' . $status . '.twig')
 			->withStatus($status)
 			;
 	}
 
-	public function renderNotFound(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, $status = 404)
+	public function renderNotFound(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 404)
 	{
 		return $this->renderError($request, $response, $args, $status);
 	}
 
-	public function renderUnauthorized(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, $status = 401)
+	public function renderUnauthorized(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 401)
 	{
 		return $this->renderError($request, $response, $args, $status);
 	}
