@@ -122,9 +122,9 @@ class Connection
 		return $views;
 	}
 
-	public function select(\Sexy\Select $select) : Query
+	public function select(\Sexy\Select $select, array $params = []) : Query
 	{
-		$query = new Query($this, $select->getSql(), $select->getParams());
+		$query = new Query($this, $select->getSql(), array_merge($select->getParams(), $params));
 		if ($select->getPage()) {
 			$query->setPage($select->getPage());
 		}
@@ -132,9 +132,9 @@ class Connection
 		return $query;
 	}
 
-	public function selectClass(\Katu\Tools\Classes\ClassName $className, \Sexy\Select $select) : Query
+	public function selectClass(\Katu\Tools\Classes\ClassName $className, \Sexy\Select $select, array $params = []) : Query
 	{
-		$query = $this->select($select);
+		$query = $this->select($select, $params);
 		$query->setClassName($className);
 
 		return $query;
