@@ -26,7 +26,7 @@ class Config
 		try {
 			return static::get(...$argConfig);
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return $argDefault;
+			return $argDefault[0] ?? null;
 		}
 	}
 
