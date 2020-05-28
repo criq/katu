@@ -162,7 +162,7 @@ abstract class TableBase extends \Sexy\Expression
 				}, $indexableColumns)) . "); ";
 
 				try {
-					$destinationTable->getConnection()->select($sql)->getResult();
+					$destinationTable->getConnection()->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -172,7 +172,7 @@ abstract class TableBase extends \Sexy\Expression
 			foreach ($indexableColumns as $indexableColumn) {
 				try {
 					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . $indexableColumn->name . ") ";
-					$destinationTable->getConnection()->select($sql)->getResult();
+					$destinationTable->getConnection()->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -184,7 +184,7 @@ abstract class TableBase extends \Sexy\Expression
 			foreach ($options['customIndices'] as $customIndex) {
 				try {
 					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
-					$destinationTable->getConnection()->select($sql)->getResult();
+					$destinationTable->getConnection()->createQuery($sql)->getResult();
 				} catch (\Exception $e) {
 					// Nevermind.
 				}
@@ -223,7 +223,7 @@ abstract class TableBase extends \Sexy\Expression
 			$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 
 			$sql = " SELECT COUNT(1) AS total FROM " . $table->name;
-			$res = $table->getConnection()->select($sql)->getResult()->getArray();
+			$res = $table->getConnection()->createQuery($sql)->getResult()->getArray();
 
 			return [
 				'rows' => (int) $res[0]['total'],
