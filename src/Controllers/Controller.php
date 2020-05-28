@@ -15,11 +15,11 @@ class Controller
 	/****************************************************************************
 	 * Render.
 	 */
-	public function render(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args, string $template)
+	public function render(string $template, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [])
 	{
 		try {
 			$viewClass = (string)\Katu\App::getViewClassName();
-			$template = $viewClass::render($request, $response, $args, $template, $this->data);
+			$template = $viewClass::render($template, $this->data, $request, $response, $args);
 
 			$headers = $request->getHeader('Accept-Encoding');
 			if (($headers[0] ?? null) && in_array('gzip', array_map('trim', (array)explode(',', $headers[0])))) {
@@ -38,9 +38,9 @@ class Controller
 		}
 	}
 
-	public function renderError(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 500)
+	public function renderError(\Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [], $status = 500)
 	{
-		return $this->render($request, $response, $args, 'Errors/' . $status . '.twig')
+		return $this->render("Errors/" . $status . ".twig", $request, $response, $args)
 			->withStatus($status)
 			;
 	}
