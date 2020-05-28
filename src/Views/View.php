@@ -234,7 +234,7 @@ class View
 		return true;
 	}
 
-	public static function getCommonData($request, $response, $args)
+	public static function getCommonData(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
 	{
 		$data['_site']['baseDir'] = \Katu\App::getBaseDir();
 		$data['_site']['baseUrl'] = \Katu\Config\Config::get('app', 'baseUrl');
