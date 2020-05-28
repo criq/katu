@@ -68,7 +68,7 @@ abstract class TableBase extends \Sexy\Expression
 	public function getColumnDescription($columnName)
 	{
 		$descriptions = $this->getColumnDescriptions();
-		
+
 		return $descriptions[$columnName instanceof Name ? $columnName->name : $columnName];
 	}
 
@@ -117,7 +117,7 @@ abstract class TableBase extends \Sexy\Expression
 		if (preg_match('/^CREATE ALGORITHM/', $sql)) {
 			// View.
 			$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
-			$destinationTable->getConnection()->select($sql)->getResult();
+			$destinationTable->getConnection()->createQuery($sql)->getResult();
 		} else {
 			// Table.
 			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function ($i) use ($destinationTable) {
@@ -129,11 +129,11 @@ abstract class TableBase extends \Sexy\Expression
 				$sql = $callback($sql);
 			}
 
-			$destinationTable->getConnection()->select($sql)->getResult();
+			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 			// Create table and copy the data.
 			$sql = " INSERT " . (($options['insertIgnore'] ?? null) ? " IGNORE " : null) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
-			$destinationTable->getConnection()->select($sql)->getResult();
+			$destinationTable->getConnection()->createQuery($sql)->getResult();
 		}
 
 		// Disable NULL.
