@@ -18,6 +18,10 @@ class Controller
 	public function render(string $template, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [])
 	{
 		try {
+			$request = $request ?: $this->container->get('request');
+			$response = $response ?: $this->container->get('response');
+			$args = $args ?: [];
+
 			$viewClass = (string)\Katu\App::getViewClassName();
 			$template = $viewClass::render($template, $this->data, $request, $response, $args);
 

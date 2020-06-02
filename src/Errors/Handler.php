@@ -69,7 +69,7 @@ class Handler
 		]);
 	}
 
-	public static function handleException($exception, $request = null, $response = null)
+	public static function handleException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
 	{
 		if (class_exists('\\App\\Extensions\\Errors\\Handler') && method_exists('\\App\\Extensions\\Errors\\Handler', 'resolveException')) {
 			return \App\Extensions\Errors\Handler::resolveException($exception, $request, $response);
@@ -78,7 +78,7 @@ class Handler
 		return static::resolveException($exception, $request, $response);
 	}
 
-	public static function resolveException($exception, $request = null, $response = null)
+	public static function resolveException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
 	{
 		$controllerClass = (string)\Katu\App::getControllerClassName();
 
