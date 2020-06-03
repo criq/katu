@@ -67,25 +67,25 @@ class Model extends Base
 
 		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ";
 
-		$values = [];
+		$params = [];
 		$sqlRows = [];
 		foreach ($items as $row => $values) {
 			$sqlRowParams = [];
 			foreach ($values as $key => $value) {
-				$valueKey = implode('_', [
+				$paramKey = implode('_', [
 					'row',
 					$row,
 					$key,
 				]);
-				$values[$valueKey] = $value;
-				$sqlRowParams[] = ":" . $valueKey;
+				$params[$paramKey] = $value;
+				$sqlRowParams[] = ":" . $paramKey;
 			}
 			$sqlRows[] = " ( " . implode(', ', $sqlRowParams) . " ) ";
 		}
 
 		$sql .= implode(", ", $sqlRows);
 
-		$query = static::getConnection()->createQuery($sql, $values);
+		$query = static::getConnection()->createQuery($sql, $params);
 		$query->getResult();
 
 		static::change();
