@@ -7,18 +7,18 @@ class DateTime extends \DateTime
 	public function __construct($time = null, \DateTimeZone $timezone = null)
 	{
 		if (!$timezone) {
-			$timezone = static::getLocalTimeZone();
+			$timezone = $this->getLocalTimeZone();
 		}
 
 		return parent::__construct($time, $timezone);
 	}
 
-	public function __toString()
+	public function __toString() : string
 	{
 		return $this->getDbDateTimeFormat();
 	}
 
-	public function getLocalTimeZone()
+	public function getLocalTimeZone() : \DateTimeZone
 	{
 		return new \DateTimeZone(\Katu\Config\Config::get('app', 'timezone'));
 	}
@@ -32,19 +32,19 @@ class DateTime extends \DateTime
 		return new static($time, $timezone);
 	}
 
-	public static function createFromTimestamp(int $timestamp)
+	public static function createFromTimestamp(int $timestamp) : \Katu\Tools\DateTime\DateTime
 	{
 		return new static('@' . $timestamp);
 	}
 
-	public static function createFromDateTime(\DateTime $dateTime)
+	public static function createFromDateTime(\DateTime $dateTime) : \Katu\Tools\DateTime\DateTime
 	{
 		return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
 	}
 
 	public function toLocalTimezone()
 	{
-		return $this->setTimezone(static::getLocalTimeZone());
+		return $this->setTimezone($this->getLocalTimeZone());
 	}
 
 	public function getDbDateFormat()
