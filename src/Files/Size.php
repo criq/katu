@@ -33,7 +33,7 @@ class Size
 
 	public static function createFromINI($string)
 	{
-		if (preg_match('#([0-9]+)M#', $string, $match)) {
+		if (preg_match('/([0-9]+)M/', $string, $match)) {
 			return new static($match[1] * 1024 * 1024);
 		}
 

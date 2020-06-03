@@ -199,7 +199,7 @@ abstract class Base
 	public static function getIdProperties()
 	{
 		return array_values(array_filter(array_map(function ($i) {
-			return preg_match('#^(?<property>[a-zA-Z_]+)_?[Ii][Dd]$#', $i) ? $i : null;
+			return preg_match('/^(?<property>[a-zA-Z_]+)_?[Ii][Dd]$/', $i) ? $i : null;
 		}, static::getTable()->getColumnNames())));
 	}
 

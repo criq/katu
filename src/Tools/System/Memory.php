@@ -8,7 +8,7 @@ class Memory
 
 	public static function getLimit()
 	{
-		if (preg_match('#^([0-9]+)M$#', ini_get('memory_limit'), $match)) {
+		if (preg_match('/^([0-9]+)M$/', ini_get('memory_limit'), $match)) {
 			return 1024 * 1024 * (int) $match[1];
 		}
 

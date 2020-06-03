@@ -20,7 +20,7 @@ class View extends Table
 			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
 			$res = $table->getConnection()->createQuery($sql)->getResult()->getArray();
 			foreach ($res as $row) {
-				if (!preg_match('#^<.+>$#', $row['table'])) {
+				if (!preg_match('/^<.+>$/', $row['table'])) {
 					$tableNames[] = new \Katu\PDO\Name($row['table']);
 				}
 			}
@@ -38,7 +38,7 @@ class View extends Table
 
 	public function getSourceMaterializedViewNames()
 	{
-		if (preg_match_all('#`(mv_[a-z0-9_]+)`#', $this->getCreateSyntax(), $matches)) {
+		if (preg_match_all('/`(mv_[a-z0-9_]+)`/', $this->getCreateSyntax(), $matches)) {
 			return array_values(array_unique($matches[1]));
 		}
 

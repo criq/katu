@@ -285,7 +285,7 @@ abstract class View extends Base
 	{
 		$name = implode(static::SEPARATOR, [
 			'mv',
-			preg_replace('#^view_#', null, static::getViewName()->getName()),
+			preg_replace('/^view_/', null, static::getViewName()->getName()),
 		]);
 
 		return new \Katu\PDO\Name($name);

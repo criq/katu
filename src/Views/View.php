@@ -319,10 +319,10 @@ class View
 		return trim($twig->render($template, $data));
 	}
 
-	public static function renderCondensed($request, $response, $args, $template, $data = [])
+	public static function renderCondensed(string $template, array $data = [], \Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [])
 	{
-		$template = static::render($request, $response, $args, $template, $data);
+		$template = static::render($template, $data, $request, $response, $args);
 
-		return preg_replace('#[\v\t]#', null, $template);
+		return preg_replace('/[\v\t]/', null, $template);
 	}
 }

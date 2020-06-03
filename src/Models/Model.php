@@ -362,7 +362,7 @@ class Model extends Base
 		} else {
 			$suffixes = [];
 			foreach ($res->getArray() as $item) {
-				preg_match('#' . $preg . '#', $item[$column], $match);
+				preg_match('/' . $preg . '/', $item[$column], $match);
 				if (!isset($match[2])) {
 					$suffixes[] = 0;
 				} else {

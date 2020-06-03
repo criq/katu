@@ -92,7 +92,7 @@ class User extends \Katu\Models\Model
 		return static::get(\Katu\Tools\Session\Session::get('katu.user.id'));
 	}
 
-	public static function getByAccessToken(string $token = null) : User
+	public static function getByAccessToken(string $token = null)
 	{
 		$accessTokenClass = (string)static::getAccessTokenClassName();
 
