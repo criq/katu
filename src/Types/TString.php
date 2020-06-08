@@ -35,7 +35,7 @@ class TString
 		return $this->getNumberOfWords() >= $n;
 	}
 
-	public function getForURL($options = [])
+	public function getForURL($options = []) : string
 	{
 		$options = array_merge($options, [
 			'delimiter' => '-',

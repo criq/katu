@@ -68,7 +68,7 @@ class Result implements \Iterator, \ArrayAccess
 		return $this->iteratorArray;
 	}
 
-	public function getObjects(\Katu\Tools\Classes\ClassName $className)
+	public function getObjects(\Katu\Tools\Classes\ClassName $className = null)
 	{
 		$this->setIteratorArray($className);
 
