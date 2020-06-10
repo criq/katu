@@ -68,7 +68,7 @@ class Formatter
 			$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
 		}
 
-		return $numberFormatter->formatCurrency($number, $currency);
+		return $numberFormatter->formatCurrency((float)$number, $currency);
 	}
 
 	public static function getLocalWholeCurrency($locale, $number, $currency)
