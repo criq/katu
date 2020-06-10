@@ -248,8 +248,6 @@ class TURL
 			->setUser($user)
 			;
 
-		echo $exec->getCommand();die;
-
 		return $exec->exec();
 	}
 }
