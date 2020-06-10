@@ -186,12 +186,9 @@ class TURL
 	public function getWithoutQuery()
 	{
 		$parts = $this->getParts();
-
 		unset($parts['query']);
 
-		$this->value = static::build($parts);
-
-		return $this;
+		return static::build($parts);
 	}
 
 	public function getWithoutTrailingIndex()
@@ -250,6 +247,8 @@ class TURL
 			->setMethod($method)
 			->setUser($user)
 			;
+
+		echo $exec->getCommand();die;
 
 		return $exec->exec();
 	}

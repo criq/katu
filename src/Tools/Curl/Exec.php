@@ -5,6 +5,7 @@ namespace Katu\Tools\Curl;
 class Exec
 {
 	public $isSilent = true;
+	public $allowInsecure = true;
 	public $method = 'GET';
 	public $url;
 	public $user;
@@ -31,21 +32,31 @@ class Exec
 	public function getCommand()
 	{
 		$segments = [
-			'curl',
-			'--request ' . $this->method,
+			"curl",
 		];
 
-		if ($this->user) {
-			$segments[] = '--header "Authorization: Bearer ' . $this->user->getValidAccessToken()->token . '"';
+		if ($this->allowInsecure) {
+			$segments[] = "--insecure";
 		}
 
-		$segments[] = $this->url;
+		$segments[] = "--request " . $this->method;
+
+		if ($this->user) {
+			$segments[] = "--oauth2-bearer " . $this->user->getValidAccessToken()->token;
+		}
+
+		if ($this->method == 'GET') {
+			$segments[] = "--url " . (string)$this->url;
+		} else {
+			$segments[] = "--url " . $this->url->getWithoutQuery();
+			$segments[] = "--data " . http_build_query($this->url->getQueryParams());
+		}
 
 		if ($this->isSilent) {
-			$segments[] = '>/dev/null 2>/dev/null &';
+			$segments[] = ">/dev/null 2>/dev/null &";
 		}
 
-		return implode(' ', $segments);
+		return implode(" ", $segments);
 	}
 
 	public function exec()
