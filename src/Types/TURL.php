@@ -246,10 +246,11 @@ class TURL
 
 	public function ping($method = 'GET', $user = null)
 	{
-		return (new \Katu\Tools\Curl\Exec($this))
+		$exec = (new \Katu\Tools\Curl\Exec($this))
 			->setMethod($method)
 			->setUser($user)
-			->exec()
 			;
+
+		return $exec->exec();
 	}
 }
