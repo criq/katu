@@ -50,7 +50,8 @@ class Exec
 			$segments[] = '--url ' . (string)$this->url;
 		} else {
 			$segments[] = '--url ' . $this->url->getWithoutQuery();
-			$segments[] = '--data ' . http_build_query($this->url->getQueryParams());
+			$segments[] = '-H "Content-Type: application/json"';
+			$segments[] = "--data '" . \Katu\Files\Formats\JSON::encodeStandard($this->url->getQueryParams()) . "'";
 		}
 
 		if ($this->isSilent) {
