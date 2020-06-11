@@ -32,31 +32,32 @@ class Exec
 	public function getCommand()
 	{
 		$segments = [
-			"curl",
+			'curl',
 		];
 
 		if ($this->allowInsecure) {
-			$segments[] = "--insecure";
+			$segments[] = '--insecure';
 		}
 
-		$segments[] = "--request " . $this->method;
+		$segments[] = '--request ' . $this->method;
 
 		if ($this->user) {
-			$segments[] = "--oauth2-bearer " . $this->user->getValidAccessToken()->token;
+			$segments[] = '--oauth2-bearer ' . $this->user->getValidAccessToken()->token;
+			$segments[] = '--header "Authorization: Bearer ' . $this->user->getValidAccessToken()->token . '"';
 		}
 
 		if ($this->method == 'GET') {
-			$segments[] = "--url " . (string)$this->url;
+			$segments[] = '--url ' . (string)$this->url;
 		} else {
-			$segments[] = "--url " . $this->url->getWithoutQuery();
-			$segments[] = "--data " . http_build_query($this->url->getQueryParams());
+			$segments[] = '--url ' . $this->url->getWithoutQuery();
+			$segments[] = '--data ' . http_build_query($this->url->getQueryParams());
 		}
 
 		if ($this->isSilent) {
-			$segments[] = ">/dev/null 2>/dev/null &";
+			$segments[] = '>/dev/null 2>/dev/null &';
 		}
 
-		return implode(" ", $segments);
+		return implode(' ', $segments);
 	}
 
 	public function exec()
