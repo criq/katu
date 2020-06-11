@@ -241,13 +241,16 @@ class TURL
 		return $tmpFile;
 	}
 
-	public function ping($method = 'GET', $user = null)
+	public function getPingExec(string $method = 'GET', \Katu\Models\Presets\User $user = null)
 	{
-		$exec = (new \Katu\Tools\Curl\Exec($this))
+		return (new \Katu\Tools\Curl\Exec($this))
 			->setMethod($method)
 			->setUser($user)
 			;
+	}
 
-		return $exec->exec();
+	public function ping(string $method = 'GET', \Katu\Models\Presets\User $user = null)
+	{
+		return $this->getPingExec($method, $user)->exec();
 	}
 }
