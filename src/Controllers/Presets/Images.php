@@ -7,7 +7,7 @@ class Images extends \Katu\Controllers\Controller
 	public static function getVersionSrcFile($request, $response, $args)
 	{
 		try {
-			$fileClass = \Katu\App::getExtendedClass('\\App\\Models\\File', '\\Katu\\Models\\File');
+			$fileClass = \Katu\App::getExtendedClassName(new \Katu\Tools\Classes\ClassName('App', 'Models', 'File'), new \Katu\Tools\Classes\ClassName('Katu', 'Models', 'File'));
 			$file = $fileClass::getOneBy([
 				'id' => $args['fileId'],
 				'secret' => $args['fileSecret'],

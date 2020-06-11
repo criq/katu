@@ -2,9 +2,10 @@
 
 namespace Katu\Middleware;
 
-class Error extends \Slim\Middleware {
-
-	public function call() {
+class Error extends \Slim\Middleware
+{
+	public function call()
+	{
 		$app = $this->app;
 		$app->error(function (\Exception $e) {
 			throw $e;
@@ -16,5 +17,4 @@ class Error extends \Slim\Middleware {
 			\Katu\Errors\Handler::handleException($e);
 		}
 	}
-
 }

@@ -62,7 +62,7 @@ class Exec
 
 	public function exec()
 	{
-		\App\Extensions\Errors\Handler::log($this->getCommand());
+		// \App\Extensions\Errors\Handler::log($this->getCommand());
 
 		return exec($this->getCommand());
 	}

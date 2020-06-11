@@ -6,24 +6,24 @@ class App
 {
 	public static $app = null;
 
-	public static function getExtendedClass($appClassName, $fallbackClassName)
+	public static function getExtendedClassName($appClassName, $fallbackClassName) : \Katu\Tools\Classes\ClassName
 	{
 		return class_exists((string)$appClassName) ? $appClassName : $fallbackClassName;
 	}
 
-	public static function getControllerClassName()
+	public static function getControllerClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Controllers', 'Controller'), new \Katu\Tools\Classes\ClassName('Katu', 'Controllers', 'Controller'));
+		return static::getExtendedClassName(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Controllers', 'Controller'), new \Katu\Tools\Classes\ClassName('Katu', 'Controllers', 'Controller'));
 	}
 
-	public static function getViewClassName()
+	public static function getViewClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Views', 'View'), new \Katu\Tools\Classes\ClassName('Katu', 'Views', 'View'));
+		return static::getExtendedClassName(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Views', 'View'), new \Katu\Tools\Classes\ClassName('Katu', 'Views', 'View'));
 	}
 
-	public static function getErrorHandlerClassName()
+	public static function getErrorHandlerClassName() : \Katu\Tools\Classes\ClassName
 	{
-		return static::getExtendedClass(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Errors', 'Handler'), new \Katu\Tools\Classes\ClassName('Katu', 'Errors', 'Handler'));
+		return static::getExtendedClassName(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Errors', 'Handler'), new \Katu\Tools\Classes\ClassName('Katu', 'Errors', 'Handler'));
 	}
 
 	public static function getBaseDir()
@@ -86,25 +86,7 @@ class App
 				return new $errorHandlerClass;
 			};
 
-			// TODO - je zapotřebí?
-			/*
-			$config['settings']['logger'] = [
-				'name' => 'KatuLogger',
-				'level' => \Monolog\Logger::DEBUG,
-				'path' => ERROR_LOG,
-			];
-			*/
-
 			static::$app = new \Slim\App($config);
-			#static::$app->add(new \Psr7Middlewares\Middleware\TrailingSlash(false));
-
-			// Add error middleware.
-			// TODO - updatovat
-			#static::$app->add(new \Katu\Middleware\Error);
-
-			// Add profiler middleware.
-			// TODO - updatovat
-			#$app->add(new Middleware\Profiler());
 		}
 
 		return static::$app;
