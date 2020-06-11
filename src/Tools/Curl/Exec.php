@@ -42,7 +42,7 @@ class Exec
 		$segments[] = '--request ' . $this->method;
 
 		if ($this->user) {
-			$segments[] = '--oauth2-bearer ' . $this->user->getValidAccessToken()->token;
+			// $segments[] = '--oauth2-bearer ' . $this->user->getValidAccessToken()->token;
 			$segments[] = '--header "Authorization: Bearer ' . $this->user->getValidAccessToken()->token . '"';
 		}
 
@@ -62,6 +62,8 @@ class Exec
 
 	public function exec()
 	{
+		\App\Extensions\Errors\Handler::log($this->getCommand());
+
 		return exec($this->getCommand());
 	}
 }
