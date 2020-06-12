@@ -57,7 +57,7 @@ class Model extends Base
 		}
 	}
 
-	public static function insertMultiple($items = [])
+	public static function insertMultiple(array $items = [])
 	{
 		$items = array_values($items);
 
