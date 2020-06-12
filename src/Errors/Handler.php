@@ -5,27 +5,16 @@ namespace Katu\Errors;
 class Handler
 {
 	const ERROR_LOG = 'error.log';
-	const LOG_DIR   = 'logs';
 
 	public function __invoke(\Slim\Http\Request $request, \Slim\Http\Response $response, \Throwable $exception)
 	{
 		return static::handleException($exception, $request, $response);
 	}
 
-	public static function getLogDir()
-	{
-		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::LOG_DIR);
-	}
-
-	public static function getErrorLogFile()
-	{
-		return new \Katu\Files\File(static::getLogDir(), static::ERROR_LOG);
-	}
-
 	public static function init()
 	{
 		ini_set('display_errors', false);
-		ini_set('error_log', (string)static::getErrorLogFile());
+		ini_set('error_log', (string)(new \Katu\Tools\Logs\Logger)->getFile());
 
 		set_error_handler(function ($code, $message, $file = null, $line = null, $context = null) {
 			throw new \Exception(implode("; ", [
@@ -52,17 +41,10 @@ class Handler
 		});
 	}
 
-	public static function getLogger()
+	public static function log($error, $code = 0, $file = null, $line = null)
 	{
-		$logger = new \Monolog\Logger('KatuLogger');
-		$logger->pushHandler(new \Monolog\Handler\StreamHandler((string)static::getErrorLogFile()));
-
-		return $logger;
-	}
-
-	public static function log($message, $code = 0, $file = null, $line = null)
-	{
-		return static::getLogger()->error($message, [
+		return (new \Katu\Tools\Logs\Logger('error'))->error($error, [
+			'error' => $error,
 			'code' => $code,
 			'file' => $file,
 			'line' => $line,
