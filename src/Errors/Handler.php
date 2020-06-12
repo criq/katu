@@ -11,10 +11,15 @@ class Handler
 		return static::handleException($exception, $request, $response);
 	}
 
+	public static function getLogger()
+	{
+		return new \Katu\Tools\Logs\Logger('error');
+	}
+
 	public static function init()
 	{
 		ini_set('display_errors', false);
-		ini_set('error_log', (string)(new \Katu\Tools\Logs\Logger)->getFile());
+		ini_set('error_log', (string)static::getLogger()->getFile());
 
 		set_error_handler(function ($code, $message, $file = null, $line = null, $context = null) {
 			throw new \Exception(implode("; ", [
@@ -43,7 +48,7 @@ class Handler
 
 	public static function log($error, $code = 0, $file = null, $line = null)
 	{
-		return (new \Katu\Tools\Logs\Logger('error'))->error($error, [
+		return static::getLogger()->error($error, [
 			'error' => $error,
 			'code' => $code,
 			'file' => $file,
