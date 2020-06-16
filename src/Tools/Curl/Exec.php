@@ -15,6 +15,11 @@ class Exec
 		$this->url = $url;
 	}
 
+	public function __toString()
+	{
+		return $this->getCommand();
+	}
+
 	public function setMethod(string $method)
 	{
 		$this->method = $method;

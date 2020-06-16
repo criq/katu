@@ -192,7 +192,7 @@ class General
 	public static function loadMemcached()
 	{
 		if (!static::$memcached) {
-			static::$memcached = new \Memcached(static::getMemcahcedInstanceName());
+			static::$memcached = new \Memcached;
 			static::$memcached->addServer('localhost', 11211);
 		}
 

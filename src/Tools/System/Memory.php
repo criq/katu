@@ -6,10 +6,15 @@ class Memory
 {
 	const TRESHOLD_CRITICAL = .9;
 
+	public static function setLimit($limit)
+	{
+		return ini_set('memory_limit', $limit);
+	}
+
 	public static function getLimit()
 	{
 		if (preg_match('/^([0-9]+)M$/', ini_get('memory_limit'), $match)) {
-			return 1024 * 1024 * (int) $match[1];
+			return 1024 * 1024 * (int)$match[1];
 		}
 
 		return 0;
