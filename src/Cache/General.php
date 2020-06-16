@@ -230,7 +230,6 @@ class General
 
 		// Try file.
 		$file = $this->getFile();
-		// var_dump($file);die;
 		if ($file->exists() && \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeoutInSeconds()) {
 			return unserialize($file->get());
 		}
@@ -304,6 +303,37 @@ class General
 		}
 
 		return null;
+	}
+
+	public function exists() : bool
+	{
+		$memoryKey = $this->getMemoryKey();
+
+		// Try Memcached.
+		if ($this->isMemcachedEnabled()) {
+			$memcached = $this->getMemcached();
+			$memcached->get($memoryKey);
+			if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
+				return true;
+			}
+		}
+
+		// Try APC.
+		if ($this->isApcEnabled() && \apcu_exists($memoryKey)) {
+			$success = null;
+			\apcu_fetch($memoryKey, $success);
+			if ($success) {
+				return true;
+			}
+		}
+
+		// Try file.
+		$file = $this->getFile();
+		if ($file->exists() && \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeoutInSeconds()) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/****************************************************************************
