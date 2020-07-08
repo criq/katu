@@ -440,10 +440,14 @@ class File
 		return hash($function, $this->get());
 	}
 
-	public function getHashedURL($function = 'sha1', $paramName = 'hash')
+	public function getHashedURL(?string $algo = 'sha1', ?string $paramName = 'hash')
 	{
+		if (!$algo) {
+			$algo = 'sha1';
+		}
+
 		return (new \Katu\Types\TURL($this->getURL()))
-			->addQueryParam($paramName, $this->getHash($function))
+			->addQueryParam($paramName, $this->getHash($algo))
 			;
 	}
 }
