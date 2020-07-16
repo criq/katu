@@ -39,7 +39,12 @@ class Connection
 
 	public function getName() : string
 	{
-		return $this->name;
+		return (string)$this->name;
+	}
+
+	public function getVersion() : string
+	{
+		return (string)$this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
 	public static function getInstance($name)
