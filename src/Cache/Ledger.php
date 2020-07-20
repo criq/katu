@@ -74,15 +74,21 @@ class Ledger
 	{
 		$cutoffDateTime = new \Katu\Tools\DateTime\DateTime(is_int($timeout) ? '-' . $timeout . 'seconds' : '- ' . $timeout);
 
-		$expiredKeys = [];
+		$expired = [];
 		foreach ($this->get() as $key => $value) {
 			if (isset($value[$timeKey]) && (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->isInTimeout($cutoffDateTime->getAge())) {
 				// Not expired.
+			} elseif (isset($value[$timeKey])) {
+				$expired[$key] = (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->getTimestamp();
 			} else {
-				$expiredKeys[] = $key;
+				$expired[$key] = (float)('0.' . str_pad($key, 6, 0, \STR_PAD_LEFT) . '1');
 			}
 		}
 
-		return $expiredKeys;
+		// var_dump($expired);die;
+
+		natsort($expired);
+
+		return array_keys($expired);
 	}
 }
