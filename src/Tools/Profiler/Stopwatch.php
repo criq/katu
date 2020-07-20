@@ -2,8 +2,8 @@
 
 namespace Katu\Tools\Profiler;
 
-class Stopwatch {
-
+class Stopwatch
+{
 	const FACTOR_NANO  = 1000000000;
 	const FACTOR_MICRO = 1000000;
 	const FACTOR_MILLI = 1000;
@@ -11,30 +11,40 @@ class Stopwatch {
 
 	public $start;
 
-	public function __construct() {
-		$this->start = (float) (\Katu\Tools\DateTime\DateTime::getMicrotime() * static::FACTOR_NANO);
+	public function __construct()
+	{
+		$this->start = (float)(\Katu\Tools\DateTime\DateTime::getMicrotime() * static::FACTOR_NANO);
 	}
 
-	public function getNanoValues() {
-		return [$this->start, (float) (\Katu\Tools\DateTime\DateTime::getMicrotime() * static::FACTOR_NANO)];
+	public function __toString()
+	{
+		return (string)$this->getDuration();
 	}
 
-	public function getNanoDuration() {
+	public function getNanoValues()
+	{
+		return [$this->start, (float)(\Katu\Tools\DateTime\DateTime::getMicrotime() * static::FACTOR_NANO)];
+	}
+
+	public function getNanoDuration()
+	{
 		$values = $this->getNanoValues();
 
-		return (float) ((max($values) - min($values)));
+		return (float)((max($values) - min($values)));
 	}
 
-	public function getMicroDuration() {
-		return (float) ($this->getNanoDuration() * (static::FACTOR_MICRO / static::FACTOR_NANO));
+	public function getMicroDuration()
+	{
+		return (float)($this->getNanoDuration() * (static::FACTOR_MICRO / static::FACTOR_NANO));
 	}
 
-	public function getMilliDuration() {
-		return (float) ($this->getNanoDuration() * (static::FACTOR_MILLI / static::FACTOR_NANO));
+	public function getMilliDuration()
+	{
+		return (float)($this->getNanoDuration() * (static::FACTOR_MILLI / static::FACTOR_NANO));
 	}
 
-	public function getDuration() {
-		return (float) ($this->getNanoDuration() * (static::FACTOR_BASE / static::FACTOR_NANO));
+	public function getDuration()
+	{
+		return (float)($this->getNanoDuration() * (static::FACTOR_BASE / static::FACTOR_NANO));
 	}
-
 }
