@@ -91,46 +91,54 @@ class General
 		return (array)$this->args;
 	}
 
-	public function getKeyArray() : array
+	// public function getKeyArray() : array
+	// {
+	// 	$array = [
+	// 		$this->name,
+	// 		$this->args,
+	// 	];
+	// 	// var_dump($array);die;
+
+	// 	$checksum = crc32(serialize($array));
+	// 	// var_dump($checksum);die;
+
+	// 	$array = (new \Katu\Types\TArray($array))->flatten()->getArray();
+	// 	// var_dump($array);die;
+
+	// 	$array = array_map(function ($i) {
+	// 		try {
+	// 			return (string)$i;
+	// 		} catch (\Throwable $e) {
+	// 			return sha1(serialize($i));
+	// 		}
+	// 	}, $array);
+	// 	// var_dump($array);die;
+
+	// 	$array = array_map(function ($i) {
+	// 		$i = strtr($i, '\\', '/');
+	// 		$i = strtr($i, '.', '_');
+	// 		$i = mb_strtolower($i);
+	// 		$i = preg_replace('/[^a-z0-9_\\/]/i', null, $i);
+	// 		return $i;
+	// 	}, $array);
+	// 	// var_dump($array);die;
+
+	// 	$array[] = 'crc32_' . $checksum;
+
+	// 	return (array)$array;
+	// }
+
+	public function disableMemory()
 	{
-		$array = [
-			$this->name,
-			$this->args,
-		];
-		// var_dump($array);die;
+		$this->enableApcu = false;
+		$this->enableMemcached = false;
 
-		$checksum = crc32(serialize($array));
-		// var_dump($checksum);die;
-
-		$array = (new \Katu\Types\TArray($array))->flatten()->getArray();
-		// var_dump($array);die;
-
-		$array = array_map(function ($i) {
-			try {
-				return (string)$i;
-			} catch (\Throwable $e) {
-				return sha1(serialize($i));
-			}
-		}, $array);
-		// var_dump($array);die;
-
-		$array = array_map(function ($i) {
-			$i = strtr($i, '\\', '/');
-			$i = strtr($i, '.', '_');
-			$i = mb_strtolower($i);
-			$i = preg_replace('/[^a-z0-9_\\/]/i', null, $i);
-			return $i;
-		}, $array);
-		// var_dump($array);die;
-
-		$array[] = 'crc32_' . $checksum;
-
-		return (array)$array;
+		return $this;
 	}
 
 	public function getMemoryKey()
 	{
-		$key = implode('.', $this->getKeyArray());
+		$key = \Katu\Files\File::generatePath($this->name, 'txt');
 		if (mb_strlen($key) > 250) {
 			$key = sha1($key);
 		}
@@ -140,13 +148,10 @@ class General
 
 	public function getFile() : \Katu\Files\File
 	{
-		$array = $this->getKeyArray();
-		$array[] = 'cache.txt';
-
-		$file = new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, ...$array);
-		// var_dump($file);
-
-		return $file;
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, \Katu\Files\File::generatePath([
+			$this->name,
+			$this->args,
+		], 'txt'));
 	}
 
 	public static function isApcSupported()

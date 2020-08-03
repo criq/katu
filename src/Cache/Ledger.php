@@ -4,16 +4,21 @@ namespace Katu\Cache;
 
 class Ledger
 {
-	public $file;
+	public $name;
 
-	public function __construct(\Katu\Files\File $file)
+	public function __construct($name)
 	{
-		$this->file = $file;
-		$this->file->touch();
+		$this->name = $name;
+		$this->getFile()->touch();
 
 		if (!$this->get()) {
 			$this->set([]);
 		}
+	}
+
+	public function getFile()
+	{
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'ledgers', \Katu\Files\File::generatePath($this->name, 'json'));
 	}
 
 	public function populateKeys(array $keys)
@@ -33,14 +38,14 @@ class Ledger
 
 	public function get()
 	{
-		return (array)\Katu\Files\Formats\JSON::decodeAsArray($this->file->get());
+		return (array)\Katu\Files\Formats\JSON::decodeAsArray($this->getFile()->get());
 	}
 
 	public function set($contents)
 	{
 		ksort($contents, \SORT_NATURAL);
 
-		return $this->file->set(\Katu\Files\Formats\JSON::encode($contents));
+		return $this->getFile()->set(\Katu\Files\Formats\JSON::encode($contents));
 	}
 
 	public function setKey($key, $value)
@@ -62,7 +67,6 @@ class Ledger
 	public function getKey($key)
 	{
 		$contents = $this->get();
-
 		if (isset($contents[$key])) {
 			return $contents[$key];
 		}
@@ -89,5 +93,10 @@ class Ledger
 		// var_dump($expired);die;
 
 		return array_keys($expired);
+	}
+
+	public function count()
+	{
+		return count($this->get());
 	}
 }

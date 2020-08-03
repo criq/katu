@@ -7,6 +7,8 @@ class File
 	const TYPE_DIR  = 'dir';
 	const TYPE_FILE = 'file';
 
+	const HASH_ALGO = 'crc32';
+
 	public $path;
 
 	public function __construct()
@@ -82,10 +84,110 @@ class File
 		return new static(...$parts);
 	}
 
+	public static function generatePath($input, ?string $extension = null) : string
+	{
+		$input = is_array($input) ? $input : [$input];
+
+		/**************************************************************************
+		 * Generate hash.
+		 */
+		$hash = hash(static::HASH_ALGO, serialize($input));
+		// var_dump($hash);die;
+
+		/**************************************************************************
+		 * Flatten array.
+		 */
+		$output = (new \Katu\Types\TArray($input))->flatten()->getArray();
+		// var_dump($output);die;
+
+		/**************************************************************************
+		 * Make sure everything is a string.
+		 */
+		$output = array_map(function ($i) {
+			try {
+				return (string)$i;
+			} catch (\Throwable $e) {
+				return sha1(serialize($i));
+			}
+		}, $output);
+		// var_dump($output);
+
+		/**************************************************************************
+		 * Separate into directories.
+		 */
+		$output = array_map(function ($i) {
+			return preg_split('/[\/\\\\]/', $i);
+		}, $output);
+		// var_dump($output);
+
+		/**************************************************************************
+		 * Flatten array.
+		 */
+		$output = (new \Katu\Types\TArray($output))->flatten()->getArray();
+		// var_dump($output);
+
+		/**************************************************************************
+		 * Underscore capital letters.
+		 */
+		$output = array_map(function ($i) {
+			return preg_replace_callback('/\p{Lu}/u', function ($matches) {
+				return '_' . mb_strtolower($matches[0]);
+			}, $i);
+		}, $output);
+		// var_dump($output);
+
+		/**************************************************************************
+		 * Sanitize dashes and underscores.
+		 */
+		$output = array_map(function ($i) {
+			$i = strtr($i, '-', '_');
+			$i = trim($i, '_');
+
+			return $i;
+		}, $output);
+		// var_dump($output);
+
+		/**************************************************************************
+		 * Remove invalid characters.
+		 */
+		$output = array_map(function ($i) {
+			$i = strtr($i, '\\', '/');
+			$i = mb_strtolower($i);
+			$i = preg_replace('/[^a-z0-9_\/\.]/i', null, $i);
+			return $i;
+		}, $output);
+		// var_dump($output);
+
+		/**************************************************************************
+		 * Filter.
+		 */
+		$output = array_values(array_filter($output));
+
+		try {
+			$filename = array_slice($output, -1, 1)[0];
+			$pathinfo = pathinfo($filename);
+
+			$hashedFilename = implode('.', array_filter([
+				$pathinfo['filename'],
+				$hash,
+				$extension ?: ($pathinfo['extension'] ?? null),
+			]));
+
+			$output = array_merge(array_slice($output, 0, -1), [
+				$hashedFilename,
+			]);
+		} catch (\Throwable $e) {
+			$output[] = $hash;
+		}
+
+		return implode('/', $output);
+	}
+
 	public static function joinPaths()
 	{
 		return implode('/', array_map(function ($i) {
 			$implodedFilename = implode('.', (array)$i);
+
 			return rtrim($implodedFilename, '/');
 		}, func_get_args()));
 	}

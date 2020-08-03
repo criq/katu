@@ -4,12 +4,10 @@ namespace Katu\Cache;
 
 class Pickle
 {
-	protected $path;
 	protected $name;
 
-	public function __construct(string $name, $value = null)
+	public function __construct($name, $value = null)
 	{
-		$this->path = new \Katu\Files\File(debug_backtrace()[0]['file']);
 		$this->name = $name;
 
 		if (!$this->getFile()->exists()) {
@@ -28,7 +26,7 @@ class Pickle
 
 	public function getFile()
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'pickles', [$this->name . '.txt']);
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'pickles', \Katu\Files\File::generatePath($this->name, 'txt'));
 	}
 
 	public function get()

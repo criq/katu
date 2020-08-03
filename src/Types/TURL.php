@@ -64,7 +64,7 @@ class TURL
 			$url .= '?' . http_build_query($parts['query']);
 		}
 
-		return $url;
+		return new static($url);
 	}
 
 	public static function isValid($value)
