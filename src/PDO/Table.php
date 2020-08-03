@@ -18,7 +18,7 @@ class Table extends TableBase
 
 	public function touch()
 	{
-		$file = static::getLastUpdatedTemporaryFile();
+		$file = $this->getLastUpdatedTemporaryFile();
 		$file->touch();
 
 		return true;
@@ -26,7 +26,7 @@ class Table extends TableBase
 
 	public function getLastUpdatedTime()
 	{
-		$file = static::getLastUpdatedTemporaryFile();
+		$file = $this->getLastUpdatedTemporaryFile();
 
 		return $file->getDateTimeModified();
 	}
