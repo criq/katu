@@ -4,48 +4,119 @@ namespace Katu\Tools\Security;
 
 class Password
 {
-	const DELIMITER = '$';
+	protected $delimiter = '$';
+	protected $algo = 'sha512';
+	protected $password;
+	protected $saltLength = 64;
+	protected $salt;
 
-	public static function getHashable($password, $salt)
+	public function __construct(?string $password = null)
 	{
-		return $password . $salt;
+		$this->password = $password;
 	}
 
-	public static function encode($hash, $password)
+	public static function createFromEncoded(string $encoded) : Password
 	{
-		$salt = \Katu\Tools\Random\Generator::getString();
+		$password = new static;
+		$password->setDelimiter(substr($encoded, 0, 1));
 
-		return static::DELIMITER . implode(static::DELIMITER, array($hash, $salt, hash($hash, static::getHashable($password, $salt))));
+		$e = explode($password->getDelimiter(), substr($encoded, 1));
+		$password->setAlgo($e[0]);
+		$password->setSaltLength(strlen($e[1]));
+		$password->setSalt($e[1]);
+
+		return $password;
 	}
 
-	public static function verify($attempt, $token)
+	public function setSaltLength(int $saltLength) : Password
 	{
-		$analyzed = static::analyzeHashed($token);
-		if (!$analyzed) {
-			return false;
-		}
+		$this->saltLength = $saltLength;
 
-		return hash($analyzed['hash'], static::getHashable($attempt, $analyzed['salt'])) == $analyzed['hashed'];
+		return $this;
 	}
 
-	public static function analyzeHashed($token)
+	public function setSalt(string $salt) : Password
 	{
-		if (!$token) {
-			return false;
+		$this->salt = $salt;
+
+		return $this;
+	}
+
+	public function getSalt() : string
+	{
+		if (!$this->salt) {
+			$this->salt = \Katu\Tools\Random\Generator::getString($this->saltLength);
 		}
 
-		$delimiter = substr($token, 0, 1);
-		if (!$delimiter) {
-			return false;
+		return $this->salt;
+	}
+
+	public function setAlgo(string $algo) : Password
+	{
+		if (!in_array($algo, hash_algos())) {
+			throw new \Katu\Exceptions\InputErrorException("Invalid hashing algorithm $algo.");
 		}
 
-		list($hash, $salt, $hashed) = explode($delimiter, substr($token, 1));
+		$this->algo = $algo;
 
-		return array(
-			'delimiter' => $delimiter,
-			'hash'      => $hash,
-			'salt'      => $salt,
-			'hashed'    => $hashed,
-		);
+		return $this;
+	}
+
+	public function getAlgo() : string
+	{
+		return $this->algo;
+	}
+
+	public function setDelimiter(string $delimiter) : Password
+	{
+		if (strlen($delimiter) != 1) {
+			throw new \Katu\Exceptions\InputErrorException("Invalid delimiter $delimiter.");
+		}
+
+		$this->delimiter = $delimiter;
+
+		return $this;
+	}
+
+	public function setPassword(string $password) : Password
+	{
+		$this->password = $password;
+
+		return $this;
+	}
+
+	public function getPassword() : string
+	{
+		return $this->password;
+	}
+
+	public function getDelimiter() : string
+	{
+		return $this->delimiter;
+	}
+
+	public function getHashable() : string
+	{
+		return implode([
+			$this->getPassword(),
+			$this->getSalt(),
+		]);
+	}
+
+	public function getHash() : string
+	{
+		return hash($this->getAlgo(), $this->getHashable());
+	}
+
+	public function getEncoded() : string
+	{
+		return implode([
+			$this->getDelimiter(),
+			implode($this->getDelimiter(), [
+				$this->getAlgo(),
+				$this->getSalt(),
+				$this->getHash(),
+			]),
+		]);
 	}
 }
