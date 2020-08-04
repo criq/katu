@@ -191,9 +191,18 @@ class User extends \Katu\Models\Model
 
 	public function setPlainPassword($password, $hash = 'sha512')
 	{
-		$this->update('password', \Katu\Tools\Security\Password::encode($hash, $password));
+		$this->update('password', (new \Katu\Tools\Security\Password($password))->getEncoded());
 
 		return true;
+	}
+
+	public function getPassword()
+	{
+		try {
+			return \Katu\Tools\Security\Password::createFromEncoded($this->password);
+		} catch (\Throwable $e) {
+			return false;
+		}
 	}
 
 	public function setName($name)
