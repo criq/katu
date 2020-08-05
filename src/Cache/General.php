@@ -138,7 +138,10 @@ class General
 
 	public function getMemoryKey()
 	{
-		$key = \Katu\Files\File::generatePath($this->name, 'txt');
+		$key = \Katu\Files\File::generatePath([
+			$this->name,
+			$this->args,
+		], 'txt');
 		if (mb_strlen($key) > 250) {
 			$key = sha1($key);
 		}
