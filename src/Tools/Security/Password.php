@@ -6,9 +6,10 @@ class Password
 {
 	protected $delimiter = '$';
 	protected $algo = 'sha512';
-	protected $password;
 	protected $saltLength = 64;
 	protected $salt;
+	protected $iterations = 3;
+	protected $password;
 
 	public function __construct(?string $password = null)
 	{
@@ -24,8 +25,36 @@ class Password
 		$password->setAlgo($e[0]);
 		$password->setSaltLength(strlen($e[1]));
 		$password->setSalt($e[1]);
+		$password->setIterations($e[2]);
 
 		return $password;
+	}
+
+	public function setDelimiter(string $delimiter) : Password
+	{
+		if (strlen($delimiter) != 1) {
+			throw new \Katu\Exceptions\InputErrorException("Invalid delimiter $delimiter.");
+		}
+
+		$this->delimiter = $delimiter;
+
+		return $this;
+	}
+
+	public function setAlgo(string $algo) : Password
+	{
+		if (!in_array($algo, hash_algos())) {
+			throw new \Katu\Exceptions\InputErrorException("Invalid hashing algorithm $algo.");
+		}
+
+		$this->algo = $algo;
+
+		return $this;
+	}
+
+	public function getAlgo() : string
+	{
+		return $this->algo;
 	}
 
 	public function setSaltLength(int $saltLength) : Password
@@ -51,31 +80,16 @@ class Password
 		return $this->salt;
 	}
 
-	public function setAlgo(string $algo) : Password
+	public function setIterations(int $iterations) : Password
 	{
-		if (!in_array($algo, hash_algos())) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid hashing algorithm $algo.");
-		}
-
-		$this->algo = $algo;
+		$this->iterations = $iterations;
 
 		return $this;
 	}
 
-	public function getAlgo() : string
+	public function getIterations() : int
 	{
-		return $this->algo;
-	}
-
-	public function setDelimiter(string $delimiter) : Password
-	{
-		if (strlen($delimiter) != 1) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid delimiter $delimiter.");
-		}
-
-		$this->delimiter = $delimiter;
-
-		return $this;
+		return $this->iterations;
 	}
 
 	public function setPassword(string $password) : Password
@@ -105,7 +119,14 @@ class Password
 
 	public function getHash() : string
 	{
-		return hash($this->getAlgo(), $this->getHashable());
+		$iteration = 1;
+		$hash = $this->getHashable();
+
+		do {
+			$hash = hash($this->getAlgo(), $hash);
+		} while (++$iteration <= $this->iterations);
+
+		return $hash;
 	}
 
 	public function getEncoded() : string
@@ -115,6 +136,7 @@ class Password
 			implode($this->getDelimiter(), [
 				$this->getAlgo(),
 				$this->getSalt(),
+				$this->getIterations(),
 				$this->getHash(),
 			]),
 		]);
