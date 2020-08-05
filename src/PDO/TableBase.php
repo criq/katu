@@ -239,6 +239,6 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getLastUpdatedTemporaryFile()
 	{
-		return \Katu\Files\Temporary::createFromName('databases', $this->getConnection()->name, 'tables', 'updated', $this->name);
+		return new \Katu\Files\Temporary('databases', $this->getConnection()->name, 'tables', 'updated', $this->name);
 	}
 }

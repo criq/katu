@@ -21,69 +21,6 @@ class File
 		return $this->getPath();
 	}
 
-	public static function createFromName() : File
-	{
-		$generateHashArray = function ($value) {
-			$hash = crc32($value);
-
-			$array = [
-				substr($hash, 0, 2),
-				substr($hash, 2, 2),
-				substr($hash, 4),
-			];
-
-			return $array;
-		};
-
-		$args = (new \Katu\Types\TArray(func_get_args()))->flatten()->getArray();
-		$parts = [];
-
-		foreach ($args as $arg) {
-			// Existing directory.
-			try {
-				$dir = new static($arg);
-				if ($dir->isDir() && $dir->exists()) {
-					$parts[] = $dir;
-				} else {
-					throw new \Exception;
-				}
-			} catch (\Throwable $e) {
-				// URL.
-				try {
-					$url = new \Katu\Types\TURL($arg);
-					$parts[] = $url->getScheme();
-					$parts[] = $url->getHost();
-					$parts[] = trim($url->getParts()['path'], '/');
-					$parts[] = $generateHashArray(\Katu\Files\Formats\JSON::encodeStandard($url->getQueryParams()));
-				} catch (\Throwable $e) {
-					// Numbers and strings.
-					if (is_string($arg) || is_int($arg) || is_float($arg)) {
-						$arg = (new \Katu\Types\TString($arg))->normalizeSpaces()->trim();
-						$arg = preg_replace('/\v/m', ' ', $arg);
-						$arg = preg_split('/[\/\\\]/', $arg);
-
-						$parts[] = $arg;
-
-					// Other types.
-					} else {
-						$parts[] = $generateHashArray(serialize($arg));
-					}
-				}
-			}
-		}
-
-		// Downcode.
-		$parts = array_filter((new \Katu\Types\TArray($parts))->flatten()->getArray());
-		$parts = array_map(function ($part) {
-			return \URLify::downcode($part);
-		}, $parts);
-
-		// Add checksum.
-		$parts[] = [crc32(var_export($args, true)), 'checksum'];
-
-		return new static(...$parts);
-	}
-
 	public static function generatePath($input, ?string $extension = null) : string
 	{
 		$input = is_array($input) ? $input : [$input];

@@ -10,6 +10,6 @@ class Temporary extends File
 
 	public function __construct()
 	{
-		return parent::__construct(\Katu\App::getTemporaryDir(), (string)(new \Katu\Tools\Keys\Types\TArray(func_get_args())));
+		return parent::__construct(\Katu\App::getTemporaryDir(), static::generatePath(func_get_args()));
 	}
 }
