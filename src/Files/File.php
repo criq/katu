@@ -23,19 +23,23 @@ class File
 
 	public static function generatePath($input, ?string $extension = null) : string
 	{
-		$input = is_array($input) ? $input : [$input];
-
 		/**************************************************************************
 		 * Generate hash.
 		 */
 		$hash = hash(static::HASH_ALGO, serialize($input));
-		// var_dump($hash);die;
+		// var_dump($hash);
+
+		/**************************************************************************
+		 * Make sure input in an array.
+		 */
+		$input = is_array($input) ? $input : [$input];
+		// var_dump($input);
 
 		/**************************************************************************
 		 * Flatten array.
 		 */
 		$output = (new \Katu\Types\TArray($input))->flatten()->getArray();
-		// var_dump($output);die;
+		// var_dump($output);
 
 		/**************************************************************************
 		 * Make sure everything is a string.
@@ -53,7 +57,7 @@ class File
 		 * Separate into directories.
 		 */
 		$output = array_map(function ($i) {
-			return preg_split('/[\/\\\\]/', $i);
+			return preg_split('/[\/\\\\&\?=]/', $i);
 		}, $output);
 		// var_dump($output);
 
