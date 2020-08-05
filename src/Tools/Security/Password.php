@@ -109,21 +109,18 @@ class Password
 		return $this->delimiter;
 	}
 
-	public function getHashable() : string
-	{
-		return implode([
-			$this->getPassword(),
-			$this->getSalt(),
-		]);
-	}
-
 	public function getHash() : string
 	{
 		$iteration = 1;
-		$hash = $this->getHashable();
+		$password = $this->getPassword();
 
 		do {
-			$hash = hash($this->getAlgo(), $hash);
+			$hashable = implode([
+				$this->getSalt(),
+				$password,
+			]);
+
+			$hash = $password = hash($this->getAlgo(), $hashable);
 		} while (++$iteration <= $this->iterations);
 
 		return $hash;
