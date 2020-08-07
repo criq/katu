@@ -14,10 +14,14 @@ class General
 	protected $timeout;
 	protected static $memcached;
 
-	public function __construct($name = null, $timeout = null)
+	public function __construct($name = null, $timeout = null, ?callable $callback = null)
 	{
 		$this->setName($name);
 		$this->setTimeout($timeout);
+
+		if ($callback) {
+			$this->setCallback($callback);
+		}
 	}
 
 	public function setName()

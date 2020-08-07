@@ -9,10 +9,10 @@ abstract class TableBase extends \Sexy\Expression
 
 	abstract public function getCreateSyntax();
 
-	public function __construct(Connection $connection, Name $name)
+	public function __construct(Connection $connection, $name)
 	{
 		$this->connection = $connection;
-		$this->name = $name;
+		$this->name = new Name($name);
 	}
 
 	public function __toString()
