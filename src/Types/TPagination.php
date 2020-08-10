@@ -60,8 +60,10 @@ class TPagination
 		return new \Sexy\Page(static::getPageFromRequest($params), $perPage ?: static::getAppPerPage());
 	}
 
-	public static function getPageFromRequest($params)
+	public static function getPageFromRequest(\Slim\Http\Request $request) : int
 	{
+		$params = $request->getParams();
+
 		if (!($params[static::getAppQueryParam()] ?? null)) {
 			return 1;
 		}
