@@ -23,8 +23,8 @@ class Role extends \Katu\Models\Model
 		}
 
 		return static::insert(array(
-			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
-			'name'        => (string) (trim($name)),
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'name' => trim($name),
 		));
 	}
 
@@ -121,7 +121,7 @@ class Role extends \Katu\Models\Model
 	public function getRolePermissions()
 	{
 		$rolePermissionClass = (string)static::getRolePermissionClassName();
-
+		
 		return $rolePermissionClass::getBy([
 			'roleId' => $this->getId(),
 		]);
@@ -138,10 +138,10 @@ class Role extends \Katu\Models\Model
 	{
 		$rolePermissionClass = (string)static::getRolePermissionClassName();
 
-		return (bool) $rolePermissionClass::getOneBy(array(
-			'roleId'     => (int)    ($this->getId()),
-			'permission' => (string) (trim($permission)),
-		));
+		return (bool)$rolePermissionClass::getOneBy([
+			'roleId' => $this->getId(),
+			'permission' => trim($permission),
+		]);
 	}
 
 	public function deleteAllPermissions()

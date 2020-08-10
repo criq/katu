@@ -6,7 +6,7 @@ class RolePermission extends \Katu\Models\Model
 {
 	const TABLE = 'role_permissions';
 
-	public function getUserPermissionClassName()
+	public static function getUserPermissionClassName()
 	{
 		return new \Katu\Tools\Classes\ClassName('Katu', 'Models', 'Presets', 'UserPermission');
 	}
