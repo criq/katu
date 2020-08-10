@@ -6,6 +6,10 @@ class DateTime extends \DateTime
 {
 	public function __construct($time = null, \DateTimeZone $timezone = null)
 	{
+		if ($time instanceof \DateTime) {
+			$time = $time->format('r');
+		}
+
 		if (!$timezone) {
 			$timezone = $this->getLocalTimeZone();
 		}
@@ -16,6 +20,16 @@ class DateTime extends \DateTime
 	public function __toString() : string
 	{
 		return $this->getDbDateTimeFormat();
+	}
+
+	public static function createFromTimestamp(int $timestamp) : \Katu\Tools\DateTime\DateTime
+	{
+		return new static('@' . $timestamp);
+	}
+
+	public static function createFromDateTime(\DateTime $dateTime) : \Katu\Tools\DateTime\DateTime
+	{
+		return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
 	}
 
 	public function getLocalTimeZone() : \DateTimeZone
@@ -30,16 +44,6 @@ class DateTime extends \DateTime
 		}
 
 		return new static($time, $timezone);
-	}
-
-	public static function createFromTimestamp(int $timestamp) : \Katu\Tools\DateTime\DateTime
-	{
-		return new static('@' . $timestamp);
-	}
-
-	public static function createFromDateTime(\DateTime $dateTime) : \Katu\Tools\DateTime\DateTime
-	{
-		return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
 	}
 
 	public function toLocalTimezone()
