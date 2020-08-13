@@ -43,4 +43,23 @@ class Pickle
 	{
 		return $this->getFile()->delete();
 	}
+
+	public function getDateTimeModified()
+	{
+		return \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($this->getFile()));
+	}
+
+	public function isExpired($timeout)
+	{
+		return is_null($this->get()) || !$this->getDateTimeModified()->isInTimeout(\Katu\Cache\General::parseTimeout($timeout));
+	}
+
+	public function getOrCreate($timeout, callable $callback)
+	{
+		if ($this->isExpired($timeout)) {
+			$this->set(call_user_func_array($callback, array_slice(func_get_args(), 2)));
+		}
+
+		return $this->get();
+	}
 }

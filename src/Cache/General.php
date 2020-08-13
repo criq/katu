@@ -56,10 +56,8 @@ class General
 		return $this->timeout;
 	}
 
-	public function getTimeoutInSeconds()
+	public static function parseTimeout($timeout)
 	{
-		$timeout = $this->getTimeout();
-
 		if (is_int($timeout)) {
 			return $timeout;
 		} elseif (is_float($timeout)) {
@@ -68,7 +66,12 @@ class General
 			return (new \Katu\Tools\DateTime\DateTime('- ' . $timeout))->getAge();
 		}
 
-		return null;
+		return false;
+	}
+
+	public function getTimeoutInSeconds()
+	{
+		return static::parseTimeout($this->getTimeout());
 	}
 
 	public function setCallback($callback)
