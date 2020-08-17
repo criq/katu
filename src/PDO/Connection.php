@@ -145,7 +145,7 @@ class Connection
 		return $query;
 	}
 
-	public function createQuery(string $sql, array $params = []) : Query
+	public function createQuery($sql, array $params = []) : Query
 	{
 		return new Query($this, $sql, $params);
 	}

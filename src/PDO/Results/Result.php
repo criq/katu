@@ -9,7 +9,7 @@ class Result implements \Iterator, \ArrayAccess
 	public $connection;
 	public $statement;
 
-	public function __construct(\Katu\PDO\Connection $connection, $statement)
+	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement)
 	{
 		$this->connection = $connection;
 		$this->statement = $statement;

@@ -10,11 +10,15 @@ class Query
 	public $params = [];
 	public $sql;
 
-	public function __construct(Connection $connection, string $sql, array $params = [])
+	public function __construct(Connection $connection, $sql, array $params = [])
 	{
 		$this->connection = $connection;
 		$this->params = $params;
-		$this->sql = $sql;
+		$this->sql = (string)$sql;
+
+		if ($sql instanceof \Sexy\Select && $sql->getPage()) {
+			$this->page = $sql->getPage();
+		}
 	}
 
 	public function setSql(string $sql) : Query
