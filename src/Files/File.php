@@ -32,13 +32,13 @@ class File
 		/**************************************************************************
 		 * Make sure input in an array.
 		 */
-		$input = is_array($input) ? $input : [$input];
+		$output = is_array($input) ? $input : [$input];
 		// var_dump($input);
 
 		/**************************************************************************
 		 * Flatten array.
 		 */
-		$output = (new \Katu\Types\TArray($input))->flatten()->getArray();
+		$output = (new \Katu\Types\TArray($output))->flatten()->getArray();
 		// var_dump($output);
 
 		/**************************************************************************
