@@ -4,24 +4,23 @@ namespace Katu\Models;
 
 abstract class View extends Base
 {
+	const AUTO_INDICES = true;
+	const CACHE = true;
+	const CACHE_ADVANCE = .75;
 	const CACHE_DATETIME_FORMAT = 'YmdHis';
+	const CACHE_ON_UPDATE = true;
+	const CACHE_TIMEOUT = 86400;
+	const COMPOSITE_INDEX = true;
+	const CUSTOM_INDICES = '';
+	const MATERIALIZE = false;
+	const MATERIALIZE_ADVANCE = 1;
+	const MATERIALIZE_HOURS = '';
+	const MATERIALIZE_TIMEOUT = 86400;
 	const PREFIX_CACHE = '_cache';
 	const SEPARATOR = '_';
 	const TABLE = null;
 	const TIMEOUT = 3600;
 	const TMP_LENGTH = 8;
-
-	public static $_autoIndices        = true;
-	public static $_cache              = true;
-	public static $_cacheAdvance       = .75;
-	public static $_cacheOnUpdate      = true;
-	public static $_cacheTimeout       = 86400;
-	public static $_compositeIndex     = true;
-	public static $_customIndices      = [];
-	public static $_materialize        = false;
-	public static $_materializeAdvance = 1;
-	public static $_materializeHours   = [];
-	public static $_materializeTimeout = 86400;
 
 	public static function getTable() : \Katu\PDO\Table
 	{
@@ -156,12 +155,12 @@ abstract class View extends Base
 
 	public static function isCached()
 	{
-		return static::$_cache;
+		return static::CACHE;
 	}
 
 	public static function isMaterialized()
 	{
-		return static::$_materialize;
+		return static::MATERIALIZE;
 	}
 
 	public static function cachedTableExists()
@@ -179,7 +178,7 @@ abstract class View extends Base
 
 	public static function cacheHasUpdatedTables()
 	{
-		if (static::$_cacheOnUpdate) {
+		if (static::CACHE_ON_UPDATE) {
 			$sourceTables = static::getView()->getSourceTables();
 			foreach ($sourceTables as $sourceTable) {
 				if (!$sourceTable->exists()) {
@@ -211,12 +210,12 @@ abstract class View extends Base
 
 	public static function getCacheExpiryRatio()
 	{
-		return static::getCacheAge() / static::$_cacheTimeout;
+		return static::getCacheAge() / static::CACHE_TIMEOUT;
 	}
 
 	public static function getMaterializeExpiryRatio()
 	{
-		return static::getMaterializeAge() / static::$_materializeTimeout;
+		return static::getMaterializeAge() / static::MATERIALIZE_TIMEOUT;
 	}
 
 	public static function isCacheExpired($expiryRatio = 1)
@@ -242,7 +241,7 @@ abstract class View extends Base
 
 	public static function isCacheExpiredAdvance()
 	{
-		return static::isCacheExpired(static::$_cacheAdvance);
+		return static::isCacheExpired(static::CACHE_ADVANCE);
 	}
 
 	public static function isMaterializeExpired($expiryRatio = 1)
@@ -264,16 +263,16 @@ abstract class View extends Base
 
 	public static function isMaterializeExpiredAdvance($expiryRatio = 1)
 	{
-		return static::isMaterializeExpired(static::$_materializeAdvance);
+		return static::isMaterializeExpired(static::MATERIALIZE_ADVANCE);
 	}
 
 	public static function isMaterializable()
 	{
-		if (!static::$_materializeHours || \Katu\Config\Env::getPlatform() == 'dev') {
+		if (!static::MATERIALIZE_HOURS || \Katu\Config\Env::getPlatform() == 'dev') {
 			return true;
 		}
 
-		return in_array((int)(new \Katu\Tools\DateTime\DateTime)->format('h'), static::$_materializeHours);
+		return in_array((int)(new \Katu\Tools\DateTime\DateTime)->format('h'), explode(',', static::MATERIALIZE_HOURS));
 	}
 
 	public static function getMaterializedTable()
@@ -304,9 +303,9 @@ abstract class View extends Base
 		// Copy into temporary table view.
 		$params = [
 			'disableNull'    => true,
-			'autoIndices'    => static::$_autoIndices,
-			'compositeIndex' => static::$_compositeIndex,
-			'customIndices'  => static::$_customIndices,
+			'autoIndices'    => static::AUTO_INDICES,
+			'compositeIndex' => static::COMPOSITE_INDEX,
+			'customIndices'  => explode(',', static::CUSTOM_INDICES),
 		];
 		$sourceTable->copy($temporaryTable, $params);
 
