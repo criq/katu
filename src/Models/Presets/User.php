@@ -162,7 +162,7 @@ class User extends \Katu\Models\Model
 		return (bool) $this->{static::$columnNames['emailAddressId']};
 	}
 
-	public function setEmailAddress($emailAddress)
+	public function setEmailAddress(?\Katu\Models\Presets\EmailAddress $emailAddress)
 	{
 		$emailAddressClass = (string)static::getEmailAddressClassName();
 
@@ -205,7 +205,7 @@ class User extends \Katu\Models\Model
 		}
 	}
 
-	public function setName($name)
+	public function setName(?string $name)
 	{
 		$this->update('name', trim($name));
 
