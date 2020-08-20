@@ -49,9 +49,23 @@ class Pickle
 		return \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($this->getFile()));
 	}
 
-	public function isExpired($timeout)
+	public function hasContents() : bool
 	{
-		return is_null($this->get()) || !$this->getDateTimeModified()->isInTimeout(\Katu\Cache\General::parseTimeout($timeout));
+		return !is_null($this->get());
+	}
+
+	public function isExpired($timeout) : bool
+	{
+		return (bool)(is_null($this->get()) || !$this->getDateTimeModified()->isInTimeout(\Katu\Cache\General::parseTimeout($timeout)));
+	}
+
+	public function isValid($timeout = null) : bool
+	{
+		if ($timeout && $this->isExpired($timeout)) {
+			return false;
+		}
+
+		return $this->hasContents();
 	}
 
 	public function getOrCreate($timeout, callable $callback)

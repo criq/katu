@@ -36,6 +36,13 @@ class PaginatedResult extends Result
 		return false;
 	}
 
+	public function setPagination(\Katu\Types\TPagination $pagination)
+	{
+		$this->pagination = $pagination;
+
+		return $this;
+	}
+
 	public function getPagination()
 	{
 		return new \Katu\Types\TPagination($this->getTotal(), $this->getPerPage(), $this->getPage());
