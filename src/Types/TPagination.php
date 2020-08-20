@@ -19,20 +19,70 @@ class TPagination
 
 	public function __construct(int $total, int $perPage, int $page)
 	{
-		if ((int)$total < 0) {
-			throw new \Exception("Invalid total.");
-		}
-		if ((int)$perPage < 1) {
-			throw new \Exception("Invalid per page.");
-		}
-		if ((int)$page < 1) {
-			throw new \Exception("Invalid page.");
+		$this->setTotal((int)$total);
+		$this->setPerPage((int)$perPage);
+		$this->setPage((int)$page);
+		$this->setPages((int)ceil($total / $perPage));
+	}
+
+	public function setTotal(int $total)
+	{
+		if ($total < 0) {
+			throw new \Katu\Exceptions\ErrorException("Invalid total.");
 		}
 
-		$this->total = (int)$total;
-		$this->perPage = (int)$perPage;
-		$this->page = (int)$page;
-		$this->pages = (int)ceil($total / $perPage);
+		$this->total = $total;
+
+		return $this;
+	}
+
+	public function getTotal()
+	{
+		return $this->total;
+	}
+
+	public function setPerPage(int $perPage)
+	{
+		if ((int)$perPage < 1) {
+			throw new \Katu\Exceptions\ErrorException("Invalid per page.");
+		}
+
+		$this->perPage = $perPage;
+
+		return $this;
+	}
+
+	public function getPerPage()
+	{
+		return $this->perPage;
+	}
+
+	public function setPage(int $page)
+	{
+		if ((int)$page < 1) {
+			throw new \Katu\Exceptions\ErrorException("Invalid page.");
+		}
+
+		$this->page = $page;
+
+		return $this;
+	}
+
+	public function getPage()
+	{
+		return $this->page;
+	}
+
+	public function setPages(int $pages)
+	{
+		$this->pages = $pages;
+
+		return $this;
+	}
+
+	public function getPages()
+	{
+		return $this->pages;
 	}
 
 	public static function getAppQueryParam()
