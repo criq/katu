@@ -472,6 +472,7 @@ abstract class View extends Base
 					$class::materializeIfExpired();
 				}
 			} catch (\Throwable $e) {
+				// TODO - throw into a different log.
 				\App\Extensions\Errors\Handler::log($e);
 			}
 		}
