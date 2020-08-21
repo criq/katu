@@ -185,9 +185,9 @@ abstract class View extends Base
 					continue;
 				}
 
-				$lastUpdatedTime = $sourceTable->getLastUpdatedTime();
+				$lastUpdatedTime = $sourceTable->getLastUpdatedDateTime();
 				$lastCachedDateTime = static::getLastCachedDateTime();
-				if ($lastUpdatedTime && $lastCachedDateTime && $lastUpdatedTime > $lastCachedDateTime->getTimestamp()) {
+				if ($lastUpdatedTime && $lastCachedDateTime && $lastUpdatedTime->getTimestamp() > $lastCachedDateTime->getTimestamp()) {
 					return true;
 				}
 			}

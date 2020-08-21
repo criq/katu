@@ -24,7 +24,7 @@ class Table extends TableBase
 		return true;
 	}
 
-	public function getLastUpdatedTime()
+	public function getLastUpdatedDateTime()
 	{
 		$file = $this->getLastUpdatedTemporaryFile();
 
