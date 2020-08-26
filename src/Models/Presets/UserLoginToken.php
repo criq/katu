@@ -35,7 +35,7 @@ class UserLoginToken extends \Katu\Models\Model
 
 	public function expire()
 	{
-		$this->update('timeUsed', \Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat());
+		$this->update('timeUsed', new \Katu\Tools\DateTime\DateTime);
 		$this->save();
 
 		return true;
