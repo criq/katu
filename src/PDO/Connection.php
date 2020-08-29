@@ -179,56 +179,38 @@ class Connection
 		return $this->connection->rollBack();
 	}
 
-	// public function dump($options = []) {
-	// 	$extension = 'sql';
-	// 	$dumpOptions = [];
+	public function getSqlModes() : array
+	{
+		$sql = " SELECT @@SESSION.sql_mode AS sql_mode ";
+		$array = explode(',', $this->createQuery($sql)->getResult()->getArray()[0]['sql_mode'] ?? null);
 
-	// 	if (isset($options['compress']) && $options['compress'] == 'gzip') {
-	// 		$extension = 'sql.gz';
-	// 		$dumpOptions['compress'] = 'Gzip';
-	// 	}
+		return array_combine($array, $array);
+	}
 
-	// 	if (isset($options['fileName']) && $options['fileName']) {
-	// 		$fileName = $options['fileName'];
-	// 	} else {
-	// 		$fileName = \Katu\File\System::joinPaths(\Katu\App::getBaseDir(), 'databases', $this->config->database, implode('.', [(new \Katu\Tools\DateTime\DateTime())->format('YmdHis'), $extension]));
-	// 	}
+	public function setSqlModes(array $sqlModes)
+	{
+		$sql = " SET @@SESSION.sql_mode = :sqlMode ";
+		$res = $this->createQuery($sql, [
+			'sqlMode' => implode(',', $sqlModes),
+		])->getResult();
 
-	// 	if (isset($options['addDropTable']) && $options['addDropTable']) {
-	// 		$dumpOptions['add-drop-table'] = true;
-	// 	}
+		return $res;
+	}
 
-	// 	$dumpOptions['exclude-tables'] = [];
+	public function addSqlMode($sqlMode)
+	{
+		$sqlModes = array_merge($this->getSqlModes(), [$sqlMode]);
 
-	// 	if (isset($options['skipCache']) && $options['skipCache']) {
-	// 		foreach ($this->getTableNames() as $tableName) {
-	// 			if (preg_match('#^_cache_#', $tableName)) {
-	// 				$dumpOptions['exclude-tables'][] = $tableName;
-	// 			}
-	// 		}
-	// 	}
+		return $this->setSqlModes($sqlModes);
+	}
 
-	// 	try {
+	public function removeSqlMode($sqlMode)
+	{
+		$sqlModes = $this->getSqlModes();
+		if ($sqlModes[$sqlMode] ?? null) {
+			unset($sqlModes[$sqlMode]);
+		}
 
-	// 		\Katu\Utils\FileSystem::touch($fileName);
-
-	// 		$dump = new \Ifsnop\Mysqldump\Mysqldump($this->config->database, $this->config->user, $this->config->password, $this->config->host, $this->config->type, $dumpOptions);
-	// 		$dump->start($fileName);
-
-	// 	} catch (\Exception $e) {
-
-	// 		\Katu\Errors\Handler::log($e);
-
-	// 		@unlink($fileName);
-
-	// 	}
-	// }
-
-	// public function backup($options = []) {
-	// 	return $this->dump(array_merge([
-	// 		'skipCache' => true,
-	// 		'addDropTable' => true,
-	// 		'compress' => 'gzip',
-	// 	], $options));
-	// }
+		return $this->setSqlModes($sqlModes);
+	}
 }
