@@ -8,11 +8,13 @@ class Path
 
 	public function __construct($path)
 	{
-		$this->path = $path;
+		$this->path = trim($path, '"\'');
 	}
 
 	public function run()
 	{
-		return (new \Katu\Types\TURL(\Katu\Tools\Routing\URL::joinPaths(\Katu\Tools\Routing\URL::getBase(), $this->path)))->ping();
+		$url = (new \Katu\Types\TURL(\Katu\Tools\Routing\URL::joinPaths(\Katu\Tools\Routing\URL::getBase(), $this->path)));
+
+		return $url->ping();
 	}
 }
