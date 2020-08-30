@@ -20,6 +20,6 @@ class Logger extends \Monolog\Logger
 
 	public function getFile()
 	{
-		return new \Katu\Files\File($this->getDir(), [$this->name, 'log']);
+		return new \Katu\Files\File($this->getDir(), \Katu\Files\File::generatePath($this->name, 'log'));
 	}
 }
