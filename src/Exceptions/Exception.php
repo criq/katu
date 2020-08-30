@@ -7,6 +7,7 @@ class Exception extends \Exception
 	private $abbr;
 	private $errorNames = [];
 	private $translations;
+	private $payload;
 
 	public function __construct($message = null, $code = 0, $previous = null)
 	{
@@ -102,5 +103,12 @@ class Exception extends \Exception
 			'message' => $this->getMessage(),
 			'names' => $this->getErrorNames() ?: null,
 		];
+	}
+
+	public function setPayload($payload)
+	{
+		$this->payload = $payload;
+
+		return $this;
 	}
 }
