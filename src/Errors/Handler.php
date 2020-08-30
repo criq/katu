@@ -55,16 +55,7 @@ class Handler
 			'code' => $code,
 		];
 
-		if ($error instanceof \Throwable) {
-			$data['class'] = get_class($error);
-		}
-
-		if ($error instanceof \Katu\Exceptions\Exception) {
-			$data['abbr'] = $error->getAbbr();
-			$data['context'] = $error->getContext();
-		}
-
-		return static::getLogger()->error($error, $data);
+		return static::getLogger('error')->error($error, $data);
 	}
 
 	public static function handleException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)

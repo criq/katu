@@ -23,19 +23,22 @@ class Logger extends \Monolog\Logger
 		return new \Katu\Files\File($this->getDir(), \Katu\Files\File::generatePath($this->name, 'log'));
 	}
 
-	public static function handle($name, string $level, $message)
+	public function log($level, $message, array $context = []) : void
 	{
-		$data = [];
-
 		if ($message instanceof \Throwable) {
-			$data['class'] = get_class($message);
+			$context['class'] = get_class($message);
 		}
 
 		if ($message instanceof \Katu\Exceptions\Exception) {
-			$data['abbr'] = $message->getAbbr();
-			$data['context'] = $message->getContext();
+			$context['abbr'] = $message->getAbbr();
+			$context['context'] = $message->getContext();
 		}
 
-		return (new static($name))->log($level, $message, $data);
+		parent::log($level, $message, $context);
+	}
+
+	public function error($message, array $context = []) : void
+	{
+		$this->log('error', $message, $context);
 	}
 }
