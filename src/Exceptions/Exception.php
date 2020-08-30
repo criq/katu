@@ -7,7 +7,7 @@ class Exception extends \Exception
 	private $abbr;
 	private $errorNames = [];
 	private $translations;
-	private $payload;
+	private $context;
 
 	public function __construct($message = null, $code = 0, $previous = null)
 	{
@@ -105,10 +105,15 @@ class Exception extends \Exception
 		];
 	}
 
-	public function setPayload($payload)
+	public function setContext($context)
 	{
-		$this->payload = $payload;
+		$this->context = $context;
 
 		return $this;
+	}
+
+	public function getContext()
+	{
+		return $this->context;
 	}
 }

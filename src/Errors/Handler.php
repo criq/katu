@@ -48,12 +48,19 @@ class Handler
 
 	public static function log($error, $code = 0, $file = null, $line = null)
 	{
-		return static::getLogger()->error($error, [
+		$data = [
 			'error' => $error,
-			'code' => $code,
 			'file' => $file,
 			'line' => $line,
-		]);
+			'code' => $code,
+		];
+
+		if ($error instanceof \Katu\Exceptions\Exception) {
+			$data['abbr'] = $error->getAbbr();
+			$data['context'] = $error->getContext();
+		}
+
+		return static::getLogger()->error($error, $data);
 	}
 
 	public static function handleException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
