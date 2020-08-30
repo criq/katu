@@ -6,9 +6,9 @@ class Logger extends \Monolog\Logger
 {
 	const DIR_NAME = 'logs';
 
-	public function __construct(string $channel = 'app')
+	public function __construct(string $name = 'app')
 	{
-		parent::__construct($channel);
+		parent::__construct($name);
 
 		$this->pushHandler(new \Monolog\Handler\StreamHandler((string)$this->getFile()));
 	}
@@ -21,5 +21,21 @@ class Logger extends \Monolog\Logger
 	public function getFile()
 	{
 		return new \Katu\Files\File($this->getDir(), \Katu\Files\File::generatePath($this->name, 'log'));
+	}
+
+	public static function handle(string $name, string $level, $message)
+	{
+		$data = [];
+
+		if ($message instanceof \Throwable) {
+			$data['class'] = get_class($message);
+		}
+
+		if ($message instanceof \Katu\Exceptions\Exception) {
+			$data['abbr'] = $message->getAbbr();
+			$data['context'] = $message->getContext();
+		}
+
+		return (new static($name))->log($level, $message, $data);
 	}
 }

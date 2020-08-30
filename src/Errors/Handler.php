@@ -55,6 +55,10 @@ class Handler
 			'code' => $code,
 		];
 
+		if ($error instanceof \Throwable) {
+			$data['class'] = get_class($error);
+		}
+
 		if ($error instanceof \Katu\Exceptions\Exception) {
 			$data['abbr'] = $error->getAbbr();
 			$data['context'] = $error->getContext();
