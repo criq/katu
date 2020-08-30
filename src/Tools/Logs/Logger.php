@@ -35,6 +35,8 @@ class Logger extends \Monolog\Logger
 		}
 
 		parent::log($level, $message, $context);
+
+		$this->getFile()->chmod(0777);
 	}
 
 	public function error($message, array $context = []) : void
