@@ -6,9 +6,9 @@ class Logger extends \Monolog\Logger
 {
 	const DIR_NAME = 'logs';
 
-	public function __construct(string $name = 'app')
+	public function __construct($name = 'app')
 	{
-		parent::__construct($name);
+		parent::__construct(\Katu\Files\File::generatePath($name));
 
 		$this->pushHandler(new \Monolog\Handler\StreamHandler((string)$this->getFile()));
 	}
@@ -23,7 +23,7 @@ class Logger extends \Monolog\Logger
 		return new \Katu\Files\File($this->getDir(), \Katu\Files\File::generatePath($this->name, 'log'));
 	}
 
-	public static function handle(string $name, string $level, $message)
+	public static function handle($name, string $level, $message)
 	{
 		$data = [];
 
