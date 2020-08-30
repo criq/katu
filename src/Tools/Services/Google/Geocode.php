@@ -4,7 +4,7 @@ namespace Katu\Tools\Services\Google;
 
 class Geocode
 {
-	public static function geocode($language, $address, $components = []) : GeocodeAddress
+	public static function geocode($language, $address, $components = []) : ?GeocodeAddress
 	{
 		$res = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400, function ($language, $address, $components) {
 			$componentArray = [];
@@ -47,7 +47,7 @@ class Geocode
 		}, $language, $address, $components);
 
 		if (!isset($res->results[0])) {
-			return false;
+			return null;
 		}
 
 		return new \Katu\Tools\Services\Google\GeocodeAddress($language, $res->results[0]);
