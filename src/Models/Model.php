@@ -223,17 +223,7 @@ class Model extends Base
 
 	public static function getIdColumnName()
 	{
-		$table = static::getTable();
-
-		return \Katu\Cache\General::get(['databases', $table->getConnection()->name, 'tables', 'idColumn', $table->name->name], '1 hour', function () use ($table) {
-			foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table)->getResult() as $row) {
-				if (isset($row['Key']) && $row['Key'] == 'PRI') {
-					return $row['Field'];
-				}
-			}
-
-			return false;
-		});
+		return static::getTable()->getIdColumnName();
 	}
 
 	public function getId()

@@ -241,4 +241,17 @@ abstract class TableBase extends \Sexy\Expression
 	{
 		return new \Katu\Files\Temporary('databases', $this->getConnection()->name, 'tables', 'updated', $this->name);
 	}
+
+	public function getIdColumnName()
+	{
+		return \Katu\Cache\General::get(['databases', $this->getConnection()->name, 'tables', 'idColumn', $this->getName()->getName()], '1 hour', function () {
+			foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
+				if (isset($row['Key']) && $row['Key'] == 'PRI') {
+					return $row['Field'];
+				}
+			}
+
+			return false;
+		});
+	}
 }
