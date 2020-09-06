@@ -46,11 +46,14 @@ class Cron
 		return $crons;
 	}
 
-	public static function runCurrent()
+	public static function runCurrent(?array $options = [])
 	{
 		$crons = static::getCurrent();
 		foreach ($crons as $cron) {
 			$cron->run();
+			if ($options['sleep'] ?? null) {
+				sleep($options['sleep']);
+			}
 		}
 
 		return true;
