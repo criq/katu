@@ -2,16 +2,26 @@
 
 namespace Katu\Models\Presets;
 
+use \Sexy\Sexy as SX;
+
 class Setting extends \Katu\Models\Model
 {
 	const TABLE = 'settings';
 
-	public static function make(User $creator, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting
+	public static function getOrCreate(User $creator, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting
 	{
-		if (!static::checkName($name)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid setting name."))
-				->addErrorName('name')
-				;
+		try {
+			if (!static::checkName($name)) {
+				throw (new \Katu\Exceptions\InputErrorException("Invalid setting name '$name'."))
+					->addErrorName('name')
+					;
+			}
+		} catch (\Katu\Exceptions\Exception $e) {
+			if ($e->getAbbr() == 'nameInUse') {
+				// Nevermind.
+			} else {
+				throw $e;
+			}
 		}
 
 		return static::upsert([
@@ -27,10 +37,28 @@ class Setting extends \Katu\Models\Model
 		]);
 	}
 
-	public static function checkName(string $name, \Katu\Models\Model $object = null)
+	public static function checkName(string $name, ?Setting $object = null)
 	{
-		if (!trim($name)) {
+		$name = trim($name);
+
+		if (!$name) {
 			throw (new \Katu\Exceptions\InputErrorException("Missing setting name."))
+				->addErrorName('name')
+				;
+		}
+
+		$sql = SX::select()
+			->from(static::getTable())
+			->where(SX::eq(static::getColumn('name'), $name))
+			;
+
+		if ($object) {
+			$sql->where(SX::cmpNotEq(static::getIdColumn(), $object->getId()));
+		}
+
+		if (static::select($sql)->getResult()->getTotal()) {
+			throw (new \Katu\Exceptions\InputErrorException("Setting name '$name' already used."))
+				->setAbbr('nameInUse')
 				->addErrorName('name')
 				;
 		}
@@ -54,23 +82,6 @@ class Setting extends \Katu\Models\Model
 	public function getValue()
 	{
 		return \Katu\Files\Formats\JSON::decodeAsArray($this->value);
-	}
-
-	public static function getObject($name)
-	{
-		return static::getOneBy([
-			'name' => trim($name),
-		]);
-	}
-
-	public static function getByName($name)
-	{
-		$setting = static::getObject($name);
-		if (!$setting) {
-			throw new \Katu\Exceptions\MissingSettingException("Missing setting " . $name . ".");
-		}
-
-		return $setting->getValue();
 	}
 
 	public static function getAllAsAssoc()
