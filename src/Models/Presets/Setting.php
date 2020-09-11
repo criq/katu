@@ -6,7 +6,7 @@ class Setting extends \Katu\Models\Model
 {
 	const TABLE = 'settings';
 
-	public static function create(User $creator, string $name, $value, bool $isSystem, string $description = null) : Setting
+	public static function make(User $creator, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting
 	{
 		if (!static::checkName($name)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid setting name."))
@@ -14,11 +14,14 @@ class Setting extends \Katu\Models\Model
 				;
 		}
 
-		return static::insert([
+		return static::upsert([
+			'name' => trim($name),
+		], [
 			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
 			'creatorId' => $creator->getId(),
-			'name' => trim($name),
-			'value' => \Katu\Files\Formats\JSON::encodeStandard(trim($value)),
+		], [
+			'timeEdited' => new \Katu\Tools\DateTime\DateTime,
+			'value' => \Katu\Files\Formats\JSON::encodeStandard($value),
 			'isSystem' => $isSystem ? '1' : '0',
 			'description' => trim($description) ?: null,
 		]);
@@ -28,17 +31,6 @@ class Setting extends \Katu\Models\Model
 	{
 		if (!trim($name)) {
 			throw (new \Katu\Exceptions\InputErrorException("Missing setting name."))
-				->addErrorName('name')
-				;
-		}
-
-		$expressions['name'] = trim($name);
-		if ($object) {
-			$expressions[] = new \Sexy\CmpNotEq(static::getIdColumn(), $object->getId());
-		}
-
-		if (static::getBy($expressions)->getTotal()) {
-			throw (new \Katu\Exceptions\InputErrorException("Setting already exists."))
 				->addErrorName('name')
 				;
 		}
