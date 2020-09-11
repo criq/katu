@@ -86,13 +86,19 @@ class Setting extends \Katu\Models\Model
 
 	public static function getAllAsAssoc()
 	{
-		$settings = array();
-
+		$settings = [];
 		foreach (static::getAll() as $setting) {
 			$settings[$setting->name] = $setting->getValue();
 		}
 
 		return $settings;
+	}
+
+	public static function getOneByName(string $name)
+	{
+		return static::getOneBy([
+			'name' => $name,
+		]);
 	}
 
 	/****************************************************************************
