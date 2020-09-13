@@ -17,10 +17,10 @@ class Model extends Base
 			$property = $this->getPropertyName($match['property']);
 
 			// Not found, maybe just added.
-			if (!$property) {
-				\Katu\Cache\General::clearMemory();
-				$property = $this->getPropertyName($match['property']);
-			}
+			// if (!$property) {
+			// 	\Katu\Cache\General::clearMemory();
+			// 	$property = $this->getPropertyName($match['property']);
+			// }
 
 			$value = $args[0];
 

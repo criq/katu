@@ -21,10 +21,10 @@ abstract class Base
 			$property = $this->getPropertyName($match['property']);
 
 			// Not found, maybe just added.
-			if (!$property) {
-				\Katu\Cache\General::clearMemory();
-				$property = $this->getPropertyName($match['property']);
-			}
+			// if (!$property) {
+			// 	\Katu\Cache\General::clearMemory();
+			// 	$property = $this->getPropertyName($match['property']);
+			// }
 
 			return $this->{$property} ?? null;
 		}
