@@ -225,7 +225,7 @@ class General
 		if ($this->isRedisEnabled()) {
 			$redis = $this->getRedis();
 			if ($redis->exists($memoryKey)) {
-				return $redis->get($memoryKey);
+				return $redis->get(unserialize($memoryKey));
 			}
 		}
 
@@ -262,7 +262,7 @@ class General
 			// Add to Redis.
 			$redis = $this->getRedis();
 			try {
-				$redis->set($memoryKey, $res);
+				$redis->set($memoryKey, serialize($res));
 				$timeout = $this->getTimeoutInSeconds();
 				if ($timeout) {
 					$redis->expire($memoryKey, $timeout);
