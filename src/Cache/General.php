@@ -10,6 +10,7 @@ class General
 	protected $callback;
 	protected $enableApcu = true;
 	protected $enableMemcached = true;
+	protected $enableRedis = true;
 	protected $name;
 	protected $timeout;
 	protected static $memcached;

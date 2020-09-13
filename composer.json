@@ -24,6 +24,7 @@
 		"oscarotero/psr7-middlewares": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"php": ">=7",
+		"predis/predis": "@stable",
 		"ralouphie/mimey": "@stable",
 		"sendgrid/sendgrid": "@stable",
 		"slim/extras": "@stable",
