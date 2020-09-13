@@ -274,6 +274,7 @@ class General
 				}
 				return $res;
 			} catch (\Throwable $e) {
+				(new \Katu\Tools\Logs\Logger('cache'))->error($e);
 				$redis->del($memoryKey);
 			}
 		}
