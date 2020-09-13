@@ -268,9 +268,11 @@ class General
 			$redis = $this->getRedis();
 			try {
 				$redis->set($memoryKey, serialize($res));
+				(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Memory key '$memoryKey' written to Redis.");
 				$timeout = $this->getTimeoutInSeconds();
 				if ($timeout) {
 					$redis->expire($memoryKey, $timeout);
+					(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Memory key '$memoryKey' in Redis set to expire in $timeout seconds.");
 				}
 				return $res;
 			} catch (\Throwable $e) {
