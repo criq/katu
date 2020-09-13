@@ -274,6 +274,7 @@ class General
 				}
 				return $res;
 			} catch (\Throwable $e) {
+				var_dump($e);die;
 				$redis->del($memoryKey);
 			}
 		}
