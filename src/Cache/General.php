@@ -128,6 +128,9 @@ class General
 		], 'txt'));
 	}
 
+	/****************************************************************************
+	 * APC.
+	 */
 	public static function isApcSupported()
 	{
 		try {
@@ -149,11 +152,14 @@ class General
 		return $size * .75;
 	}
 
+	/****************************************************************************
+	 * Memcached.
+	 */
 	public static function isMemcachedSupported()
 	{
 		try {
 			return class_exists('Memcached');
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
+		} catch (\Throwable $e) {
 			return false;
 		}
 	}
@@ -185,9 +191,43 @@ class General
 		return static::$memcached;
 	}
 
+	/****************************************************************************
+	 * Redis.
+	 */
+	public static function isRedisSupported()
+	{
+		try {
+			$client = new \Predis\Client;
+			$client->connect();
+			return $client->isConnected();
+		} catch (\Throwable $e) {
+			return false;
+		}
+	}
+
+	public function isRedisEnabled()
+	{
+		return $this->enableRedis && static::isRedisSupported();
+	}
+
+	public function getRedis()
+	{
+		return new \Predis\Client;
+	}
+
+
+
 	public function getResult()
 	{
 		$memoryKey = $this->getMemoryKey();
+
+		// Try Redis.
+		if ($this->isRedisEnabled()) {
+			$redis = $this->getRedis();
+			if ($redis->exists($memoryKey)) {
+				return $redis->get($memoryKey);
+			}
+		}
 
 		// Try Memcached.
 		if ($this->isMemcachedEnabled()) {
@@ -217,6 +257,22 @@ class General
 		$res = call_user_func_array($this->getCallback(), $this->getArgs());
 		$serializedRes = serialize($res);
 
+		// Try to save into Redis.
+		if ($this->isRedisEnabled()) {
+			// Add to Redis.
+			$redis = $this->getRedis();
+			try {
+				$redis->set($memoryKey, $res);
+				$timeout = $this->getTimeoutInSeconds();
+				if ($timeout) {
+					$redis->expire($memoryKey, $timeout);
+				}
+				return $res;
+			} catch (\Throwable $e) {
+				$redis->del($memoryKey);
+			}
+		}
+
 		// Try to save into Memcached.
 		if ($this->isMemcachedEnabled()) {
 			// Add to Memcached.
@@ -227,7 +283,7 @@ class General
 					throw new \Exception;
 				}
 				return $res;
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				$memcached->delete($memoryKey);
 			}
 		}
@@ -271,6 +327,13 @@ class General
 
 	public static function clearMemory()
 	{
+		try {
+			$redis = new \Predis\Client;
+			$redis->flushall();
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
 		if (static::isMemcachedSupported()) {
 			static::loadMemcached();
 			return static::$memcached->flush();
