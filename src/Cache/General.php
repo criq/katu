@@ -107,18 +107,22 @@ class General
 		return $this;
 	}
 
-	public function getMemoryKey()
+	public static function generateMemoryKey()
 	{
-		$key = \Katu\Files\File::generatePath([
-			\Katu\Config\Env::getHash(),
-			$this->name,
-			$this->args,
-		], 'txt');
+		$key = \Katu\Files\File::generatePath(array_merge([\Katu\Config\Env::getHash()], func_get_args()));
 		if (mb_strlen($key) > 250) {
 			$key = sha1($key);
 		}
 
 		return $key;
+	}
+
+	public function getMemoryKey()
+	{
+		return static::generateMemoryKey([
+			$this->name,
+			$this->args,
+		]);
 	}
 
 	public function getFile() : \Katu\Files\File
