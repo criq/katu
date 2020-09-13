@@ -225,7 +225,7 @@ class General
 		if ($this->isRedisEnabled()) {
 			$redis = $this->getRedis();
 			if ($redis->exists($memoryKey)) {
-				return $redis->get(unserialize($memoryKey));
+				return unserialize($redis->get($memoryKey));
 			}
 		}
 
