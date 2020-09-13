@@ -228,13 +228,14 @@ class General
 
 		// Try Redis.
 		if ($this->isRedisEnabled()) {
-			(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Redis is enabled.");
+			// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Redis is enabled.");
 			$redis = $this->getRedis();
 			if ($redis->exists($memoryKey)) {
+				(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Key '$memoryKey' found in Redis.");
 				return unserialize($redis->get($memoryKey));
 			}
 		} else {
-			(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Redis is not enabled.");
+			// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Redis is not enabled.");
 		}
 
 		// Try Memcached.
@@ -267,7 +268,7 @@ class General
 
 		// Try to save into Redis.
 		if ($this->isRedisEnabled()) {
-			(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Redis is enabled.");
+			// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Redis is enabled.");
 			// Add to Redis.
 			$redis = $this->getRedis();
 			try {
@@ -284,7 +285,7 @@ class General
 				$redis->del($memoryKey);
 			}
 		} else {
-			(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Redis is not enabled.");
+			// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Redis is not enabled.");
 		}
 
 		// Try to save into Memcached.
