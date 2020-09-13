@@ -10,7 +10,7 @@ class General
 	protected $callback;
 	protected $enableApcu = true;
 	protected $enableMemcached = true;
-	protected $enableRedis = true;
+	protected $enableRedis = false;
 	protected $name;
 	protected $timeout;
 	protected static $memcached;
@@ -110,9 +110,9 @@ class General
 	public static function generateMemoryKey()
 	{
 		$key = \Katu\Files\File::generatePath(array_merge([\Katu\Config\Env::getHash()], func_get_args()));
-		// if (mb_strlen($key) > 250) {
-		// 	$key = sha1($key);
-		// }
+		if (mb_strlen($key) > 250) {
+			$key = sha1($key);
+		}
 
 		return $key;
 	}
