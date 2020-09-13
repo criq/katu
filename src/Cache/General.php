@@ -110,6 +110,7 @@ class General
 	public function getMemoryKey()
 	{
 		$key = \Katu\Files\File::generatePath([
+			\Katu\Config\Env::getHash(),
 			$this->name,
 			$this->args,
 		], 'txt');
