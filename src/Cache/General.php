@@ -379,19 +379,25 @@ class General
 	public static function clearMemory()
 	{
 		try {
-			static::getRedis()->flushall();
+			if (static::isRedisSupported()) {
+				static::getRedis()->flushall();
+			}
 		} catch (\Throwable $e) {
 			// Nevermind.
 		}
 
 		try {
-			static::getMemcached()->flush();
+			if (static::isMemcachedSupported()) {
+				static::getMemcached()->flush();
+			}
 		} catch (\Throwable $e) {
 			// Nevermind.
 		}
 
 		try {
-			\apcu_clear_cache();
+			if (static::isApcSupported()) {
+				\apcu_clear_cache();
+			}
 		} catch (\Throwable $e) {
 			// Nevermind.
 		}
