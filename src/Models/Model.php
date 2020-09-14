@@ -93,7 +93,7 @@ class Model extends Base
 		return static::get(static::getConnection()->getLastInsertId());
 	}
 
-	public static function upsert($getByParams, $insertParams = [], $updateParams = [])
+	public static function upsert(array $getByParams, ?array $insertParams = [], ?array $updateParams = [])
 	{
 		$object = static::getOneBy($getByParams);
 		if ($object) {
@@ -102,13 +102,13 @@ class Model extends Base
 			}
 			$object->save();
 		} else {
-			$object = static::insert(array_merge((array) $getByParams, (array) $insertParams, (array) $updateParams));
+			$object = static::insert(array_merge((array)$getByParams, (array)$insertParams, (array)$updateParams));
 		}
 
 		return $object;
 	}
 
-	public function update($property, $value = null)
+	public function update(string $property, $value = null)
 	{
 		if (property_exists($this, $property)) {
 			if ($this->$property !== $value) {
