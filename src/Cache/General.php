@@ -258,16 +258,15 @@ class General
 
 		// Try Redis.
 		if ($this->isRedisEnabled()) {
-			$redis = $this->getRedis();
+			$redis = static::getRedis();
 			if ($redis->exists($memoryKey)) {
-				// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Key '$memoryKey' found in Redis.");
 				return unserialize($redis->get($memoryKey));
 			}
 		}
 
 		// Try Memcached.
 		if ($this->isMemcachedEnabled()) {
-			$memcached = $this->getMemcached();
+			$memcached = static::getMemcached();
 			$res = $memcached->get($memoryKey);
 			if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
 				return $res;
@@ -296,14 +295,12 @@ class General
 		// Try to save into Redis.
 		if ($this->isRedisEnabled()) {
 			// Add to Redis.
-			$redis = $this->getRedis();
+			$redis = static::getRedis();
 			try {
 				$redis->set($memoryKey, serialize($res));
-				// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Memory key '$memoryKey' written to Redis.");
 				$timeout = $this->getTimeoutInSeconds();
 				if ($timeout) {
 					$redis->expire($memoryKey, $timeout);
-					// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Memory key '$memoryKey' in Redis set to expire in $timeout seconds.");
 				}
 				return $res;
 			} catch (\Throwable $e) {
@@ -315,7 +312,7 @@ class General
 		// Try to save into Memcached.
 		if ($this->isMemcachedEnabled()) {
 			// Add to Memcached.
-			$memcached = $this->getMemcached();
+			$memcached = static::getMemcached();
 			try {
 				$timeout = $this->getTimeoutInSeconds();
 				if (!$memcached->set($memoryKey, $res, $timeout ? time() + $timeout : 0)) {
@@ -408,7 +405,7 @@ class General
 
 		// Try Memcached.
 		if ($this->isMemcachedEnabled()) {
-			$memcached = $this->getMemcached();
+			$memcached = static::getMemcached();
 			$memcached->get($memoryKey);
 			if ($memcached->getResultCode() === \Memcached::RES_SUCCESS) {
 				return true;
