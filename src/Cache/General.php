@@ -10,10 +10,11 @@ class General
 	protected $callback;
 	protected $enableApcu = true;
 	protected $enableMemcached = true;
-	protected $enableRedis = false;
+	protected $enableRedis = true;
 	protected $name;
 	protected $timeout;
 	protected static $memcached;
+	protected static $redis;
 
 	public function __construct($name = null, $timeout = null, ?callable $callback = null)
 	{
@@ -147,7 +148,13 @@ class General
 
 	public function isApcEnabled()
 	{
-		return $this->enableApcu && static::isApcSupported();
+		try {
+			$appEnabled = (bool)\Katu\Config\Config::get('app', 'cache', 'memory', 'apc');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			$appEnabled = true;
+		}
+
+		return $appEnabled && $this->enableApcu && static::isApcSupported();
 	}
 
 	public static function getMaxApcSize()
@@ -171,12 +178,21 @@ class General
 
 	public function isMemcachedEnabled()
 	{
-		return $this->enableMemcached && static::isMemcachedSupported();
+		try {
+			$appEnabled = (bool)\Katu\Config\Config::get('app', 'cache', 'memory', 'memcached');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			$appEnabled = true;
+		}
+
+		return $appEnabled && $this->enableMemcached && static::isMemcachedSupported();
 	}
 
 	public static function getMemcahcedInstanceName()
 	{
-		return 'appCache';
+		return implode('.', [
+			'appCache',
+			\Katu\Config\Env::getHash(),
+		]);
 	}
 
 	public static function loadMemcached()
@@ -186,14 +202,12 @@ class General
 			static::$memcached->addServer('localhost', 11211);
 		}
 
-		return true;
+		return static::$memcached;
 	}
 
-	public function getMemcached()
+	public static function getMemcached()
 	{
-		static::loadMemcached();
-
-		return static::$memcached;
+		return static::loadMemcached();
 	}
 
 	/****************************************************************************
@@ -212,14 +226,32 @@ class General
 
 	public function isRedisEnabled()
 	{
-		return $this->enableRedis && static::isRedisSupported();
+		try {
+			$appEnabled = (bool)\Katu\Config\Config::get('app', 'cache', 'memory', 'redis');
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			$appEnabled = true;
+		}
+
+		return $appEnabled && $this->enableRedis && static::isRedisSupported();
 	}
 
-	public function getRedis()
+	public static function loadRedis()
 	{
-		return new \Predis\Client;
+		if (!static::$redis) {
+			static::$redis = new \Predis\Client;
+		}
+
+		return static::$redis;
 	}
 
+	public static function getRedis()
+	{
+		return static::loadRedis();
+	}
+
+	/****************************************************************************
+	 * Result.
+	 */
 	public function getResult()
 	{
 		$memoryKey = $this->getMemoryKey();
@@ -228,7 +260,7 @@ class General
 		if ($this->isRedisEnabled()) {
 			$redis = $this->getRedis();
 			if ($redis->exists($memoryKey)) {
-				(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Key '$memoryKey' found in Redis.");
+				// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Key '$memoryKey' found in Redis.");
 				return unserialize($redis->get($memoryKey));
 			}
 		}
@@ -267,15 +299,15 @@ class General
 			$redis = $this->getRedis();
 			try {
 				$redis->set($memoryKey, serialize($res));
-				(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Memory key '$memoryKey' written to Redis.");
+				// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Memory key '$memoryKey' written to Redis.");
 				$timeout = $this->getTimeoutInSeconds();
 				if ($timeout) {
 					$redis->expire($memoryKey, $timeout);
-					(new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Memory key '$memoryKey' in Redis set to expire in $timeout seconds.");
+					// (new \Katu\Tools\Logs\Logger('cache'))->log('debug', "Memory key '$memoryKey' in Redis set to expire in $timeout seconds.");
 				}
 				return $res;
 			} catch (\Throwable $e) {
-				(new \Katu\Tools\Logs\Logger('cache'))->error($e);
+				// (new \Katu\Tools\Logs\Logger('cache'))->error($e);
 				$redis->del($memoryKey);
 			}
 		}
@@ -318,15 +350,30 @@ class General
 	{
 		$memoryKey = $this->getMemoryKey();
 
+		try {
+			static::getRedis()->del($memoryKey);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
+		try {
+			static::getMemcached()->delete($memoryKey);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
 		// APC.
-		if ($this->isApcEnabled() && \apcu_exists($memoryKey)) {
+		try {
 			\apcu_delete($memoryKey);
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
 		// File.
-		$file = $this->getFile();
-		if ($file->exists()) {
-			$file->delete();
+		try {
+			$this->getFile()->delete();
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
 		return true;
@@ -335,23 +382,24 @@ class General
 	public static function clearMemory()
 	{
 		try {
-			$redis = new \Predis\Client;
-			$redis->flushall();
+			static::getRedis()->flushall();
 		} catch (\Throwable $e) {
 			// Nevermind.
 		}
 
-		if (static::isMemcachedSupported()) {
-			static::loadMemcached();
-			return static::$memcached->flush();
+		try {
+			static::getMemcached()->flush();
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
-		if (static::isApcSupported()) {
+		try {
 			\apcu_clear_cache();
-			return true;
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
-		return null;
+		return true;
 	}
 
 	public function exists() : bool

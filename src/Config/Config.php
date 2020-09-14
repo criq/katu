@@ -13,7 +13,7 @@ class Config
 		try {
 			return call_user_func_array([new \Katu\Types\TArray(static::getAll()), 'getValueByArgs'], $args);
 		} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
-			throw new \Katu\Exceptions\MissingConfigException("Missing config for " . implode('.', $args) . ".");
+			throw new \Katu\Exceptions\MissingConfigException("Missing config for '" . implode('.', $args) . "'.");
 		}
 	}
 
