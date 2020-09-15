@@ -259,8 +259,9 @@ class General
 		// Try Redis.
 		if ($this->isRedisEnabled()) {
 			$redis = static::getRedis();
-			if ($redis->exists($memoryKey)) {
-				return unserialize($redis->get($memoryKey));
+			$res = $redis->get($memoryKey);
+			if (!is_null($res)) {
+				return unserialize($res);
 			}
 		}
 
