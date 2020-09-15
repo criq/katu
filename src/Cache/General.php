@@ -152,6 +152,8 @@ class General
 			$appEnabled = (bool)\Katu\Config\Config::get('app', 'cache', 'memory', 'apc');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			$appEnabled = true;
+		} catch (\Throwable $e) {
+			$appEnabled = true;
 		}
 
 		return $appEnabled && $this->enableApcu && static::isApcSupported();
@@ -181,6 +183,8 @@ class General
 		try {
 			$appEnabled = (bool)\Katu\Config\Config::get('app', 'cache', 'memory', 'memcached');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			$appEnabled = true;
+		} catch (\Throwable $e) {
 			$appEnabled = true;
 		}
 
@@ -229,6 +233,8 @@ class General
 		try {
 			$appEnabled = (bool)\Katu\Config\Config::get('app', 'cache', 'memory', 'redis');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			$appEnabled = true;
+		} catch (\Throwable $e) {
 			$appEnabled = true;
 		}
 
