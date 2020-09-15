@@ -53,16 +53,20 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getColumnDescriptions()
 	{
-		$table = $this;
+		$cacheName = ['databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name];
 
-		return \Katu\Cache\General::get(['databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name], '1 day', function ($table) {
-			$columns = [];
-			foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
-				$columns[$properties['Field']] = $properties;
-			}
+		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
+			$table = $this;
 
-			return $columns;
-		}, $table);
+			return \Katu\Cache\General::get($cacheName, '1 day', function ($table) {
+				$columns = [];
+				foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
+					$columns[$properties['Field']] = $properties;
+				}
+
+				return $columns;
+			}, $table);
+		});
 	}
 
 	public function getColumnDescription($columnName)
@@ -244,14 +248,18 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getIdColumnName()
 	{
-		return \Katu\Cache\General::get(['databases', $this->getConnection()->name, 'tables', 'idColumn', $this->getName()->getName()], '1 hour', function () {
-			foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
-				if (isset($row['Key']) && $row['Key'] == 'PRI') {
-					return $row['Field'];
-				}
-			}
+		$cacheName = ['databases', $this->getConnection()->name, 'tables', 'idColumn', $this->getName()->getName()];
 
-			return false;
+		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
+			return \Katu\Cache\General::get($cacheName, '1 hour', function () {
+				foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
+					if (isset($row['Key']) && $row['Key'] == 'PRI') {
+						return $row['Field'];
+					}
+				}
+
+				return false;
+			});
 		});
 	}
 }
