@@ -82,17 +82,13 @@ class Connection
 
 	public function getTableNames()
 	{
-		$cacheName = ['pdo', $this->name, 'tables'];
+		$sql = " SHOW TABLES ";
+		$res = $this->createQuery($sql)->getResult()->getArray();
 
-		return \Katu\Cache\Runtime::get($cacheName, function () {
-			$sql = " SHOW TABLES ";
-			$res = $this->createQuery($sql)->getResult()->getArray();
-
-			return array_map(function ($i) {
-				$names = array_values($i);
-				return new \Katu\PDO\Name($names[0]);
-			}, $res);
-		});
+		return array_map(function ($i) {
+			$names = array_values($i);
+			return new \Katu\PDO\Name($names[0]);
+		}, $res);
 	}
 
 	public function getViews()
@@ -106,17 +102,13 @@ class Connection
 
 	public function getViewNames()
 	{
-		$cacheName = ['pdo', $this->name, 'views'];
+		$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
+		$res = $this->createQuery($sql)->getResult()->getArray();
 
-		return \Katu\Cache\Runtime::get($cacheName, function () {
-			$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
-			$res = $this->createQuery($sql)->getResult()->getArray();
-
-			return array_map(function ($i) {
-				$names = array_values($i);
-				return $names[0];
-			}, $res);
-		});
+		return array_map(function ($i) {
+			$names = array_values($i);
+			return $names[0];
+		}, $res);
 	}
 
 	public function getViewReport()
