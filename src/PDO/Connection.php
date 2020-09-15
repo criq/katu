@@ -82,7 +82,9 @@ class Connection
 
 	public function getTableNames()
 	{
-		return \Katu\Cache\Runtime::get(['pdo', $this->name, 'tables'], function () {
+		$cacheName = ['pdo', $this->name, 'tables'];
+
+		return \Katu\Cache\Runtime::get($cacheName, function () {
 			$sql = " SHOW TABLES ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 
@@ -104,7 +106,9 @@ class Connection
 
 	public function getViewNames()
 	{
-		return \Katu\Cache\Runtime::get(['pdo', $this->name, 'views'], function () {
+		$cacheName = ['pdo', $this->name, 'views'];
+
+		return \Katu\Cache\Runtime::get($cacheName, function () {
 			$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
 			$res = $this->createQuery($sql)->getResult()->getArray();
 

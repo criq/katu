@@ -8,8 +8,8 @@ class System
 	{
 		$cacheName = ['system', 'numberOfCpus'];
 
-		return \Katu\Cache\General::get($cacheName, function () use ($cacheName) {
-			return \Katu\Cache\General::get($cacheName, 86400, function () {
+		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
+			return \Katu\Cache\General::get($cacheName, '1 day', function () {
 				$numCpus = 1;
 				if (is_file('/proc/cpuinfo')) {
 					$cpuinfo = file_get_contents('/proc/cpuinfo');

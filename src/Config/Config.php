@@ -32,7 +32,9 @@ class Config
 
 	public static function getAll()
 	{
-		return \Katu\Cache\Runtime::get('config', function () {
+		$cacheName = ['config'];
+
+		return \Katu\Cache\Runtime::get($cacheName, function () {
 			$config = [];
 
 			foreach (static::getFiles() as $file) {

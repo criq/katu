@@ -93,6 +93,7 @@ abstract class TableBase extends \Sexy\Expression
 		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
+		\Katu\Cache\General::clearMemory();
 		\Katu\Cache\Runtime::clear();
 
 		return $res;
@@ -103,6 +104,7 @@ abstract class TableBase extends \Sexy\Expression
 		$sql = " DROP TABLE " . $this->name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
+		\Katu\Cache\General::clearMemory();
 		\Katu\Cache\Runtime::clear();
 
 		return $res;
@@ -195,6 +197,7 @@ abstract class TableBase extends \Sexy\Expression
 			}
 		}
 
+		\Katu\Cache\General::clearMemory();
 		\Katu\Cache\Runtime::clear();
 
 		return true;
