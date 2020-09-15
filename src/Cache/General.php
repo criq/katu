@@ -298,11 +298,16 @@ class General
 			// Add to Redis.
 			$redis = static::getRedis();
 			try {
-				$redis->set($memoryKey, serialize($res));
+				$args = [
+					$memoryKey,
+					serialize($res),
+				];
 				$timeout = $this->getTimeoutInSeconds();
 				if ($timeout) {
-					$redis->expire($memoryKey, $timeout);
+					$args[] = 'EX';
+					$args[] = $timeout;
 				}
+				$redis->set(...$args);
 				return $res;
 			} catch (\Throwable $e) {
 				// (new \Katu\Tools\Logs\Logger('cache'))->error($e);
