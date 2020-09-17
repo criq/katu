@@ -125,11 +125,7 @@ class File
 
 	public static function joinPaths()
 	{
-		return implode('/', array_map(function ($i) {
-			$implodedFilename = implode('.', (array)$i);
-
-			return rtrim($implodedFilename, '/');
-		}, func_get_args()));
+		return preg_replace('/(\/)+/', '/', implode('/', func_get_args()));
 	}
 
 	public static function createTemporaryWithFileName(string $fileName) : File
@@ -491,5 +487,12 @@ class File
 		return (new \Katu\Types\TURL($this->getURL()))
 			->addQueryParam($paramName, $this->getHash($algo))
 			;
+	}
+
+	public function getCachedHashedURL($timeout = null, ?string $algo = 'sha1', ?string $paramName = 'hash')
+	{
+		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__], $timeout, function ($file, $algo, $paramName) {
+			return $file->getHashedURL($algo, $paramName);
+		}, $this, $algo, $paramName);
 	}
 }
