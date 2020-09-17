@@ -125,7 +125,9 @@ class File
 
 	public static function joinPaths()
 	{
-		return preg_replace('/(\/)+/', '/', implode('/', (array)func_get_args()));
+		return preg_replace('/(\/)+/', '/', implode('/', array_map(function ($i) {
+			return implode('.', (array)$i);
+		}, func_get_args())));
 	}
 
 	public static function createTemporaryWithFileName(string $fileName) : File
