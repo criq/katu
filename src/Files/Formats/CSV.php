@@ -97,6 +97,11 @@ class CSV
 		return file_put_contents($file, file_get_contents($this->file));
 	}
 
+	public function getFile()
+	{
+		return $this->file;
+	}
+
 	public function getAsString()
 	{
 		return $this->file->get();

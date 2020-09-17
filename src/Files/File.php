@@ -4,10 +4,9 @@ namespace Katu\Files;
 
 class File
 {
+	const HASH_ALGO = 'crc32';
 	const TYPE_DIR  = 'dir';
 	const TYPE_FILE = 'file';
-
-	const HASH_ALGO = 'crc32';
 
 	public $path;
 
@@ -412,7 +411,7 @@ class File
 				;
 		}
 
-		return true;
+		return $destination;
 	}
 
 	public function move(File $destination)
