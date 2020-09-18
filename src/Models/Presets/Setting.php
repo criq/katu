@@ -8,7 +8,7 @@ class Setting extends \Katu\Models\Model
 {
 	const TABLE = 'settings';
 
-	public static function getOrCreate(User $creator, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting
+	public static function getOrCreate(?User $creator = null, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting
 	{
 		try {
 			if (!static::checkName($name)) {
@@ -28,7 +28,7 @@ class Setting extends \Katu\Models\Model
 			'name' => trim($name),
 		], [
 			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
-			'creatorId' => $creator->getId(),
+			'creatorId' => $creator ? $creator->getId() : null,
 		], [
 			'timeEdited' => new \Katu\Tools\DateTime\DateTime,
 			'value' => \Katu\Files\Formats\JSON::encodeStandard($value),
