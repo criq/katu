@@ -31,13 +31,13 @@ class Column extends \Sexy\Expression
 		]);
 	}
 
-	public function getProperties()
-	{
-		return new ColumnProperties($this->table->getColumnDescription($this->name));
-	}
-
 	public function getTable()
 	{
 		return $this->table;
+	}
+
+	public function getProperties()
+	{
+		return new ColumnProperties($this->getTable()->getColumnDescription($this->name));
 	}
 }

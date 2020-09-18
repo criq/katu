@@ -22,18 +22,27 @@ class ColumnProperties
 	{
 		$this->name = $description['Field'];
 
-		if (preg_match('/^(?<type>tinyint|smallint|mediumint|int|bigint)\((?<length>[0-9]+)\)/', $description['Type'], $match)) {
+		$numberTypes = implode('|', [
+			'bigint',
+			'decimal',
+			'double',
+			'float',
+			'int',
+			'mediumint',
+			'real',
+			'smallint',
+			'tinyint',
+		]);
+
+		$numberTypeRegex = "(?<type>$numberTypes)";
+		$numberLengthRegex = "(?<length>[0-9]+(,[0-9]+)?)";
+		$numberRegex = "/^$numberTypeRegex(\($numberLengthRegex\))?\s*(?<isUnsigned>unsigned)?$/";
+
+		if (preg_match($numberRegex, $description['Type'], $match)) {
 			$this->type = (string)$match['type'];
-			$this->length = (int)$match['length'];
-			$this->filter = FILTER_SANITIZE_NUMBER_INT;
-		} elseif (preg_match('/^(?<type>tinyint|smallint|mediumint|int|bigint)\s+(unsigned)/', $description['Type'], $match)) {
-			$this->type = (string)$match['type'];
-			$this->isUnsigned = true;
-			$this->filter = FILTER_SANITIZE_NUMBER_INT;
-		} elseif (preg_match('/^(?<type>float|double|real|decimal)\((?<length>[0-9]+,[0-9]+)\)/', $description['Type'], $match)) {
-			$this->type = (string)$match['type'];
-			$this->length = $match['length'];
+			$this->length = $match['length'] ?? null;
 			$this->filter = FILTER_SANITIZE_NUMBER_FLOAT;
+			$this->isUnsigned = (bool)($match['isUnsigned'] ?? null);
 		} elseif (preg_match('/^(?<type>char|varchar)\((?<length>[0-9]+)\)/', $description['Type'], $match)) {
 			$this->type = (string)$match['type'];
 			$this->length = (int)$match['length'];
