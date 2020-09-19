@@ -9,6 +9,16 @@ abstract class Base
 	const DATABASE = 'app';
 	const TABLE = null;
 
+	public static function getTableClass()
+	{
+		return new \ReflectionClass("\Katu\PDO\Table");
+	}
+
+	public static function getColumnClass()
+	{
+		return new \ReflectionClass("\Katu\PDO\Column");
+	}
+
 	public function __toString()
 	{
 		return (string) $this->getId();
@@ -67,12 +77,16 @@ abstract class Base
 
 	public static function getTable() : \Katu\PDO\Table
 	{
-		return new \Katu\PDO\Table(static::getConnection(), static::getTableName());
+		$tableClass = static::getTableClass()->getName();
+
+		return new $tableClass(static::getConnection(), static::getTableName());
 	}
 
 	public static function getColumn($name) : \Katu\PDO\Column
 	{
-		return new \Katu\PDO\Column(static::getTable(), new \Katu\PDO\Name($name));
+		$columnClass = static::getColumnClass()->getName();
+
+		return new $columnClass(static::getTable(), new \Katu\PDO\Name($name));
 	}
 
 	public static function select() : \Katu\PDO\Query

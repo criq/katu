@@ -22,6 +22,21 @@ abstract class View extends Base
 	const TIMEOUT = 3600;
 	const TMP_LENGTH = 8;
 
+	public static function getTableClass()
+	{
+		return new \ReflectionClass("\Katu\PDO\Table");
+	}
+
+	public static function getViewClass()
+	{
+		return new \ReflectionClass("\Katu\PDO\View");
+	}
+
+	public static function getColumnClass()
+	{
+		return new \ReflectionClass("\Katu\PDO\Column");
+	}
+
 	public static function getTable() : \Katu\PDO\Table
 	{
 		return static::isCached() ? static::getCachedTable() : static::getView();
@@ -34,7 +49,9 @@ abstract class View extends Base
 
 	public static function getView()
 	{
-		return new \Katu\PDO\View(static::getConnection(), static::getViewName());
+		$viewClass = static::getViewClass()->getName();
+
+		return new $viewClass(static::getConnection(), static::getViewName());
 	}
 
 	public static function getViewName() : \Katu\PDO\Name
@@ -50,7 +67,9 @@ abstract class View extends Base
 			$table = static::getTable();
 		}
 
-		return new \Katu\PDO\Column($table, new \Katu\PDO\Name($name));
+		$columnClass = static::getColumnClass()->getName();
+
+		return new $columnClass($table, new \Katu\PDO\Name($name));
 	}
 
 	public static function getViewColumn($name, $options = [])
@@ -80,7 +99,9 @@ abstract class View extends Base
 			$tableName = static::getViewName();
 		}
 
-		return new \Katu\PDO\Table(static::getConnection(), $tableName);
+		$tableClass = static::getTableClass()->getName();
+
+		return new $tableClass(static::getConnection(), $tableName);
 	}
 
 	public static function getCachedTablesSql()
@@ -136,7 +157,9 @@ abstract class View extends Base
 
 	public static function generateCachedTable()
 	{
-		return new \Katu\PDO\Table(static::getConnection(), static::generateCachedTableName());
+		$tableClass = static::getTableClass()->getName();
+
+		return new $tableClass(static::getConnection(), static::generateCachedTableName());
 	}
 
 	public static function generateCachedTableName()
@@ -277,7 +300,9 @@ abstract class View extends Base
 
 	public static function getMaterializedTable()
 	{
-		return new \Katu\PDO\Table(static::getConnection(), static::getMaterializedTableName());
+		$tableClass = static::getTableClass();
+
+		return new $tableClass(static::getConnection(), static::getMaterializedTableName());
 	}
 
 	public static function getMaterializedTableName()
@@ -298,7 +323,8 @@ abstract class View extends Base
 		$temporaryTableName = new \Katu\PDO\Name(
 			'_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)),
 		);
-		$temporaryTable = new \Katu\PDO\Table($destinationTable->getConnection(), $temporaryTableName);
+		$tableClass = static::getTableClass();
+		$temporaryTable = new $tableClass($destinationTable->getConnection(), $temporaryTableName);
 
 		// Copy into temporary table view.
 		$params = [
@@ -480,11 +506,13 @@ abstract class View extends Base
 
 	public static function deleteOldCachedTables()
 	{
+		$tableClass = static::getTableClass();
+
 		foreach (static::getAllViewClassNames() as $class) {
 			$query = $class::getCachedTablesQuery();
 			$array = $query->getResult()->getArray();
 			foreach (array_slice($array, 1) as $tableArray) {
-				$table = new \Katu\PDO\Table(
+				$table = new $tableClass(
 					$class::getConnection(),
 					new \Katu\PDO\Name($tableArray['TABLE_NAME']),
 				);
