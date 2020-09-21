@@ -300,7 +300,7 @@ abstract class View extends Base
 
 	public static function getMaterializedTable()
 	{
-		$tableClass = static::getTableClass();
+		$tableClass = static::getTableClass()->getName();
 
 		return new $tableClass(static::getConnection(), static::getMaterializedTableName());
 	}
@@ -323,7 +323,7 @@ abstract class View extends Base
 		$temporaryTableName = new \Katu\PDO\Name(
 			'_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)),
 		);
-		$tableClass = static::getTableClass();
+		$tableClass = static::getTableClass()->getName();
 		$temporaryTable = new $tableClass($destinationTable->getConnection(), $temporaryTableName);
 
 		// Copy into temporary table view.
@@ -506,7 +506,7 @@ abstract class View extends Base
 
 	public static function deleteOldCachedTables()
 	{
-		$tableClass = static::getTableClass();
+		$tableClass = static::getTableClass()->getName();
 
 		foreach (static::getAllViewClassNames() as $class) {
 			$query = $class::getCachedTablesQuery();

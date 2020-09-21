@@ -19,7 +19,7 @@ class ExceptionCollection extends Exception implements \Iterator, \ArrayAccess
 
 	public function add()
 	{
-		return static::addException(...func_get_args());
+		return $this->addException(...func_get_args());
 	}
 
 	public function addException(\Exception $exception)
