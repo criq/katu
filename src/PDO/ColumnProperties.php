@@ -22,17 +22,7 @@ class ColumnProperties
 	{
 		$this->name = $description['Field'];
 
-		$numberTypes = implode('|', [
-			'bigint',
-			'decimal',
-			'double',
-			'float',
-			'int',
-			'mediumint',
-			'real',
-			'smallint',
-			'tinyint',
-		]);
+		$numberTypes = implode('|', static::getNumericTypes());
 
 		$numberTypeRegex = "(?<type>$numberTypes)";
 		$numberLengthRegex = "(?<length>[0-9]+(,[0-9]+)?)";
@@ -90,5 +80,20 @@ class ColumnProperties
 		if (is_null($this->isAi)) {
 			$this->isAi = (bool)($description['Extra'] == 'auto_increment');
 		}
+	}
+
+	public static function getNumericTypes()
+	{
+		return [
+			'bigint',
+			'decimal',
+			'double',
+			'float',
+			'int',
+			'mediumint',
+			'real',
+			'smallint',
+			'tinyint',
+		];
 	}
 }
