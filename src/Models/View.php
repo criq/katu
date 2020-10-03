@@ -158,7 +158,7 @@ abstract class View extends Base
 			'tableRegexp' => implode(static::SEPARATOR, [
 				'(' . implode('|', [static::getCachedTableNameBase(), static::getCachedTableShortNameBase()]) . ')',
 				'[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '}',
-				'([0-9A-Z]{' . static::TMP_LENGTH . '})',
+				'([' . \Katu\Tools\Random\Generator::IDSTRING . ']{' . static::TMP_LENGTH . '})',
 			]),
 		]);
 
