@@ -16,6 +16,7 @@ abstract class View extends Base
 	const MATERIALIZE_ADVANCE = 1;
 	const MATERIALIZE_HOURS = '';
 	const MATERIALIZE_TIMEOUT = 86400;
+	const MAX_NAME_LENGTH = 64;
 	const PREFIX_CACHE = '_cache';
 	const SEPARATOR = '_';
 	const TABLE = null;
@@ -87,6 +88,39 @@ abstract class View extends Base
 		]);
 	}
 
+	public static function getMetaStringLength()
+	{
+		$str = implode([
+			static::PREFIX_CACHE,
+			static::SEPARATOR,
+			static::SEPARATOR,
+			(new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT),
+			static::SEPARATOR,
+			\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
+		]);
+
+		return strlen($str);
+	}
+
+	public static function getCachedTableShortNameBase()
+	{
+		$hash = substr(hash('sha1', static::getViewName()->getName()), 0, 8);
+
+		$str = implode(static::SEPARATOR, array_merge([static::PREFIX_CACHE], array_map(function ($i) {
+			return substr($i, 0, 3);
+		}, explode('_', static::getViewName()->getName()))));
+
+		$maxLength = static::MAX_NAME_LENGTH - static::getMetaStringLength() - strlen($hash) + strlen(static::PREFIX_CACHE);
+		$str = substr($str, 0, $maxLength);
+
+		$str = implode(static::SEPARATOR, [
+			$str,
+			$hash,
+		]);
+
+		return $str;
+	}
+
 	public static function getCachedTable()
 	{
 		try {
@@ -122,9 +156,9 @@ abstract class View extends Base
 		$query = static::getConnection()->createQuery($sql, [
 			'tableSchema' => static::getConnection()->config->database,
 			'tableRegexp' => implode(static::SEPARATOR, [
-				static::getCachedTableNameBase(),
+				'(' . implode('|', [static::getCachedTableNameBase(), static::getCachedTableShortNameBase()]) . ')',
 				'[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '}',
-				'([0-9A-Z]{' . static::TMP_LENGTH . '})',
+				'([0-9A-Za-z]{' . static::TMP_LENGTH . '})',
 			]),
 		]);
 
@@ -148,7 +182,7 @@ abstract class View extends Base
 
 		// TODO - ošéfovat
 		$name = static::getCachedTableNameBase();
-		if (strlen($name) > 64) {
+		if (strlen($name) > static::MAX_NAME_LENGTH) {
 			return substr($name, 0, 60) . substr(sha1($name), 0, 4);
 		}
 
@@ -169,8 +203,11 @@ abstract class View extends Base
 			\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
 		]));
 
-		if (strlen($name) > 64) {
-			return substr($name, 0, 60) . substr(sha1($name), 0, 4);
+		if (strlen($name) > static::MAX_NAME_LENGTH) {
+			$name = implode(static::SEPARATOR, array_merge([static::getCachedTableShortNameBase()], [
+				(new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT),
+				\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
+			]));
 		}
 
 		return new \Katu\PDO\Name($name);
