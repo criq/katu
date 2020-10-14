@@ -110,7 +110,7 @@ class General
 
 	public static function generateMemoryKey()
 	{
-		$key = \Katu\Files\File::generatePath(array_merge([\Katu\Config\Env::getHash()], func_get_args()));
+		$key = \Katu\Files\File::generatePath(array_merge([\Katu\Config\Env::getVersion()], func_get_args()));
 		if (mb_strlen($key) > 250) {
 			$key = sha1($key);
 		}
@@ -191,7 +191,7 @@ class General
 	{
 		return implode('.', [
 			'appCache',
-			\Katu\Config\Env::getHash(),
+			\Katu\Config\Env::getShortHash(),
 		]);
 	}
 

@@ -13,7 +13,7 @@ class View
 	{
 		return [
 			'auto_reload' => false,
-			'cache' => (string)\Katu\Files\File::joinPaths(\Katu\App::getTemporaryDir(), 'twig'),
+			'cache' => (string)\Katu\Files\File::joinPaths(\Katu\App::getTemporaryDir(), 'twig', \Katu\Config\Env::getVersion()),
 			'debug' => false,
 			'optimizations' => -1,
 			'strict_variables' => false,
@@ -48,7 +48,6 @@ class View
 		/***************************************************************************
 		 * Image.
 		 */
-
 		$twig->addFunction(new \Twig\TwigFunction('getImage', function ($uri) {
 			try {
 				return new \Katu\Tools\Images\Image($uri);
@@ -60,7 +59,6 @@ class View
 		/***************************************************************************
 		 * Text.
 		 */
-
 		$twig->addFilter(new \Twig\TwigFilter('shorten', function ($string, $length, $options = []) {
 			$shorter = substr($string, 0, $length);
 
@@ -101,11 +99,14 @@ class View
 		/***************************************************************************
 		 * Functions.
 		 */
-
 		$twig->addFunction(new \Twig\TwigFunction('dump', function () {
 			foreach ((array) func_get_args() as $arg) {
 				var_dump($arg);
 			}
+		}));
+
+		$twig->addFunction(new \Twig\TwigFunction('getVersion', function () {
+			return \Katu\Config\Env::getVersion();
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getBaseDir', function () {
@@ -210,26 +211,6 @@ class View
 
 			return false;
 		}));
-
-		// $twig->addFunction(new \Twig\TwigFunction('start', function () {
-		// 	if (\Katu\Tools\Profiler\Profiler::isOn()) {
-		// 		$profiler = \Katu\Tools\Profiler\Profiler::init('twig');
-
-		// 		return static::render("Katu/Blocks/profilerStart");
-		// 	}
-		// }));
-
-		// $twig->addFunction(new \Twig\TwigFunction('stop', function () {
-		// 	if (\Katu\Tools\Profiler\Profiler::isOn()) {
-		// 		$profiler = \Katu\Tools\Profiler\Profiler::get('twig');
-
-		// 		$res = static::render("Katu/Blocks/profilerEnd", ['profiler' => $profiler,]);
-
-		// 		$profiler->reset('twig');
-
-		// 		return $res;
-		// 	}
-		// }));
 
 		return true;
 	}
