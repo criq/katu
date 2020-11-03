@@ -104,6 +104,7 @@ class General
 	{
 		$this->enableApcu = false;
 		$this->enableMemcached = false;
+		$this->enableRedis = false;
 
 		return $this;
 	}
@@ -254,6 +255,8 @@ class General
 	 */
 	public function getResult()
 	{
+		$this->setArgs(...func_get_args());
+
 		$memoryKey = $this->getMemoryKey();
 
 		// Try Redis.

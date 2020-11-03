@@ -58,14 +58,14 @@ abstract class TableBase extends \Sexy\Expression
 		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
 			$table = $this;
 
-			return \Katu\Cache\General::get($cacheName, '1 day', function ($table) {
+			return \Katu\Cache\General::get($cacheName, '1 day', function () use ($table) {
 				$columns = [];
 				foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
 					$columns[$properties['Field']] = $properties;
 				}
 
 				return $columns;
-			}, $table);
+			});
 		});
 	}
 
