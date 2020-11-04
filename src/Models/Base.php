@@ -162,13 +162,6 @@ abstract class Base
 		return static::select($sql)->getResult();
 	}
 
-	// public static function getCachedBySql($sql, $timeout = null)
-	// {
-	// 	return Utils\Cache::get(function($sql) {
-	// 		return PDO\Results\CachedClassResult::createFromClassResult(static::getBySql($sql));
-	// 	}, $timeout, $sql);
-	// }
-
 	public static function getOneBySql($sql)
 	{
 		return static::getBySql($sql)->getOne();
