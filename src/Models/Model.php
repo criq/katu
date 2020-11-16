@@ -34,6 +34,8 @@ class Model extends Base
 
 	public static function insert($values = [])
 	{
+		$connection = static::getConnection();
+
 		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
 		}, array_keys($values));
@@ -42,14 +44,15 @@ class Model extends Base
 			return ':' . $i;
 		}, array_keys($values));
 
-		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ( " . implode(", ", $placeholders) . " ) ";
+		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " )
+			VALUES ( " . implode(", ", $placeholders) . " ) ";
 
-		$query = static::getConnection()->createQuery($sql, $values);
+		$query = $connection->createQuery($sql, $values);
 		$query->getResult();
 
 		static::change();
 
-		$primaryKey = static::getConnection()->getLastInsertId();
+		$primaryKey = $connection->getLastInsertId();
 		if ($primaryKey) {
 			return static::get($primaryKey);
 		} else {
