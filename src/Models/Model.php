@@ -47,9 +47,6 @@ class Model extends Base
 		$sql = " INSERT INTO " . static::getTable() . "
 				( " . implode(", ", $columns) . " )
 			VALUES ( " . implode(", ", $placeholders) . " ) ";
-		// echo $sql;
-		// var_dump($params);
-		// die;
 
 		$query = $connection->createQuery($sql, $params);
 		$query->getResult();
