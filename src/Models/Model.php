@@ -32,22 +32,26 @@ class Model extends Base
 		return parent::__call(...func_get_args());
 	}
 
-	public static function insert($values = [])
+	public static function insert($params = [])
 	{
 		$connection = static::getConnection();
 
 		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
-		}, array_keys($values));
+		}, array_keys($params));
 
 		$placeholders = array_map(function ($i) {
 			return ':' . $i;
-		}, array_keys($values));
+		}, array_keys($params));
 
-		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " )
+		$sql = " INSERT INTO " . static::getTable() . "
+				( " . implode(", ", $columns) . " )
 			VALUES ( " . implode(", ", $placeholders) . " ) ";
+		// echo $sql;
+		// var_dump($params);
+		// die;
 
-		$query = $connection->createQuery($sql, $values);
+		$query = $connection->createQuery($sql, $params);
 		$query->getResult();
 
 		static::change();
