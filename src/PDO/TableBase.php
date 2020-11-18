@@ -55,13 +55,17 @@ abstract class TableBase extends \Sexy\Expression
 	{
 		$cacheName = ['databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name];
 
-		return \Katu\Cache\Runtime::get($cacheName, function () {
-			$columns = [];
-			foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this->name)->getResult() as $properties) {
-				$columns[$properties['Field']] = $properties;
-			}
+		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
+			$table = $this;
 
-			return $columns;
+			return \Katu\Cache\General::get($cacheName, '1 minute', function () use ($table) {
+				$columns = [];
+				foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
+					$columns[$properties['Field']] = $properties;
+				}
+
+				return $columns;
+			});
 		});
 	}
 
