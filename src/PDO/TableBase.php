@@ -53,7 +53,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getColumnDescriptions()
 	{
-		$cacheName = [\Katu\Config\Env::getVersion(), 'databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name];
+		$cacheName = ['databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name];
 
 		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
 			$table = $this;
