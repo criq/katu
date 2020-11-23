@@ -149,17 +149,22 @@ abstract class View extends Base
 		return $sql;
 	}
 
+	public static function getCachedTableNameRegexp()
+	{
+		return implode(static::SEPARATOR, [
+			'(' . implode('|', [static::getCachedTableNameBase(), static::getCachedTableShortNameBase()]) . ')',
+			'(?<datetime>[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '})',
+			'([' . \Katu\Tools\Random\Generator::IDSTRING . ']{' . static::TMP_LENGTH . '})',
+		]);
+	}
+
 	public static function getCachedTablesQuery()
 	{
 		$sql = static::getCachedTablesSql();
 
 		$query = static::getConnection()->createQuery($sql, [
 			'tableSchema' => static::getConnection()->config->database,
-			'tableRegexp' => implode(static::SEPARATOR, [
-				'(' . implode('|', [static::getCachedTableNameBase(), static::getCachedTableShortNameBase()]) . ')',
-				'[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '}',
-				'([' . \Katu\Tools\Random\Generator::IDSTRING . ']{' . static::TMP_LENGTH . '})',
-			]),
+			'tableRegexp' => static::getCachedTableNameRegexp(),
 		]);
 
 		return $query;
@@ -483,8 +488,9 @@ abstract class View extends Base
 	{
 		$query = static::getCachedTablesQuery();
 		$array = $query->getResult()->getArray();
+		$regexp = static::getCachedTableNameRegexp();
 
-		if (($array[0]['TABLE_NAME'] ?? null) && preg_match('/^' . static::getCachedTableNameBase() . static::SEPARATOR . '(?<datetime>[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '})' . '/', $array[0]['TABLE_NAME'], $match)) {
+		if (($array[0]['TABLE_NAME'] ?? null) && preg_match("/$regexp/", $array[0]['TABLE_NAME'], $match)) {
 			return \Katu\Tools\DateTime\DateTime::createFromFormat(static::CACHE_DATETIME_FORMAT, $match['datetime']);
 		}
 
