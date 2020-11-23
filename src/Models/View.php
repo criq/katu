@@ -164,7 +164,9 @@ abstract class View extends Base
 
 		$query = static::getConnection()->createQuery($sql, [
 			'tableSchema' => static::getConnection()->config->database,
-			'tableRegexp' => static::getCachedTableNameRegexp(),
+			'tableRegexp' => strtr(static::getCachedTableNameRegexp(), [
+				'?<datetime>' => null,
+			]),
 		]);
 
 		return $query;
