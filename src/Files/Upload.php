@@ -32,12 +32,26 @@ class Upload
 			return false;
 		}
 
-		$upload = new self($uploadedFiles[$key]);
-		if ($upload->error === UPLOAD_ERR_NO_FILE) {
-			return false;
+		if (($uploadedFiles[$key] ?? null) instanceof \Slim\Http\UploadedFile) {
+			$upload = new static($uploadedFiles[$key]);
+			if (($upload->error ?? null) === UPLOAD_ERR_NO_FILE) {
+				return false;
+			}
+
+			return $upload;
 		}
 
-		return $upload;
+		$uploads = [];
+		if (is_array($uploadedFiles[$key] ?? null)) {
+			foreach ($uploadedFiles[$key] as $uploadedFile) {
+				$uploads[] = new static($uploadedFile);
+			}
+			if (($uploads[0]->error ?? null) === UPLOAD_ERR_NO_FILE) {
+				return false;
+			}
+		}
+
+		return $uploads;
 	}
 
 	public function isInError() : bool
