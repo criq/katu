@@ -4,6 +4,8 @@ namespace Katu\Exceptions;
 
 class Exception extends \Exception
 {
+	const HTTP_CODE = 400;
+
 	private $abbr;
 	private $errorNames = [];
 	private $translations;
@@ -19,6 +21,11 @@ class Exception extends \Exception
 	public function __toString()
 	{
 		return (string) $this->getTranslatedMessage();
+	}
+
+	public function getHttpCode()
+	{
+		return static::HTTP_CODE;
 	}
 
 	public function setAbbr(string $abbr)
