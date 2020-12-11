@@ -65,6 +65,16 @@ class View
 			return $shorter;
 		}));
 
+		$twig->addFilter(new \Twig\TwigFilter('shortenUrl', function ($string, $length, $options = []) {
+			$sanitized = rtrim(preg_replace('/^https?\:\/\//', null, $string), '/?');
+			$shorter = rtrim(substr($sanitized, 0, $length), '/?');
+			if (strlen($shorter) < strlen($sanitized)) {
+				$shorter .= "...";
+			}
+
+			return $shorter;
+		}));
+
 		$twig->addFilter(new \Twig\TwigFilter('asArray', function ($variable) {
 			return (array) $variable;
 		}));
