@@ -22,9 +22,7 @@ class TEmailAddress
 
 	public static function isValid($value) : bool
 	{
-		$validator = new \Egulias\EmailValidator\EmailValidator;
-
-		return (bool)$validator->isValid($value, new \Egulias\EmailValidator\Validation\RFCValidation);
+		return (bool)filter_var($value, \FILTER_VALIDATE_EMAIL);
 	}
 
 	public function getDomain() : string

@@ -3,7 +3,6 @@
 	"description": "katu framework",
 	"type": "library",
 	"require" : {
-		"egulias/email-validator": "^2",
 		"facebook/graph-sdk": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
 		"gregwar/cache": "@stable",
