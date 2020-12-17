@@ -35,7 +35,17 @@ class Image
 
 	public function getInterventionImage()
 	{
-		return \Intervention\Image\ImageManagerStatic::make($this->getSource()->getUri());
+		$uri = $this->getSource()->getUri();
+		try {
+			return \Intervention\Image\ImageManagerStatic::make($uri);
+		} catch (\Throwable $e) {
+			if (preg_match('/SSL operation failed/', $e->getMessage())) {
+				$uri = preg_replace('/^https/', 'http', $uri);
+				return \Intervention\Image\ImageManagerStatic::make($uri);
+			} else {
+				throw $e;
+			}
+		}
 	}
 
 	public function getPixel()
@@ -54,32 +64,34 @@ class Image
 		return $imageVersion->getImage();
 	}
 
-	public function getColors($n = 1)
+	public function getColors($number = 1)
 	{
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($uri, $n) {
-			$palette = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($uri) {
+		$timeout = '1 year';
+
+		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], $timeout, function ($image, $number) use ($timeout) {
+			$palette = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], $timeout, function ($image) {
 				try {
-					return \League\ColorExtractor\Palette::fromFilename($uri);
-				} catch (\Exception $e) {
+					return \League\ColorExtractor\Palette::fromGD($image->getInterventionImage()->getCore());
+				} catch (\Throwable $e) {
 					return false;
 				}
-			}, $uri);
+			}, $image);
 
 			if (!$palette) {
 				return false;
 			}
 
-			$mostUsedColors = array_keys($palette->getMostUsedColors($n));
+			$mostUsedColors = array_keys($palette->getMostUsedColors($number));
 
 			return array_map(function ($color) {
 				return new \Katu\Types\TColor(\League\ColorExtractor\Color::fromIntToHex($color));
 			}, $mostUsedColors);
-		}, $this->getSource()->getUri(), $n);
+		}, $this, $number);
 	}
 
 	public function getImageSize()
 	{
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($image) {
+		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], '1 year', function ($image) {
 			try {
 				$size = getimagesize($image->getSource()->getUri());
 				return new \Katu\Types\TImageSize($size[0], $size[1]);
@@ -92,7 +104,7 @@ class Image
 
 	public function getMime()
 	{
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($image) {
+		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], '1 year', function ($image) {
 			try {
 				$size = getimagesize($image->getSource()->getUri());
 				return $size['mime'];

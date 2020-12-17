@@ -4,7 +4,7 @@ namespace Katu\Controllers\Presets;
 
 class Images extends \Katu\Controllers\Controller
 {
-	public static function getVersionSrcFile($request, $response, $args)
+	public static function getVersionSrcFile(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
 	{
 		try {
 			$fileClass = \Katu\App::getExtendedClassName(new \Katu\Tools\Classes\ClassName('App', 'Models', 'File'), new \Katu\Tools\Classes\ClassName('Katu', 'Models', 'File'));
@@ -33,16 +33,16 @@ class Images extends \Katu\Controllers\Controller
 				->write($imageVersion->getFile()->get())
 				;
 		} catch (\Throwable $e) {
-			throw new \Katu\Exceptions\Exception;
+			throw new \Katu\Exceptions\NotFoundException;
 		}
 	}
 
-	public static function getVersionSrcUrl($request, $response, $args)
+	public static function getVersionSrcUrl(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
 	{
 		try {
 			try {
 				$url = new \Katu\Types\TURL(trim($request->getParam('url')));
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
 
@@ -62,7 +62,7 @@ class Images extends \Katu\Controllers\Controller
 				->write($imageVersion->getFile()->get())
 				;
 		} catch (\Throwable $e) {
-			throw new \Katu\Exceptions\Exception;
+			throw new \Katu\Exceptions\NotFoundException;
 		}
 	}
 }
