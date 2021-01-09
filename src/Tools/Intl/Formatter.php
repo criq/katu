@@ -65,7 +65,7 @@ class Formatter
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
 		if ((int)$number == (float)$number) {
 			$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
-			$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
+			$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 2);
 		}
 
 		return $numberFormatter->formatCurrency((float)$number, $currency);
