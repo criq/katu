@@ -60,9 +60,12 @@ class View
 		 * Text.
 		 */
 		$twig->addFilter(new \Twig\TwigFilter('shorten', function ($string, $length, $options = []) {
-			$shorter = substr($string, 0, $length);
+			$shorter = trim(mb_substr($string, 0, $length));
+			if (mb_strlen($shorter) < mb_strlen($string) && $options['append'] ?? null) {
+				$shorter .= $options['append'];
+			}
 
-			return $shorter;
+			return new \Twig\Markup($shorter, 'UTF-8');
 		}));
 
 		$twig->addFilter(new \Twig\TwigFilter('shortenUrl', function ($string, $length, $options = []) {
