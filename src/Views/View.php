@@ -60,6 +60,7 @@ class View
 		 * Text.
 		 */
 		$twig->addFilter(new \Twig\TwigFilter('shorten', function ($string, $length, $options = []) {
+			$string = trim($string);
 			$shorter = trim(mb_substr($string, 0, $length));
 			if (mb_strlen($shorter) < mb_strlen($string) && $options['append'] ?? null) {
 				$shorter .= $options['append'];
