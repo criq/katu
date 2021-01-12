@@ -2,7 +2,7 @@
 
 namespace Katu\Exceptions;
 
-class ExceptionCollection extends Exception implements \Iterator, \ArrayAccess
+class ExceptionCollection extends Exception implements \Iterator, \ArrayAccess, \Countable
 {
 	protected $iteratorPosition = 0;
 	public $collection = [];
@@ -131,5 +131,13 @@ class ExceptionCollection extends Exception implements \Iterator, \ArrayAccess
 	public function offsetGet($offset)
 	{
 		return isset($this->collection[$offset]) ? $this->collection[$offset] : null;
+	}
+
+	/****************************************************************************
+	 * Countable.
+	 */
+	public function count()
+	{
+		return count($this->collection);
 	}
 }
