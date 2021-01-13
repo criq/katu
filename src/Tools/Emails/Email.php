@@ -57,6 +57,11 @@ class Email
 		return $this;
 	}
 
+	public function getSubject()
+	{
+		return $this->subject;
+	}
+
 	public function setPlain($plain)
 	{
 		$this->plain = $plain;
@@ -125,6 +130,13 @@ class Email
 		foreach (static::resolveEmailAddress($toEmailAddress) as $emailAddress) {
 			$this->to[$emailAddress] = $toName;
 		}
+
+		return $this;
+	}
+
+	public function resetTo()
+	{
+		$this->to = [];
 
 		return $this;
 	}
