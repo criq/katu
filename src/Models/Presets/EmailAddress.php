@@ -25,6 +25,8 @@ class EmailAddress extends \Katu\Models\Model
 
 	public static function make(string $emailAddress) : EmailAddress
 	{
+		$emailAddress = preg_replace('/\s/', null, $emailAddress);
+
 		if (!static::checkEmailAddress($emailAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
