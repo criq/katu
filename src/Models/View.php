@@ -365,7 +365,7 @@ abstract class View extends Base
 
 		// Get a temporary table.
 		$temporaryTableName = new \Katu\PDO\Name(
-			'_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)),
+			'_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH))
 		);
 		$tableClass = static::getTableClass()->getName();
 		$temporaryTable = new $tableClass($destinationTable->getConnection(), $temporaryTableName);
