@@ -400,11 +400,7 @@ abstract class View extends Base
 			$class::updateLastCachedTime();
 		};
 
-		(new \Katu\Tools\Locks\Lock(
-			static::TIMEOUT,
-			['databases', static::getConnection()->config->database, 'views', 'cache', $class],
-			$callback,
-		))
+		(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], $callback))
 			->setUseLock(false)
 			->setArgs([$class])
 			->run()
