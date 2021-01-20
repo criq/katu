@@ -69,9 +69,19 @@ class Email
 		return $this;
 	}
 
+	public function getPlain()
+	{
+		return $this->plain;
+	}
+
 	public function setText($text)
 	{
 		return $this->setPlain($text);
+	}
+
+	public function getText()
+	{
+		return $this->getPlain();
 	}
 
 	public function setHtml($html)
@@ -79,6 +89,11 @@ class Email
 		$this->html = $html;
 
 		return $this;
+	}
+
+	public function getHtml()
+	{
+		return $this->html;
 	}
 
 	public function setBody($html, $plain = null)
@@ -102,11 +117,21 @@ class Email
 		return $this;
 	}
 
+	public function getFromEmailAddress()
+	{
+		return $this->fromEmailAddress;
+	}
+
 	public function setFromName($fromName)
 	{
 		$this->fromName = $fromName;
 
 		return $this;
+	}
+
+	public function getFromName()
+	{
+		return $this->fromName;
 	}
 
 	public function setFrom($fromEmailAddress, $fromName = null)
@@ -139,6 +164,11 @@ class Email
 		$this->to = [];
 
 		return $this;
+	}
+
+	public function getTo()
+	{
+		return $this->to;
 	}
 
 	public function addCc($toEmailAddress, $toName = null)
