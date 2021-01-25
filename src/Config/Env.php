@@ -53,7 +53,7 @@ class Env
 
 	public static function getVersion()
 	{
-		return hash('adler32', implode([
+		return hash('adler32', implode('', [
 			static::getCommit(),
 			static::getHash(),
 		]));
