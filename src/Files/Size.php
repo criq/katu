@@ -31,6 +31,19 @@ class Size
 		return $this->inMB() / 1024;
 	}
 
+	public function getType()
+	{
+		if ($this->size < 1024) {
+			return new \Katu\Types\TFileSize($this->size, 'B');
+		} elseif ($this->size < 1024 * 1024) {
+			return new \Katu\Types\TFileSize($this->inKb(), 'kB');
+		} elseif ($this->size < 1024 * 1024 * 1024) {
+			return new \Katu\Types\TFileSize($this->inMB(), 'MB');
+		} else {
+			return new \Katu\Types\TFileSize($this->inGB(), 'GB');
+		}
+	}
+
 	public static function createFromINI($string)
 	{
 		if (preg_match('/([0-9]+)M/', $string, $match)) {

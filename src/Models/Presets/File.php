@@ -223,4 +223,9 @@ class File extends \Katu\Models\Model
 	{
 		return in_array($this->type, static::getSupportedImageTypes());
 	}
+
+	public function getSize()
+	{
+		return new \Katu\Files\Size($this->size);
+	}
 }
