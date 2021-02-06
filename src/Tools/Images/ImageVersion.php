@@ -71,4 +71,19 @@ class ImageVersion
 			return false;
 		}
 	}
+
+	public function getEmbedSrc()
+	{
+		$this->getImage();
+
+		$file = $this->getFile();
+		$mime = $file->getMime();
+		$base64 = @base64_encode($file->get());
+
+		if ($mime && $base64) {
+			return 'data:' . $mime . ';base64,' . $base64;
+		}
+
+		return false;
+	}
 }
