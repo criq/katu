@@ -94,7 +94,11 @@ class File extends \Katu\Models\Model
 			$fileAttachment->delete();
 		}
 
-		@unlink($this->getPath());
+		try {
+			unlink($this->getPath());
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
 
 		return parent::delete();
 	}
