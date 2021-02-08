@@ -31,7 +31,7 @@ class Email
 		if ($emailAddress instanceof \Katu\Models\Presets\EmailAddress) {
 			$originalEmailAddress = $emailAddress->emailAddress;
 		} elseif ($emailAddress instanceof \Katu\Types\TEmailAddress) {
-			$originalEmailAddress = (string) $emailAddress;
+			$originalEmailAddress = (string)$emailAddress;
 		} else {
 			$originalEmailAddress = $emailAddress;
 		}
