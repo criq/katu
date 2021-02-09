@@ -44,7 +44,7 @@ class TEmailAddress
 		return $this->emailAddress;
 	}
 
-	public function setName(string $name)
+	public function setName(?string $name = null)
 	{
 		$this->name = trim($name);
 
@@ -61,7 +61,7 @@ class TEmailAddress
 		return explode('@', $this->getEmailAddress())[1];
 	}
 
-	public static function createFromEnvelope(string $encoded)
+	public static function createFromEnvelope(?string $encoded = null)
 	{
 		if (preg_match('/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U', $encoded, $match)) {
 			return new static($match['emailAddress'], $match['name']);

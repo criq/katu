@@ -121,11 +121,9 @@ class Model extends Base
 			}
 
 			static::change();
-
-			return true;
 		}
 
-		return false;
+		return $this;
 	}
 
 	public function delete()
