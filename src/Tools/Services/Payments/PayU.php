@@ -38,7 +38,7 @@ class PayU
 	{
 		$url = $this->getEndpoinTURL('NewPayment');
 
-		$params = array(
+		$params = [
 			'pos_id'       => $this->posId,
 			'pay_type'     => isset($params['pay_type'])   ? $params['pay_type']   : null,
 			'session_id'   => isset($params['session_id']) ? $params['session_id'] : null,
@@ -61,7 +61,7 @@ class PayU
 			'client_ip'    => isset($params['client_ip'])  ? $params['client_ip']  : null,
 			'ts'           => time(),
 			'key1'         => $this->keyOne,
-		);
+		];
 
 		$params['sig'] = md5(implode(array_values($params)));
 
@@ -71,12 +71,12 @@ class PayU
 	public function getPaymentStatus($sessionId, $encoding = 'UTF')
 	{
 		$url = static::BASE_URL . '/' . $encoding . '/Payment/get/xml';
-		$params = array(
+		$params = [
 			'pos_id'     => $this->posId,
 			'session_id' => $sessionId,
 			'ts'         => time(),
 			'key1'       => $this->keyOne,
-		);
+		];
 
 		$params['sig'] = md5(implode(array_values($params)));
 

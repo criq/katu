@@ -51,8 +51,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function getWithoutKeys()
 	{
-		$res = array();
-
+		$res = [];
 		foreach ($this->array as $key => $value) {
 			if (in_array($key, func_get_args()) === false) {
 				$res[$key] = $value;

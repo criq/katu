@@ -191,27 +191,6 @@ class Model extends Base
 		return (bool)static::get($this->getId());
 	}
 
-	public static function getOneOrCreateWithArray(array $getBy, ?array $array = [])
-	{
-		$object = static::getOneBy($getBy);
-		if (!$object) {
-			$properties = array_merge($getBy, $array);
-			$object = static::insert($properties);
-		}
-
-		return $object;
-	}
-
-	public static function getOneOrCreateWithList($getBy)
-	{
-		$object = static::getOneBy($getBy);
-		if (!$object) {
-			$object = call_user_func_array(['static', 'create'], array_slice(func_get_args(), 1));
-		}
-
-		return $object;
-	}
-
 	public function setUniqueColumnValue($column, $chars = null, $length = null)
 	{
 		if (is_null($chars)) {

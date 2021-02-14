@@ -62,7 +62,7 @@ class Session
 		}
 
 		if (!isset($_SESSION[static::KEY])) {
-			$_SESSION[static::KEY] = array();
+			$_SESSION[static::KEY] = [];
 		}
 
 		return true;
@@ -127,7 +127,7 @@ class Session
 		try {
 			$config = \Katu\Config\Config::get('app', 'cookie');
 		} catch (\Exception $e) {
-			$config = array();
+			$config = [];
 		}
 
 		$config = array_merge(\Katu\Tools\Cookies\Cookie::getDefaultConfig(), $config);

@@ -11,7 +11,7 @@ class INI
 			throw new \Exception("Invalid INI file.");
 		}
 
-		$ini = array();
+		$ini = [];
 		foreach ($src as $section => $values) {
 			$pointer =& $ini;
 			$level = 0;

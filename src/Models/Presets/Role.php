@@ -22,17 +22,17 @@ class Role extends \Katu\Models\Model
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
-		return static::insert(array(
+		return static::insert([
 			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
 			'name' => trim($name),
-		));
+		]);
 	}
 
 	public static function make($name)
 	{
-		return static::getOneOrCreateWithList(array(
+		return static::upsert([
 			'name' => $name,
-		), $name);
+		]);
 	}
 
 	public function delete()
@@ -40,15 +40,15 @@ class Role extends \Katu\Models\Model
 		$rolePermissionClass = (string)static::getRolePermissionClassName();
 		$userRoleClass = (string)static::getUserRoleClassName();
 
-		foreach ($rolePermissionClass::getBy(array(
+		foreach ($rolePermissionClass::getBy([
 			'roleId' => $this->getId(),
-		)) as $rolePermission) {
+		]) as $rolePermission) {
 			$rolePermission->delete();
 		}
 
-		foreach ($userRoleClass::getBy(array(
+		foreach ($userRoleClass::getBy([
 			'roleId' => $this->getId(),
-		)) as $userRole) {
+		]) as $userRole) {
 			$userRole->delete();
 		}
 
@@ -148,9 +148,9 @@ class Role extends \Katu\Models\Model
 	{
 		$rolePermissionClass = (string)static::getRolePermissionClassName();
 
-		foreach ($rolePermissionClass::getBy(array(
+		foreach ($rolePermissionClass::getBy([
 			'roleId' => $this->getId(),
-		)) as $rolePermission) {
+		]) as $rolePermission) {
 			$rolePermission->delete();
 		}
 

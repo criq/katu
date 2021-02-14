@@ -31,9 +31,9 @@ class EmailAddress extends \Katu\Models\Model
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
-		return static::getOneOrCreateWithList(array(
+		return static::upsert([
 			static::$columnNames['emailAddress'] => $emailAddress,
-		), $emailAddress);
+		]);
 	}
 
 	public static function checkEmailAddress(string $emailAddress) : bool
