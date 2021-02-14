@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Classes\Factories;
+namespace Katu\Tools\Factories;
 
 abstract class Factory implements \Katu\Interfaces\Factory
 {

@@ -4,7 +4,7 @@ namespace Katu\PDO\Results;
 
 class PaginatedResult extends Result
 {
-	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Classes\Factories\Factory $factory, ?\Sexy\Page $page = null)
+	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Interfaces\Factory $factory, ?\Sexy\Page $page = null)
 	{
 		parent::__construct($connection, $statement, $factory);
 

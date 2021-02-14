@@ -80,15 +80,15 @@ abstract class Base
 	{
 		// Sexy SQL expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
-			$query = static::getConnection()->select(func_get_arg(0))->setFactory(new \Katu\Classes\Factories\ClassFactory(static::getClassName()));
+			$query = static::getConnection()->select(func_get_arg(0))->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClassName()));
 
 		// Raw SQL and bind values.
 		} elseif (count(func_get_args()) == 2) {
-			$query = static::getConnection()->select(func_get_arg(0), func_get_arg(1))->setFactory(new \Katu\Classes\Factories\ClassFactory(static::getClassName()));
+			$query = static::getConnection()->select(func_get_arg(0), func_get_arg(1))->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClassName()));
 
 		// Raw SQL.
 		} elseif (count(func_get_args()) == 1) {
-			$query = static::getConnection()->select(func_get_arg(0))->setFactory(new \Katu\Classes\Factories\ClassFactory(static::getClassName()));
+			$query = static::getConnection()->select(func_get_arg(0))->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClassName()));
 
 		// Anything else.
 		} else {
@@ -138,7 +138,7 @@ abstract class Base
 		}
 
 		$query = static::getConnection()->select($sql);
-		$query->setFactory(new \Katu\Classes\Factories\ClassFactory(static::getClassName()));
+		$query->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClassName()));
 
 		return $query->getResult();
 	}

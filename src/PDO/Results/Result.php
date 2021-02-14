@@ -43,7 +43,7 @@ class Result extends \ArrayObject
 	{
 		$factory = $query->getFactory();
 		if (!$factory) {
-			$factory = new \Katu\Classes\Factories\ArrayFactory;
+			$factory = new \Katu\Tools\Factories\ArrayFactory;
 		}
 
 		if ($query->getPage()) {

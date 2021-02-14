@@ -175,7 +175,7 @@ abstract class View extends Base
 	public static function getCachedTableName()
 	{
 		$query = static::getCachedTablesQuery();
-		$array = $query->getResult()->setFactory(new \Katu\Classes\Factories\ArrayFactory)->getItems();
+		$array = $query->getResult()->setFactory(new \Katu\Tools\Factories\ArrayFactory)->getItems();
 
 		if ($array[0]['TABLE_NAME'] ?? null) {
 			return new \Katu\PDO\Name($array[0]['TABLE_NAME']);
