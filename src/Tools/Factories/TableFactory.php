@@ -8,11 +8,12 @@ abstract class TableFactory extends Factory
 {
 	abstract public static function getTable() : \Katu\PDO\Table;
 
-	public static function get(int $primaryKey)
+	public static function get($primaryKey)
 	{
 		$table = static::getTable();
 
 		$sql = SX::select()
+			->setOptGetTotalRows(false)
 			->from($table)
 			->where(SX::eq($table->getColumn($table->getPrimaryKeyColumnName()), $primaryKey))
 			;
