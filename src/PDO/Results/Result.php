@@ -127,7 +127,7 @@ class Result extends \ArrayObject
 		return $this->getCount();
 	}
 
-	public function each(callable $callback)
+	public function each($callback)
 	{
 		$res = [];
 		foreach ($this->getItems() as $item) {
