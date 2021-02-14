@@ -78,17 +78,19 @@ abstract class Base
 
 	public static function select() : \Katu\PDO\Query
 	{
+		$factory = new \Katu\Tools\Factories\ClassFactory(static::getClassName());
+
 		// Sexy SQL expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
-			$query = static::getConnection()->select(func_get_arg(0))->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClassName()));
+			$query = static::getConnection()->select(func_get_arg(0))->setFactory($factory);
 
 		// Raw SQL and bind values.
 		} elseif (count(func_get_args()) == 2) {
-			$query = static::getConnection()->select(func_get_arg(0), func_get_arg(1))->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClassName()));
+			$query = static::getConnection()->select(func_get_arg(0), func_get_arg(1))->setFactory($factory);
 
 		// Raw SQL.
 		} elseif (count(func_get_args()) == 1) {
-			$query = static::getConnection()->select(func_get_arg(0))->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClassName()));
+			$query = static::getConnection()->select(func_get_arg(0))->setFactory($factory);
 
 		// Anything else.
 		} else {
