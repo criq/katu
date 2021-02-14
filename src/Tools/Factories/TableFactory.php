@@ -14,7 +14,7 @@ abstract class TableFactory extends Factory
 
 		$sql = SX::select()
 			->from($table)
-			->where(SX::eq($table->getColumn($table->getIdColumnName()), $primaryKey))
+			->where(SX::eq($table->getColumn($table->getPrimaryKeyColumnName()), $primaryKey))
 			;
 
 		return $table->getConnection()->createQuery($sql)

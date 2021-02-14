@@ -246,7 +246,7 @@ abstract class TableBase extends \Sexy\Expression
 		return new \Katu\Files\Temporary('databases', $this->getConnection()->getName(), 'tables', 'updated', $this->name);
 	}
 
-	public function getIdColumnName()
+	public function getPrimaryKeyColumnName()
 	{
 		$cacheName = ['databases', $this->getConnection()->getName(), 'tables', 'idColumn', $this->getName()->getName()];
 

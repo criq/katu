@@ -106,10 +106,10 @@ class Model extends Base
 
 	public function delete()
 	{
-		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIdColumnName() . " = :" . static::getIdColumnName();
+		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getPrimaryKeyColumnName() . " = :" . static::getPrimaryKeyColumnName();
 
 		$query = static::getConnection()->createQuery($sql, [
-			static::getIdColumnName() => $this->getId(),
+			static::getPrimaryKeyColumnName() => $this->getId(),
 		]);
 
 		$res = $query->getResult();
@@ -127,7 +127,7 @@ class Model extends Base
 
 		$values = [];
 		foreach (get_object_vars($this) as $name => $value) {
-			if (in_array($name, $columnsNames) && $name != static::getIdColumnName()) {
+			if (in_array($name, $columnsNames) && $name != static::getPrimaryKeyColumnName()) {
 				$values[$name] = $value;
 			}
 		}
@@ -138,10 +138,10 @@ class Model extends Base
 		}
 
 		if ($set) {
-			$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
+			$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getPrimaryKeyColumnName() . " = :" . $this->getPrimaryKeyColumnName() . " ) ";
 
 			$query = static::getConnection()->createQuery($sql, $values);
-			$query->setParam(static::getIdColumnName(), $this->getId());
+			$query->setParam(static::getPrimaryKeyColumnName(), $this->getId());
 			$query->getResult();
 		}
 
@@ -159,24 +159,24 @@ class Model extends Base
 
 	public static function getIdColumn() : \Katu\PDO\Column
 	{
-		return static::getColumn(static::getIdColumnName());
+		return static::getColumn(static::getPrimaryKeyColumnName());
 	}
 
-	public static function getIdColumnName()
+	public static function getPrimaryKeyColumnName()
 	{
-		return static::getTable()->getIdColumnName();
+		return static::getTable()->getPrimaryKeyColumnName();
 	}
 
 	public function getId()
 	{
-		return $this->{static::getIdColumnName()};
+		return $this->{static::getPrimaryKeyColumnName()};
 	}
 
 	public static function get($primaryKey)
 	{
 		$callback = function ($class, $primaryKey) {
 			return $class::getOneBy([
-				$class::getIdColumnName() => $primaryKey,
+				$class::getPrimaryKeyColumnName() => $primaryKey,
 			]);
 		};
 
