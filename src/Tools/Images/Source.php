@@ -38,15 +38,6 @@ abstract class Source
 		} elseif ($input instanceof \Katu\Models\Presets\File) {
 			return new Sources\File($input);
 
-		// File attachment.
-		} elseif ($input instanceof \Katu\Models\Presets\FileAttachment) {
-			return new Sources\File($input->getFile());
-
-		// Model.
-		} elseif ($input instanceof \Katu\Models\Base) {
-			$imageFile = $input->getImageFile();
-			return $imageFile ? new Sources\File($imageFile) : false;
-
 		// String.
 		} elseif (is_string($input)) {
 			try {

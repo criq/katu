@@ -9,6 +9,16 @@ abstract class Base
 	const DATABASE = 'app';
 	const TABLE = null;
 
+	public static function createFromArray(array $array)
+	{
+		$object = new static;
+		foreach ($array as $key => $value) {
+			$object->$key = $value;
+		}
+
+		return $object;
+	}
+
 	public static function getTableClass()
 	{
 		return new \ReflectionClass("\Katu\PDO\Table");
@@ -17,29 +27,6 @@ abstract class Base
 	public static function getColumnClass()
 	{
 		return new \ReflectionClass("\Katu\PDO\Column");
-	}
-
-	public function __toString()
-	{
-		return (string) $this->getId();
-	}
-
-	public function __call($name, $args)
-	{
-		// Getter.
-		if (preg_match('/^get(?<property>[a-z0-9]+)$/i', $name, $match)) {
-			$property = $this->getPropertyName($match['property']);
-
-			// Not found, maybe just added.
-			// if (!$property) {
-			// 	\Katu\Cache\General::clearMemory();
-			// 	$property = $this->getPropertyName($match['property']);
-			// }
-
-			return $this->{$property} ?? null;
-		}
-
-		trigger_error('Undeclared class method ' . $name . '.');
 	}
 
 	public static function getClass()
@@ -60,7 +47,7 @@ abstract class Base
 	public static function getConnection() : \Katu\PDO\Connection
 	{
 		if (!defined('static::DATABASE')) {
-			throw new \Exception("Undefined database.");
+			throw new \Katu\Exceptions\Exception("Undefined database.");
 		}
 
 		return \Katu\PDO\Connection::getInstance(static::DATABASE);
@@ -69,7 +56,7 @@ abstract class Base
 	public static function getTableName() : \Katu\PDO\Name
 	{
 		if (!defined('static::TABLE')) {
-			throw new \Exception("Undefined table.");
+			throw new \Katu\Exceptions\Exception("Undefined table.");
 		}
 
 		return new \Katu\PDO\Name(static::TABLE);
@@ -77,12 +64,12 @@ abstract class Base
 
 	public static function getTable() : \Katu\PDO\Table
 	{
-		$tableClass = static::getTableClass()->getName();
+		$tableClass = (string)static::getTableClass()->getName();
 
 		return new $tableClass(static::getConnection(), static::getTableName());
 	}
 
-	public static function getColumn($name) : \Katu\PDO\Column
+	public static function getColumn(string $name) : \Katu\PDO\Column
 	{
 		$columnClass = static::getColumnClass()->getName();
 
@@ -93,15 +80,15 @@ abstract class Base
 	{
 		// Sexy SQL expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
-			$query = static::getConnection()->selectClass(static::getClassName(), func_get_arg(0));
+			$query = static::getConnection()->select(func_get_arg(0))->setFactory(new \Katu\Classes\Factories\ClassFactory(static::getClassName()));
 
 		// Raw SQL and bind values.
 		} elseif (count(func_get_args()) == 2) {
-			$query = static::getConnection()->selectClass(static::getClassName(), func_get_arg(0), func_get_arg(1));
+			$query = static::getConnection()->select(func_get_arg(0), func_get_arg(1))->setFactory(new \Katu\Classes\Factories\ClassFactory(static::getClassName()));
 
 		// Raw SQL.
 		} elseif (count(func_get_args()) == 1) {
-			$query = static::getConnection()->selectClass(static::getClassName(), func_get_arg(0));
+			$query = static::getConnection()->select(func_get_arg(0))->setFactory(new \Katu\Classes\Factories\ClassFactory(static::getClassName()));
 
 		// Anything else.
 		} else {
@@ -118,10 +105,9 @@ abstract class Base
 		return static::getConnection()->transaction(...func_get_args());
 	}
 
-	public static function filterParams($params)
+	public static function filterParams(array $params)
 	{
 		$filteredParams = [];
-
 		foreach ($params as $param => $value) {
 			if (is_string($param)) {
 				$filteredParams[$param] = $value;
@@ -131,7 +117,7 @@ abstract class Base
 		return $filteredParams;
 	}
 
-	public static function getBy($params = [], $expressions = [], $options = [])
+	public static function getBy(?array $params = [], ?array $expressions = [], ?array $options = []) : \Katu\PDO\Results\Result
 	{
 		$sql = SX::select();
 		$sql->addExpressions($expressions);
@@ -147,17 +133,17 @@ abstract class Base
 			}
 		}
 
-		if (isset($options['setOptGetTotalRows'])) {
+		if ($options['setOptGetTotalRows'] ?? null) {
 			$sql->setOptGetTotalRows($options['setOptGetTotalRows']);
 		}
 
 		$query = static::getConnection()->select($sql);
-		$query->setClassName(static::getClassName());
+		$query->setFactory(new \Katu\Classes\Factories\ClassFactory(static::getClassName()));
 
 		return $query->getResult();
 	}
 
-	public static function getBySql($sql)
+	public static function getBySql($sql) : \Katu\PDO\Results\Result
 	{
 		return static::select($sql)->getResult();
 	}
@@ -182,64 +168,8 @@ abstract class Base
 		return static::getBy(...$args)->getOne();
 	}
 
-	public static function getAll($expressions = [])
+	public static function getAll(?array $expressions = [])
 	{
 		return static::getBy([], $expressions);
-	}
-
-	public static function getFromAssoc($array)
-	{
-		if (!$array) {
-			return false;
-		}
-
-		$class = static::getClass();
-		$object = new $class;
-
-		foreach ($array as $key => $value) {
-			$object->$key = $value;
-		}
-
-		return $object;
-	}
-
-	public static function getIdProperties()
-	{
-		return array_values(array_filter(array_map(function ($i) {
-			return preg_match('/^(?<property>[a-zA-Z_]+)_?[Ii][Dd]$/', $i) ? $i : null;
-		}, static::getTable()->getColumnNames())));
-	}
-
-	// public function getBoundObject($model)
-	// {
-	// 	$nsModel = '\\App\\Models\\' . $model;
-	// 	if (!class_exists($nsModel)) {
-	// 		return null;
-	// 	}
-
-	// 	foreach (static::getIdProperties() as $property) {
-	// 		$proposedModel = '\\App\\Models\\' . ucfirst(preg_replace('#^(.+)_?[Ii][Dd]$#', '\\1', $property));
-	// 		if ($proposedModel && $nsModel == $proposedModel) {
-	// 			$object = $proposedModel::get($this->{$property});
-	// 			if ($object) {
-	// 				return $object;
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return null;
-	// }
-
-	public static function getPropertyName($property)
-	{
-		$properties = array_merge(array_keys(get_class_vars(get_called_class())), static::getTable()->getColumnNames());
-
-		foreach ($properties as $p) {
-			if (strtolower($p) === strtolower($property)) {
-				return $p;
-			}
-		}
-
-		return false;
 	}
 }

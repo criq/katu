@@ -4,63 +4,94 @@ namespace Katu\PDO;
 
 class Query
 {
-	public $className;
-	public $connection;
-	public $page;
-	public $params = [];
-	public $sql;
+	protected $connection;
+	protected $factory;
+	protected $page;
+	protected $params = [];
+	protected $sql;
 
-	public function __construct(Connection $connection, $sql, array $params = [])
+	public function __construct(Connection $connection, $sql, ?array $params = [])
 	{
-		$this->connection = $connection;
-		$this->params = $params;
-		$this->sql = (string)$sql;
-
-		if ($sql instanceof \Sexy\Select && $sql->getPage()) {
-			$this->page = $sql->getPage();
-		}
+		$this->setConnection($connection);
+		$this->setParams($params);
+		$this->setSql($sql);
 	}
 
-	public function setSql(string $sql) : Query
+	public function setConnection(Connection $connection) : Query
 	{
-		$this->sql = $sql;
+		$this->connection = $connection;
 
 		return $this;
 	}
 
-	public function setParam($name, $value) : Query
+	public function getConnection() : Connection
+	{
+		return $this->connection;
+	}
+
+	public function setSql($sql) : Query
+	{
+		$this->sql = $sql;
+		if ($sql instanceof \Sexy\Select && $sql->getPage()) {
+			$this->setPage($sql->getPage());
+		}
+
+		return $this;
+	}
+
+	public function getSql()
+	{
+		return $this->sql;
+	}
+
+	public function setParam(string $name, $value) : Query
 	{
 		$this->params[$name] = $value;
 
 		return $this;
 	}
 
-	public function setParams($params) : Query
+	public function setParams(?array $params = []) : Query
 	{
 		$this->params = array_merge($this->params, $params);
 
 		return $this;
 	}
 
-	public function setPage($page) : Query
+	public function getParams() : array
+	{
+		return $this->params;
+	}
+
+	public function setPage(\Sexy\Page $page) : Query
 	{
 		$this->page = $page;
 
 		return $this;
 	}
 
-	public function setClassName(\Katu\Tools\Classes\ClassName $className) : Query
+	public function getPage() : ?\Sexy\Page
 	{
-		$this->className = $className;
+		return $this->page;
+	}
+
+	public function setFactory(\Katu\Interfaces\Factory $factory) : Query
+	{
+		$this->factory = $factory;
 
 		return $this;
 	}
 
+	public function getFactory() : ?\Katu\Interfaces\Factory
+	{
+		return $this->factory;
+	}
+
 	public function getStatement()
 	{
-		$statement = $this->connection->connection->prepare($this->sql);
+		$statement = $this->getConnection()->getConnection()->prepare($this->getSql());
 
-		foreach ($this->params as $name => $value) {
+		foreach ($this->getParams() as $name => $value) {
 			if (is_string($value)) {
 				$statement->bindValue($name, $value, \PDO::PARAM_STR);
 			} elseif (is_int($value)) {
@@ -77,18 +108,6 @@ class Query
 
 	public function getResult()
 	{
-		$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
-
-		if ($this->className) {
-			$result = new Results\ClassResult($this->connection, $this->getStatement(), $this->page, $this->className);
-		} elseif ($this->page) {
-			$result = new Results\PaginatedResult($this->connection, $this->getStatement(), $this->page);
-		} else {
-			$result = new Results\Result($this->connection, $this->getStatement());
-		}
-
-		\Katu\Tools\Profiler\Profiler::add(new \Katu\Tools\Profiler\Query($this, $stopwatch));
-
-		return $result;
+		return Results\Result::createFromQuery($this);
 	}
 }

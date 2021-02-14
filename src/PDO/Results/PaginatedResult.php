@@ -4,36 +4,23 @@ namespace Katu\PDO\Results;
 
 class PaginatedResult extends Result
 {
-	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, ?\Sexy\Page $page = null)
+	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Classes\Factories\Factory $factory, ?\Sexy\Page $page = null)
 	{
-		parent::__construct($connection, $statement);
+		parent::__construct($connection, $statement, $factory);
 
-		if (strpos($this->statement->queryString, 'SQL_CALC_FOUND_ROWS')) {
+		if (strpos($this->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS')) {
 			$sql = " SELECT FOUND_ROWS() AS total ";
-			$total = $this->connection->createQuery($sql)->getResult()->statement->fetchColumn();
+			$total = (int)$this->getConnection()->createQuery($sql)->getResult()->getItems()[0]['total'];
 		} else {
-			$total = $this->statement->rowCount();
+			$total = (int)$this->getStatement()->rowCount();
 		}
 
 		// Set default page if empty.
-		if ($page) {
-			$this->page = $page;
-		} else {
+		if (!$page) {
 			$page = new \Sexy\Page(1, $total ?: 1);
 		}
 
-		$this->pagination = new \Katu\Types\TPagination($total, $page->perPage, $page->page);
-	}
-
-	public function getPageFromMeta()
-	{
-		foreach ($this->meta as $_meta) {
-			if ($_meta instanceof \Sexy\Page) {
-				return $_meta;
-			}
-		}
-
-		return false;
+		$this->setPagination(new \Katu\Types\TPagination($total, $page->perPage, $page->page));
 	}
 
 	public function setPagination(\Katu\Types\TPagination $pagination)
@@ -50,21 +37,21 @@ class PaginatedResult extends Result
 
 	public function getTotal()
 	{
-		return $this->pagination->total;
+		return $this->getPagination()->total;
 	}
 
 	public function getPage()
 	{
-		return $this->pagination->page;
+		return $this->getPagination()->page;
 	}
 
 	public function getPerPage()
 	{
-		return $this->pagination->perPage;
+		return $this->getPagination()->perPage;
 	}
 
 	public function getPages()
 	{
-		return $this->pagination->pages;
+		return $this->getPagination()->pages;
 	}
 }

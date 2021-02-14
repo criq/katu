@@ -353,9 +353,9 @@ class User extends \Katu\Models\Model
 		$userPermissionClass = (string)static::getUserPermissionClassName();
 
 		if (class_exists($userPermissionClass)) {
-			return $userPermissionClass::getBy([
+			$userPermissionClass::getBy([
 				'userId' => $this->getId(),
-			])->getPropertyValues('permission');
+			])->getColumnValues('permission');
 		}
 
 		return false;

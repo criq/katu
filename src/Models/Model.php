@@ -6,49 +6,28 @@ use \Sexy\Sexy as SX;
 
 class Model extends Base
 {
-	const CACHE_IN_MEMORY_BY_PRIMARY_KEY = false;
-
-	protected $__updated = false;
-
-	public function __call($name, $args)
+	public function __toString() : string
 	{
-		// Setter.
-		if (preg_match('/^set(?<property>[a-z0-9]+)$/i', $name, $match) && count($args) == 1) {
-			$property = $this->getPropertyName($match['property']);
-
-			// Not found, maybe just added.
-			// if (!$property) {
-			// 	\Katu\Cache\General::clearMemory();
-			// 	$property = $this->getPropertyName($match['property']);
-			// }
-
-			$value = $args[0];
-
-			if ($property && $this->update($property, $value)) {
-				return true;
-			}
-		}
-
-		return parent::__call(...func_get_args());
+		return (string)$this->getId();
 	}
 
-	public static function insert($params = [])
+	public static function insert(?array $values = [])
 	{
 		$connection = static::getConnection();
 
 		$columns = array_map(function ($i) {
 			return new \Katu\PDO\Name($i);
-		}, array_keys($params));
+		}, array_keys($values));
 
 		$placeholders = array_map(function ($i) {
 			return ':' . $i;
-		}, array_keys($params));
+		}, array_keys($values));
 
 		$sql = " INSERT INTO " . static::getTable() . "
 				( " . implode(", ", $columns) . " )
 			VALUES ( " . implode(", ", $placeholders) . " ) ";
 
-		$query = $connection->createQuery($sql, $params);
+		$query = $connection->createQuery($sql, $values);
 		$query->getResult();
 
 		static::change();
@@ -61,7 +40,7 @@ class Model extends Base
 		}
 	}
 
-	public static function insertMultiple(array $items = [])
+	public static function insertMultiple(?array $items = [])
 	{
 		$items = array_values($items);
 
@@ -117,7 +96,6 @@ class Model extends Base
 		if (property_exists($this, $property)) {
 			if ($this->$property !== $value) {
 				$this->$property = $value;
-				$this->__updated = true;
 			}
 
 			static::change();
@@ -128,13 +106,6 @@ class Model extends Base
 
 	public function delete()
 	{
-		// Delete file attachments.
-		if (class_exists('\\App\\Models\\FileAttachment')) {
-			foreach ($this->getFileAttachments() as $fileAttachment) {
-				$fileAttachment->delete();
-			}
-		}
-
 		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getIdColumnName() . " = :" . static::getIdColumnName();
 
 		$query = static::getConnection()->createQuery($sql, [
@@ -150,75 +121,43 @@ class Model extends Base
 
 	public function save()
 	{
-		if ($this->isUpdated()) {
-			$columnsNames = array_map(function ($columnName) {
-				return $columnName->getName();
-			}, static::getTable()->getColumnNames());
+		$columnsNames = array_map(function ($columnName) {
+			return $columnName->getName();
+		}, static::getTable()->getColumnNames());
 
-			$values = [];
-			foreach (get_object_vars($this) as $name => $value) {
-				if (in_array($name, $columnsNames) && $name != static::getIdColumnName()) {
-					$values[$name] = $value;
-				}
+		$values = [];
+		foreach (get_object_vars($this) as $name => $value) {
+			if (in_array($name, $columnsNames) && $name != static::getIdColumnName()) {
+				$values[$name] = $value;
 			}
-
-			$set = [];
-			foreach ($values as $name => $value) {
-				$set[] = (new \Katu\PDO\Name($name)) . " = :" . $name;
-			}
-
-			if ($set) {
-				$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
-
-				$query = static::getConnection()->createQuery($sql, $values);
-				$query->setParam(static::getIdColumnName(), $this->getId());
-				$query->getResult();
-			}
-
-			static::change();
-
-			$this->__updated = false;
 		}
 
-		return true;
+		$set = [];
+		foreach ($values as $name => $value) {
+			$set[] = (new \Katu\PDO\Name($name)) . " = :" . $name;
+		}
+
+		if ($set) {
+			$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getIdColumnName() . " = :" . $this->getIdColumnName() . " ) ";
+
+			$query = static::getConnection()->createQuery($sql, $values);
+			$query->setParam(static::getIdColumnName(), $this->getId());
+			$query->getResult();
+		}
+
+		static::change();
+
+		return $this;
 	}
 
 	public static function change()
 	{
 		static::getTable()->touch();
 
-		return null;
+		return true;
 	}
 
-	public function isUpdated()
-	{
-		return (bool)$this->__updated;
-	}
-
-	public static function getAppModels()
-	{
-		$dir = \Katu\App::getBaseDir() . '/app/Models/';
-		$ns = '\\App\\Models';
-
-		$models = [];
-
-		foreach (scandir($dir) as $file) {
-			$path = $dir . $file;
-			if (is_file($path)) {
-				$pathinfo = pathinfo($file);
-				$model = $ns . '\\' . $pathinfo['filename'];
-				if (class_exists($model)) {
-					$models[] = ltrim($model, '\\');
-				}
-			}
-		}
-
-		natsort($models);
-
-		return $models;
-	}
-
-	public static function getIdColumn()
+	public static function getIdColumn() : \Katu\PDO\Column
 	{
 		return static::getColumn(static::getIdColumnName());
 	}
@@ -233,26 +172,6 @@ class Model extends Base
 		return $this->{static::getIdColumnName()};
 	}
 
-	public function getTransmittableId()
-	{
-		return base64_encode(\Katu\Files\Formats\JSON::encodeStandard([
-			'class' => $this->getClass(),
-			'id'    => $this->getId(),
-		]));
-	}
-
-	public static function getFromTransmittableId($transmittableId)
-	{
-		try {
-			$array = \Katu\Files\Formats\JSON::decodeAsArray(base64_decode($transmittableId));
-			$class = '\\' . ltrim($array['class'], '\\');
-
-			return $class::get($array['id']);
-		} catch (\Exception $e) {
-			return false;
-		}
-	}
-
 	public static function get($primaryKey)
 	{
 		$callback = function ($class, $primaryKey) {
@@ -261,19 +180,18 @@ class Model extends Base
 			]);
 		};
 
-		if (static::CACHE_IN_MEMORY_BY_PRIMARY_KEY) {
-			return \Katu\Cache\General::get(['model', 'get'], '1 hour', $callback, static::getClass(), $primaryKey);
-		} else {
-			return call_user_func_array($callback, [static::getClass(), $primaryKey]);
-		}
+		return call_user_func_array($callback, [
+			static::getClass(),
+			$primaryKey,
+		]);
 	}
 
 	public function exists()
 	{
-		return (bool) static::get($this->getId());
+		return (bool)static::get($this->getId());
 	}
 
-	public static function getOneOrCreateWithArray($getBy, $array = [])
+	public static function getOneOrCreateWithArray(array $getBy, ?array $array = [])
 	{
 		$object = static::getOneBy($getBy);
 		if (!$object) {
@@ -353,7 +271,7 @@ class Model extends Base
 		// There are some, get a new slug.
 		} else {
 			$suffixes = [];
-			foreach ($res->getArray() as $item) {
+			foreach ($res->getItems() as $item) {
 				preg_match('/' . $preg . '/', $item[$column], $match);
 				if (!isset($match[2])) {
 					$suffixes[] = 0;
@@ -396,115 +314,5 @@ class Model extends Base
 		}
 
 		return !static::getBySql($sql)->getTotal();
-	}
-
-	public function getFileAttachments($params = [], $expressions = [])
-	{
-		$params['objectModel'] = $this->getClass();
-		$params['objectId']    = $this->getId();
-
-		if (!isset($expressions['orderBy'])) {
-			$expressions['orderBy'] = \Katu\Models\Presets\FileAttachment::getColumn('position');
-		}
-
-		return \Katu\Models\Presets\FileAttachment::getBy($params, $expressions);
-	}
-
-	public function refreshFileAttachmentsFromFileIds($user, $fileIds)
-	{
-		$this->getFileAttachments()->each('delete');
-
-		foreach ((array) $fileIds as $key => $fileId) {
-			$file = \Katu\Models\Presets\File::get($fileId);
-			if ($file) {
-				$fileAttachment = $file->attachTo($user, $this);
-				$fileAttachment->update('position', $key + 1);
-				$fileAttachment->save();
-			}
-		}
-
-		return true;
-	}
-
-	public function refreshFileAttachmentPositions()
-	{
-		$position = 0;
-
-		// Refresh the ones with position.
-		foreach ($this->getFileAttachments([
-			SX::cmpNotEq(\Katu\Models\Presets\FileAttachment::getColumn('position'), 0),
-		], [
-			'orderBy' => \Katu\Models\Presets\FileAttachment::getColumn('position'),
-		]) as $fileAttachment) {
-			$fileAttachment->setPosition(++$position);
-			$fileAttachment->save();
-		}
-
-		// Refresh the ones without position.
-		foreach ($this->getFileAttachments([
-			SX::eq(\Katu\Models\Presets\FileAttachment::getColumn('position'), 0),
-		], [
-			'orderBy' => \Katu\Models\Presets\FileAttachment::getColumn('timeCreated'),
-		]) as $fileAttachment) {
-			$fileAttachment->setPosition(++$position);
-			$fileAttachment->save();
-		}
-
-		return true;
-	}
-
-	public function getImageFileAttachments($expressions = [])
-	{
-		$sql = SX::select(\Katu\Models\Presets\FileAttachment::getTable())
-			->from(\Katu\Models\Presets\FileAttachment::getTable())
-			->joinColumns(\Katu\Models\Presets\FileAttachment::getColumn('fileId'), \Katu\Models\Presets\File::getColumn('id'))
-			->whereIn(\Katu\Models\Presets\File::getColumn('type'), [
-				'image/jpeg',
-				'image/png',
-				'image/gif',
-			])
-			->whereEq(\Katu\Models\Presets\FileAttachment::getColumn('objectModel'), (string) $this->getClass())
-			->whereEq(\Katu\Models\Presets\FileAttachment::getColumn('objectId'), (int) $this->getId())
-			->orderBy([
-				SX::orderBy(\Katu\Models\Presets\FileAttachment::getColumn('position')),
-				SX::orderBy(\Katu\Models\Presets\FileAttachment::getColumn('timeCreated'), SX::kw('desc')),
-			])
-			->addExpressions($expressions)
-			;
-
-		return \Katu\Models\Presets\FileAttachment::getBySql($sql);
-	}
-
-	public function getImageFile()
-	{
-		$imageAttachments = $this->getImageFileAttachments();
-		if ($imageAttachments->getTotal()) {
-			return $imageAttachments[0]->getFile();
-		}
-
-		return false;
-	}
-
-	public function getImagePath()
-	{
-		$file = $this->getImageFile();
-
-		// Is file.
-		if ($file instanceof \Katu\Models\Presets\File) {
-			return $file->getPath();
-
-		// Is URL.
-		} elseif (\Katu\Types\TURL::isValid($file)) {
-			return $file;
-		}
-
-		return false;
-	}
-
-	public function hasImage()
-	{
-		$path = $this->getImagePath();
-
-		return $path && file_exists($path);
 	}
 }

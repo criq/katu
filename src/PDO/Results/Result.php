@@ -2,58 +2,124 @@
 
 namespace Katu\PDO\Results;
 
-class Result implements \Iterator, \ArrayAccess
+class Result extends \ArrayObject
 {
-	protected $iteratorArray = null;
-	protected $iteratorPosition = 0;
-	public $connection;
-	public $statement;
+	protected $connection;
+	protected $factory;
+	protected $fetched = false;
+	protected $statement;
 
-	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement)
+	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Interfaces\Factory $factory)
 	{
-		$this->connection = $connection;
-		$this->statement = $statement;
+		$this->setConnection($connection);
+		$this->setStatement($statement);
+		$this->setFactory($factory);
 
-		try {
-			$this->statement->execute();
+		$this->getStatement()->execute();
 
-			if (!preg_match("/^0+$/", $this->statement->errorCode())) {
-				$error = $this->statement->errorInfo();
-				throw new \Exception(implode(';', [
-					$error[2],
-					$this->statement->queryString,
-				]), $error[1]);
-			}
-		} catch (\Exception $e) {
-			// Non-existing table.
-			if ($e->getCode() == 1146 && preg_match('/Table \'(.+)\.(?<table>.+)\' doesn\'t exist/', $e->getMessage(), $match)) {
+		$errorInfo = $this->getStatement()->errorInfo();
+		if ((int)$errorInfo[1]) {
+			$exception = new \Katu\Exceptions\Exception($errorInfo[2], $errorInfo[1]);
+
+			// Table doesn't exist.
+			if ($errorInfo[1] == 1146 && preg_match("/Table '(.+)\.(?<tableName>.+)' doesn't exist/", $errorInfo[2], $match)) {
 				// Create the table.
-				$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['table'] . '.create.sql');
+				$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['tableName'] . '.create.sql');
 				if ($sqlFile->exists()) {
 					// There is a file, let's create the table.
-					$createQuery = $this->connection->createQuery($sqlFile->get());
-					$createQuery->getResult();
-
-					$this->statement->execute();
-
-					if ((int)$this->statement->errorCode()) {
-						$error = $this->statement->errorInfo();
-						throw new \Exception($error[2], $error[1]);
-					}
+					$this->getConnection()->createQuery($sqlFile->get())->getResult();
 				} else {
-					throw $e;
+					throw $exception;
 				}
 			} else {
-				throw $e;
+				throw $exception;
 			}
 		}
+
+		$this->setStorage();
+	}
+
+	public static function createFromQuery(\Katu\PDO\Query $query)
+	{
+		$factory = $query->getFactory();
+		if (!$factory) {
+			$factory = new \Katu\Classes\Factories\ArrayFactory;
+		}
+
+		if ($query->getPage()) {
+			$object = new PaginatedResult($query->getConnection(), $query->getStatement(), $factory, $query->getPage());
+		} else {
+			$object = new static($query->getConnection(), $query->getStatement(), $factory);
+		}
+
+		return $object;
+	}
+
+	public function setConnection(\Katu\PDO\Connection $connection) : Result
+	{
+		$this->connection = $connection;
+
+		return $this;
+	}
+
+	public function getConnection() : \Katu\PDO\Connection
+	{
+		return $this->connection;
+	}
+
+	public function setStatement(\PDOStatement $statement) : Result
+	{
+		$this->statement = $statement;
+
+		return $this;
+	}
+
+	public function getStatement() : \PDOStatement
+	{
+		return $this->statement;
+	}
+
+	public function setFactory(\Katu\Interfaces\Factory $factory) : Result
+	{
+		$this->factory = $factory;
+
+		return $this;
+	}
+
+	public function getFactory() : \Katu\Interfaces\Factory
+	{
+		return $this->factory;
+	}
+
+	public function setStorage()
+	{
+		if (!$this->fetched) {
+			foreach ($this->getStatement()->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+				$this[] = $this->getFactory()->create($row);
+			}
+			$this->fetched = true;
+		}
+
+		return true;
+	}
+
+	public function getItems()
+	{
+		$this->setStorage();
+
+		return $this->getArrayCopy();
+	}
+
+	public function getOne()
+	{
+		return $this[0] ?? false;
 	}
 
 	public function getCount()
 	{
-		$this->setIteratorArray();
+		$this->setStorage();
 
-		return count($this->iteratorArray);
+		return count($this);
 	}
 
 	public function getTotal()
@@ -61,44 +127,10 @@ class Result implements \Iterator, \ArrayAccess
 		return $this->getCount();
 	}
 
-	public function getArray()
-	{
-		$this->setIteratorArray();
-
-		return $this->iteratorArray;
-	}
-
-	public function getObjects(\Katu\Tools\Classes\ClassName $className = null)
-	{
-		$this->setIteratorArray($className);
-
-		return $this->iteratorArray;
-	}
-
-	public function getColumnValues($column)
-	{
-		$values = [];
-
-		foreach ($this as $row) {
-			if (is_object($row)) {
-				$values[] = $row->$column;
-			} else {
-				$values[] = $row[$column];
-			}
-		}
-
-		return $values;
-	}
-
-	public function getIds()
-	{
-		return $this->getColumnValues('id');
-	}
-
-	public function each($callback)
+	public function each(callable $callback)
 	{
 		$res = [];
-		foreach ($this as $item) {
+		foreach ($this->getItems() as $item) {
 			if (is_string($callback) && method_exists($item, $callback)) {
 				$res[] = call_user_func_array([$item, $callback], [$item]);
 			} else {
@@ -109,86 +141,17 @@ class Result implements \Iterator, \ArrayAccess
 		return $res;
 	}
 
-	/****************************************************************************
-	 * Iterator.
-	 */
-	public function rewind()
+	public function getColumnValues($column)
 	{
-		$this->iteratorPosition = 0;
-	}
-
-	public function current()
-	{
-		$this->setIteratorArray();
-
-		return $this->iteratorArray[$this->iteratorPosition];
-	}
-
-	public function key()
-	{
-		return $this->iteratorPosition;
-	}
-
-	public function next()
-	{
-		++$this->iteratorPosition;
-	}
-
-	public function valid()
-	{
-		$this->setIteratorArray();
-
-		return isset($this->iteratorArray[$this->iteratorPosition]);
-	}
-
-	/****************************************************************************
-	 * ArrayAccess.
-	 */
-	public function setIteratorArray(\Katu\Tools\Classes\ClassName $className = null)
-	{
-		if (is_null($this->iteratorArray)) {
-			$this->iteratorArray = [];
-			if ($className) {
-				while ($row = $this->statement->fetchObject((string)$className)) {
-					$this->iteratorArray[] = $row;
-				}
+		$values = [];
+		foreach ($this->getItems() as $item) {
+			if (is_object($item)) {
+				$values[] = $item->$column;
 			} else {
-				while ($row = $this->statement->fetch(\PDO::FETCH_ASSOC, \PDO::FETCH_ORI_NEXT)) {
-					$this->iteratorArray[] = $row;
-				}
+				$values[] = $item[$column];
 			}
 		}
-	}
 
-	public function offsetSet($offset, $value)
-	{
-		$this->setIteratorArray();
-
-		if (is_null($offset)) {
-			$this->iteratorArray[] = $value;
-		} else {
-			$this->iteratorArray[$offset] = $value;
-		}
-	}
-
-	public function offsetExists($offset)
-	{
-		$this->setIteratorArray();
-
-		return isset($this->iteratorArray[$offset]);
-	}
-
-	public function offsetUnset($offset)
-	{
-		$this->setIteratorArray();
-
-		unset($this->iteratorArray[$offset]);
-	}
-
-	public function offsetGet($offset)
-	{
-		$this->setIteratorArray();
-
-		return isset($this->iteratorArray[$offset]) ? $this->iteratorArray[$offset] : null;
+		return $values;
 	}
 }

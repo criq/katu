@@ -25,14 +25,14 @@ abstract class TableBase extends \Sexy\Expression
 		return $this->connection;
 	}
 
-	public function getSql(&$context = [])
-	{
-		return implode('.', [new Name($this->getConnection()->config->database), $this->name]);
-	}
-
 	public function getName()
 	{
 		return $this->name;
+	}
+
+	public function getSql(&$context = [])
+	{
+		return implode('.', [new Name($this->getConnection()->getConfig()->database), $this->name]);
 	}
 
 	public function getColumns()
@@ -53,7 +53,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getColumnDescriptions()
 	{
-		$cacheName = ['databases', $this->getConnection()->name, 'tables', 'descriptions', $this->name];
+		$cacheName = ['databases', $this->getConnection()->getName(), 'tables', 'descriptions', $this->name];
 
 		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
 			$table = $this;
@@ -218,7 +218,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getUsedInViewsCacheName()
 	{
-		return ['databases', $this->getConnection()->name, 'tables', 'usedInViews', $this->name];
+		return ['databases', $this->getConnection()->getName(), 'tables', 'usedInViews', $this->name];
 	}
 
 	public function getTotalUsage($timeout = null)
@@ -227,7 +227,7 @@ abstract class TableBase extends \Sexy\Expression
 			$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 
 			$sql = " SELECT COUNT(1) AS total FROM " . $table->name;
-			$res = $table->getConnection()->createQuery($sql)->getResult()->getArray();
+			$res = $table->getConnection()->createQuery($sql)->getResult()->getItems();
 
 			return [
 				'rows' => (int) $res[0]['total'],
@@ -238,17 +238,17 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getTotalUsageCacheName()
 	{
-		return ['databases', $this->getConnection()->name, 'tables', 'totalRows', $this->name];
+		return ['databases', $this->getConnection()->getName(), 'tables', 'totalRows', $this->name];
 	}
 
 	public function getLastUpdatedTemporaryFile()
 	{
-		return new \Katu\Files\Temporary('databases', $this->getConnection()->name, 'tables', 'updated', $this->name);
+		return new \Katu\Files\Temporary('databases', $this->getConnection()->getName(), 'tables', 'updated', $this->name);
 	}
 
 	public function getIdColumnName()
 	{
-		$cacheName = ['databases', $this->getConnection()->name, 'tables', 'idColumn', $this->getName()->getName()];
+		$cacheName = ['databases', $this->getConnection()->getName(), 'tables', 'idColumn', $this->getName()->getName()];
 
 		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
 			return \Katu\Cache\General::get($cacheName, '1 hour', function () {

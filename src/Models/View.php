@@ -163,7 +163,7 @@ abstract class View extends Base
 		$sql = static::getCachedTablesSql();
 
 		$query = static::getConnection()->createQuery($sql, [
-			'tableSchema' => static::getConnection()->config->database,
+			'tableSchema' => static::getConnection()->getConfig()->database,
 			'tableRegexp' => strtr(static::getCachedTableNameRegexp(), [
 				'?<datetime>' => null,
 			]),
@@ -175,7 +175,7 @@ abstract class View extends Base
 	public static function getCachedTableName()
 	{
 		$query = static::getCachedTablesQuery();
-		$array = $query->getResult()->getArray();
+		$array = $query->getResult()->setFactory(new \Katu\Classes\Factories\ArrayFactory)->getItems();
 
 		if ($array[0]['TABLE_NAME'] ?? null) {
 			return new \Katu\PDO\Name($array[0]['TABLE_NAME']);
@@ -233,7 +233,7 @@ abstract class View extends Base
 	public static function cachedTableExists()
 	{
 		$query = static::getCachedTablesQuery();
-		$array = $query->getResult()->getArray();
+		$array = $query->getResult()->getItems();
 
 		return (bool)($array[0] ?? null);
 	}
@@ -479,7 +479,7 @@ abstract class View extends Base
 	public static function getLastCachedDateTime()
 	{
 		$query = static::getCachedTablesQuery();
-		$array = $query->getResult()->getArray();
+		$array = $query->getResult()->getItems();
 		$regexp = static::getCachedTableNameRegexp();
 
 		if (($array[0]['TABLE_NAME'] ?? null) && preg_match("/$regexp/", $array[0]['TABLE_NAME'], $match)) {
@@ -545,7 +545,7 @@ abstract class View extends Base
 
 		foreach (static::getAllViewClassNames() as $class) {
 			$query = $class::getCachedTablesQuery();
-			$array = $query->getResult()->getArray();
+			$array = $query->getResult()->getItems();
 			foreach (array_slice($array, 1) as $tableArray) {
 				$table = new $tableClass(
 					$class::getConnection(),

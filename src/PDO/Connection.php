@@ -4,10 +4,10 @@ namespace Katu\PDO;
 
 class Connection
 {
-	public $config;
-	public $connection;
-	public $name;
-	public static $connections = [];
+	protected $config;
+	protected $connection;
+	protected $name;
+	protected static $connections = [];
 
 	public function __construct($name)
 	{
@@ -35,6 +35,16 @@ class Connection
 	public function __sleep()
 	{
 		return ['name', 'config'];
+	}
+
+	public function getConnection()
+	{
+		return $this->connection;
+	}
+
+	public function getConfig()
+	{
+		return $this->config;
 	}
 
 	public function getName() : string
@@ -83,7 +93,7 @@ class Connection
 	public function getTableNames()
 	{
 		$sql = " SHOW TABLES ";
-		$res = $this->createQuery($sql)->getResult()->getArray();
+		$res = $this->createQuery($sql)->getResult()->getItems();
 
 		return array_map(function ($i) {
 			$names = array_values($i);
@@ -103,7 +113,7 @@ class Connection
 	public function getViewNames()
 	{
 		$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
-		$res = $this->createQuery($sql)->getResult()->getArray();
+		$res = $this->createQuery($sql)->getResult()->getItems();
 
 		return array_map(function ($i) {
 			$names = array_values($i);
@@ -129,14 +139,6 @@ class Connection
 		if ($select->getPage()) {
 			$query->setPage($select->getPage());
 		}
-
-		return $query;
-	}
-
-	public function selectClass(\Katu\Tools\Classes\ClassName $className, \Sexy\Select $select, array $params = []) : Query
-	{
-		$query = $this->select($select, $params);
-		$query->setClassName($className);
 
 		return $query;
 	}
@@ -178,7 +180,7 @@ class Connection
 	public function getSqlModes() : array
 	{
 		$sql = " SELECT @@SESSION.sql_mode AS sql_mode ";
-		$array = explode(',', $this->createQuery($sql)->getResult()->getArray()[0]['sql_mode'] ?? null);
+		$array = explode(',', $this->createQuery($sql)->getResult()->getItems()[0]['sql_mode'] ?? null);
 
 		return array_combine($array, $array);
 	}
