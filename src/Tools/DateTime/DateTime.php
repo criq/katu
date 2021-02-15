@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\DateTime;
 
+use GPBMetadata\Google\Type\Date;
+
 class DateTime extends \DateTime
 {
 	public function __construct($time = null, \DateTimeZone $timezone = null)
@@ -22,14 +24,38 @@ class DateTime extends \DateTime
 		return $this->getDbDateTimeFormat();
 	}
 
-	public static function createFromTimestamp(int $timestamp) : \Katu\Tools\DateTime\DateTime
+	public static function createFromTimestamp(int $timestamp) : DateTime
 	{
 		return new static('@' . $timestamp);
 	}
 
-	public static function createFromDateTime(\DateTime $dateTime) : \Katu\Tools\DateTime\DateTime
+	public static function createFromDateTime(\DateTime $dateTime) : DateTime
 	{
 		return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
+	}
+
+	public static function createFromString(string $string) : ?DateTime
+	{
+		if (!trim($string)) {
+			return null;
+		}
+
+		if ($string == '0000-00-00' || $string == '0000-00-00 00:00:00') {
+			return null;
+		}
+
+		try {
+			$datetime = new static($string);
+			if ($datetime->format('Y') < 0) {
+				return null;
+			}
+
+			return $datetime;
+		} catch (\Throwable $e) {
+			return null;
+		}
+
+		return null;
 	}
 
 	public function getLocalTimeZone() : \DateTimeZone
