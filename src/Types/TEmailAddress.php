@@ -72,7 +72,7 @@ class TEmailAddress
 
 	public function getEnvelope()
 	{
-		return implode(' ', array_filter([
+		return implode(" ", array_filter([
 			$this->getName(),
 			"<" . $this->getEmailAddress() . ">",
 		]));

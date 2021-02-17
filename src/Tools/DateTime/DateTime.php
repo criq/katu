@@ -34,7 +34,7 @@ class DateTime extends \DateTime
 		return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
 	}
 
-	public static function createFromString(string $string) : ?DateTime
+	public static function createFromString(?string $string) : ?DateTime
 	{
 		if (!trim($string)) {
 			return null;
