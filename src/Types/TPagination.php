@@ -187,8 +187,8 @@ class TPagination
 		return [
 			'total' => $this->getTotal(),
 			'pages' => $this->getPages(),
-			'page' => $this->getPage(),
 			'perPage' => $this->getPerPage(),
+			'page' => $this->getPage(),
 		];
 	}
 }
