@@ -2,36 +2,26 @@
 
 namespace Katu\Types;
 
-class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
+class TArray extends \ArrayObject
 {
-	private $array = [];
-
-	public function __construct($value = [])
-	{
-		if (!self::isValid($value)) {
-			throw new \Exception("Invalid array.");
-		}
-
-		if ($value instanceof static) {
-			$this->array = $value->getArray();
-		} else {
-			$this->array = (array)$value;
-		}
-	}
-
 	public function getArray()
 	{
-		return $this->array;
+		return $this->getArrayCopy();
 	}
 
-	public static function isValid($value)
+	public function getTotal()
 	{
-		return is_array($value) || $value instanceof static;
+		return $this->count();
+	}
+
+	public function getCount()
+	{
+		return $this->count();
 	}
 
 	public function getValueByArgs()
 	{
-		$value = $this->array;
+		$value = $this->getArray();
 
 		foreach (func_get_args() as $key) {
 			if (isset($value[$key])) {
@@ -52,19 +42,19 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 	public function getWithoutKeys()
 	{
 		$res = [];
-		foreach ($this->array as $key => $value) {
+		foreach ($this as $key => $value) {
 			if (in_array($key, func_get_args()) === false) {
 				$res[$key] = $value;
 			}
 		}
 
-		return new self($res);
+		return new static($res);
 	}
 
 	public function implodeInSentence($delimiter, $lastDelimiter)
 	{
-		$arrayList = (array) array_slice($this->array, 0, -1);
-		$arrayLast = (array) array_slice($this->array, -1, 1);
+		$arrayList = (array)array_slice($this->getArray(), 0, -1);
+		$arrayLast = (array)array_slice($this->getArray(), -1, 1);
 
 		return implode($lastDelimiter, array_filter([implode($delimiter, $arrayList), $arrayLast[0]]));
 	}
@@ -76,7 +66,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 		}
 
 		$items = [];
-		foreach ($this->array as $key => $value) {
+		foreach ($this as $key => $value) {
 			$items[] = implode($keyValueDelimiter, [$key, $value]);
 		}
 
@@ -95,14 +85,14 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 	public function getRandomItems($n)
 	{
 		for ($i = 0; $i < $n; $i++) {
-			$res[] = $this->array[array_rand($this->array)];
+			$res[] = $this[array_rand($this->getArray())];
 		}
 		return $res;
 	}
 
 	public function flatten()
 	{
-		$iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($this->array));
+		$iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($this));
 		$values = [];
 
 		foreach ($iterator as $value) {
@@ -114,27 +104,27 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function reverse()
 	{
-		return new static(array_reverse($this->array));
+		return new static(array_reverse($this->getArray()));
 	}
 
 	public function unique()
 	{
-		return new static(array_unique($this->array));
+		return new static(array_unique($this->getArray()));
 	}
 
 	public function keys()
 	{
-		return new static(array_keys($this->array));
+		return new static(array_keys($this->getArray()));
 	}
 
 	public function values()
 	{
-		return new static(array_values($this->array));
+		return new static(array_values($this->getArray()));
 	}
 
 	public function natsort()
 	{
-		$array = $this->array;
+		$array = $this->getArray();
 		natsort($array);
 
 		return new static($array);
@@ -142,7 +132,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function asort($sortFlags = \SORT_REGULAR)
 	{
-		$array = $this->array;
+		$array = $this->getArray();
 		asort($array, $sortFlags);
 
 		return new static($array);
@@ -150,7 +140,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function ksort($sortFlags = \SORT_REGULAR)
 	{
-		$array = $this->array;
+		$array = $this->getArray();
 		ksort($array, $sortFlags);
 
 		return new static($array);
@@ -158,7 +148,7 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function shuffle()
 	{
-		$array = $this->array;
+		$array = $this->getArray();
 		shuffle($array);
 
 		return new static($array);
@@ -166,28 +156,17 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function slice($offset, $length, $preserveKeys = false)
 	{
-		return new static(array_slice($this->array, $offset, $length, $preserveKeys));
-	}
-
-	public function append($array)
-	{
-		if (!is_array($array) && !($array instanceof static)) {
-			$array = [$array];
-		}
-
-		$this->array = array_merge($this->array, (new static($array))->getArray());
-
-		return true;
+		return new static(array_slice($this->getArray(), $offset, $length, $preserveKeys));
 	}
 
 	public function getPage($page, $perPage)
 	{
-		return new static(array_slice($this->array, (($page - 1) * $perPage), $perPage));
+		return new static(array_slice($this->getArray(), (($page - 1) * $perPage), $perPage));
 	}
 
 	public function orderBy($key, $flags = 0)
 	{
-		$array = $this->array;
+		$array = $this->getArray();
 
 		array_multisort(array_map(function ($i) use ($key) {
 			if (is_object($i) && method_exists($i, $key)) {
@@ -206,12 +185,12 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function count()
 	{
-		return count($this->array);
+		return count($this);
 	}
 
 	public function map($callback)
 	{
-		$array = array_map($callback, $this->array);
+		$array = array_map($callback, $this->getArray());
 
 		return new static($array);
 	}
@@ -224,62 +203,18 @@ class TArray implements \ArrayAccess, \IteratorAggregate, \Countable
 			};
 		}
 
-		$array = array_filter($this->array, $callback);
+		$array = array_filter($this->getArray(), $callback);
 
 		return new static($array);
 	}
 
-	public function pushArray($array)
+	public function search($needle)
 	{
-		foreach ($array as $item) {
-			array_push($this->array, $item);
-		}
-
-		return true;
+		return array_search($needle, $this->getArray());
 	}
 
-	public function getTotal()
+	public function contains($needle)
 	{
-		return $this->count();
-	}
-
-	public function getCount()
-	{
-		return $this->count();
-	}
-
-	/****************************************************************************
-	 * ArrayAccess.
-	 */
-	public function offsetSet($offset, $value)
-	{
-		if (is_null($offset)) {
-			$this->array[] = $value;
-		} else {
-			$this->array[$offset] = $value;
-		}
-	}
-
-	public function offsetExists($offset)
-	{
-		return isset($this->array[$offset]);
-	}
-
-	public function offsetUnset($offset)
-	{
-		unset($this->array[$offset]);
-	}
-
-	public function offsetGet($offset)
-	{
-		return isset($this->array[$offset]) ? $this->array[$offset] : null;
-	}
-
-	/****************************************************************************
-	 * IteratorAggregate.
-	 */
-	public function getIterator()
-	{
-		return new \ArrayIterator($this->array);
+		return $this->search($needle) !== false;
 	}
 }
