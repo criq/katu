@@ -8,6 +8,7 @@ class Result extends \ArrayObject
 	protected $factory;
 	protected $fetched = false;
 	protected $statement;
+	protected $total;
 
 	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Interfaces\Factory $factory)
 	{
@@ -16,6 +17,13 @@ class Result extends \ArrayObject
 		$this->setFactory($factory);
 
 		$this->getStatement()->execute();
+
+		if (strpos($this->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS')) {
+			$sql = " SELECT FOUND_ROWS() AS total ";
+			$this->setTotal((int)$this->getConnection()->createQuery($sql)->getResult()[0]['total']);
+		} else {
+			$this->setTotal((int)$this->getStatement()->rowCount());
+		}
 
 		$errorInfo = $this->getStatement()->errorInfo();
 		if ((int)$errorInfo[1]) {
@@ -122,9 +130,16 @@ class Result extends \ArrayObject
 		return count($this);
 	}
 
+	public function setTotal(int $total) : Result
+	{
+		$this->total = $total;
+
+		return $this;
+	}
+
 	public function getTotal()
 	{
-		return $this->getCount();
+		return $this->total;
 	}
 
 	public function each($callback)

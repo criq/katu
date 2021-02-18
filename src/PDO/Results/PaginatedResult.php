@@ -8,19 +8,12 @@ class PaginatedResult extends Result
 	{
 		parent::__construct($connection, $statement, $factory);
 
-		if (strpos($this->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS')) {
-			$sql = " SELECT FOUND_ROWS() AS total ";
-			$total = (int)$this->getConnection()->createQuery($sql)->getResult()->getItems()[0]['total'];
-		} else {
-			$total = (int)$this->getStatement()->rowCount();
-		}
-
 		// Set default page if empty.
 		if (!$page) {
-			$page = new \Sexy\Page(1, $total ?: 1);
+			$page = new \Sexy\Page(1, $this->getTotal() ?: 1);
 		}
 
-		$this->setPagination(new \Katu\Types\TPagination($total, $page->perPage, $page->page));
+		$this->setPagination(new \Katu\Types\TPagination($this->getTotal(), $page->perPage, $page->page));
 	}
 
 	public function setPagination(\Katu\Types\TPagination $pagination)
@@ -33,11 +26,6 @@ class PaginatedResult extends Result
 	public function getPagination()
 	{
 		return $this->pagination;
-	}
-
-	public function getTotal()
-	{
-		return $this->getPagination()->total;
 	}
 
 	public function getPage()
