@@ -54,4 +54,19 @@ class PaginatedResult extends Result
 	{
 		return $this->getPagination()->pages;
 	}
+
+	/****************************************************************************
+	 * REST.
+	 */
+	public function getResponseArray()
+	{
+		$res = [];
+		$res['pagination'] = $this->getPagination()->getResponseArray();
+
+		foreach ($this as $object) {
+			$res['items'][] = $object->getResponseArray();
+		}
+
+		return $res;
+	}
 }

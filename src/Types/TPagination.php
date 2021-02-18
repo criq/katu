@@ -111,7 +111,6 @@ class TPagination
 	public static function getPageFromRequest(\Slim\Http\Request $request) : int
 	{
 		$params = $request->getParams();
-
 		if (!($params[static::getAppQueryParam()] ?? null)) {
 			return 1;
 		}
@@ -180,6 +179,16 @@ class TPagination
 		return [
 			'prev' => \Katu\Config\Config::getWithDefault('pagination', 'copy', 'prev', static::DEFAULT_COPY_PREV),
 			'next' => \Katu\Config\Config::getWithDefault('pagination', 'copy', 'next', static::DEFAULT_COPY_NEXT),
+		];
+	}
+
+	public function getResponseArray()
+	{
+		return [
+			'total' => $this->getTotal(),
+			'pages' => $this->getPages(),
+			'page' => $this->getPage(),
+			'perPage' => $this->getPerPage(),
 		];
 	}
 }

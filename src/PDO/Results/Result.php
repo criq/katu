@@ -46,7 +46,7 @@ class Result extends \ArrayObject
 			$factory = new \Katu\Tools\Factories\ArrayFactory;
 		}
 
-		if ($query->getPage()) {
+		if (strpos($query->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS')) {
 			$object = new PaginatedResult($query->getConnection(), $query->getStatement(), $factory, $query->getPage());
 		} else {
 			$object = new static($query->getConnection(), $query->getStatement(), $factory);
@@ -153,5 +153,18 @@ class Result extends \ArrayObject
 		}
 
 		return $values;
+	}
+
+	/****************************************************************************
+	 * REST.
+	 */
+	public function getResponseArray()
+	{
+		$res = [];
+		foreach ($this as $object) {
+			$res[] = $object->getResponseArray();
+		}
+
+		return $res;
 	}
 }
