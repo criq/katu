@@ -183,11 +183,6 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function count()
-	{
-		return count($this);
-	}
-
 	public function map($callback)
 	{
 		$array = array_map($callback, $this->getArray());
