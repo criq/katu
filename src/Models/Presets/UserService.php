@@ -6,9 +6,9 @@ class UserService extends \Katu\Models\Model
 {
 	const TABLE = 'user_services';
 
-	public static function getUserClassName() : \Katu\Tools\Classes\ClassName
+	public static function getUserClass()
 	{
-		return new \Katu\Tools\Classes\ClassName('Katu', 'Models', 'Presets', 'User');
+		return new \ReflectionClass("\Katu\Models\Presets\User");
 	}
 
 	public static function create(User $user, string $serviceName, string $serviceUserId)
@@ -36,9 +36,7 @@ class UserService extends \Katu\Models\Model
 
 	public function getUser()
 	{
-		$class = (string)static::getUserClassName();
-
-		return $class::get($this->userId);
+		return static::getUserClass()->getName()::get($this->userId);
 	}
 
 	public function setServiceAccessToken($serviceAccessToken)

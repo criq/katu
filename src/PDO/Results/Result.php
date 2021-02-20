@@ -120,7 +120,7 @@ class Result extends \ArrayObject
 
 	public function getOne()
 	{
-		return $this[0] ?? false;
+		return $this[0] ?? null;
 	}
 
 	public function getCount()
