@@ -33,6 +33,11 @@ class Formatter
 		return $numberFormatter->format($number);
 	}
 
+	public static function getLocalFormNumber($locale, $number)
+	{
+		return preg_replace('/\s/u', null, static::getLocalNumber($locale, $number));
+	}
+
 	public static function getLocalReadableNumber($locale, $number)
 	{
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::DECIMAL);

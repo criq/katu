@@ -103,12 +103,12 @@ class File extends \Katu\Models\Model
 		return parent::delete();
 	}
 
-	public function getFile()
+	public function getFile() : ?\Katu\Files\File
 	{
 		return new \Katu\Files\File($this->getPath());
 	}
 
-	public static function getDirName()
+	public static function getDirName() : string
 	{
 		try {
 			return \Katu\Config\Config::get('app', 'files', 'dir');
@@ -117,12 +117,12 @@ class File extends \Katu\Models\Model
 		}
 	}
 
-	public static function getDir()
+	public static function getDir() : \Katu\Files\File
 	{
 		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::getDirName());
 	}
 
-	public function getName()
+	public function getName() : string
 	{
 		return $this->name;
 	}

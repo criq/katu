@@ -96,12 +96,12 @@ class Geocode extends \Katu\Models\Model
 	public static function getDistanceSqlSelectExpression(\Katu\Types\Geo\TLatLng $latLng)
 	{
 		return SX::calcMultiply([
-			SX::val(6371),
+			SX::param(6371),
 			SX::fnAcos([
 				SX::calcPlus([
 					SX::calcMultiply([
 						SX::fnCos([
-							SX::val($latLng->lat->getRad()),
+							SX::param($latLng->lat->getRad()),
 						]),
 						SX::fnCos([
 							static::getColumn('latRad'),
@@ -109,13 +109,13 @@ class Geocode extends \Katu\Models\Model
 						SX::fnCos([
 							SX::calcMinus([
 								static::getColumn('lngRad'),
-								SX::val($latLng->lng->getRad()),
+								SX::param($latLng->lng->getRad()),
 							]),
 						]),
 					]),
 					SX::calcMultiply([
 						SX::fnSin([
-							SX::val($latLng->lat->getRad()),
+							SX::param($latLng->lat->getRad()),
 						]),
 						SX::fnSin([
 							static::getColumn('latRad'),

@@ -6,6 +6,11 @@ class FileAttachment extends \Katu\Models\Model
 {
 	const TABLE = 'file_attachments';
 
+	public static function getFileClass()
+	{
+		return new \ReflectionClass("\Katu\Models\Presets\File");
+	}
+
 	public static function create(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment
 	{
 		return static::insert([
@@ -17,7 +22,7 @@ class FileAttachment extends \Katu\Models\Model
 		]);
 	}
 
-	public static function make(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file)
+	public static function make(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment
 	{
 		return static::upsert([
 			'objectModel' => $object->getClass(),
@@ -31,8 +36,11 @@ class FileAttachment extends \Katu\Models\Model
 
 	public function getObject()
 	{
-		$class = $this->objectModel;
+		return $this->objectModel::get($this->objectId);
+	}
 
-		return $class::get($this->objectId);
+	public function getFile()
+	{
+		return static::getFileClass()->getName()::get($this->fileId);
 	}
 }

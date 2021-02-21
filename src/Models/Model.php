@@ -287,4 +287,57 @@ class Model extends Base
 
 		return !static::getBySql($sql)->getTotal();
 	}
+
+	/****************************************************************************
+	 * FileAttachments.
+	 */
+	public function getFileAttachments()
+	{
+		return \App\Models\FileAttachment::getBy([
+			'objectModel' => static::getClass(),
+			'objectId' => $this->getId(),
+		]);
+	}
+
+	public function getImageFile()
+	{
+		$sql = SX::select()
+			->select(\App\Models\File::getTable())
+			->from(\App\Models\FileAttachment::getTable())
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
+			->orderBy([
+				SX::orderBy(\App\Models\FileAttachment::getColumn('position'))
+			])
+			->joinColumns(\App\Models\FileAttachment::getColumn('fileId'), \App\Models\File::getIdColumn())
+			;
+
+		return \App\Models\File::getBySql($sql)->getOne();
+	}
+
+	public function refreshFileAttachmentsFromFileIds(\App\Models\User $user, ?array $fileIds)
+	{
+		foreach ($this->getFileAttachments() as $fileAttachment) {
+			$fileAttachment->delete();
+		}
+
+		$position = 1;
+		foreach ($fileIds as $fileId) {
+			$file = \App\Models\File::get($fileId);
+			if ($file) {
+				\App\Models\FileAttachment::upsert([
+					'objectModel' => static::getClass(),
+					'objectId' => $this->getId(),
+					'fileId' => $file->getId(),
+				], [
+					'timeCreated' => new \App\Classes\DateTime,
+					'creatorId' => $user->getId(),
+				], [
+					'position' => $position++,
+				]);
+			}
+		}
+
+		return $this;
+	}
 }
