@@ -145,7 +145,7 @@ abstract class Base
 		return $query->getResult();
 	}
 
-	public static function getBySql($sql) : \Katu\PDO\Results\Result
+	public static function getBySql($sql) : \Katu\PDO\Results\PaginatedResult
 	{
 		return static::select($sql)->getResult();
 	}
@@ -170,7 +170,7 @@ abstract class Base
 		return static::getBy(...$args)->getOne();
 	}
 
-	public static function getAll(?array $expressions = [])
+	public static function getAll(?array $expressions = []) : \Katu\PDO\Results\PaginatedResult
 	{
 		return static::getBy([], $expressions);
 	}

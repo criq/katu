@@ -137,11 +137,6 @@ class App
 		}
 	}
 
-	public static function getRequest() : \Slim\Http\Request
-	{
-		return static::get()->getContainer()->request;
-	}
-
 	public static function isProfilerOn() : bool
 	{
 		return \Katu\Cache\Runtime::get('profiler.on', function () {

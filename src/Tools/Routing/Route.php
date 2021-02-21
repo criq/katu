@@ -51,4 +51,9 @@ class Route
 			$this->function,
 		]);
 	}
+
+	public static function getName(\Slim\Http\Request $request)
+	{
+		return $request->getAttributes('route')['route']->getName();
+	}
 }
