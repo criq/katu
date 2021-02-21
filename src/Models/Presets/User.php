@@ -53,14 +53,14 @@ class User extends \Katu\Models\Model
 		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'UserSetting');
 	}
 
-	public static function create()
+	public static function create() : User
 	{
 		return static::insert([
 			static::$columnNames['timeCreated'] => new \Katu\Tools\DateTime\DateTime,
 		]);
 	}
 
-	public static function createWithEmailAddress($emailAddress)
+	public static function createWithEmailAddress($emailAddress) : User
 	{
 		$emailAddressClass = (string)static::getEmailAddressClassName();
 
@@ -92,20 +92,20 @@ class User extends \Katu\Models\Model
 		return static::get(\Katu\Tools\Session\Session::get('katu.user.id'));
 	}
 
-	public static function getByAccessToken(string $token = null)
+	public static function getByAccessToken(?string $token) : ?User
 	{
 		$accessTokenClass = (string)static::getAccessTokenClassName();
 
 		$accessToken = $accessTokenClass::getOneBy([
 			'token' => preg_replace('/^(Bearer)\s+/', null, $token),
-			new \Sexy\CmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
+			SX::cmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
 		]);
 
 		if ($accessToken) {
 			return static::get($accessToken->userId);
 		}
 
-		return false;
+		return null;
 	}
 
 	public function getValidAccessToken()
@@ -189,11 +189,11 @@ class User extends \Katu\Models\Model
 		return true;
 	}
 
-	public function setPlainPassword($password)
+	public function setPlainPassword(string $password)
 	{
 		$this->update('password', (new \Katu\Tools\Security\Password($password))->getEncoded());
 
-		return true;
+		return $this;
 	}
 
 	public function getPassword()

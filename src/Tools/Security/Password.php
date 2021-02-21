@@ -25,7 +25,7 @@ class Password
 		$password->setAlgo($e[0]);
 		$password->setSaltLength(strlen($e[1]));
 		$password->setSalt($e[1]);
-		$password->setIterations($e[2]);
+		$password->setIterations((int)$e[2] ? (int)$e[2] : 1);
 
 		return $password;
 	}

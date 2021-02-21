@@ -15,7 +15,7 @@ class Config
 	public $type;
 	public $user;
 
-	public function __construct($host, $user, $password, $database, $charset)
+	public function __construct(string $host, string $user, string $password, string $database, string $charset)
 	{
 		$this->charset  = $charset;
 		$this->database = $database;
@@ -25,7 +25,7 @@ class Config
 		$this->user = $user;
 	}
 
-	public static function createFromConfig($config)
+	public static function createFromConfig(array $config)
 	{
 		$class = (string)new \Katu\Tools\Classes\ClassName('Katu', 'PDO', 'Config', $config['type']);
 		if (!class_exists($class)) {

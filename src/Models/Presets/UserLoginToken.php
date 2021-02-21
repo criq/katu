@@ -6,9 +6,9 @@ class UserLoginToken extends \Katu\Models\Model
 {
 	const TABLE = 'user_login_tokens';
 
-	public static function getUserClassName()
+	public static function getUserClass()
 	{
-		return new \Katu\Tools\Classes\ClassName('Katu', 'Models', 'Presets', 'User');
+		return new \ReflectionClass("\Katu\Models\Presets\User");
 	}
 
 	public static function create(User $user, int $timeout = 86400)
@@ -23,9 +23,7 @@ class UserLoginToken extends \Katu\Models\Model
 
 	public function getUser()
 	{
-		$class = (string)static::getUserClassName();
-
-		return $class::get($this->userId);
+		return static::getUserClass()->getName()::get($this->userId);
 	}
 
 	public function isValid()

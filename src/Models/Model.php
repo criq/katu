@@ -174,10 +174,8 @@ class Model extends Base
 
 	public static function get($primaryKey)
 	{
-		$class = (string)static::getClass();
-
-		return $class::getOneBy([
-			$class::getPrimaryKeyColumnName() => $primaryKey,
+		return static::getOneBy([
+			static::getPrimaryKeyColumnName() => $primaryKey,
 		]);
 	}
 

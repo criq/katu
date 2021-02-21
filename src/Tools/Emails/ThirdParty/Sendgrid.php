@@ -23,36 +23,21 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty
 
 	public function getEmail()
 	{
-		$email = new \SendGrid\Mail\Mail;
+		$email = new \SendGrid\Email;
 		$email->setFrom($this->fromEmailAddress, $this->fromName);
 		$email->setSubject($this->subject);
-		$email->addContent('text/html', $this->html);
-		$email->addContent('text/plain', $this->plain ?: strip_tags($this->html));
-		$email->addHeaders($this->headers);
+		$email->setHtml($this->html);
+		$email->setText($this->plain ?: strip_tags($this->html));
+		$email->setHeaders($this->headers);
+
+		foreach ($this->to as $toEmailAddress => $toName) {
+			$email->addTo($toEmailAddress, $toName);
+		}
 
 		if ($this->template) {
 			$email->setTemplateId($this->template);
 		}
 
-		/**********************************************************************
-		 * Personalizations.
-		 */
-		foreach ($this->to as $toEmailAddress => $toName) {
-			$personalization = new \SendGrid\Mail\Personalization;
-			$personalization->addTo(new \SendGrid\Mail\To($toEmailAddress, $toName));
-
-			$substitution = new \SendGrid\Mail\Substitution('content.value', $this->html);
-			foreach ($this->variables as $variable => $value) {
-				$substitution = new \SendGrid\Mail\Substitution($variable, $value);
-				$personalization->addSubstitution($substitution);
-			}
-
-			$email->addPersonalization($personalization);
-		}
-
-		/**********************************************************************
-		 * Attachments.
-		 */
 		foreach ($this->attachments as $attachment) {
 			$email->addAttachment($attachment['file'], $attachment['name'], $attachment['cid']);
 		}
