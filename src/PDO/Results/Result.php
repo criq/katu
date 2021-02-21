@@ -55,12 +55,15 @@ class Result extends \ArrayObject
 		}
 
 		if (strpos($query->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS')) {
-			$object = new PaginatedResult($query->getConnection(), $query->getStatement(), $factory, $query->getPage());
+			$result = new PaginatedResult($query->getConnection(), $query->getStatement(), $factory, $query->getPage());
+		} elseif ($query->getTotal()) {
+			$result = new PaginatedResult($query->getConnection(), $query->getStatement(), $factory, $query->getPage());
+			$result->setTotal($query->getTotal());
 		} else {
-			$object = new static($query->getConnection(), $query->getStatement(), $factory);
+			$result = new static($query->getConnection(), $query->getStatement(), $factory);
 		}
 
-		return $object;
+		return $result;
 	}
 
 	public function setConnection(\Katu\PDO\Connection $connection) : Result

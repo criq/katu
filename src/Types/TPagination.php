@@ -32,6 +32,11 @@ class TPagination
 		}
 
 		$this->total = $total;
+		try {
+			$this->setPages((int)ceil($total / $this->perPage));
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
 
 		return $this;
 	}

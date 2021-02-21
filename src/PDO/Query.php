@@ -9,6 +9,7 @@ class Query
 	protected $page;
 	protected $params = [];
 	protected $sql;
+	protected $total;
 
 	public function __construct(Connection $connection, $sql, ?array $params = [])
 	{
@@ -109,5 +110,17 @@ class Query
 	public function getResult()
 	{
 		return Results\Result::createFromQuery($this);
+	}
+
+	public function setTotal(?int $total) : Query
+	{
+		$this->total = $total;
+
+		return $this;
+	}
+
+	public function getTotal() : ?int
+	{
+		return $this->total;
 	}
 }
