@@ -4,9 +4,11 @@ namespace Katu\PDO\Results;
 
 class PaginatedResult extends Result
 {
+	protected $pagination;
+
 	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Interfaces\Factory $factory, ?\Sexy\Page $page = null)
 	{
-		parent::__construct($connection, $statement, $factory);
+		parent::__construct(...func_get_args());
 
 		// Set default page if empty.
 		if (!$page) {
@@ -26,6 +28,19 @@ class PaginatedResult extends Result
 	public function getPagination()
 	{
 		return $this->pagination;
+	}
+
+	public function setTotal(int $total) : PaginatedResult
+	{
+		parent::setTotal(...func_get_args());
+
+		try {
+			$this->getPagination()->setTotal($total);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
+		return $this;
 	}
 
 	public function getPage()
