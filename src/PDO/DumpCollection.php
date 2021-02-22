@@ -65,8 +65,6 @@ class DumpCollection implements \Iterator, \ArrayAccess
 	public function cleanup()
 	{
 		// If disk usage more than 90 %, remove some backups.
-		// var_dump(\Katu\Utils\FileSystem::getSpaceAboveFreeTreshold(.9)->inGB());
-
 		$weeks = $this->getByWeek();
 		foreach ($weeks as $week) {
 			$week->cleanup();

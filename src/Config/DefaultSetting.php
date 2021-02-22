@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils;
+namespace Katu\Config;
 
 class DefaultSetting
 {
@@ -20,9 +20,9 @@ class DefaultSetting
 	public function make($creator)
 	{
 		try {
-			$setting = \App\Models\Setting::getByName($this->name);
+			$setting = \App\Models\Setting::getOneByName($this->name);
 		} catch (\Katu\Exceptions\MissingSettingException $e) {
-			$setting = \App\Models\Setting::create($creator, $this->name, $this->value, $this->isSystem, $this->description);
+			$setting = \App\Models\Setting::getOrCreate($creator, $this->name, $this->value, $this->isSystem, $this->description);
 		}
 
 		return $setting;

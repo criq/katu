@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Utils\Callback;
+namespace Katu\Tools\Callbacks;
 
 class Collection
 {
