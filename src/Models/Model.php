@@ -293,10 +293,28 @@ class Model extends Base
 	 */
 	public function getFileAttachments()
 	{
-		return \App\Models\FileAttachment::getBy([
-			'objectModel' => static::getClass(),
-			'objectId' => $this->getId(),
-		]);
+		$sql = SX::select()
+			->select(\App\Models\FileAttachment::getTable())
+			->from(\App\Models\FileAttachment::getTable())
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
+			;
+
+		return \App\Models\FileAttachment::getBySql($sql);
+	}
+
+	public function getImageFileAttachments()
+	{
+		$sql = SX::select()
+			->select(\App\Models\FileAttachment::getTable())
+			->from(\App\Models\FileAttachment::getTable())
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
+			->joinColumns(\App\Models\FileAttachment::getColumn('fileId'), \App\Models\File::getIdColumn())
+			->where(SX::cmpLike(\App\Models\File::getColumn('type'), 'image/%'))
+			;
+
+		return \App\Models\FileAttachment::getBySql($sql);
 	}
 
 	public function getImageFile()
