@@ -104,7 +104,7 @@ class CSV
 
 	public function getAsString()
 	{
-		return $this->file->get();
+		return $this->getFile()->get();
 	}
 
 	public function delete()
