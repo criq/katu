@@ -25,9 +25,9 @@ class Upload
 		$this->error    = (int)   $upload->getError();
 	}
 
-	public static function get(string $key)
+	public static function get(\Slim\Http\Request $request, string $key)
 	{
-		$uploadedFiles = \Katu\App::getRequest()->getUploadedFiles();
+		$uploadedFiles = $request->getUploadedFiles();
 		if (!isset($uploadedFiles[$key])) {
 			return false;
 		}
