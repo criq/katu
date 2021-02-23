@@ -26,7 +26,7 @@ class Pickle
 
 	public function getFile()
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'pickles', \Katu\Files\File::generatePath($this->name, 'txt'));
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'pickles', \Katu\Files\File::generatePath($this->getName(), 'txt'));
 	}
 
 	public function get()
