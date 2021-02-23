@@ -23,12 +23,12 @@ class TURL
 		}
 	}
 
-	public function __toString()
+	public function __toString() : string
 	{
 		return (string)$this->value;
 	}
 
-	public static function make($url, $params = [])
+	public static function make($url, $params = []) : TURL
 	{
 		$params = array_filter((array)$params, function ($i) {
 			if (is_string($i)) {
@@ -40,7 +40,7 @@ class TURL
 		return new static($url . ($params ? ('?' . http_build_query($params)) : null));
 	}
 
-	public static function build($parts)
+	public static function build($parts) : TURL
 	{
 		$url = '';
 
@@ -67,12 +67,12 @@ class TURL
 		return new static($url);
 	}
 
-	public static function isValid($value)
+	public static function isValid($value) : bool
 	{
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== false;
 	}
 
-	public static function makeValid($value)
+	public static function makeValid($value) : string
 	{
 		$url = trim($value);
 		if (!$url) {
@@ -86,28 +86,28 @@ class TURL
 		return $url;
 	}
 
-	public function getScheme()
+	public function getScheme() : string
 	{
 		$parts = $this->getParts();
 
 		return $parts['scheme'];
 	}
 
-	public function getHost()
+	public function getHost() : string
 	{
 		$parts = $this->getParts();
 
 		return $parts['host'];
 	}
 
-	public function getHostWithScheme()
+	public function getHostWithScheme() : string
 	{
 		$parts = $this->getParts();
 
 		return $parts['scheme'] . '://' . $parts['host'];
 	}
 
-	public function get2ndLevelDomain()
+	public function get2ndLevelDomain() : string
 	{
 		$parsed = parse_url($this->value);
 		if (!isset($parsed['host'])) {
@@ -117,7 +117,7 @@ class TURL
 		return implode('.', array_slice(explode('.', $parsed['host']), -2));
 	}
 
-	public function getParts()
+	public function getParts() : array
 	{
 		$parts = parse_url($this->value);
 
@@ -135,7 +135,7 @@ class TURL
 		return $parts;
 	}
 
-	public function addQueryParam($name, $value, $overwrite = true)
+	public function addQueryParam($name, $value, $overwrite = true) : TURL
 	{
 		$parts = $this->getParts();
 
@@ -150,7 +150,7 @@ class TURL
 		return $this;
 	}
 
-	public function removeQueryParam($name)
+	public function removeQueryParam($name) : TURL
 	{
 		$parts = $this->getParts();
 
@@ -183,7 +183,7 @@ class TURL
 		return null;
 	}
 
-	public function getWithoutQuery()
+	public function getWithoutQuery() : TURL
 	{
 		$parts = $this->getParts();
 		unset($parts['query']);
@@ -191,7 +191,7 @@ class TURL
 		return static::build($parts);
 	}
 
-	public function getWithoutTrailingIndex()
+	public function getWithoutTrailingIndex() : TURL
 	{
 		$parts = $this->getParts();
 
