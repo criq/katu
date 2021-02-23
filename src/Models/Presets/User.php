@@ -62,7 +62,8 @@ class User extends \Katu\Models\Model
 
 	public static function createWithEmailAddress($emailAddress) : User
 	{
-		if (!$emailAddress || !($emailAddress instanceof (static::getEmailAddressClass()->getName()))) {
+		$emailAddressClass = static::getEmailAddressClass()->getName();
+		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
 				->setAbbr('invalidEmailAddress')
 				->addErrorName('emailAddress')
@@ -152,7 +153,8 @@ class User extends \Katu\Models\Model
 
 	public function setEmailAddress(?\Katu\Models\Presets\EmailAddress $emailAddress)
 	{
-		if (!$emailAddress || !($emailAddress instanceof (static::getEmailAddressClass()->getName()))) {
+		$emailAddressClass = static::getEmailAddressClass()->getName();
+		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
 				->setAbbr('invalidEmailAddress')
 				->addErrorName('emailAddress')
