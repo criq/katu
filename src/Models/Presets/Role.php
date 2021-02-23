@@ -6,14 +6,14 @@ class Role extends \Katu\Models\Model
 {
 	const TABLE = 'roles';
 
-	public static function getRolePermissionClassName()
+	public static function getRolePermissionClass() : \ReflectionClass
 	{
-		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'RolePermission');
+		return new \ReflectionClass('App\Models\RolePermission');
 	}
 
-	public static function getUserRoleClassName()
+	public static function getUserRoleClass() : \ReflectionClass
 	{
-		return new \Katu\Tools\Classes\ClassName('App', 'Models', 'UserRole');
+		return new \ReflectionClass('App\Models\UserRole');
 	}
 
 	public static function create($name)
@@ -37,16 +37,13 @@ class Role extends \Katu\Models\Model
 
 	public function delete()
 	{
-		$rolePermissionClass = (string)static::getRolePermissionClassName();
-		$userRoleClass = (string)static::getUserRoleClassName();
-
-		foreach ($rolePermissionClass::getBy([
+		foreach (static::getRolePermissionClass()->getName()::getBy([
 			'roleId' => $this->getId(),
 		]) as $rolePermission) {
 			$rolePermission->delete();
 		}
 
-		foreach ($userRoleClass::getBy([
+		foreach (static::getUserRoleClass()->getName()::getBy([
 			'roleId' => $this->getId(),
 		]) as $userRole) {
 			$userRole->delete();
@@ -89,7 +86,7 @@ class Role extends \Katu\Models\Model
 		return true;
 	}
 
-	public function setName($name)
+	public function setName($name) : Role
 	{
 		if (!static::checkName($name, $this)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid name."))
@@ -99,14 +96,12 @@ class Role extends \Katu\Models\Model
 
 		$this->update('name', trim($name));
 
-		return true;
+		return $this;
 	}
 
 	public function addPermission($permission)
 	{
-		$rolePermissionClass = (string)static::getRolePermissionClassName();
-
-		return $rolePermissionClass::make($this, $permission);
+		return static::getRolePermissionClass()->getName()::make($this, $permission);
 	}
 
 	public function addPermissions($permissions)
@@ -120,9 +115,7 @@ class Role extends \Katu\Models\Model
 
 	public function getRolePermissions()
 	{
-		$rolePermissionClass = (string)static::getRolePermissionClassName();
-
-		return $rolePermissionClass::getBy([
+		return static::getRolePermissionClass()->getName()::getBy([
 			'roleId' => $this->getId(),
 		]);
 	}
@@ -134,21 +127,17 @@ class Role extends \Katu\Models\Model
 		}, $this->getRolePermissions()->getItems());
 	}
 
-	public function hasPermission($permission)
+	public function hasPermission($permission) : bool
 	{
-		$rolePermissionClass = (string)static::getRolePermissionClassName();
-
-		return (bool)$rolePermissionClass::getOneBy([
+		return (bool)(static::getRolePermissionClass()->getName()::getOneBy([
 			'roleId' => $this->getId(),
 			'permission' => trim($permission),
-		]);
+		]));
 	}
 
 	public function deleteAllPermissions()
 	{
-		$rolePermissionClass = (string)static::getRolePermissionClassName();
-
-		foreach ($rolePermissionClass::getBy([
+		foreach (static::getRolePermissionClass()->getName()::getBy([
 			'roleId' => $this->getId(),
 		]) as $rolePermission) {
 			$rolePermission->delete();

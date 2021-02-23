@@ -6,9 +6,9 @@ class RolePermission extends \Katu\Models\Model
 {
 	const TABLE = 'role_permissions';
 
-	public static function getUserPermissionClassName()
+	public static function getUserPermissionClass() : \ReflectionClass
 	{
-		return new \Katu\Tools\Classes\ClassName('Katu', 'Models', 'Presets', 'UserPermission');
+		return new \ReflectionClass('Katu\Models\Presets\UserPermission');
 	}
 
 	public static function create(Role $role, string $permission) : RolePermission
@@ -44,8 +44,6 @@ class RolePermission extends \Katu\Models\Model
 
 	public static function isValidPermission($permission) : bool
 	{
-		$userPermissionClass = (string)static::getUserPermissionClassName();
-
-		return in_array($permission, $userPermissionClass::getAvailable());
+		return in_array($permission, static::getUserPermissionClass()->getName()::getAvailable());
 	}
 }
