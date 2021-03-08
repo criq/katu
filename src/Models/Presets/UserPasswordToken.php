@@ -9,7 +9,7 @@ class UserPasswordToken extends \Katu\Models\Model
 
 	public static function getUserClass()
 	{
-		return new \ReflectionClass("\Katu\Models\Presets\User");
+		return new \ReflectionClass("Katu\Models\Presets\User");
 	}
 
 	public static function create(User $user)

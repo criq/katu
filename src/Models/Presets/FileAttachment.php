@@ -8,7 +8,7 @@ class FileAttachment extends \Katu\Models\Model
 
 	public static function getFileClass()
 	{
-		return new \ReflectionClass("\Katu\Models\Presets\File");
+		return new \ReflectionClass("Katu\Models\Presets\File");
 	}
 
 	public static function create(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment

@@ -25,17 +25,17 @@ abstract class View extends Base
 
 	public static function getTableClass()
 	{
-		return new \ReflectionClass("\Katu\PDO\Table");
+		return new \ReflectionClass("Katu\PDO\Table");
 	}
 
 	public static function getViewClass()
 	{
-		return new \ReflectionClass("\Katu\PDO\View");
+		return new \ReflectionClass("Katu\PDO\View");
 	}
 
 	public static function getColumnClass()
 	{
-		return new \ReflectionClass("\Katu\PDO\Column");
+		return new \ReflectionClass("Katu\PDO\Column");
 	}
 
 	public static function getTable() : \Katu\PDO\Table

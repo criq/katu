@@ -21,12 +21,12 @@ abstract class Base
 
 	public static function getTableClass()
 	{
-		return new \ReflectionClass("\Katu\PDO\Table");
+		return new \ReflectionClass("Katu\PDO\Table");
 	}
 
 	public static function getColumnClass()
 	{
-		return new \ReflectionClass("\Katu\PDO\Column");
+		return new \ReflectionClass("Katu\PDO\Column");
 	}
 
 	public static function getClass()
