@@ -400,7 +400,7 @@ abstract class View extends Base
 			$class::updateLastCachedTime();
 		};
 
-		(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->config->database, 'views', 'cache', $class], $callback))
+		(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->getConfig()->database, 'views', 'cache', $class], $callback))
 			->setUseLock(false)
 			->setArgs([$class])
 			->run()
@@ -429,7 +429,7 @@ abstract class View extends Base
 				return true;
 			};
 
-			(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->config->database, 'views', 'materialize', $class], $callback))
+			(new \Katu\Tools\Locks\Lock(static::TIMEOUT, ['databases', static::getConnection()->getConfig()->database, 'views', 'materialize', $class], $callback))
 				->setArgs([$class])
 				->run()
 				;
@@ -464,7 +464,7 @@ abstract class View extends Base
 	{
 		return new \Katu\Files\Temporary([
 			'!databases',
-			'!' . static::getConnection()->config->database,
+			'!' . static::getConnection()->getConfig()->database,
 			'!views',
 			'!cached',
 			'!' . static::TABLE,
@@ -493,7 +493,7 @@ abstract class View extends Base
 	{
 		return new \Katu\Files\Temporary([
 			'!databases',
-			'!' . static::getConnection()->config->database,
+			'!' . static::getConnection()->getConfig()->database,
 			'!views',
 			'!materialized',
 			'!' . static::TABLE,
