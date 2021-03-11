@@ -13,7 +13,7 @@ class Lock
 	private $timeout;
 	private $useLock = true;
 
-	public function __construct(\Katu\Tools\DateTime\Timeout $timeout, mixed $name = null, callable $callback = null)
+	public function __construct(\Katu\Tools\DateTime\Timeout $timeout, $name = null, callable $callback = null)
 	{
 		$this->setTimeout($timeout);
 		$this->setName($name);

@@ -6,7 +6,7 @@ class Timeout
 {
 	protected $timeout;
 
-	public function __construct(mixed $timeout)
+	public function __construct($timeout)
 	{
 		$this->timeout = $timeout;
 	}
