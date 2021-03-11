@@ -99,7 +99,7 @@ class Lock
 			return false;
 		}
 
-		if ($file->getDateTimeModified() >= $this->getTimeout()->getDateTime()) {
+		if ($file->getDateTimeModified()->getTimestamp() >= $this->getTimeout()->getDateTime()->getTimestamp()) {
 			return true;
 		}
 
