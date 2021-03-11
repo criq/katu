@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\DateTime;
 
-use GPBMetadata\Google\Type\Date;
-
 class DateTime extends \DateTime
 {
 	public function __construct($time = null, \DateTimeZone $timezone = null)

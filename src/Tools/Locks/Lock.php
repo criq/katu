@@ -13,15 +13,15 @@ class Lock
 	private $timeout;
 	private $useLock = true;
 
-	public function __construct(int $timeout, $name = null, callable $callback = null)
+	public function __construct(\Katu\Tools\DateTime\Timeout $timeout, mixed $name = null, callable $callback = null)
 	{
-		$this->timeout = $timeout;
-		$this->name = $name;
-		$this->callback = $callback;
+		$this->setTimeout($timeout);
+		$this->setName($name);
+		$this->setCallback($callback);
 
-		if (!$this->name) {
+		if (!$this->getName()) {
 			$origin = debug_backtrace()[1];
-			$this->name = [$origin['class'], $origin['function']];
+			$this->setName([$origin['class'], $origin['function']]);
 		}
 	}
 
@@ -32,11 +32,21 @@ class Lock
 		return $this;
 	}
 
-	public function setTimeout(int $timeout)
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	public function setTimeout(\Katu\Tools\DateTime\Timeout $timeout)
 	{
 		$this->timeout = $timeout;
 
 		return $this;
+	}
+
+	public function getTimeout() : ?\Katu\Tools\DateTime\Timeout
+	{
+		return $this->timeout;
 	}
 
 	public function setCallback(callable $callback)
@@ -44,6 +54,11 @@ class Lock
 		$this->callback = $callback;
 
 		return $this;
+	}
+
+	public function getCallback()
+	{
+		return $this->callback;
 	}
 
 	public function setArgs(array $args)
@@ -84,7 +99,7 @@ class Lock
 			return false;
 		}
 
-		if ($file->getDateTimeModified()->isInTimeout($this->timeout)) {
+		if ($file->getDateTimeModified() >= $this->getTimeout()->getDateTime()) {
 			return true;
 		}
 
@@ -118,8 +133,8 @@ class Lock
 			$this->lock();
 		}
 
-		@set_time_limit($this->timeout);
-		$callback = $this->callback;
+		@set_time_limit($this->getTimeout()->getSeconds());
+		$callback = $this->getCallback();
 		$res = $callback(...$this->args);
 
 		if ($this->getUseLock()) {
