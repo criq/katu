@@ -39,7 +39,7 @@ class TArray extends \ArrayObject
 		return $this[$index];
 	}
 
-	public function getWithoutKeys()
+	public function getWithoutKeys() : TArray
 	{
 		$res = [];
 		foreach ($this as $key => $value) {
@@ -90,7 +90,7 @@ class TArray extends \ArrayObject
 		return $res;
 	}
 
-	public function flatten()
+	public function flatten() : TArray
 	{
 		$iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($this));
 		$values = [];
@@ -102,27 +102,27 @@ class TArray extends \ArrayObject
 		return new static($values);
 	}
 
-	public function reverse()
+	public function reverse() : TArray
 	{
 		return new static(array_reverse($this->getArray()));
 	}
 
-	public function unique()
+	public function unique() : TArray
 	{
 		return new static(array_unique($this->getArray()));
 	}
 
-	public function keys()
+	public function keys() : TArray
 	{
 		return new static(array_keys($this->getArray()));
 	}
 
-	public function values()
+	public function values() : TArray
 	{
 		return new static(array_values($this->getArray()));
 	}
 
-	public function natsort()
+	public function natsort() : TArray
 	{
 		$array = $this->getArray();
 		natsort($array);
@@ -130,7 +130,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function asort($sortFlags = \SORT_REGULAR)
+	public function asort($sortFlags = \SORT_REGULAR) : TArray
 	{
 		$array = $this->getArray();
 		asort($array, $sortFlags);
@@ -138,7 +138,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function ksort($sortFlags = \SORT_REGULAR)
+	public function ksort($sortFlags = \SORT_REGULAR) : TArray
 	{
 		$array = $this->getArray();
 		ksort($array, $sortFlags);
@@ -146,7 +146,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function shuffle()
+	public function shuffle() : TArray
 	{
 		$array = $this->getArray();
 		shuffle($array);
@@ -154,17 +154,17 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function slice($offset, $length, $preserveKeys = false)
+	public function slice($offset, $length, $preserveKeys = false) : TArray
 	{
 		return new static(array_slice($this->getArray(), $offset, $length, $preserveKeys));
 	}
 
-	public function getPage($page, $perPage)
+	public function getPage($page, $perPage) : TArray
 	{
 		return new static(array_slice($this->getArray(), (($page - 1) * $perPage), $perPage));
 	}
 
-	public function orderBy($key, $flags = 0)
+	public function orderBy($key, $flags = 0) : TArray
 	{
 		$array = $this->getArray();
 
@@ -183,14 +183,14 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function map($callback)
+	public function map($callback) : TArray
 	{
 		$array = array_map($callback, $this->getArray());
 
 		return new static($array);
 	}
 
-	public function filter($callback = null)
+	public function filter($callback = null) : TArray
 	{
 		if (!$callback) {
 			$callback = function ($i) {
