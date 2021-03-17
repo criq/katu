@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-use \Sexy\Sexy as SX;
+use Sexy\Sexy as SX;
 
 class Setting extends \Katu\Models\Model
 {

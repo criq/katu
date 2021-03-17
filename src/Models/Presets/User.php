@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-use \Sexy\Sexy as SX;
+use Sexy\Sexy as SX;
 
 class User extends \Katu\Models\Model
 {
@@ -13,6 +13,9 @@ class User extends \Katu\Models\Model
 		'timeCreated' => 'timeCreated',
 	];
 
+	/****************************************************************************
+	 * Classes.
+	 */
 	public static function getAccessTokenClass() : \ReflectionClass
 	{
 		return new \ReflectionClass('App\Models\AccessToken');
@@ -53,6 +56,9 @@ class User extends \Katu\Models\Model
 		return new \ReflectionClass('App\Models\UserSetting');
 	}
 
+	/****************************************************************************
+	 * Create & Delete.
+	 */
 	public static function create() : User
 	{
 		return static::insert([
@@ -97,6 +103,68 @@ class User extends \Katu\Models\Model
 		return null;
 	}
 
+	/****************************************************************************
+	 * Getters & Setters.
+	 */
+	public function setName(?string $name) : User
+	{
+		$this->update('name', trim($name) ?: null);
+
+		return $this;
+	}
+
+	public function getName() : ?string
+	{
+		return $this->name;
+	}
+
+	public function setEmailAddress(?\Katu\Models\Presets\EmailAddress $emailAddress)
+	{
+		$emailAddressClass = static::getEmailAddressClass()->getName();
+		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
+			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
+				->setAbbr('invalidEmailAddress')
+				->addErrorName('emailAddress')
+				;
+		}
+
+		// Look for another user with this e-mail address.
+		if (static::getBy([
+			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
+			SX::cmpNotEq(static::getIdColumn(), $this->getId()),
+		])->getTotal()) {
+			throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
+				->setAbbr('emailAddressInUse')
+				->addErrorName('emailAddress')
+				;
+		}
+
+		$this->update(static::$columnNames['emailAddressId'], $emailAddress->getId());
+
+		return true;
+	}
+
+	public function getEmailAddress()
+	{
+		return static::getEmailAddressClass()->getName()::get($this->{static::$columnNames['emailAddressId']});
+	}
+
+	public function setPlainPassword(string $password)
+	{
+		$this->update('password', (new \Katu\Tools\Security\Password($password))->getEncoded());
+
+		return $this;
+	}
+
+	public function getPassword()
+	{
+		try {
+			return \Katu\Tools\Security\Password::createFromEncoded($this->password);
+		} catch (\Throwable $e) {
+			return false;
+		}
+	}
+
 	public function getValidAccessToken()
 	{
 		return static::getAccessTokenClass()->getName()::makeValidForUser($this);
@@ -131,63 +199,9 @@ class User extends \Katu\Models\Model
 		return (bool) $this->password;
 	}
 
-	public function getEmailAddress()
-	{
-		return static::getEmailAddressClass()->getName()::get($this->{static::$columnNames['emailAddressId']});
-	}
-
 	public function hasEmailAddress()
 	{
 		return (bool) $this->{static::$columnNames['emailAddressId']};
-	}
-
-	public function setEmailAddress(?\Katu\Models\Presets\EmailAddress $emailAddress)
-	{
-		$emailAddressClass = static::getEmailAddressClass()->getName();
-		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
-				->setAbbr('invalidEmailAddress')
-				->addErrorName('emailAddress')
-				;
-		}
-
-		// Look for another user with this e-mail address.
-		if (static::getBy([
-			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
-			SX::cmpNotEq(static::getIdColumn(), $this->getId()),
-		])->getTotal()) {
-			throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
-				->setAbbr('emailAddressInUse')
-				->addErrorName('emailAddress')
-				;
-		}
-
-		$this->update(static::$columnNames['emailAddressId'], $emailAddress->getId());
-
-		return true;
-	}
-
-	public function setPlainPassword(string $password)
-	{
-		$this->update('password', (new \Katu\Tools\Security\Password($password))->getEncoded());
-
-		return $this;
-	}
-
-	public function getPassword()
-	{
-		try {
-			return \Katu\Tools\Security\Password::createFromEncoded($this->password);
-		} catch (\Throwable $e) {
-			return false;
-		}
-	}
-
-	public function setName(?string $name)
-	{
-		$this->update('name', trim($name));
-
-		return true;
 	}
 
 	public function login()

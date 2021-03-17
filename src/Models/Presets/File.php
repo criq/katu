@@ -2,7 +2,7 @@
 
 namespace Katu\Models\Presets;
 
-use \Katu\Tools\Random\Generator;
+use Katu\Tools\Random\Generator;
 
 class File extends \Katu\Models\Model
 {

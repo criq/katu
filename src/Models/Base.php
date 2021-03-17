@@ -2,7 +2,7 @@
 
 namespace Katu\Models;
 
-use \Sexy\Sexy as SX;
+use Sexy\Sexy as SX;
 
 abstract class Base
 {

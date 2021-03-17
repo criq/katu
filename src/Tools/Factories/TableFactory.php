@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Factories;
 
-use \Sexy\Sexy as SX;
+use Sexy\Sexy as SX;
 
 abstract class TableFactory extends Factory
 {

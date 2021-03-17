@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\DOM;
 
-use \Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\DomCrawler\Crawler;
 
 class DOM
 {
