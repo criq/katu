@@ -27,11 +27,11 @@ class Session
 	public static function getDefaultConfig()
 	{
 		return [
-			'save_path'              => (string)static::getPath(),
-			'name'                   => static::DEFAULT_NAME,
-			//'sid_length'             => static::DEFAULT_SID_LENGTH,
+			'save_path' => (string)static::getPath(),
+			'name' => static::DEFAULT_NAME,
+			//'sid_length' => static::DEFAULT_SID_LENGTH,
 			//'sid_bits_per_character' => static::DEFAULT_SID_BITS_PER_CHARACTER,
-			'cookie_lifetime'        => abs((new \Katu\Tools\DateTime\DateTime('+ ' . static::DEFAULT_COOKIE_LIFETIME))->getAge()),
+			'cookie_lifetime' => abs((new \Katu\Tools\DateTime\DateTime('+ ' . static::DEFAULT_COOKIE_LIFETIME))->getAge()),
 		];
 	}
 

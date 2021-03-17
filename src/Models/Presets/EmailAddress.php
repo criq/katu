@@ -13,7 +13,7 @@ class EmailAddress extends \Katu\Models\Model
 
 	public static function create(string $emailAddress) : EmailAddress
 	{
-		if (!static::checkEmailAddress($emailAddress)) {
+		if (!static::sanitizeEmailAddress($emailAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
@@ -23,11 +23,11 @@ class EmailAddress extends \Katu\Models\Model
 		]);
 	}
 
-	public static function make(string $emailAddress) : EmailAddress
+	public static function getOrCreate(string $emailAddress) : EmailAddress
 	{
 		$emailAddress = preg_replace('/\s/', null, $emailAddress);
 
-		if (!static::checkEmailAddress($emailAddress)) {
+		if (!static::sanitizeEmailAddress($emailAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
@@ -36,30 +36,22 @@ class EmailAddress extends \Katu\Models\Model
 		]);
 	}
 
-	public static function checkEmailAddress(string $emailAddress) : bool
+	public static function sanitizeEmailAddress(string $value) : string
 	{
-		if (!trim($emailAddress)) {
+		$value = trim($value);
+		if (!$value) {
 			throw (new \Katu\Exceptions\InputErrorException("Missing e-mail address."))
 				->setAbbr('missingEmailAddress')
-				->addErrorName('emailAddress')
-				->addTranslation('cs', "Chybějící e-mailová adresa.")
 				;
 		}
 
-		if (!static::isValid($emailAddress)) {
+		if (!\Katu\Types\TEmailAddress::validateEmailAddress($value)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
 				->setAbbr('invalidEmailAddress')
-				->addErrorName('emailAddress')
-				->addTranslation('cs', "Neplatná e-mailová adresa.")
 				;
 		}
 
-		return true;
-	}
-
-	public static function isValid($emailAddress) : bool
-	{
-		return \Katu\Types\TEmailAddress::validateEmailAddress($emailAddress);
+		return $value;
 	}
 
 	public function getEmailAddress()
