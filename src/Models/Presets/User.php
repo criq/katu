@@ -60,23 +60,13 @@ class User extends \Katu\Models\Model
 		]);
 	}
 
-	public static function createWithEmailAddress($emailAddress) : User
+	public static function createWithEmailAddress(\Katu\Models\Presets\EmailAddress $emailAddress) : User
 	{
-		$emailAddressClass = static::getEmailAddressClass()->getName();
-		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
-				->setAbbr('invalidEmailAddress')
-				->addErrorName('emailAddress')
-				;
-		}
-
-		// Look for another user with this e-mail address.
 		if (static::getBy([
 			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
 		])->getTotal()) {
 			throw (new \Katu\Exceptions\InputErrorException("E-mail address is already in use."))
 				->setAbbr('emailAddressInUse')
-				->addErrorName('emailAddress')
 				;
 		}
 
