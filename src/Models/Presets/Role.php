@@ -99,6 +99,11 @@ class Role extends \Katu\Models\Model
 		return $this;
 	}
 
+	public function getName() : string
+	{
+		return $this->name;
+	}
+
 	public function addPermission($permission)
 	{
 		return static::getRolePermissionClass()->getName()::make($this, $permission);
