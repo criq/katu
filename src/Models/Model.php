@@ -76,7 +76,7 @@ class Model extends Base
 		return static::get(static::getConnection()->getLastInsertId());
 	}
 
-	public static function upsert(array $getByParams, ?array $insertParams = [], ?array $updateParams = [])
+	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [])
 	{
 		$object = static::getOneBy($getByParams);
 		if ($object) {
@@ -162,14 +162,18 @@ class Model extends Base
 		return static::getColumn(static::getPrimaryKeyColumnName());
 	}
 
-	public static function getPrimaryKeyColumnName()
+	public static function getPrimaryKeyColumnName() : ?string
 	{
 		return static::getTable()->getPrimaryKeyColumnName();
 	}
 
-	public function getId()
+	public function getId() : ?string
 	{
-		return $this->{static::getPrimaryKeyColumnName()};
+		try {
+			return $this->{static::getPrimaryKeyColumnName()};
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public static function get($primaryKey)
