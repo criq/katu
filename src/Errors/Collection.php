@@ -16,7 +16,7 @@ class Collection implements \Iterator, \ArrayAccess
 
 	public function addError($error)
 	{
-		if ($error instanceof \Katu\Exceptions\ExceptionCollection) {
+		if ($error instanceof \Katu\Exceptions\Exceptions) {
 			foreach ($error as $exception) {
 				$this->addError($exception);
 			}

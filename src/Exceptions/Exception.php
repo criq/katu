@@ -6,50 +6,52 @@ class Exception extends \Exception
 {
 	const HTTP_CODE = 400;
 
-	private $abbr;
-	private $errorNames = [];
-	private $translations;
-	private $context;
+	protected $abbr;
+	protected $context;
+	protected $errorNames = [];
+	protected $translations;
 
-	public function __construct($message = null, $code = 0, $previous = null)
+	public function __construct(?string $message = null, ?int $code = 0, ?\Throwable $previous = null)
 	{
 		parent::__construct($message, $code, $previous);
 
 		$this->translations = new \Katu\Types\TLocaleStrings;
 	}
 
-	public function __toString()
+	public function __toString() : string
 	{
 		return (string) $this->getTranslatedMessage();
 	}
 
-	public function getHttpCode()
+	public function getHttpCode() : int
 	{
-		return static::HTTP_CODE;
+		return (int)static::HTTP_CODE;
 	}
 
-	public function setAbbr(string $abbr)
+	public function setAbbr(string $abbr) : Exception
 	{
 		$this->abbr = trim($abbr);
 
 		return $this;
 	}
 
-	public function getAbbr()
+	public function getAbbr() : ?string
 	{
 		return $this->abbr;
 	}
 
-	public function addErrorName(string $errorName)
+	public function addErrorName(string $errorName) : Exception
 	{
-		$this->errorNames[] = static::getErrorName($errorName);
+		foreach (func_get_args() as $arg) {
+			$this->errorNames[] = static::getErrorName($arg);
+		}
 
 		$this->maintainErrorNames();
 
 		return $this;
 	}
 
-	public static function getErrorName(string $errorName)
+	public static function getErrorName(string $errorName) : string
 	{
 		return implode('.', array_filter((array)$errorName));
 	}
@@ -59,7 +61,7 @@ class Exception extends \Exception
 		return array_search(static::getErrorName($errorName), $this->errorNames);
 	}
 
-	public function replaceErrorName(string $errorName, string $replacement)
+	public function replaceErrorName(string $errorName, string $replacement) : Exception
 	{
 		$index = $this->getErrorNameIndex($errorName);
 		if ($index !== false && isset($this->errorNames[$index])) {
@@ -71,19 +73,19 @@ class Exception extends \Exception
 		return $this;
 	}
 
-	private function maintainErrorNames()
+	private function maintainErrorNames() : Exception
 	{
 		$this->errorNames = array_values(array_unique(array_filter($this->errorNames)));
 
 		return $this;
 	}
 
-	public function getErrorNames()
+	public function getErrorNames() : array
 	{
 		return $this->errorNames;
 	}
 
-	public function addTranslation($locale, $message)
+	public function addTranslation($locale, string $message) : Exception
 	{
 		if (is_string($locale)) {
 			$locale = new \Katu\Types\TLocale($locale);
