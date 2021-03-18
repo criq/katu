@@ -184,14 +184,12 @@ abstract class TableBase extends \Sexy\Expression
 		}
 
 		// Create custom indices.
-		if (isset($options['customIndices'])) {
-			foreach ($options['customIndices'] as $customIndex) {
-				try {
-					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
-					$destinationTable->getConnection()->createQuery($sql)->getResult();
-				} catch (\Exception $e) {
-					// Nevermind.
-				}
+		foreach (($options['customIndices'] ?? []) as $customIndex) {
+			try {
+				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
+				$destinationTable->getConnection()->createQuery($sql)->getResult();
+			} catch (\Exception $e) {
+				// Nevermind.
 			}
 		}
 

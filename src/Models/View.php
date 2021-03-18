@@ -370,10 +370,10 @@ abstract class View extends Base
 
 		// Copy into temporary table view.
 		$params = [
-			'disableNull'    => true,
-			'autoIndices'    => static::AUTO_INDICES,
+			'disableNull' => true,
+			'autoIndices' => static::AUTO_INDICES,
 			'compositeIndex' => static::COMPOSITE_INDEX,
-			'customIndices'  => explode(',', static::CUSTOM_INDICES),
+			'customIndices' => array_values(array_filter(explode(',', static::CUSTOM_INDICES))),
 		];
 		$sourceTable->copy($temporaryTable, $params);
 
