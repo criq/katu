@@ -4,7 +4,7 @@ namespace Katu\Tools\Emails;
 
 abstract class ThirdParty extends \Katu\Tools\Emails\Email
 {
-	public $recipientVariables = [];
+	public $substitutions = [];
 	public $template;
 	public $variables = [];
 
@@ -41,7 +41,7 @@ abstract class ThirdParty extends \Katu\Tools\Emails\Email
 	{
 		foreach (static::resolveEmailAddress($emailAddress) as $emailAddress) {
 			if (trim($name)) {
-				$this->recipientVariables[$emailAddress][$name] = $value;
+				$this->substitutions[$emailAddress][$name] = $value;
 			}
 		}
 

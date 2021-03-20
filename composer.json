@@ -25,7 +25,7 @@
 		"php": ">=7",
 		"predis/predis": "@stable",
 		"ralouphie/mimey": "@stable",
-		"sendgrid/sendgrid": "~7",
+		"sendgrid/sendgrid": "@stable",
 		"slim/extras": "@stable",
 		"slim/slim": "^3",
 		"squizlabs/php_codesniffer": "@stable",

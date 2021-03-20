@@ -23,19 +23,29 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty
 
 	public function getEmail()
 	{
-		$email = new \SendGrid\Email;
+		$email = new \SendGrid\Mail\Mail;
 		$email->setFrom($this->fromEmailAddress, $this->fromName);
 		$email->setSubject($this->subject);
-		$email->setHtml($this->html);
-		$email->setText($this->plain ?: strip_tags($this->html));
-		$email->setHeaders($this->headers);
+		$email->addHeaders($this->headers);
 
-		foreach ($this->to as $toEmailAddress => $toName) {
-			$email->addTo($toEmailAddress, $toName);
+		try {
+			$email->addContent('text/html', $this->html);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
+		try {
+			$email->addContent('text/plain', $this->plain ?: strip_tags($this->html));
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
 		if ($this->template) {
 			$email->setTemplateId($this->template);
+		}
+
+		foreach ($this->to as $toEmailAddress => $toName) {
+			$email->addTo($toEmailAddress, $toName, $this->substitutions[$toEmailAddress] ?? []);
 		}
 
 		foreach ($this->attachments as $attachment) {

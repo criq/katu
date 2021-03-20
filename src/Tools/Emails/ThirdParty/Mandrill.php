@@ -67,7 +67,7 @@ class Mandrill extends \Katu\Tools\Emails\ThirdParty
 		}
 
 		$message['global_merge_vars'] = $this->getVariables();
-		$message['merge_vars'] = $this->getRecipientVariables();
+		$message['merge_vars'] = $this->getSubstitutions();
 
 		$message['async'] = $this->async;
 
@@ -102,11 +102,11 @@ class Mandrill extends \Katu\Tools\Emails\ThirdParty
 		return $variables;
 	}
 
-	public function getRecipientVariables()
+	public function getSubstitutions()
 	{
 		$variables = [];
 
-		foreach ($this->recipientVariables as $recipient => $vars) {
+		foreach ($this->substitutions as $recipient => $vars) {
 			$recipientVars = [];
 			foreach ($vars as $name => $value) {
 				$recipientVars[] = [
