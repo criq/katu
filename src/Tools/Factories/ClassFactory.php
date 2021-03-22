@@ -4,16 +4,21 @@ namespace Katu\Tools\Factories;
 
 class ClassFactory extends Factory
 {
-	protected $className;
+	protected $class;
 
-	public function __construct(\Katu\Tools\Classes\ClassName $className)
+	public function __construct(\ReflectionClass $class)
 	{
-		$this->className = $className;
+		$this->class = $class;
+	}
+
+	public function getClass() : \ReflectionClass
+	{
+		return $this->class;
 	}
 
 	public function create()
 	{
-		$class = (string)$this->className;
+		$class = $this->getClass()->getName();
 		$object = new $class;
 		$array = func_get_arg(0);
 		foreach ($array as $key => $value) {

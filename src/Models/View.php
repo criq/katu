@@ -392,7 +392,7 @@ abstract class View extends Base
 
 	public static function cache()
 	{
-		$class = static::getClass();
+		$class = static::getClass()->getName();
 
 		$callback = function ($class) {
 			$class::materializeSourceViews();
@@ -419,7 +419,7 @@ abstract class View extends Base
 	public static function materialize()
 	{
 		try {
-			$class = static::getClass();
+			$class = static::getClass()->getName();
 
 			$callback = function ($class) {
 				$class::materializeSourceViews();

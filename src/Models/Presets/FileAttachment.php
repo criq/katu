@@ -16,7 +16,7 @@ class FileAttachment extends \Katu\Models\Model
 		return static::insert([
 			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
 			'creatorId' => $creator ? $creator->getId() : null,
-			'objectModel' => $object->getClass(),
+			'objectModel' => $object->getClass()->getName(),
 			'objectId' => $object->getId(),
 			'fileId' => $file->getId(),
 		]);
@@ -25,7 +25,7 @@ class FileAttachment extends \Katu\Models\Model
 	public static function make(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment
 	{
 		return static::upsert([
-			'objectModel' => $object->getClass(),
+			'objectModel' => $object->getClass()->getName(),
 			'objectId' => $object->getId(),
 			'fileId' => $file->getId(),
 		], [

@@ -27,8 +27,9 @@ class Config
 
 	public static function createFromConfig(array $config)
 	{
-		$class = (string)new \Katu\Tools\Classes\ClassName('Katu', 'PDO', 'Config', $config['type']);
-		if (!class_exists($class)) {
+		try {
+			$class = (new \ReflectionClass("Katu\PDO\Config\\" . $config['type']))->getName();
+		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\PDOConfigException("Invalid PDO type.");
 		}
 

@@ -29,14 +29,9 @@ abstract class Base
 		return new \ReflectionClass("Katu\PDO\Column");
 	}
 
-	public static function getClass()
+	public static function getClass() : \ReflectionClass
 	{
-		return get_called_class();
-	}
-
-	public static function getClassName()
-	{
-		return new \Katu\Tools\Classes\ClassName(static::getClass());
+		return new \ReflectionClass(get_called_class());
 	}
 
 	public function getClassMethods()
@@ -78,7 +73,7 @@ abstract class Base
 
 	public static function select() : \Katu\PDO\Query
 	{
-		$factory = new \Katu\Tools\Factories\ClassFactory(static::getClassName());
+		$factory = new \Katu\Tools\Factories\ClassFactory(static::getClass());
 
 		// Sexy SQL expression.
 		if (count(func_get_args()) == 1 && func_get_arg(0) instanceof \Sexy\Expression) {
@@ -140,7 +135,7 @@ abstract class Base
 		}
 
 		$query = static::getConnection()->select($sql);
-		$query->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClassName()));
+		$query->setFactory(new \Katu\Tools\Factories\ClassFactory(static::getClass()));
 
 		return $query->getResult();
 	}

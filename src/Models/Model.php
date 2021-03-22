@@ -300,7 +300,7 @@ class Model extends Base
 		$sql = SX::select()
 			->select(\App\Models\FileAttachment::getTable())
 			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()->getName()))
 			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
 			;
 
@@ -312,7 +312,7 @@ class Model extends Base
 		$sql = SX::select()
 			->select(\App\Models\FileAttachment::getTable())
 			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()->getName()))
 			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
 			->joinColumns(\App\Models\FileAttachment::getColumn('fileId'), \App\Models\File::getIdColumn())
 			->where(SX::cmpLike(\App\Models\File::getColumn('type'), 'image/%'))
@@ -326,7 +326,7 @@ class Model extends Base
 		$sql = SX::select()
 			->select(\App\Models\File::getTable())
 			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()->getName()))
 			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
 			->orderBy([
 				SX::orderBy(\App\Models\FileAttachment::getColumn('position'))
@@ -348,7 +348,7 @@ class Model extends Base
 			$file = \App\Models\File::get($fileId);
 			if ($file) {
 				\App\Models\FileAttachment::upsert([
-					'objectModel' => static::getClass(),
+					'objectModel' => static::getClass()->getName(),
 					'objectId' => $this->getId(),
 					'fileId' => $file->getId(),
 				], [

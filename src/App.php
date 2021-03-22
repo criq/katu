@@ -6,24 +6,28 @@ class App
 {
 	public static $app = null;
 
-	public static function getExtendedClassName($appClassName, $fallbackClassName) : \Katu\Tools\Classes\ClassName
+	public static function getExtendedClass(string $appClassName, string $fallbackClassName) : \ReflectionClass
 	{
-		return class_exists((string)$appClassName) ? $appClassName : $fallbackClassName;
+		try {
+			return new \ReflectionClass($appClassName);
+		} catch (\Throwable $e) {
+			return new \ReflectionClass($fallbackClassName);
+		}
 	}
 
-	public static function getControllerClassName() : \Katu\Tools\Classes\ClassName
+	public static function getControllerClass() : \ReflectionClass
 	{
-		return static::getExtendedClassName(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Controllers', 'Controller'), new \Katu\Tools\Classes\ClassName('Katu', 'Controllers', 'Controller'));
+		return static::getExtendedClass("App\Extensions\Controllers\Controller", "Katu\Controllers\Controller");
 	}
 
-	public static function getViewClassName() : \Katu\Tools\Classes\ClassName
+	public static function getViewClass() : \ReflectionClass
 	{
-		return static::getExtendedClassName(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Views', 'View'), new \Katu\Tools\Classes\ClassName('Katu', 'Views', 'View'));
+		return static::getExtendedClass("App\Extensions\Views\View", "Katu\Views\View");
 	}
 
-	public static function getErrorHandlerClassName() : \Katu\Tools\Classes\ClassName
+	public static function getErrorHandlerClass() : \ReflectionClass
 	{
-		return static::getExtendedClassName(new \Katu\Tools\Classes\ClassName('App', 'Extensions', 'Errors', 'Handler'), new \Katu\Tools\Classes\ClassName('Katu', 'Errors', 'Handler'));
+		return static::getExtendedClass("App\Extensions\Errors\Handler", "Katu\Errors\Handler");
 	}
 
 	public static function getBaseDir()
@@ -81,7 +85,7 @@ class App
 			}
 
 			$config['errorHandler'] = function ($c) {
-				$errorHandlerClass = (string)static::getErrorHandlerClassName();
+				$errorHandlerClass = static::getErrorHandlerClass()->getName();
 
 				return new $errorHandlerClass;
 			};

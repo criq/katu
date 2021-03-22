@@ -60,14 +60,14 @@ class Handler
 
 	public static function handleException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
 	{
-		$className = (string)\Katu\App::getErrorHandlerClassName();
+		$className = \Katu\App::getErrorHandlerClass()->getName();
 
 		return $className::resolveException($exception, $request, $response);
 	}
 
 	public static function resolveException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
 	{
-		$controllerClass = (string)\Katu\App::getControllerClassName();
+		$controllerClass = \Katu\App::getControllerClass()->getName();
 
 		try {
 			throw $exception;

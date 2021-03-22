@@ -22,7 +22,7 @@ class Controller
 			$response = $response ?: $this->container->get('response');
 			$args = $args ?: [];
 
-			$viewClass = (string)\Katu\App::getViewClassName();
+			$viewClass = \Katu\App::getViewClass()->getName();
 			$template = $viewClass::render($template, $this->data, $request, $response, $args);
 
 			$headers = $request->getHeader('Accept-Encoding');
