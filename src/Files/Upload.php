@@ -25,17 +25,17 @@ class Upload
 		$this->error    = (int)   $upload->getError();
 	}
 
-	public static function get(\Slim\Http\Request $request, string $key)
+	public static function createFromRequest(\Slim\Http\Request $request, string $key) : ?Upload
 	{
 		$uploadedFiles = $request->getUploadedFiles();
 		if (!isset($uploadedFiles[$key])) {
-			return false;
+			return null;
 		}
 
 		if (($uploadedFiles[$key] ?? null) instanceof \Slim\Http\UploadedFile) {
 			$upload = new static($uploadedFiles[$key]);
 			if (($upload->error ?? null) === UPLOAD_ERR_NO_FILE) {
-				return false;
+				return null;
 			}
 
 			return $upload;
@@ -47,11 +47,16 @@ class Upload
 				$uploads[] = new static($uploadedFile);
 			}
 			if (($uploads[0]->error ?? null) === UPLOAD_ERR_NO_FILE) {
-				return false;
+				return null;
 			}
 		}
 
 		return $uploads;
+	}
+
+	public function getError() : int
+	{
+		return $this->error;
 	}
 
 	public function isInError() : bool
@@ -59,32 +64,12 @@ class Upload
 		return (bool)$this->getErrorId();
 	}
 
-	public function isType($types) : bool
-	{
-		return in_array($this->fileType, (array)$types);
-	}
-
-	public function isSupportedImage() : bool
-	{
-		return in_array($this->fileType, \Katu\Models\Presets\File::getSupportedImageTypes());
-	}
-
-	public function getHash() : string
-	{
-		return sha1(file_get_contents($this->path));
-	}
-
-	public function getErrorNumber() : int
-	{
-		return $this->error;
-	}
-
 	public function getErrorMessage() : string
 	{
-		switch ($this->getErrorNumber()) {
+		switch ($this->getError()) {
 			// 0
 			case UPLOAD_ERR_OK:
-				return false;
+				return null;
 				break;
 
 			// 1
@@ -126,7 +111,7 @@ class Upload
 
 	public function getErrorId() : int
 	{
-		switch ($this->getErrorNumber()) {
+		switch ($this->getError()) {
 			// 0
 			case UPLOAD_ERR_OK:
 				return static::ERROR_OK;
@@ -169,22 +154,57 @@ class Upload
 		}
 	}
 
-	public function getException()
+	public function getException() : ?\Throwable
 	{
 		if ($this->getErrorId()) {
 			return new \Exception($this->getErrorMessage(), $this->getErrorId());
 		}
 
-		return false;
+		return null;
 	}
 
-	public static function getMaxSize()
+	public function getFileName() : string
 	{
-		return min(\Katu\Files\Size::createFromIni(ini_get('upload_max_filesize')), \Katu\Files\Size::createFromIni(ini_get('post_max_size')));
+		return $this->fileName;
+	}
+
+	public function getFileSize() : int
+	{
+		return $this->fileSize;
+	}
+
+	public function getFileType() : string
+	{
+		return $this->fileType;
+	}
+
+	public function isType(array $types) : bool
+	{
+		return in_array($this->fileType, $types);
+	}
+
+	public function isSupportedImage() : bool
+	{
+		return in_array($this->fileType, \Katu\Models\Presets\File::getSupportedImageTypes());
+	}
+
+	public function getPath() : string
+	{
+		return $this->path;
 	}
 
 	public function getFile() : \Katu\Files\File
 	{
 		return new \Katu\Files\File($this->path);
+	}
+
+	public function getHash() : string
+	{
+		return sha1(file_get_contents($this->path));
+	}
+
+	public static function getMaxSize() : \Katu\Files\Size
+	{
+		return min(\Katu\Files\Size::createFromIni(ini_get('upload_max_filesize')), \Katu\Files\Size::createFromIni(ini_get('post_max_size')));
 	}
 }
