@@ -2,6 +2,8 @@
 
 namespace Katu\PDO;
 
+use Katu\Types\TClass;
+
 class Config
 {
 	const DRIVER = null;
@@ -27,13 +29,14 @@ class Config
 
 	public static function createFromConfig(array $config)
 	{
-		try {
-			$class = (new \ReflectionClass("Katu\PDO\Config\\" . $config['type']))->getName();
-		} catch (\Throwable $e) {
+		$class = (new TClass("Katu\PDO\Config\\" . $config['type']));
+		if (!$class->exists()) {
 			throw new \Katu\Exceptions\PDOConfigException("Invalid PDO type.");
 		}
 
-		return new $class($config['host'], $config['user'], $config['password'], $config['database'], $config['charset']);
+		$className = $class->getName();
+
+		return new $className($config['host'], $config['user'], $config['password'], $config['database'], $config['charset']);
 	}
 
 	public function getPDOArray()

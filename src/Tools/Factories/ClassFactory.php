@@ -2,16 +2,18 @@
 
 namespace Katu\Tools\Factories;
 
+use Katu\Types\TClass;
+
 class ClassFactory extends Factory
 {
 	protected $class;
 
-	public function __construct(\ReflectionClass $class)
+	public function __construct(TClass $class)
 	{
 		$this->class = $class;
 	}
 
-	public function getClass() : \ReflectionClass
+	public function getClass() : TClass
 	{
 		return $this->class;
 	}

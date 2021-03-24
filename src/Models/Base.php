@@ -2,6 +2,7 @@
 
 namespace Katu\Models;
 
+use Katu\Types\TClass;
 use Sexy\Sexy as SX;
 
 abstract class Base
@@ -19,19 +20,19 @@ abstract class Base
 		return $object;
 	}
 
-	public static function getTableClass()
+	public static function getTableClass() : TClass
 	{
-		return new \ReflectionClass("Katu\PDO\Table");
+		return new TClass("Katu\PDO\Table");
 	}
 
-	public static function getColumnClass()
+	public static function getColumnClass() : TClass
 	{
-		return new \ReflectionClass("Katu\PDO\Column");
+		return new TClass("Katu\PDO\Column");
 	}
 
-	public static function getClass() : \ReflectionClass
+	public static function getClass() : TClass
 	{
-		return new \ReflectionClass(get_called_class());
+		return new TClass(get_called_class());
 	}
 
 	public function getClassMethods()

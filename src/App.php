@@ -2,32 +2,30 @@
 
 namespace Katu;
 
+use Katu\Types\TClass;
+
 class App
 {
 	public static $app = null;
 
-	public static function getExtendedClass(string $appClassName, string $fallbackClassName) : \ReflectionClass
+	public static function getExtendedClass(TClass $appClass, TClass $fallbackClass) : TClass
 	{
-		try {
-			return new \ReflectionClass($appClassName);
-		} catch (\Throwable $e) {
-			return new \ReflectionClass($fallbackClassName);
-		}
+		return $appClass->exists() ? $appClass : $fallbackClass;
 	}
 
-	public static function getControllerClass() : \ReflectionClass
+	public static function getControllerClass() : TClass
 	{
-		return static::getExtendedClass("App\Extensions\Controllers\Controller", "Katu\Controllers\Controller");
+		return static::getExtendedClass(new TClass("App\Extensions\Controllers\Controller"), new TClass("Katu\Controllers\Controller"));
 	}
 
-	public static function getViewClass() : \ReflectionClass
+	public static function getViewClass() : TClass
 	{
-		return static::getExtendedClass("App\Extensions\Views\View", "Katu\Views\View");
+		return static::getExtendedClass(new TClass("App\Extensions\Views\View"), new TClass("Katu\Views\View"));
 	}
 
-	public static function getErrorHandlerClass() : \ReflectionClass
+	public static function getErrorHandlerClass() : TClass
 	{
-		return static::getExtendedClass("App\Extensions\Errors\Handler", "Katu\Errors\Handler");
+		return static::getExtendedClass(new TClass("App\Extensions\Errors\Handler"), new TClass("Katu\Errors\Handler"));
 	}
 
 	public static function getBaseDir()

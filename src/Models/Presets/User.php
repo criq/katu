@@ -2,6 +2,7 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Types\TClass;
 use Sexy\Sexy as SX;
 
 class User extends \Katu\Models\Model
@@ -16,44 +17,44 @@ class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Classes.
 	 */
-	public static function getAccessTokenClass() : \ReflectionClass
+	public static function getAccessTokenClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\AccessToken');
+		return new TClass("App\Models\AccessToken");
 	}
 
-	public static function getEmailAddressClass() : \ReflectionClass
+	public static function getEmailAddressClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\EmailAddress');
+		return new TClass("App\Models\EmailAddress");
 	}
 
-	public static function getRoleClass() : \ReflectionClass
+	public static function getRoleClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\Role');
+		return new TClass("App\Models\Role");
 	}
 
-	public static function getRolePermissionClass() : \ReflectionClass
+	public static function getRolePermissionClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\RolePermission');
+		return new TClass("App\Models\RolePermission");
 	}
 
-	public static function getUserRoleClass() : \ReflectionClass
+	public static function getUserRoleClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\UserRole');
+		return new TClass("App\Models\UserRole");
 	}
 
-	public static function getUserPermissionClass() : \ReflectionClass
+	public static function getUserPermissionClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\UserPermission');
+		return new TClass("App\Models\UserPermission");
 	}
 
-	public static function getUserServiceClass() : \ReflectionClass
+	public static function getUserServiceClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\UserService');
+		return new TClass("App\Models\UserService");
 	}
 
-	public static function getUserSettingClass() : \ReflectionClass
+	public static function getUserSettingClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\UserSetting');
+		return new TClass("App\Models\UserSetting");
 	}
 
 	/****************************************************************************

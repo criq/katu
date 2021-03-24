@@ -2,12 +2,14 @@
 
 namespace Katu\Controllers\Presets;
 
+use Katu\Types\TClass;
+
 class Images extends \Katu\Controllers\Controller
 {
 	public static function getVersionSrcFile(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
 	{
 		try {
-			$fileClass = \Katu\App::getExtendedClass("App\Models\File", "Katu\Models\Presets\File")->getName();
+			$fileClass = \Katu\App::getExtendedClass(new TClass("App\Models\File"), new TClass("Katu\Models\Presets\File"))->getName();
 			$file = $fileClass::getOneBy([
 				'id' => $args['fileId'],
 				'secret' => $args['fileSecret'],

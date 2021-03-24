@@ -2,6 +2,8 @@
 
 namespace Katu\Models;
 
+use Katu\Types\TClass;
+
 abstract class View extends Base
 {
 	const AUTO_INDICES = true;
@@ -23,19 +25,19 @@ abstract class View extends Base
 	const TIMEOUT = 3600;
 	const TMP_LENGTH = 8;
 
-	public static function getTableClass()
+	public static function getTableClass() : TClass
 	{
-		return new \ReflectionClass("Katu\PDO\Table");
+		return new TClass("Katu\PDO\Table");
 	}
 
-	public static function getViewClass()
+	public static function getViewClass() : TClass
 	{
-		return new \ReflectionClass("Katu\PDO\View");
+		return new TClass("Katu\PDO\View");
 	}
 
-	public static function getColumnClass()
+	public static function getColumnClass() : TClass
 	{
-		return new \ReflectionClass("Katu\PDO\Column");
+		return new TClass("Katu\PDO\Column");
 	}
 
 	public static function getTable() : \Katu\PDO\Table

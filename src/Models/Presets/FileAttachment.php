@@ -2,13 +2,15 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Types\TClass;
+
 class FileAttachment extends \Katu\Models\Model
 {
 	const TABLE = 'file_attachments';
 
-	public static function getFileClass()
+	public static function getFileClass() : TClass
 	{
-		return new \ReflectionClass("Katu\Models\Presets\File");
+		return new TClass("Katu\Models\Presets\File");
 	}
 
 	public static function create(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment

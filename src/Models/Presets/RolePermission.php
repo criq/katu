@@ -2,13 +2,15 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Types\TClass;
+
 class RolePermission extends \Katu\Models\Model
 {
 	const TABLE = 'role_permissions';
 
-	public static function getUserPermissionClass() : \ReflectionClass
+	public static function getUserPermissionClass() : TClass
 	{
-		return new \ReflectionClass('Katu\Models\Presets\UserPermission');
+		return new TClass("Katu\Models\Presets\UserPermission");
 	}
 
 	public static function create(Role $role, string $permission) : RolePermission

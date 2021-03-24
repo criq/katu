@@ -2,13 +2,15 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Types\TClass;
+
 class UserService extends \Katu\Models\Model
 {
 	const TABLE = 'user_services';
 
-	public static function getUserClass()
+	public static function getUserClass() : TClass
 	{
-		return new \ReflectionClass("Katu\Models\Presets\User");
+		return new TClass("Katu\Models\Presets\User");
 	}
 
 	public static function create(User $user, string $serviceName, string $serviceUserId)

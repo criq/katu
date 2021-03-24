@@ -2,18 +2,20 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Types\TClass;
+
 class Role extends \Katu\Models\Model
 {
 	const TABLE = 'roles';
 
-	public static function getRolePermissionClass() : \ReflectionClass
+	public static function getRolePermissionClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\RolePermission');
+		return new TClass("App\Models\RolePermission");
 	}
 
-	public static function getUserRoleClass() : \ReflectionClass
+	public static function getUserRoleClass() : TClass
 	{
-		return new \ReflectionClass('App\Models\UserRole');
+		return new TClass("App\Models\UserRole");
 	}
 
 	public static function create($name)
