@@ -20,8 +20,8 @@ class ClassFactory extends Factory
 
 	public function create()
 	{
-		$class = $this->getClass()->getName();
-		$object = new $class;
+		$className = $this->getClass()->getName();
+		$object = new $className;
 		$array = func_get_arg(0);
 		foreach ($array as $key => $value) {
 			$object->$key = $value;

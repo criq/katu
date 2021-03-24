@@ -20,7 +20,7 @@ class EncryptedString
 	public static function encrypt(string $payload) : EncryptedString
 	{
 		$method = static::DEFAULT_METHOD;
-		$iv = openssl_random_pseudo_bytes(16);
+		$iv = hex2bin(substr(sha1($payload), 0, 32));
 		$result = openssl_encrypt($payload, $method, \Katu\Config\Config::get('encryption', 'key'), 0, $iv);
 
 		return new EncryptedString($method, $iv, $result);

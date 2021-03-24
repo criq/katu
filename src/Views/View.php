@@ -284,11 +284,11 @@ class View
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();
 
-		if (class_exists('\\App\\Models\\User')) {
+		if (class_exists("App\Models\User")) {
 			$data['_user'] = \App\Models\User::getCurrent();
 		}
 
-		if (class_exists('\App\\Models\\Setting')) {
+		if (class_exists("App\Models\Setting")) {
 			$data['_settings'] = \App\Models\Setting::getAllAsAssoc();
 		}
 
