@@ -16,12 +16,12 @@ class CSRF
 		return $token;
 	}
 
-	public static function getAllTokens()
+	public static function getAllTokens() : array
 	{
-		return (array) \Katu\Tools\Session\Session::get('csrf.tokens');
+		return (array)\Katu\Tools\Session\Session::get('csrf.tokens');
 	}
 
-	public static function getValidTokens()
+	public static function getValidTokens() : array
 	{
 		return array_values(array_filter(static::getAllTokens(), function ($token) {
 			return $token->isValid();
@@ -36,16 +36,16 @@ class CSRF
 			}
 		}
 
-		return false;
+		return null;
 	}
 
-	public static function isValidToken($tokenToken)
+	public static function isValidToken($tokenToken) : bool
 	{
 		$token = static::getValidTokenByToken($tokenToken);
-		if (!$token) {
-			return false;
+		if ($token) {
+			return $token->isValid();
 		}
 
-		return $token->isValid();
+		return false;
 	}
 }
