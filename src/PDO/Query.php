@@ -8,6 +8,7 @@ class Query
 	protected $factory;
 	protected $page;
 	protected $params = [];
+	protected $result;
 	protected $sql;
 	protected $statement;
 
@@ -85,6 +86,10 @@ class Query
 
 	public function getFactory() : ?\Katu\Interfaces\Factory
 	{
+		if (!$this->factory) {
+			$this->factory = new \Katu\Tools\Factories\ArrayFactory;
+		}
+
 		return $this->factory;
 	}
 
@@ -109,37 +114,68 @@ class Query
 		return $this->statement;
 	}
 
-	public function getResult()
+	public function setResult(Result $result) : Query
 	{
-		$factory = $this->getFactory();
-		if (!$factory) {
-			$factory = new \Katu\Tools\Factories\ArrayFactory;
-		}
+		$this->result = $result;
 
-		$statement = $this->getStatement();
-		$statement->execute();
+		return $this;
+	}
 
-		$foundRows = null;
-		try {
-			if (mb_strpos($statement->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
-				$sql = " SELECT FOUND_ROWS() AS total ";
-				$foundRowsQuery = $this->getConnection()->createQuery($sql);
-				$foundRowsStatement = $foundRowsQuery->getStatement();
-				$foundRowsStatement->execute();
-				$fetched = $foundRowsStatement->fetchAll(\PDO::FETCH_ASSOC);
-				$foundRows = (int)$fetched[0]['total'];
+	public function getResult() : Result
+	{
+		if (!$this->result) {
+			$statement = $this->getStatement();
+			$statement->execute();
+
+			$errorInfo = $statement->errorInfo();
+			if ((int)$errorInfo[1]) {
+				$exception = new \Katu\Exceptions\Exception($errorInfo[2], $errorInfo[1]);
+
+				// Table doesn't exist.
+				if ($errorInfo[1] == 1146 && preg_match("/Table '(.+)\.(?<tableName>.+)' doesn't exist/", $errorInfo[2], $match)) {
+					// Create the table.
+					$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['tableName'] . '.create.sql');
+					if ($sqlFile->exists()) {
+						// There is a file, let's create the table.
+						$this->getConnection()->createQuery($sqlFile->get())->getResult();
+					} else {
+						throw $exception;
+					}
+				} else {
+					throw $exception;
+				}
 			}
-		} catch (\Throwable $e) {
-			// Nevermind.
+
+			$foundRows = null;
+			try {
+				if (mb_strpos($statement->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
+					$sql = " SELECT FOUND_ROWS() AS total ";
+					$foundRowsQuery = $this->getConnection()->createQuery($sql);
+					$foundRowsStatement = $foundRowsQuery->getStatement();
+					$foundRowsStatement->execute();
+					$fetched = $foundRowsStatement->fetchAll(\PDO::FETCH_ASSOC);
+					$foundRows = (int)$fetched[0]['total'];
+				}
+			} catch (\Throwable $e) {
+				// Nevermind.
+			}
+
+			$result = new Result($this);
+
+			if ($this->getPage() && !is_null($foundRows)) {
+				$result->setPagination(new \Katu\Types\TPagination($foundRows, $this->getPage()->getPerPage(), $this->getPage()->getPage()));
+			} else {
+				$rowCount = $statement->rowCount();
+				$result->setPagination(new \Katu\Types\TPagination($rowCount, $rowCount ?: 1, 1));
+			}
+
+			foreach ($this->getStatement()->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+				$result->append($this->getFactory()->create($row));
+			}
+
+			$this->setResult($result);
 		}
 
-		if ($this->getPage() && !is_null($foundRows)) {
-			$pagination = new \Katu\Types\TPagination($foundRows, $this->getPage()->getPerPage(), $this->getPage()->getPage());
-			$result = new \Katu\PDO\Results\PaginatedResult($this->getConnection(), $statement, $factory, $pagination);
-		} else {
-			$result = new \Katu\PDO\Results\Result($this->getConnection(), $statement, $factory);
-		}
-
-		return $result;
+		return $this->result;
 	}
 }

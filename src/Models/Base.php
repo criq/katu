@@ -115,7 +115,7 @@ abstract class Base
 		return $filteredParams;
 	}
 
-	public static function getBy(?array $params = [], ?array $expressions = [], ?array $options = []) : \Katu\PDO\Results\Result
+	public static function getBy(?array $params = [], ?array $expressions = [], ?array $options = []) : \Katu\PDO\Result
 	{
 		$sql = SX::select();
 		$sql->addExpressions($expressions);
@@ -141,7 +141,7 @@ abstract class Base
 		return $query->getResult();
 	}
 
-	public static function getBySql($sql) : \Katu\PDO\Results\Result
+	public static function getBySql($sql) : \Katu\PDO\Result
 	{
 		return static::select($sql)->getResult();
 	}
@@ -166,7 +166,7 @@ abstract class Base
 		return static::getBy(...$args)->getOne();
 	}
 
-	public static function getAll(?array $expressions = []) : \Katu\PDO\Results\Result
+	public static function getAll(?array $expressions = []) : \Katu\PDO\Result
 	{
 		return static::getBy([], $expressions);
 	}
