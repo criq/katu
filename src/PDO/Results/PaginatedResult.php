@@ -25,19 +25,6 @@ class PaginatedResult extends Result
 		return $this->pagination;
 	}
 
-	public function setTotal(int $total) : PaginatedResult
-	{
-		parent::setTotal(...func_get_args());
-
-		try {
-			$this->getPagination()->setTotal($total);
-		} catch (\Throwable $e) {
-			// Nevermind.
-		}
-
-		return $this;
-	}
-
 	public function getPage()
 	{
 		return $this->getPagination()->page;
@@ -51,6 +38,11 @@ class PaginatedResult extends Result
 	public function getPages()
 	{
 		return $this->getPagination()->pages;
+	}
+
+	public function getTotal() : int
+	{
+		return $this->getPagination()->getTotal();
 	}
 
 	/****************************************************************************

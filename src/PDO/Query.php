@@ -2,8 +2,6 @@
 
 namespace Katu\PDO;
 
-use Katu\Types\TPagination;
-
 class Query
 {
 	protected $connection;
@@ -11,6 +9,7 @@ class Query
 	protected $page;
 	protected $params = [];
 	protected $sql;
+	protected $statement;
 
 	public function __construct(Connection $connection, $sql, ?array $params = [])
 	{
@@ -89,23 +88,25 @@ class Query
 		return $this->factory;
 	}
 
-	public function getStatement()
+	public function getStatement() : \PDOStatement
 	{
-		$statement = $this->getConnection()->getConnection()->prepare($this->getSql());
+		if (!$this->statement) {
+			$this->statement = $this->getConnection()->getConnection()->prepare($this->getSql());
 
-		foreach ($this->getParams() as $name => $value) {
-			if (is_string($value)) {
-				$statement->bindValue($name, $value, \PDO::PARAM_STR);
-			} elseif (is_int($value)) {
-				$statement->bindValue($name, $value, \PDO::PARAM_INT);
-			} elseif (is_float($value)) {
-				$statement->bindValue($name, $value, \PDO::PARAM_STR);
-			} else {
-				$statement->bindValue($name, $value, \PDO::PARAM_STR);
+			foreach ($this->getParams() as $name => $value) {
+				if (is_string($value)) {
+					$this->statement->bindValue($name, $value, \PDO::PARAM_STR);
+				} elseif (is_int($value)) {
+					$this->statement->bindValue($name, $value, \PDO::PARAM_INT);
+				} elseif (is_float($value)) {
+					$this->statement->bindValue($name, $value, \PDO::PARAM_STR);
+				} else {
+					$this->statement->bindValue($name, $value, \PDO::PARAM_STR);
+				}
 			}
 		}
 
-		return $statement;
+		return $this->statement;
 	}
 
 	public function getResult()
@@ -115,16 +116,17 @@ class Query
 			$factory = new \Katu\Tools\Factories\ArrayFactory;
 		}
 
-		$this->getStatement()->execute();
+		$statement = $this->getStatement();
+		$statement->execute();
 
 		$foundRows = null;
 		try {
-			if (mb_strpos($this->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
+			if (mb_strpos($statement->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
 				$sql = " SELECT FOUND_ROWS() AS total ";
 				$foundRowsQuery = $this->getConnection()->createQuery($sql);
-				$statement = $foundRowsQuery->getStatement();
-				$statement->execute();
-				$fetched = $statement->fetchAll(\PDO::FETCH_ASSOC);
+				$foundRowsStatement = $foundRowsQuery->getStatement();
+				$foundRowsStatement->execute();
+				$fetched = $foundRowsStatement->fetchAll(\PDO::FETCH_ASSOC);
 				$foundRows = (int)$fetched[0]['total'];
 			}
 		} catch (\Throwable $e) {
@@ -132,10 +134,12 @@ class Query
 		}
 
 		if ($this->getPage() && !is_null($foundRows)) {
-			$pagination = new TPagination($foundRows, $this->getPage()->getPerPage(), $this->getPage()->getPage());
-			return new \Katu\PDO\Results\PaginatedResult($this->getConnection(), $this->getStatement(), $factory, $pagination);
+			$pagination = new \Katu\Types\TPagination($foundRows, $this->getPage()->getPerPage(), $this->getPage()->getPage());
+			$result = new \Katu\PDO\Results\PaginatedResult($this->getConnection(), $statement, $factory, $pagination);
 		} else {
-			return new \Katu\PDO\Results\Result($this->getConnection(), $this->getStatement(), $factory);
+			$result = new \Katu\PDO\Results\Result($this->getConnection(), $statement, $factory);
 		}
+
+		return $result;
 	}
 }

@@ -8,22 +8,12 @@ class Result extends \ArrayObject
 	protected $factory;
 	protected $fetched = false;
 	protected $statement;
-	protected $total;
 
 	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Interfaces\Factory $factory)
 	{
 		$this->setConnection($connection);
 		$this->setStatement($statement);
 		$this->setFactory($factory);
-
-		$this->getStatement()->execute();
-
-		if (strpos($this->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS')) {
-			$sql = " SELECT FOUND_ROWS() AS total ";
-			$this->setTotal((int)$this->getConnection()->createQuery($sql)->getResult()[0]['total']);
-		} else {
-			$this->setTotal((int)$this->getStatement()->rowCount());
-		}
 
 		$errorInfo = $this->getStatement()->errorInfo();
 		if ((int)$errorInfo[1]) {
@@ -83,7 +73,7 @@ class Result extends \ArrayObject
 		return $this->factory;
 	}
 
-	public function setStorage()
+	public function setStorage() : Result
 	{
 		if (!$this->fetched) {
 			foreach ($this->getStatement()->fetchAll(\PDO::FETCH_ASSOC) as $row) {
@@ -92,10 +82,10 @@ class Result extends \ArrayObject
 			$this->fetched = true;
 		}
 
-		return true;
+		return $this;
 	}
 
-	public function getItems()
+	public function getItems() : array
 	{
 		$this->setStorage();
 
@@ -107,23 +97,9 @@ class Result extends \ArrayObject
 		return $this[0] ?? null;
 	}
 
-	public function getCount()
+	public function getTotal() : int
 	{
-		$this->setStorage();
-
 		return count($this);
-	}
-
-	public function setTotal(int $total) : Result
-	{
-		$this->total = $total;
-
-		return $this;
-	}
-
-	public function getTotal()
-	{
-		return $this->total;
 	}
 
 	public function each($callback)
