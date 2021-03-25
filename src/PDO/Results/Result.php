@@ -47,25 +47,6 @@ class Result extends \ArrayObject
 		$this->setStorage();
 	}
 
-	public static function createFromQuery(\Katu\PDO\Query $query)
-	{
-		$factory = $query->getFactory();
-		if (!$factory) {
-			$factory = new \Katu\Tools\Factories\ArrayFactory;
-		}
-
-		if (strpos($query->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS')) {
-			$result = new PaginatedResult($query->getConnection(), $query->getStatement(), $factory, $query->getPage());
-		} elseif ($query->getTotal()) {
-			$result = new PaginatedResult($query->getConnection(), $query->getStatement(), $factory, $query->getPage());
-			$result->setTotal($query->getTotal());
-		} else {
-			$result = new static($query->getConnection(), $query->getStatement(), $factory);
-		}
-
-		return $result;
-	}
-
 	public function setConnection(\Katu\PDO\Connection $connection) : Result
 	{
 		$this->connection = $connection;

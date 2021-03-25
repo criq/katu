@@ -113,7 +113,7 @@ abstract class TableBase extends \Sexy\Expression
 		// Delete the original table.
 		try {
 			$destinationTable->delete();
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			// Nevermind.
 		}
 
@@ -167,7 +167,7 @@ abstract class TableBase extends \Sexy\Expression
 
 				try {
 					$destinationTable->getConnection()->createQuery($sql)->getResult();
-				} catch (\Exception $e) {
+				} catch (\Throwable $e) {
 					// Nevermind.
 				}
 			}
@@ -177,7 +177,7 @@ abstract class TableBase extends \Sexy\Expression
 				try {
 					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . $indexableColumn->name . ") ";
 					$destinationTable->getConnection()->createQuery($sql)->getResult();
-				} catch (\Exception $e) {
+				} catch (\Throwable $e) {
 					// Nevermind.
 				}
 			}
@@ -188,7 +188,7 @@ abstract class TableBase extends \Sexy\Expression
 			try {
 				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
 				$destinationTable->getConnection()->createQuery($sql)->getResult();
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				// Nevermind.
 			}
 		}

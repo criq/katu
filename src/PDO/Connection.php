@@ -23,7 +23,6 @@ class Connection
 		for ($i = 1; $i <= 3; $i++) {
 			try {
 				$this->connection = new \PDO($this->config->getPDODSN(), $this->config->user, $this->config->password);
-				// $this->connection->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
 				break;
 			} catch (\Throwable $e) {
 				if (strpos($e->getMessage(), 'driver does not support setting attributes.')) {
@@ -157,7 +156,7 @@ class Connection
 			$this->commit();
 
 			return $res;
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$this->rollback();
 			throw $e;
 		}

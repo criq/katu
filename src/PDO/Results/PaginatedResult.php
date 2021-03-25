@@ -6,16 +6,11 @@ class PaginatedResult extends Result
 {
 	protected $pagination;
 
-	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Interfaces\Factory $factory, ?\Sexy\Page $page = null)
+	public function __construct(\Katu\PDO\Connection $connection, \PDOStatement $statement, \Katu\Interfaces\Factory $factory, \Katu\Types\TPagination $pagination)
 	{
 		parent::__construct(...func_get_args());
 
-		// Set default page if empty.
-		if (!$page) {
-			$page = new \Sexy\Page(1, $this->getTotal() ?: 1);
-		}
-
-		$this->setPagination(new \Katu\Types\TPagination($this->getTotal(), $page->perPage, $page->page));
+		$this->setPagination($pagination);
 	}
 
 	public function setPagination(\Katu\Types\TPagination $pagination)

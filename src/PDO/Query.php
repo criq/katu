@@ -2,6 +2,8 @@
 
 namespace Katu\PDO;
 
+use Katu\Types\TPagination;
+
 class Query
 {
 	protected $connection;
@@ -9,7 +11,6 @@ class Query
 	protected $page;
 	protected $params = [];
 	protected $sql;
-	protected $total;
 
 	public function __construct(Connection $connection, $sql, ?array $params = [])
 	{
@@ -109,18 +110,32 @@ class Query
 
 	public function getResult()
 	{
-		return Results\Result::createFromQuery($this);
-	}
+		$factory = $this->getFactory();
+		if (!$factory) {
+			$factory = new \Katu\Tools\Factories\ArrayFactory;
+		}
 
-	public function setTotal(?int $total) : Query
-	{
-		$this->total = $total;
+		$this->getStatement()->execute();
 
-		return $this;
-	}
+		$foundRows = null;
+		try {
+			if (mb_strpos($this->getStatement()->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
+				$sql = " SELECT FOUND_ROWS() AS total ";
+				$foundRowsQuery = $this->getConnection()->createQuery($sql);
+				$statement = $foundRowsQuery->getStatement();
+				$statement->execute();
+				$fetched = $statement->fetchAll(\PDO::FETCH_ASSOC);
+				$foundRows = (int)$fetched[0]['total'];
+			}
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
 
-	public function getTotal() : ?int
-	{
-		return $this->total;
+		if ($this->getPage() && !is_null($foundRows)) {
+			$pagination = new TPagination($foundRows, $this->getPage()->getPerPage(), $this->getPage()->getPage());
+			return new \Katu\PDO\Results\PaginatedResult($this->getConnection(), $this->getStatement(), $factory, $pagination);
+		} else {
+			return new \Katu\PDO\Results\Result($this->getConnection(), $this->getStatement(), $factory);
+		}
 	}
 }
