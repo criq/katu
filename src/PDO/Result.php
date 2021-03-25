@@ -61,7 +61,7 @@ class Result extends \ArrayObject
 		return $res;
 	}
 
-	public function getColumnValues($column)
+	public function getColumnValues($column) : array
 	{
 		$values = [];
 		foreach ($this->getItems() as $item) {
@@ -75,7 +75,7 @@ class Result extends \ArrayObject
 		return $values;
 	}
 
-	public function getPage()
+	public function getPage() : int
 	{
 		return $this->getPagination()->getPage();
 	}
