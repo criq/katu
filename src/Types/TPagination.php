@@ -19,9 +19,9 @@ class TPagination
 
 	public function __construct(int $total, int $perPage, int $page)
 	{
-		$this->setTotal((int)$total);
-		$this->setPerPage((int)$perPage);
 		$this->setPage((int)$page);
+		$this->setPerPage((int)$perPage);
+		$this->setTotal((int)$total);
 		$this->setPages((int)ceil($total / $perPage));
 	}
 
@@ -33,7 +33,7 @@ class TPagination
 
 		$this->total = $total;
 		try {
-			$this->setPages((int)ceil($total / $this->perPage));
+			$this->setPages((int)ceil($total / $this->getPerPage()));
 		} catch (\Throwable $e) {
 			// Nevermind.
 		}
