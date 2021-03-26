@@ -125,27 +125,34 @@ class Query
 	{
 		if (!$this->result) {
 			$statement = $this->getStatement();
-			$statement->execute();
 
-			$errorInfo = $statement->errorInfo();
-			if ((int)$errorInfo[1]) {
-				$exception = new \Katu\Exceptions\Exception($errorInfo[2], $errorInfo[1]);
+			try {
+				$statement->execute();
+			} catch (\Throwable $e) {
+				// Nevermind.
+			} finally {
+				$error = Error::createFromErrorInfo($statement->errorInfo());
+			}
 
-				// Table doesn't exist.
-				if ($errorInfo[1] == 1146 && preg_match("/Table '(.+)\.(?<tableName>.+)' doesn't exist/", $errorInfo[2], $match)) {
-					// Create the table.
-					$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['tableName'] . '.create.sql');
-					if ($sqlFile->exists()) {
-						// There is a file, let's create the table.
-						$this->getConnection()->createQuery($sqlFile->get())->getResult();
-					} else {
-						throw $exception;
+			if ($error->getCode() == 1146 && preg_match("/Table '(.+)\.(?<tableName>.+)' doesn't exist/", $error->getMessage(), $match)) {
+				// Create the table.
+				$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['tableName'] . '.create.sql');
+				if ($sqlFile->exists()) {
+					// There is a file, let's create the table.
+					$this->getConnection()->createQuery($sqlFile->get())->getResult();
+
+					// Re-run the query.
+					try {
+						$statement->execute();
+					} catch (\Throwable $e) {
+						// Nevermind.
+					} finally {
+						$error = Error::createFromErrorInfo($statement->errorInfo());
 					}
-				} else {
-					throw $exception;
 				}
 			}
 
+			// Found rows.
 			$foundRows = null;
 			try {
 				if (mb_strpos($statement->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
@@ -160,8 +167,11 @@ class Query
 				// Nevermind.
 			}
 
+			// Result.
 			$result = new Result($this);
+			$result->setError($error);
 
+			// Pagination.
 			if ($this->getPage() && !is_null($foundRows)) {
 				$result->setPagination(new \Katu\Types\TPagination($foundRows, $this->getPage()->getPerPage(), $this->getPage()->getPage()));
 			} else {
@@ -169,6 +179,7 @@ class Query
 				$result->setPagination(new \Katu\Types\TPagination($rowCount, $rowCount ?: 1, 1));
 			}
 
+			// Items.
 			foreach ($this->getStatement()->fetchAll(\PDO::FETCH_ASSOC) as $row) {
 				$result->append($this->getFactory()->create($row));
 			}

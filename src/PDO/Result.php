@@ -6,6 +6,7 @@ use Katu\Types\TPagination;
 
 class Result extends \ArrayObject
 {
+	protected $error;
 	protected $pagination;
 
 	public function __construct(?Query $query = null)
@@ -23,6 +24,18 @@ class Result extends \ArrayObject
 	public function getQuery() : Query
 	{
 		return $this->query;
+	}
+
+	public function setError($error) : Result
+	{
+		$this->error = $error;
+
+		return $this;
+	}
+
+	public function getError()
+	{
+		return $this->error;
 	}
 
 	public function setPagination(TPagination $pagination) : Result
