@@ -211,4 +211,18 @@ class Connection
 
 		return $this->setSqlModes($sqlModes);
 	}
+
+	public function getFoundRowsPickledResult($sql, \Katu\Interfaces\Factory $factory, \Katu\Cache\Pickle $pickle, $timeout)
+	{
+		if ($pickle->isValid($timeout)) {
+			$sql->setOptGetTotalRows(false);
+			$result = $this->createQuery($sql)->setFactory($factory)->setFoundRows($pickle->get())->getResult();
+		} else {
+			$sql->setOptGetTotalRows(true);
+			$result = $this->createQuery($sql)->setFactory($factory)->getResult();
+			$pickle->set($result->getTotal());
+		}
+
+		return $result;
+	}
 }

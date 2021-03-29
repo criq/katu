@@ -149,6 +149,7 @@ class Query
 		if (!$this->result) {
 			$statement = $this->getStatement();
 
+			// Run the query.
 			try {
 				$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 				$statement->execute();
