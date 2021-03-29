@@ -9,6 +9,7 @@ class Query
 	protected $connection;
 	protected $duration;
 	protected $factory;
+	protected $foundRows;
 	protected $page;
 	protected $params = [];
 	protected $result;
@@ -124,6 +125,18 @@ class Query
 		return $this;
 	}
 
+	public function setFoundRows(int $foundRows) : Query
+	{
+		$this->foundRows = $foundRows;
+
+		return $this;
+	}
+
+	public function getFoundRows() : ?int
+	{
+		return $this->foundRows;
+	}
+
 	public function setResult(Result $result) : Query
 	{
 		$this->result = $result;
@@ -167,7 +180,7 @@ class Query
 			}
 
 			// Found rows.
-			$foundRows = null;
+			$foundRows = $this->getFoundRows();
 			try {
 				if (mb_strpos($statement->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
 					$sql = " SELECT FOUND_ROWS() AS total ";
