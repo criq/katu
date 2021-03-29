@@ -2,9 +2,12 @@
 
 namespace Katu\PDO;
 
+use Katu\Types\TSeconds;
+
 class Query
 {
 	protected $connection;
+	protected $duration;
 	protected $factory;
 	protected $page;
 	protected $params = [];
@@ -114,6 +117,13 @@ class Query
 		return $this->statement;
 	}
 
+	public function setDuration(TSeconds $duration) : Query
+	{
+		$this->duration = $duration;
+
+		return $this;
+	}
+
 	public function setResult(Result $result) : Query
 	{
 		$this->result = $result;
@@ -127,7 +137,9 @@ class Query
 			$statement = $this->getStatement();
 
 			try {
+				$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 				$statement->execute();
+				$this->setDuration(new TSeconds($stopwatch->getDuration()));
 			} catch (\Throwable $e) {
 				// Nevermind.
 			} finally {
@@ -143,7 +155,9 @@ class Query
 
 					// Re-run the query.
 					try {
+						$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 						$statement->execute();
+						$this->setDuration(new TSeconds($stopwatch->getDuration()));
 					} catch (\Throwable $e) {
 						// Nevermind.
 					} finally {
