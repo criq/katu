@@ -181,7 +181,6 @@ class Query
 			}
 
 			// Found rows.
-			$foundRows = $this->getFoundRows();
 			try {
 				if (mb_strpos($statement->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
 					$sql = " SELECT FOUND_ROWS() AS total ";
@@ -189,7 +188,7 @@ class Query
 					$foundRowsStatement = $foundRowsQuery->getStatement();
 					$foundRowsStatement->execute();
 					$fetched = $foundRowsStatement->fetchAll(\PDO::FETCH_ASSOC);
-					$foundRows = (int)$fetched[0]['total'];
+					$this->setFoundRows((int)$fetched[0]['total']);
 				}
 			} catch (\Throwable $e) {
 				// Nevermind.
@@ -202,8 +201,8 @@ class Query
 			}
 
 			// Pagination.
-			if ($this->getPage() && !is_null($foundRows)) {
-				$result->setPagination(new \Katu\Types\TPagination($foundRows, $this->getPage()->getPerPage(), $this->getPage()->getPage()));
+			if ($this->getPage() && !is_null($this->getFoundRows())) {
+				$result->setPagination(new \Katu\Types\TPagination($this->getFoundRows(), $this->getPage()->getPerPage(), $this->getPage()->getPage()));
 			} else {
 				$rowCount = $statement->rowCount();
 				$result->setPagination(new \Katu\Types\TPagination($rowCount, $rowCount ?: 1, 1));
