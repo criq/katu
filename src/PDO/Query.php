@@ -169,7 +169,9 @@ class Query
 
 			// Result.
 			$result = new Result($this);
-			$result->setError($error);
+			if ($error->getCode()) {
+				$result->setError($error);
+			}
 
 			// Pagination.
 			if ($this->getPage() && !is_null($foundRows)) {
