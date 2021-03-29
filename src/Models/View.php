@@ -453,8 +453,8 @@ abstract class View extends Base
 	public static function materializeSourceViews()
 	{
 		foreach (static::getView()->getSourceViewsInMaterializedViews() as $view) {
-			foreach ($view->getModelNames() as $class) {
-				$class::materializeIfExpired();
+			foreach ($view->getModels() as $class) {
+				$class->getName()::materializeIfExpired();
 			}
 		}
 
@@ -511,27 +511,27 @@ abstract class View extends Base
 		return (float)static::getLastMaterializedTemporaryFile()->get();
 	}
 
-	public static function getAllViewClassNames()
+	public static function getAllViewClasses() : array
 	{
-		$dir = (new \Katu\Files\File('app', 'Models'));
+		$dir = new \Katu\Files\File('app', 'Models');
 		if ($dir->exists()) {
 			$dir->includeAllPhpFiles();
 		}
 
-		return array_map(function ($i) {
-			return '\\' . ltrim($i, '\\');
-		}, array_values(array_filter(get_declared_classes(), function ($class) {
-			return is_subclass_of($class, '\\Katu\\Models\\View') && defined("$class::TABLE") && $class::TABLE;
-		})));
+		return array_values(array_filter(array_map(function ($className) {
+			if (is_subclass_of($className, "Katu\Models\View") && defined("$className::TABLE") && $className::TABLE) {
+				return new TClass($className);
+			}
+		}, get_declared_classes())));
 	}
 
 	public static function cacheAndMaterializeAll()
 	{
-		foreach (static::getAllViewClassNames() as $class) {
+		foreach (static::getAllViewClasses() as $class) {
 			try {
-				$class::cacheIfExpired();
-				if ($class::isMaterializable()) {
-					$class::materializeIfExpired();
+				$class->getName()::cacheIfExpired();
+				if ($class->getName()::isMaterializable()) {
+					$class->getName()::materializeIfExpired();
 				}
 			} catch (\Throwable $e) {
 				// TODO - throw into a different log.
@@ -544,12 +544,12 @@ abstract class View extends Base
 	{
 		$tableClass = static::getTableClass()->getName();
 
-		foreach (static::getAllViewClassNames() as $class) {
-			$query = $class::getCachedTablesQuery();
+		foreach (static::getAllViewClasses() as $class) {
+			$query = $class->getName()::getCachedTablesQuery();
 			$array = $query->getResult()->getItems();
 			foreach (array_slice($array, 1) as $tableArray) {
 				$table = new $tableClass(
-					$class::getConnection(),
+					$class->getName()::getConnection(),
 					new \Katu\PDO\Name($tableArray['TABLE_NAME']),
 				);
 				$table->delete();
