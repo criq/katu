@@ -4,10 +4,10 @@ namespace Katu\Config;
 
 class Env
 {
-	const ENV_DEV  = 0;
+	const ENV_DEV = 0;
 	const ENV_PROD = 1;
 
-	public static function getPlatform()
+	public static function getPlatform() : string
 	{
 		$files = [
 			new \Katu\Files\File(\Katu\App::getBaseDir(), '.platform'),
@@ -23,19 +23,19 @@ class Env
 		return false;
 	}
 
-	public static function getHash()
+	public static function getHash() : string
 	{
 		return sha1(\Katu\Files\Formats\JSON::encodeStandard(self::getEnvProperties()));
 	}
 
-	public static function getShortHash()
+	public static function getShortHash() : string
 	{
 		$hash = self::getHash();
 
 		return substr($hash, 0, 4) . substr($hash, -4, 4);
 	}
 
-	public static function getEnvProperties()
+	public static function getEnvProperties() : array
 	{
 		return [
 			'host' => $_SERVER['SERVER_NAME'],
@@ -43,7 +43,7 @@ class Env
 		];
 	}
 
-	public static function getCommit()
+	public static function getCommit() : string
 	{
 		$file = new \Katu\Files\File(\Katu\App::getBaseDir(), '.git', 'HEAD');
 		preg_match('/ref: (.+)/', $file->get(), $match);
@@ -51,7 +51,7 @@ class Env
 		return trim($file->get());
 	}
 
-	public static function getVersion()
+	public static function getVersion() : string
 	{
 		return hash('adler32', implode('', [
 			static::getCommit(),

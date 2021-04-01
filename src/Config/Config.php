@@ -35,6 +35,11 @@ class Config
 		$cacheName = ['config'];
 
 		return \Katu\Cache\Runtime::get($cacheName, function () {
+			$cacheFile = new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'config', \Katu\Config\Env::getVersion());
+			if ($cacheFile->exists()) {
+				return unserialize($cacheFile->get());
+			}
+
 			$config = [];
 
 			foreach (static::getFiles() as $file) {
@@ -50,6 +55,8 @@ class Config
 			}
 
 			$config = array_merge_recursive($config, $_SERVER['CONFIG'] ?? []);
+
+			$cacheFile->set(serialize($config));
 
 			return $config;
 		});
