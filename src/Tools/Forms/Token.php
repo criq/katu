@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Forms;
 
+use Katu\Tools\DateTime\Timeout;
+
 class Token
 {
 	const SECRET_LENGTH = 4;
@@ -23,12 +25,12 @@ class Token
 
 	public function isValid()
 	{
-		return $this->isInTimeout();
+		return $this->fitsInTimeout();
 	}
 
-	public function isInTimeout()
+	public function fitsInTimeout()
 	{
-		return \Katu\Tools\DateTime\DateTime::get($this->time)->isInTimeout(static::TOKEN_TIMEOUT);
+		return \Katu\Tools\DateTime\DateTime::get($this->time)->fitsInTimeout(new Timeout(static::TOKEN_TIMEOUT));
 	}
 
 	public function getAge()

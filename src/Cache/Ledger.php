@@ -2,6 +2,8 @@
 
 namespace Katu\Cache;
 
+use Katu\Tools\DateTime\Timeout;
+
 class Ledger
 {
 	public $name;
@@ -80,7 +82,7 @@ class Ledger
 
 		$expired = [];
 		foreach ($this->get() as $key => $value) {
-			if (isset($value[$timeKey]) && (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->isInTimeout($cutoffDateTime->getAge())) {
+			if (isset($value[$timeKey]) && (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->fitsInTimeout(new Timeout($cutoffDateTime->getAge()))) {
 				// Not expired.
 			} elseif (isset($value[$timeKey])) {
 				$expired[$key] = 'B' . (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->getTimestamp();

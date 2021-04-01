@@ -2,6 +2,7 @@
 
 namespace Katu\Cache;
 
+use Katu\Tools\DateTime\Timeout;
 use Katu\Types\TSeconds;
 
 class Pickle
@@ -26,18 +27,9 @@ class Pickle
 		return $this->name;
 	}
 
-	public function getFile()
+	public function getFile() : \Katu\Files\File
 	{
 		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'pickles', \Katu\Files\File::generatePath($this->getName(), 'txt'));
-	}
-
-	public function getAge() : ?TSeconds
-	{
-		try {
-			return $this->getFile()->getDateTimeModified()->getAge();
-		} catch (\Throwable $e) {
-			return null;
-		}
 	}
 
 	public function get()
@@ -57,7 +49,7 @@ class Pickle
 
 	public function getDateTimeModified()
 	{
-		return \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($this->getFile()));
+		return $this->getFile()->getDateTimeModified();
 	}
 
 	public function hasContents() : bool
@@ -65,12 +57,21 @@ class Pickle
 		return !is_null($this->get());
 	}
 
-	public function isExpired($timeout) : bool
+	public function getAge() : ?TSeconds
 	{
-		return (bool)(is_null($this->get()) || !$this->getDateTimeModified()->isInTimeout(\Katu\Cache\General::parseTimeout($timeout)));
+		try {
+			return $this->getFile()->getDateTimeModified()->getAge();
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
-	public function isValid($timeout = null) : bool
+	public function isExpired(Timeout $timeout) : bool
+	{
+		return (bool)(is_null($this->get()) || !$timeout->fits($this->getDateTimeModified()));
+	}
+
+	public function isValid(?Timeout $timeout = null) : bool
 	{
 		if ($timeout && $this->isExpired($timeout)) {
 			return false;
@@ -79,7 +80,7 @@ class Pickle
 		return $this->hasContents();
 	}
 
-	public function getOrCreate($timeout, callable $callback)
+	public function getOrCreate(Timeout $timeout, callable $callback)
 	{
 		if ($this->isExpired($timeout)) {
 			$this->set(call_user_func_array($callback, array_slice(func_get_args(), 2)));

@@ -15,9 +15,7 @@ class Timeout
 
 	public function getSeconds() : TSeconds
 	{
-		if (is_int($this->timeout)) {
-			return new TSeconds(abs($this->timeout) * -1);
-		} elseif (is_float($this->timeout)) {
+		if (is_numeric($this->timeout)) {
 			return new TSeconds(abs($this->timeout) * -1);
 		} elseif (is_string($this->timeout)) {
 			return (new \Katu\Tools\DateTime\DateTime('- ' . $this->timeout))->getAge();
@@ -29,5 +27,10 @@ class Timeout
 	public function getDateTime() : DateTime
 	{
 		return new DateTime($this->getSeconds()->getValue() . ' seconds');
+	}
+
+	public function fits(\DateTime $datetime) : bool
+	{
+		return $this->getDateTime()->getTimestamp() <= $datetime->getTimestamp();
 	}
 }

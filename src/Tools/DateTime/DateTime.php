@@ -97,9 +97,9 @@ class DateTime extends \DateTime
 		return $this->getTimestamp() > 0;
 	}
 
-	public function isInTimeout($timeout)
+	public function fitsInTimeout(Timeout $timeout)
 	{
-		return ($this->getTimestamp() + $timeout) >= time();
+		return $timeout->fits($this);
 	}
 
 	public function isYesterday()
