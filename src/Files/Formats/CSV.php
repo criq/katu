@@ -37,8 +37,8 @@ class CSV
 			$this->file = $file;
 		}
 
-		$this->writer = new \EasyCSV\Writer($this->file);
-		$this->reader = new \EasyCSV\Reader($this->file, 'r+', isset($options['headersInFirstRow']) ? (bool) $options['headersInFirstRow'] : true);
+		$this->writer = new \EasyCSV\Writer($this->file, 'a+');
+		$this->reader = new \EasyCSV\Reader($this->file, 'r', isset($options['headersInFirstRow']) ? (bool)$options['headersInFirstRow'] : true);
 
 		if (isset($options['delimiter'])) {
 			$this->writer->setDelimiter($options['delimiter']);
@@ -51,12 +51,12 @@ class CSV
 		}
 	}
 
-	public function __toString()
+	public function __toString() : string
 	{
 		return $this->getAsString();
 	}
 
-	public static function readToArray($file, $options = [])
+	public static function readToArray($file, $options = []) : array
 	{
 		$options['readOnly'] = true;
 		$csv = new static($file, $options);
@@ -69,22 +69,22 @@ class CSV
 		return $rows;
 	}
 
-	public static function setFromAssoc(array $array, $options = [])
+	public static function setFromAssoc(array $array, $options = []) : CSV
 	{
 		$csv = new static(null, $options);
 		$line = 0;
 
 		foreach ($array as $row) {
 			if (++$line == 1) {
-				$csv->add(array_keys($row));
+				$csv->append(array_keys($row));
 			}
-			$csv->add(array_values($row));
+			$csv->append(array_values($row));
 		}
 
 		return $csv;
 	}
 
-	public function add()
+	public function append()
 	{
 		return $this->writer->writeRow(is_array(@func_get_arg(0)) ? func_get_arg(0) : func_get_args());
 	}
@@ -97,12 +97,12 @@ class CSV
 		return file_put_contents($file, file_get_contents($this->file));
 	}
 
-	public function getFile()
+	public function getFile() : \Katu\Files\File
 	{
 		return $this->file;
 	}
 
-	public function getAsString()
+	public function getAsString() : string
 	{
 		return $this->getFile()->get();
 	}

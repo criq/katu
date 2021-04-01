@@ -2,8 +2,8 @@
 
 namespace Katu\Tools\Profiler;
 
-class Query {
-
+class Query
+{
 	public function __construct($query, $duration) {
 		if ($query instanceof \Katu\PDO\Query) {
 			$this->query = $query->getStatement()->queryString;

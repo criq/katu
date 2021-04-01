@@ -25,6 +25,8 @@ abstract class View extends Base
 	const TIMEOUT = 3600;
 	const TMP_LENGTH = 8;
 
+	protected static $cachedTableNames;
+
 	public static function getTableClass() : TClass
 	{
 		return new TClass("Katu\PDO\Table");
@@ -176,10 +178,17 @@ abstract class View extends Base
 
 	public static function getCachedTableName()
 	{
-		$array = static::getCachedTablesQuery()->getResult()->getItems();
+		$className = static::getClass()->getName();
+
+		if (static::$cachedTableNames[$className] ?? null) {
+			return static::$cachedTableNames[$className];
+		}
+
+		$array = static::getCachedTablesQuery()->getResult();
 
 		if ($array[0]['TABLE_NAME'] ?? null) {
-			return new \Katu\PDO\Name($array[0]['TABLE_NAME']);
+			static::$cachedTableNames[$className] = new \Katu\PDO\Name($array[0]['TABLE_NAME']);
+			return static::$cachedTableNames[$className];
 		}
 
 		// No cached table found, cache!

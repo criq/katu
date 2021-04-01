@@ -7,11 +7,16 @@ class Connection
 	protected $config;
 	protected $connection;
 	protected $name;
+	protected $sessionId;
 	protected static $connections = [];
 
 	public function __construct($name)
 	{
-		$this->name = $name;
+		$this->setName($name);
+		$this->setSessionId(implode('.', [
+			$this->getName(),
+			\Katu\Tools\Random\Generator::getString(16),
+		]));
 
 		try {
 			$this->config = Config::createFromConfig(\Katu\Config\Config::get('db', $name));
@@ -47,9 +52,28 @@ class Connection
 		return $this->config;
 	}
 
+	public function setName(string $name) : Connection
+	{
+		$this->name = $name;
+
+		return $this;
+	}
+
 	public function getName() : string
 	{
 		return (string)$this->name;
+	}
+
+	public function setSessionId(string $sessionId) : Connection
+	{
+		$this->sessionId = $sessionId;
+
+		return $this;
+	}
+
+	public function getSessionId() : string
+	{
+		return $this->sessionId;
 	}
 
 	public function getVersion() : string
@@ -57,7 +81,7 @@ class Connection
 		return (string)$this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
-	public static function getInstance($name)
+	public static function getInstance($name) : Connection
 	{
 		if (!(static::$connections[$name] ?? null)) {
 			static::$connections[$name] = new static($name);
@@ -71,12 +95,12 @@ class Connection
 		return $this->connection->lastInsertId();
 	}
 
-	public function tableExists(Name $tableName)
+	public function tableExists(Name $tableName) : bool
 	{
 		return in_array($tableName, $this->getTableNames());
 	}
 
-	public function getTables()
+	public function getTables() : array
 	{
 		$connection = $this;
 
@@ -85,12 +109,12 @@ class Connection
 		}, $this->getTableNames());
 	}
 
-	public function getTable($tableName)
+	public function getTable($tableName) : Table
 	{
 		return new Table($this, $tableName);
 	}
 
-	public function getTableNames()
+	public function getTableNames() : array
 	{
 		$sql = " SHOW TABLES ";
 		$res = $this->createQuery($sql)->getResult()->getItems();

@@ -141,14 +141,14 @@ abstract class Base
 		return $query->getResult();
 	}
 
-	public static function getBySql($sql) : \Katu\PDO\Result
+	public static function getBySql(\Sexy\Select $sql) : \Katu\PDO\Result
 	{
 		return static::select($sql)->getResult();
 	}
 
-	public static function getOneBySql($sql)
+	public static function getOneBySql(\Sexy\Select $sql)
 	{
-		return static::getBySql($sql)->getOne();
+		return static::getBySql($sql->setOptGetTotalRows(false))->getOne();
 	}
 
 	public static function getOneBy()

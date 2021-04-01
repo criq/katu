@@ -247,6 +247,8 @@ class File
 
 	public function append($data)
 	{
+		$this->touch();
+
 		return file_put_contents($this, $data, LOCK_EX | FILE_APPEND);
 	}
 

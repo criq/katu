@@ -15,6 +15,7 @@ class Query
 	protected $result;
 	protected $sql;
 	protected $statement;
+	protected $statementDump;
 
 	public function __construct(Connection $connection, $sql, ?array $params = [])
 	{
@@ -118,11 +119,28 @@ class Query
 		return $this->statement;
 	}
 
+	public function setStatementDump(StatementDump $statementDump) : Query
+	{
+		$this->statementDump = $statementDump;
+
+		return $this;
+	}
+
+	public function getStatementDump() : StatementDump
+	{
+		return $this->statementDump;
+	}
+
 	public function setDuration(TSeconds $duration) : Query
 	{
 		$this->duration = $duration;
 
 		return $this;
+	}
+
+	public function getDuration() : ?TSeconds
+	{
+		return $this->duration;
 	}
 
 	public function setFoundRows(int $foundRows) : Query
@@ -178,6 +196,25 @@ class Query
 						$error = Error::createFromErrorInfo($statement->errorInfo());
 					}
 				}
+			}
+
+			// Statement dump.
+			ob_start();
+			$statement->debugDumpParams();
+			$this->setStatementDump(new StatementDump(ob_get_contents()));
+			ob_end_clean();
+
+			try {
+				if (\Katu\Config\Config::get('app', 'profiler', 'pdo')) {
+					$file = (\Katu\Files\File::createTemporaryWithFileName($this->getConnection()->getSessionId() . '.csv'));
+					$csv = new \Katu\Files\Formats\CSV($file);
+					$csv->append([
+						preg_replace('/\./', ',', $this->getDuration()),
+						$this->getStatementDump()->getSentSQL() ?: $this->statement->queryString,
+					]);
+				}
+			} catch (\Katu\Exceptions\MissingConfigException) {
+				// Nevermind.
 			}
 
 			// Found rows.
