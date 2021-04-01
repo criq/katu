@@ -213,7 +213,7 @@ class Query
 						$this->getStatementDump()->getSentSQL() ?: $this->statement->queryString,
 					]);
 				}
-			} catch (\Katu\Exceptions\MissingConfigException) {
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				// Nevermind.
 			}
 
