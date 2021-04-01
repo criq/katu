@@ -6,8 +6,8 @@ class Cookie
 {
 	const DEFAULT_HTTPONLY = true;
 	const DEFAULT_LIFETIME = '1 year';
-	const DEFAULT_PATH     = '/';
-	const DEFAULT_SECURE   = false;
+	const DEFAULT_PATH = '/';
+	const DEFAULT_SECURE = false;
 
 	public static function set($name, $value = null, $lifetime = null, $path = null, $domain = null)
 	{
@@ -15,8 +15,8 @@ class Cookie
 
 		$name = strtr($name, '.', '_');
 		$lifetime = !is_null($lifetime) ? (time() + (int) $lifetime) : (time() + $config['lifetime']);
-		$path     = !is_null($path) ? $path : $config['path'];
-		$domain   = !is_null($domain) ? $domain : $config['domain'];
+		$path = !is_null($path) ? $path : $config['path'];
+		$domain = !is_null($domain) ? $domain : $config['domain'];
 
 		return setcookie($name, $value, $lifetime, $path, $domain);
 	}
@@ -40,10 +40,10 @@ class Cookie
 	public static function getDefaultConfig()
 	{
 		return [
-			'lifetime' => abs((new \Katu\Tools\DateTime\DateTime('+ ' . static::DEFAULT_LIFETIME))->getAge()),
-			'path'     => static::DEFAULT_PATH,
-			'domain'   => static::getDefautDomain(),
-			'secure'   => static::DEFAULT_SECURE,
+			'lifetime' => abs((new \Katu\Tools\DateTime\DateTime('+ ' . static::DEFAULT_LIFETIME))->getAge()->getValue()),
+			'path' => static::DEFAULT_PATH,
+			'domain' => static::getDefautDomain(),
+			'secure' => static::DEFAULT_SECURE,
 			'httponly' => static::DEFAULT_HTTPONLY,
 		];
 	}

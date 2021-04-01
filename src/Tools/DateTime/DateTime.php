@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\DateTime;
 
+use Katu\Types\TSeconds;
+
 class DateTime extends \DateTime
 {
 	public function __construct($time = null, \DateTimeZone $timezone = null)
@@ -90,7 +92,7 @@ class DateTime extends \DateTime
 		return $this->format('Y-m-d H:i:s');
 	}
 
-	public function isValid()
+	public function isValid() : bool
 	{
 		return $this->getTimestamp() > 0;
 	}
@@ -105,34 +107,34 @@ class DateTime extends \DateTime
 		return (new static('- 1 day', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isToday()
+	public function isToday() : bool
 	{
 		return (new static('now', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isTomorrow()
+	public function isTomorrow() : bool
 	{
 		return (new static('+ 1 day', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isInFuture()
+	public function isInFuture() : bool
 	{
 		return $this->getTimestamp() > time();
 	}
 
-	public function isInPast()
+	public function isInPast() : bool
 	{
 		return $this->getTimestamp() < time();
 	}
 
-	public function isNow()
+	public function isNow() : bool
 	{
 		return $this->getTimestamp() == time();
 	}
 
-	public function getAge()
+	public function getAge() : TSeconds
 	{
-		return time() - $this->getTimestamp();
+		return new \Katu\Types\TSeconds($this->getTimestamp() - time());
 	}
 
 	public static function getMicroseconds()

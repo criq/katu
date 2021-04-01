@@ -133,7 +133,7 @@ class Lock
 			$this->lock();
 		}
 
-		@set_time_limit($this->getTimeout()->getSeconds());
+		@set_time_limit((string)$this->getTimeout()->getSeconds());
 		$callback = $this->getCallback();
 		$res = $callback(...$this->args);
 

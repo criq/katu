@@ -26,7 +26,7 @@ class General
 		}
 	}
 
-	public function setName()
+	public function setName() : General
 	{
 		$args = func_get_args();
 
@@ -46,7 +46,7 @@ class General
 		return $this->name;
 	}
 
-	public function setTimeout($timeout)
+	public function setTimeout($timeout) : General
 	{
 		$this->timeout = $timeout;
 
@@ -446,16 +446,14 @@ class General
 	/****************************************************************************
 	 * Code sugar.
 	 */
-	public static function get()
+	public static function get($name, $timeout, $callback = null)
 	{
-		$args = func_get_args();
-
-		$cache = new static($args[0], $args[1]);
-		if (isset($args[2])) {
-			$cache->setCallback($args[2]);
+		$cache = new static($name, $timeout);
+		if ($callback ?? null) {
+			$cache->setCallback($callback);
 		}
 
-		$cache->setArgs(...(array)array_slice($args, 3));
+		$cache->setArgs(...(array)array_slice(func_get_args(), 3));
 
 		return $cache->getResult();
 	}

@@ -2,6 +2,8 @@
 
 namespace Katu\Cache;
 
+use Katu\Types\TSeconds;
+
 class Pickle
 {
 	protected $name;
@@ -27,6 +29,15 @@ class Pickle
 	public function getFile()
 	{
 		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'pickles', \Katu\Files\File::generatePath($this->getName(), 'txt'));
+	}
+
+	public function getAge() : ?TSeconds
+	{
+		try {
+			return $this->getFile()->getDateTimeModified()->getAge();
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public function get()

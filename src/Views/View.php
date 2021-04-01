@@ -235,7 +235,7 @@ class View
 		$data['_site']['baseUrl'] = \Katu\Config\Config::get('app', 'baseUrl');
 
 		try {
-			$data['_site']['apiUrl']  = \Katu\Config\Config::get('app', 'apiUrl');
+			$data['_site']['apiUrl'] = \Katu\Config\Config::get('app', 'apiUrl');
 		} catch (\Throwable $e) {
 			/* Doesn't exist. */
 		}
@@ -272,7 +272,7 @@ class View
 
 		try {
 			if ($request->getAttribute('route')) {
-				$data['_request']['route']  = (array)[
+				$data['_request']['route'] = (array)[
 					'pattern' => $request->getAttribute('route')->getPattern(),
 					'name' => $request->getAttribute('route')->getName(),
 					'params' => $request->getAttribute('route')->getArguments(),
@@ -293,11 +293,11 @@ class View
 		}
 
 		$data['_platform'] = \Katu\Config\Env::getPlatform();
-		$data['_config']   = \Katu\Config\Config::get();
-		$data['_session']  = \Katu\Tools\Session\Session::get();
-		$data['_flash']    = \Katu\Tools\Session\Flash::get();
-		$data['_cookies']  = \Katu\Tools\Cookies\Cookie::get();
-		$data['_upload']   = [
+		$data['_config'] = \Katu\Config\Config::get();
+		$data['_session'] = \Katu\Tools\Session\Session::get();
+		$data['_flash'] = \Katu\Tools\Session\Flash::get();
+		$data['_cookies'] = \Katu\Tools\Cookies\Cookie::get();
+		$data['_upload'] = [
 			'maxSize' => \Katu\Files\Upload::getMaxSize(),
 		];
 
