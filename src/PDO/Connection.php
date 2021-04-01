@@ -236,7 +236,7 @@ class Connection
 		return $this->setSqlModes($sqlModes);
 	}
 
-	public function getFoundRowsPickledResult($sql, \Katu\Interfaces\Factory $factory, \Katu\Cache\Pickle $pickle, $timeout)
+	public function getFoundRowsPickledResult($sql, \Katu\Interfaces\Factory $factory, \Katu\Cache\Pickle $pickle, \Katu\Tools\DateTime\Timeout $timeout)
 	{
 		if ($pickle->isValid($timeout)) {
 			$sql->setOptGetTotalRows(false);
