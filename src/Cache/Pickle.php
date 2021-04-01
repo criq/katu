@@ -68,7 +68,7 @@ class Pickle
 
 	public function isExpired(Timeout $timeout) : bool
 	{
-		return (bool)(is_null($this->get()) || !$timeout->fits($this->getDateTimeModified()));
+		return (bool)(!$this->hasContents() || !$timeout->fits($this->getDateTimeModified()));
 	}
 
 	public function isValid(?Timeout $timeout = null) : bool
