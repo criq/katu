@@ -18,40 +18,11 @@ class Upload
 
 	public function __construct(\Slim\Http\UploadedFile $upload)
 	{
-		$this->path     = (string)$upload->file;
+		$this->path = (string)$upload->file;
 		$this->fileName = (string)$upload->getClientFilename();
 		$this->fileType = (string)$upload->getClientMediaType();
-		$this->fileSize = (int)   $upload->getSize();
-		$this->error    = (int)   $upload->getError();
-	}
-
-	public static function createFromRequest(\Slim\Http\Request $request, string $key) : ?Upload
-	{
-		$uploadedFiles = $request->getUploadedFiles();
-		if (!isset($uploadedFiles[$key])) {
-			return null;
-		}
-
-		if (($uploadedFiles[$key] ?? null) instanceof \Slim\Http\UploadedFile) {
-			$upload = new static($uploadedFiles[$key]);
-			if (($upload->error ?? null) === UPLOAD_ERR_NO_FILE) {
-				return null;
-			}
-
-			return $upload;
-		}
-
-		$uploads = [];
-		if (is_array($uploadedFiles[$key] ?? null)) {
-			foreach ($uploadedFiles[$key] as $uploadedFile) {
-				$uploads[] = new static($uploadedFile);
-			}
-			if (($uploads[0]->error ?? null) === UPLOAD_ERR_NO_FILE) {
-				return null;
-			}
-		}
-
-		return $uploads;
+		$this->fileSize = (int)$upload->getSize();
+		$this->error = (int)$upload->getError();
 	}
 
 	public function getError() : int
