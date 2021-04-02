@@ -40,11 +40,13 @@ class App
 
 	public static function getTemporaryDir()
 	{
-		try {
-			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'dir'));
-		} catch (\Throwable $e) {
-			return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_DIR);
-		}
+		return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_DIR);
+
+		// try {
+		// 	return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'dir'));
+		// } catch (\Throwable $e) {
+		// 	return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_DIR);
+		// }
 	}
 
 	public static function getPublicTemporaryDir()
