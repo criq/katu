@@ -22,6 +22,11 @@ class TClass
 		return $this->getName();
 	}
 
+	public static function createFromStorableName(string $storableName) : TClass
+	{
+		return new static(strtr($storableName, static::STORABLE_NAME_DELIMITER, '\\'));
+	}
+
 	public function getName() : string
 	{
 		return $this->name;
