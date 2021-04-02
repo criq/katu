@@ -119,6 +119,10 @@ class View
 			}
 		}));
 
+		$twig->addFunction(new \Twig\TwigFunction('getTimeout', function ($timeout) {
+			return new \Katu\Tools\DateTime\Timeout($timeout);
+		}));
+
 		$twig->addFunction(new \Twig\TwigFunction('getVersion', function () {
 			return \Katu\Config\Env::getVersion();
 		}));
