@@ -2,10 +2,10 @@
 
 namespace Katu\Types;
 
-use Katu\Interfaces\Packaged;
-
-class TClass implements Packaged
+class TClass
 {
+	const STORABLE_NAME_DELIMITER = '-';
+
 	public $name;
 
 	public function __construct($name)
@@ -27,14 +27,14 @@ class TClass implements Packaged
 		return $this->name;
 	}
 
-	public function getPackage() : \Katu\Types\TPackage
-	{
-		return new \Katu\Types\TPackage([
-			'name' => $this->name,
-		]);
-	}
+	// public function getPackage() : \Katu\Types\TPackage
+	// {
+	// 	return new \Katu\Types\TPackage([
+	// 		'name' => $this->name,
+	// 	]);
+	// }
 
-	public static function createFromPackage(\Katu\Types\TPackage $package)
+	public static function createFromPackage(\Katu\Types\TPackage $package) : TClass
 	{
 		return new static($package->getPayload()['name']);
 	}
@@ -48,8 +48,13 @@ class TClass implements Packaged
 		}
 	}
 
-	public function getShortName()
+	public function getShortName() : string
 	{
 		return array_slice(explode('\\', $this->name), -1, 1)[0];
+	}
+
+	public function getStorableName() : string
+	{
+		return strtr($this->getName(), '\\', static::STORABLE_NAME_DELIMITER);
 	}
 }
