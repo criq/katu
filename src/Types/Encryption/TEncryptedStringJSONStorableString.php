@@ -13,9 +13,14 @@ class TEncryptedStringJSONStorableString
 		$this->string = $string;
 	}
 
+	public function __toString() : string
+	{
+		return $this->string;
+	}
+
 	public static function createFromJSON(TJSON $json)
 	{
-		return new static(bin2hex(gzencode($json)));
+		return new static(bin2hex(gzencode($json, 9)));
 	}
 
 	public function getJSON() : TEncryptedStringJSON

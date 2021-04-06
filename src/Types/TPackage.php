@@ -3,6 +3,7 @@
 namespace Katu\Types;
 
 use Katu\Types\Encryption\TEncryptedString;
+use Katu\Types\Encryption\TEncryptedStringJSONStorableString;
 
 class TPackage
 {
@@ -15,19 +16,12 @@ class TPackage
 
 	public function __toString() : string
 	{
-		return $this->getString();
+		return $this->getStorableString();
 	}
 
-	// public static function createFromString(string $string) : TPackage
-	// {
-	// 	$encodedString = new \Katu\Tools\Security\EncodedString($string);
-
-	// 	return static::createFromJSON(new TJSON($encodedString->getPayload()));
-	// }
-
-	public static function createFromJSON(TJSON $json) : TPackage
+	public static function createFromStorableString(string $string) : TPackage
 	{
-		return new static(\Katu\Files\Formats\JSON::decodeAsArray($json));
+		return new static(\Katu\Files\Formats\JSON::decodeAsArray((new TEncryptedStringJSONStorableString($string))->getJSON()->getEncryptedString()->getOriginal()));
 	}
 
 	public function getPayload() : array
@@ -40,9 +34,9 @@ class TPackage
 		return new TJSON(\Katu\Files\Formats\JSON::encodeInline($this->payload));
 	}
 
-	public function getEncryptedString() : TEncryptedString
+	public function getStorableString() : TEncryptedStringJSONStorableString
 	{
-		return TEncryptedString::encrypt($this->getJSON());
+		return TEncryptedString::encrypt($this->getJSON())->getJSON()->getStorableString();
 	}
 
 	// public function getString() : string
