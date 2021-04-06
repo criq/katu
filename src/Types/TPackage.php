@@ -2,6 +2,8 @@
 
 namespace Katu\Types;
 
+use Katu\Types\Encryption\TEncryptedString;
+
 class TPackage
 {
 	protected $payload;
@@ -16,14 +18,14 @@ class TPackage
 		return $this->getString();
 	}
 
-	public static function createFromString(string $string) : TPackage
-	{
-		$encodedString = new \Katu\Tools\Security\EncodedString($string);
+	// public static function createFromString(string $string) : TPackage
+	// {
+	// 	$encodedString = new \Katu\Tools\Security\EncodedString($string);
 
-		return static::createFromJSON(new \Katu\Types\TJSON($encodedString->getPayload()));
-	}
+	// 	return static::createFromJSON(new TJSON($encodedString->getPayload()));
+	// }
 
-	public static function createFromJSON(\Katu\Types\TJSON $json) : TPackage
+	public static function createFromJSON(TJSON $json) : TPackage
 	{
 		return new static(\Katu\Files\Formats\JSON::decodeAsArray($json));
 	}
@@ -33,18 +35,23 @@ class TPackage
 		return $this->payload;
 	}
 
-	public function getJSON() : \Katu\Types\TJSON
+	public function getJSON() : TJSON
 	{
-		return new \Katu\Types\TJSON(\Katu\Files\Formats\JSON::encodeInline($this->payload));
+		return new TJSON(\Katu\Files\Formats\JSON::encodeInline($this->payload));
 	}
 
-	public function getString() : string
+	public function getEncryptedString() : TEncryptedString
 	{
-		return $this->getEncodedString()->getEncoded();
+		return TEncryptedString::encrypt($this->getJSON());
 	}
 
-	public function getEncodedString() : \Katu\Tools\Security\EncodedString
-	{
-		return \Katu\Tools\Security\EncodedString::encode($this->getJSON()->getString());
-	}
+	// public function getString() : string
+	// {
+	// 	return $this->getEncodedString()->getEncoded();
+	// }
+
+	// public function getEncodedString() : \Katu\Tools\Security\EncodedString
+	// {
+	// 	return \Katu\Tools\Security\EncodedString::encode($this->getJSON()->getString());
+	// }
 }
