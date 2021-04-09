@@ -144,7 +144,7 @@ class View
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getDecodedFor'], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction('getCurrenTURL', function () {
+		$twig->addFunction(new \Twig\TwigFunction('getCurrentURL', function () {
 			return (string) call_user_func_array(['\Katu\Tools\Routing\URL', 'getCurrent'], func_get_args());
 		}));
 
