@@ -446,11 +446,11 @@ class General
 	/****************************************************************************
 	 * Code sugar.
 	 */
-	public static function get($name, $timeout, $callback = null)
+	public static function get()
 	{
-		$cache = new static($name, $timeout);
-		if ($callback ?? null) {
-			$cache->setCallback($callback);
+		$cache = new static(func_get_arg(0), func_get_arg(1));
+		if (func_get_arg(2)) {
+			$cache->setCallback(func_get_arg(2));
 		}
 
 		$cache->setArgs(...(array)array_slice(func_get_args(), 3));
