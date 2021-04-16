@@ -104,7 +104,7 @@ class Controller
 		}
 
 		// Check token age. Compare with tokens minDuration.
-		if ($token->getAge() < $token->minDuration) {
+		if (abs($token->getAge()->getValue()) < $token->minDuration) {
 			return false;
 		}
 
