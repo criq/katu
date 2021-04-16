@@ -20,7 +20,7 @@ class Role extends \Katu\Models\Model
 
 	public static function create($name)
 	{
-		if (!static::checkCrudParams($name)) {
+		if (!static::sanitizeName($name)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
 		}
 
@@ -54,43 +54,19 @@ class Role extends \Katu\Models\Model
 		return parent::delete();
 	}
 
-	public static function checkCrudParams($name)
+	public static function sanitizeName(string $value) : ?string
 	{
-		if (!static::checkName($name)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid name."))
-				->addErrorName('name')
-				;
+		$value = trim($value);
+		if (!strlen($value)) {
+			throw new \Katu\Exceptions\InputErrorException("Missing name.");
 		}
 
-		return true;
-	}
-
-	public static function checkName($name, $object = null)
-	{
-		if (!trim($name)) {
-			throw (new \Katu\Exceptions\InputErrorException("Missing name."))
-				->addErrorName('name')
-				;
-		}
-
-		// Look for another role with this name.
-		$getBy['name'] = trim($name);
-		if ($object) {
-			$getBy[] = new \Sexy\CmpNotEq(static::getColumn('id'), $object->getId());
-		}
-
-		if (static::getBy($getBy)->getTotal()) {
-			throw (new \Katu\Exceptions\InputErrorException("Another role with this name already exists."))
-				->addErrorName('name')
-				;
-		}
-
-		return true;
+		return $value;
 	}
 
 	public function setName($name) : Role
 	{
-		if (!static::checkName($name, $this)) {
+		if (!static::sanitizeName($name, $this)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid name."))
 				->addErrorName('name')
 				;

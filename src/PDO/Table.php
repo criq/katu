@@ -52,4 +52,12 @@ class Table extends TableBase
 	{
 		return $this->getType() == 'view';
 	}
+
+	public function getChecksum()
+	{
+		$sql = " CHECKSUM TABLE " . $this->getName();
+		$res = $this->getConnection()->createQuery($sql)->getResult()[0]['Checksum'];
+
+		return (int)$res;
+	}
 }
