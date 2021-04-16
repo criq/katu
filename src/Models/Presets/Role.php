@@ -132,6 +132,15 @@ class Role extends \Katu\Models\Model
 	/****************************************************************************
 	 * Permissions.
 	 */
+	public function userCanView($user) : bool
+	{
+		if (!$user) {
+			return false;
+		}
+
+		return $user->hasPermission('roles.view');
+	}
+
 	public function userCanEdit($user) : bool
 	{
 		if (!$user) {
