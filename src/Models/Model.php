@@ -13,6 +13,7 @@ class Model extends Base
 
 	public static function insert(?array $values = [])
 	{
+		// var_dump($values);die;
 		$connection = static::getConnection();
 
 		$columns = array_map(function ($i) {
@@ -26,6 +27,7 @@ class Model extends Base
 		$sql = " INSERT INTO " . static::getTable() . "
 				( " . implode(", ", $columns) . " )
 			VALUES ( " . implode(", ", $placeholders) . " ) ";
+		// echo $sql;die;
 
 		$query = $connection->createQuery($sql, $values);
 		$query->getResult();
