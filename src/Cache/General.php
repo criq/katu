@@ -48,32 +48,18 @@ class General
 
 	public function setTimeout($timeout) : General
 	{
-		$this->timeout = $timeout;
+		if ($timeout instanceof \Katu\Tools\DateTime\Timeout) {
+			$this->timeout = $timeout;
+		} else {
+			$this->timeout = new \Katu\Tools\DateTime\Timeout($timeout);
+		}
 
 		return $this;
 	}
 
-	public function getTimeout()
+	public function getTimeout() : ?\Katu\Tools\DateTime\Timeout
 	{
 		return $this->timeout;
-	}
-
-	public static function parseTimeout($timeout)
-	{
-		if (is_int($timeout)) {
-			return $timeout;
-		} elseif (is_float($timeout)) {
-			return round($timeout);
-		} elseif (is_string($timeout)) {
-			return (new \Katu\Tools\DateTime\DateTime('- ' . $timeout))->getAge();
-		}
-
-		return false;
-	}
-
-	public function getTimeoutInSeconds()
-	{
-		return static::parseTimeout($this->getTimeout());
 	}
 
 	public function setCallback($callback)
@@ -256,7 +242,6 @@ class General
 	public function getResult()
 	{
 		$memoryKey = $this->getMemoryKey();
-
 		// Try Redis.
 		if ($this->isRedisEnabled()) {
 			$redis = static::getRedis();
@@ -286,7 +271,7 @@ class General
 
 		// Try file.
 		$file = $this->getFile();
-		if ($file->exists() && \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeoutInSeconds()) {
+		if ($file->exists() && $this->getTimeout()->fits(\Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file)))) {
 			return unserialize($file->get());
 		}
 
@@ -303,10 +288,10 @@ class General
 					$memoryKey,
 					serialize($res),
 				];
-				$timeout = $this->getTimeoutInSeconds();
-				if ($timeout) {
+				$seconds = $this->getTimeout()->getSeconds()->getValue();
+				if ($seconds) {
 					$args[] = 'EX';
-					$args[] = $timeout;
+					$args[] = $seconds;
 				}
 				$redis->set(...$args);
 				return $res;
@@ -321,8 +306,8 @@ class General
 			// Add to Memcached.
 			$memcached = static::getMemcached();
 			try {
-				$timeout = $this->getTimeoutInSeconds();
-				if (!$memcached->set($memoryKey, $res, $timeout ? time() + $timeout : 0)) {
+				$seconds = $this->getTimeout()->getSeconds()->getValue();
+				if (!$memcached->set($memoryKey, $res, $seconds ? time() + $seconds : 0)) {
 					throw new \Exception;
 				}
 				return $res;
@@ -335,7 +320,7 @@ class General
 		if ($this->isApcEnabled() && strlen($serializedRes) <= static::getMaxApcSize()) {
 			// Add to APC.
 			try {
-				if (!\apcu_store($memoryKey, $res, $this->getTimeoutInSeconds())) {
+				if (!\apcu_store($memoryKey, $res, $this->getTimeout()->getSeconds()->getValue())) {
 					throw new \Exception;
 				}
 				return $res;
@@ -436,7 +421,7 @@ class General
 
 		// Try file.
 		$file = $this->getFile();
-		if ($file->exists() && \Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file))->getAge() <= $this->getTimeoutInSeconds()) {
+		if ($file->exists() && $this->getTimeout()->fits(\Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file)))) {
 			return true;
 		}
 
