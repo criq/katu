@@ -76,13 +76,11 @@ class Ledger
 		return null;
 	}
 
-	public function getExpiredKeys($timeout, $timeKey = 'timeLoaded')
+	public function getExpiredKeys(Timeout $timeout, $timeKey = 'timeLoaded')
 	{
-		$cutoffDateTime = new \Katu\Tools\DateTime\DateTime(is_int($timeout) ? '-' . $timeout . 'seconds' : '- ' . $timeout);
-
 		$expired = [];
 		foreach ($this->get() as $key => $value) {
-			if (isset($value[$timeKey]) && (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->fitsInTimeout(new Timeout($cutoffDateTime->getAge()))) {
+			if (isset($value[$timeKey]) && (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->fitsInTimeout($timeout)) {
 				// Not expired.
 			} elseif (isset($value[$timeKey])) {
 				$expired[$key] = 'B' . (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->getTimestamp();
