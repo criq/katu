@@ -114,14 +114,14 @@ class Exception extends \Exception
 		];
 	}
 
-	public function setContext($context)
+	public function setContext(array $context) : Exception
 	{
 		$this->context = $context;
 
 		return $this;
 	}
 
-	public function getContext()
+	public function getContext() : array
 	{
 		return $this->context;
 	}
