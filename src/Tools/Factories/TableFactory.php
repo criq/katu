@@ -13,7 +13,7 @@ abstract class TableFactory extends Factory
 		$table = static::getTable();
 
 		$sql = SX::select()
-			->setOptGetTotalRows(false)
+			->setGetFoundRows(false)
 			->from($table)
 			->where(SX::eq($table->getColumn($table->getPrimaryKeyColumnName()), $primaryKey))
 			;
