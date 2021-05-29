@@ -58,7 +58,7 @@ abstract class TableBase extends \Sexy\Expression
 		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
 			$table = $this;
 
-			return \Katu\Cache\General::get($cacheName, '1 day', function () use ($table) {
+			return \Katu\Cache\General::get($cacheName, '10 minutes', function () use ($table) {
 				$columns = [];
 				foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
 					$columns[$properties['Field']] = $properties;
@@ -249,7 +249,7 @@ abstract class TableBase extends \Sexy\Expression
 		$cacheName = ['databases', $this->getConnection()->getName(), 'tables', 'idColumn', $this->getName()->getName()];
 
 		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
-			return \Katu\Cache\General::get($cacheName, '1 hour', function () {
+			return \Katu\Cache\General::get($cacheName, '10 minutes', function () {
 				foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
 					if (isset($row['Key']) && $row['Key'] == 'PRI') {
 						return $row['Field'];
