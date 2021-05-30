@@ -146,6 +146,14 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
+	public function usort(callable $callback) : TArray
+	{
+		$array = $this->getArray();
+		usort($array, $callback);
+
+		return new static($array);
+	}
+
 	public function shuffle() : TArray
 	{
 		$array = $this->getArray();
