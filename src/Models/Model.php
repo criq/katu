@@ -95,10 +95,8 @@ class Model extends Base
 
 	public function update(string $property, $value = null)
 	{
-		if (property_exists($this, $property)) {
-			if ($this->$property !== $value) {
-				$this->$property = $value;
-			}
+		if ($this->$property !== $value) {
+			$this->$property = $value;
 
 			static::change();
 		}
