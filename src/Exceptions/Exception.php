@@ -110,6 +110,7 @@ class Exception extends \Exception
 	{
 		return [
 			'message' => $this->getMessage(),
+			'abbr' => $this->getAbbr() ?: null,
 			'names' => $this->getErrorNames() ?: null,
 		];
 	}
