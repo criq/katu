@@ -93,7 +93,7 @@ class File
 		$output = array_map(function ($i) {
 			$i = strtr($i, '\\', '/');
 			$i = mb_strtolower($i);
-			$i = preg_replace('/[^a-z0-9_\/\.]/i', null, $i);
+			$i = preg_replace('/[^a-z0-9_\/\.]/i', '', $i);
 			return $i;
 		}, $output);
 		// var_dump($output);
