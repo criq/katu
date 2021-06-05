@@ -239,10 +239,10 @@ class Connection
 	public function getFoundRowsPickledResult($sql, \Katu\Interfaces\Factory $factory, \Katu\Cache\Pickle $pickle, \Katu\Tools\DateTime\Timeout $timeout)
 	{
 		if ($pickle->isValid($timeout)) {
-			$sql->setOptGetTotalRows(false);
+			$sql->setGetFoundRows(false);
 			$result = $this->createQuery($sql)->setFactory($factory)->setFoundRows($pickle->get())->getResult();
 		} else {
-			$sql->setOptGetTotalRows(true);
+			$sql->setGetFoundRows(true);
 			$result = $this->createQuery($sql)->setFactory($factory)->getResult();
 			$pickle->set($result->getTotal());
 		}

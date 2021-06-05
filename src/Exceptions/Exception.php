@@ -110,18 +110,19 @@ class Exception extends \Exception
 	{
 		return [
 			'message' => $this->getMessage(),
+			'abbr' => $this->getAbbr() ?: null,
 			'names' => $this->getErrorNames() ?: null,
 		];
 	}
 
-	public function setContext($context)
+	public function setContext(?array $context) : Exception
 	{
 		$this->context = $context;
 
 		return $this;
 	}
 
-	public function getContext()
+	public function getContext() : ?array
 	{
 		return $this->context;
 	}

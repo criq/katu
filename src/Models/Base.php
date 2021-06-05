@@ -131,8 +131,8 @@ abstract class Base
 			}
 		}
 
-		if ($options['setOptGetTotalRows'] ?? null) {
-			$sql->setOptGetTotalRows($options['setOptGetTotalRows']);
+		if ($options['setGetFoundRows'] ?? null) {
+			$sql->setGetFoundRows($options['setGetFoundRows']);
 		}
 
 		$query = static::getConnection()->select($sql);
@@ -148,7 +148,7 @@ abstract class Base
 
 	public static function getOneBySql(\Sexy\Select $sql)
 	{
-		return static::getBySql($sql->setOptGetTotalRows(false))->getOne();
+		return static::getBySql($sql->setGetFoundRows(false))->getOne();
 	}
 
 	public static function getOneBy()
@@ -159,7 +159,7 @@ abstract class Base
 			],
 		], [
 			[
-				'setOptGetTotalRows' => false,
+				'setGetFoundRows' => false,
 			],
 		]);
 
