@@ -20,4 +20,9 @@ class TJSON
 	{
 		return $this->json;
 	}
+
+	public function getArray()
+	{
+		return \Katu\Files\Formats\JSON::decodeAsArray($this);
+	}
 }

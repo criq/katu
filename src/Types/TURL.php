@@ -31,10 +31,7 @@ class TURL
 	public static function make($url, $params = []) : TURL
 	{
 		$params = array_filter((array)$params, function ($i) {
-			if (is_string($i)) {
-				return strlen($i);
-			}
-			return $i;
+			return mb_strlen($i);
 		});
 
 		return new static($url . ($params ? ('?' . http_build_query($params)) : null));
