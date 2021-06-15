@@ -130,9 +130,16 @@ class File
 		}, func_get_args())));
 	}
 
+	public static function prepareFileName(string $fileName) : string
+	{
+		return preg_replace_callback('/\{(?<length>[0-9+])\}/', function ($i) {
+			return \Katu\Tools\Random\Generator::getIdString($i['length']);
+		}, $fileName);
+	}
+
 	public static function createTemporaryWithFileName(string $fileName) : File
 	{
-		return new static(\Katu\App::getTemporaryDir(), 'files', $fileName);
+		return new static(\Katu\App::getTemporaryDir(), 'files', static::prepareFileName($fileName));
 	}
 
 	public static function createTemporaryWithExtension(string $extension) : File

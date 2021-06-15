@@ -38,7 +38,9 @@ class Model extends Base
 		if ($primaryKey) {
 			return static::get($primaryKey);
 		} else {
-			throw new \Katu\Exceptions\NoPrimaryKeyReturnedException;
+			throw (new \Katu\Exceptions\NoPrimaryKeyReturnedException)->setContext([
+				'sql' => $query->getStatementDump()->getSentSQL(),
+			]);
 		}
 	}
 
