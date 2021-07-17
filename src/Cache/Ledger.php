@@ -95,6 +95,15 @@ class Ledger
 		return array_keys($expired);
 	}
 
+	public function removeKey($key)
+	{
+		$contents = $this->get();
+		unset($contents[$key]);
+		$this->set($contents);
+
+		return $this;
+	}
+
 	public function count()
 	{
 		return count($this->get());
