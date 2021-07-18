@@ -36,4 +36,24 @@ class TInterval
 	{
 		return $this->max;
 	}
+
+	public function getRange() : array
+	{
+		return range($this->getMin(), $this->getMax());
+	}
+
+	public function getCount() : int
+	{
+		return count($this->getRange());
+	}
+
+	public function getIsSingle() : bool
+	{
+		return $this->getCount() == 1;
+	}
+
+	public function getIsDouble() : bool
+	{
+		return $this->getCount() == 2;
+	}
 }
