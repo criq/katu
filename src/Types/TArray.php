@@ -220,4 +220,31 @@ class TArray extends \ArrayObject
 	{
 		return $this->search($needle) !== false;
 	}
+
+	public function getIntervals() : array
+	{
+		$numbers = $this->map(function ($i) {
+			return (int)$i;
+		})->natsort();
+
+		$intervals = [];
+
+		foreach ($numbers as $number) {
+			$added = false;
+
+			foreach ($intervals as &$interval) {
+				if ($interval->getMax() == $number - 1) {
+					$interval->setMax($number);
+					$added = true;
+					continue;
+				}
+			}
+
+			if (!$added) {
+				$intervals[] = new TInterval($number, $number);
+			}
+		}
+
+		return $intervals;
+	}
 }
