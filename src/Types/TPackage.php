@@ -38,14 +38,4 @@ class TPackage
 	{
 		return TEncryptedString::encrypt($this->getJSON())->getJSON()->getStorableString();
 	}
-
-	// public function getString() : string
-	// {
-	// 	return $this->getEncodedString()->getEncoded();
-	// }
-
-	// public function getEncodedString() : \Katu\Tools\Security\EncodedString
-	// {
-	// 	return \Katu\Tools\Security\EncodedString::encode($this->getJSON()->getString());
-	// }
 }

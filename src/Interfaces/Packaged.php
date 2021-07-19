@@ -2,8 +2,10 @@
 
 namespace Katu\Interfaces;
 
+use Katu\Types\TPackage;
+
 interface Packaged
 {
-	public function getPackage() : \Katu\Types\TPackage;
-	public static function createFromPackage(\Katu\Types\TPackage $package);
+	public function getPackage() : TPackage;
+	public static function createFromPackage(TPackage $package);
 }
