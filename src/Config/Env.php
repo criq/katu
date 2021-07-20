@@ -43,12 +43,16 @@ class Env
 		];
 	}
 
-	public static function getCommit() : string
+	public static function getCommit() : ?string
 	{
-		$file = new \Katu\Files\File(\Katu\App::getBaseDir(), '.git', 'HEAD');
-		preg_match('/ref: (.+)/', $file->get(), $match);
-		$file = new \Katu\Files\File('.git', $match[1]);
-		return trim($file->get());
+		try {
+			$file = new \Katu\Files\File(\Katu\App::getBaseDir(), '.git', 'HEAD');
+			preg_match('/ref: (.+)/', $file->get(), $match);
+			$file = new \Katu\Files\File('.git', $match[1]);
+			return trim($file->get());
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public static function getVersion() : string
