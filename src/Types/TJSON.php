@@ -16,6 +16,11 @@ class TJSON
 		return $this->getString();
 	}
 
+	public static function createFromArray(array $array)
+	{
+		return new static(\Katu\Files\Formats\JSON::encodeStandard($array));
+	}
+
 	public function getString() : string
 	{
 		return $this->json;
