@@ -7,10 +7,12 @@ use Katu\Types\TClass;
 class ClassFactory extends Factory
 {
 	protected $class;
+	protected $method;
 
-	public function __construct(TClass $class)
+	public function __construct(TClass $class, ?string $method = null)
 	{
 		$this->class = $class;
+		$this->method = $method;
 	}
 
 	public function getClass() : TClass
@@ -18,13 +20,24 @@ class ClassFactory extends Factory
 		return $this->class;
 	}
 
+	public function getMethod() : ?string
+	{
+		return $this->method;
+	}
+
 	public function create()
 	{
 		$className = $this->getClass()->getName();
-		$object = new $className;
-		$array = func_get_arg(0);
-		foreach ($array as $key => $value) {
-			$object->$key = $value;
+		$method = $this->getMethod();
+		$params = func_get_arg(0);
+
+		if ($method) {
+			$object = $className::$method($params);
+		} else {
+			$object = new $className;
+			foreach ($params as $key => $value) {
+				$object->$key = $value;
+			}
 		}
 
 		return $object;
