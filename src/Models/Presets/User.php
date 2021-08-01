@@ -93,7 +93,7 @@ class User extends \Katu\Models\Model
 		$accessTokenClass = static::getAccessTokenClass()->getName();
 
 		$accessToken = $accessTokenClass::getOneBy([
-			'token' => preg_replace('/^(Bearer)\s+/', null, $token),
+			'token' => preg_replace('/^(Bearer)\s+/', '', $token),
 			SX::cmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
 		]);
 
@@ -312,11 +312,11 @@ class User extends \Katu\Models\Model
 		$userRoleClass = static::getUserRoleClass()->getName();
 		$rolePermissionClass = static::getRolePermissionClass()->getName();
 
-		$sql = (new \Sexy\Select($rolePermissionClass::getColumn('permission')))
+		$sql = (SX::select($rolePermissionClass::getColumn('permission')))
 			->from($rolePermissionClass::getTable())
 			->joinColumns($rolePermissionClass::getColumn('roleId'), $userRoleClass::getColumn('roleId'))
-			->whereEq($userRoleClass::getColumn('userId'), $this->getId())
-			->groupBy(new \Sexy\GroupBy($rolePermissionClass::getColumn('permission')))
+			->where(SX::eq($userRoleClass::getColumn('userId'), $this->getId()))
+			->groupBy(SX::groupBy($rolePermissionClass::getColumn('permission')))
 			;
 
 		return static::getConnection()->select($sql)->getResult()->getColumnValues('permission');

@@ -115,13 +115,12 @@ abstract class Base
 		return $filteredParams;
 	}
 
-	public static function getBy(?array $params = [], ?array $expressions = [], ?array $options = []) : \Katu\PDO\Result
+	public static function getBy(?array $where = [], $orderBy = null, $limitOrPage = null) : \Katu\PDO\Result
 	{
 		$sql = SX::select();
-		$sql->addExpressions($expressions);
 		$sql->from(static::getTable());
 
-		foreach ($params as $name => $value) {
+		foreach ($where as $name => $value) {
 			if ($value instanceof \Sexy\Expression) {
 				$sql->where($value);
 			} elseif (is_null($value)) {
@@ -131,8 +130,18 @@ abstract class Base
 			}
 		}
 
-		if ($options['setGetFoundRows'] ?? null) {
-			$sql->setGetFoundRows($options['setGetFoundRows']);
+		if ($orderBy instanceof \Sexy\Expression) {
+			$sql->orderBy($orderBy);
+		} elseif (is_array($orderBy)) {
+			foreach ($orderBy as $_orderBy) {
+				$sql->orderBy($_orderBy);
+			}
+		}
+
+		if ($limitOrPage instanceof \Sexy\Limit) {
+			$sql->setLimit($limitOrPage);
+		} elseif ($limitOrPage instanceof \Sexy\Page) {
+			$sql->setPage($limitOrPage);
 		}
 
 		$query = static::getConnection()->select($sql);
@@ -151,23 +160,13 @@ abstract class Base
 		return static::getBySql($sql->setGetFoundRows(false))->getOne();
 	}
 
-	public static function getOneBy()
+	public static function getOneBy(?array $where = [], $orderBy = null)
 	{
-		$args = array_merge(func_get_args(), [
-			[
-				'page' => SX::page(1, 1)
-			],
-		], [
-			[
-				'setGetFoundRows' => false,
-			],
-		]);
-
-		return static::getBy(...$args)->getOne();
+		return static::getBy($where, $orderBy)->getOne();
 	}
 
-	public static function getAll(?array $expressions = []) : \Katu\PDO\Result
+	public static function getAll($orderBy = null) : \Katu\PDO\Result
 	{
-		return static::getBy([], $expressions);
+		return static::getBy([], $orderBy);
 	}
 }
