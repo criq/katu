@@ -2,7 +2,9 @@
 
 namespace Katu\Models;
 
+use Katu\Tools\DateTime\Timeout;
 use Katu\Types\TClass;
+use Katu\Types\TIdentifier;
 
 abstract class View extends Base
 {
@@ -410,7 +412,7 @@ abstract class View extends Base
 			$class::updateLastCachedTime();
 		};
 
-		(new \Katu\Tools\Locks\Lock(new \Katu\Tools\DateTime\Timeout(static::TIMEOUT), ['databases', static::getConnection()->getConfig()->database, 'views', 'cache', $class], $callback))
+		(new \Katu\Tools\Locks\Lock(new TIdentifier('databases', static::getConnection()->getConfig()->database, 'views', 'cache', $class), new Timeout(static::TIMEOUT), $callback))
 			->setUseLock(false)
 			->setArgs([$class])
 			->run()
@@ -439,7 +441,7 @@ abstract class View extends Base
 				return true;
 			};
 
-			(new \Katu\Tools\Locks\Lock(new \Katu\Tools\DateTime\Timeout(static::TIMEOUT), ['databases', static::getConnection()->getConfig()->database, 'views', 'materialize', $class], $callback))
+			(new \Katu\Tools\Locks\Lock(new TIdentifier('databases', static::getConnection()->getConfig()->database, 'views', 'materialize', $class), new Timeout(static::TIMEOUT), $callback))
 				->setArgs([$class])
 				->run()
 				;
