@@ -2,124 +2,81 @@
 
 namespace Katu\Cache;
 
-class URL extends \Katu\Cache\General
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+use Katu\Types\TURL;
+
+class URL
 {
-	protected $curlConnectTimeout = 5;
-	protected $curlEncoding = null;
-	protected $curlTimeout = 5;
+	protected $curl;
+	protected $timeout;
 	protected $url;
 
-	public function __construct($url = null, int $timeout = null)
+	public function __construct(TURL $url, Timeout $timeout, ?\Curl\Curl $curl = null)
 	{
 		$this->setURL($url);
 		$this->setTimeout($timeout);
-		$this->setCallback($this->generateCallback());
-		$this->setArgs($url);
+		$this->setCurl($curl);
 	}
 
-	public function setURL($url)
+	public function setURL(TURL $url) : URL
 	{
 		$this->url = $url;
-		$this->setName(static::generateNameFromUrl($this->url));
 
 		return $this;
 	}
 
-	public static function generateNameFromUrl($url)
-	{
-		$name = [];
-
-		$url = new \Katu\Types\TURL((string)$url);
-		$urlParts = $url->getParts();
-
-		$name = [
-			'url',
-			$urlParts['scheme'],
-			$urlParts['host'],
-			$urlParts['path'],
-		];
-
-		ksort($urlParts['query']);
-
-		foreach ($urlParts['query'] as $key => $value) {
-			$name[] = (new \Katu\Types\TString($key))->getForUrl();
-			$name[] = (new \Katu\Types\TString($value))->getForUrl();
-		}
-
-		$name = array_values(array_filter($name));
-
-		return $name;
-	}
-
-	public function getURL()
+	public function getURL() : TURL
 	{
 		return $this->url;
 	}
 
-	public function setCurlTimeout(int $curlTimeout)
+	public function setTimeout(Timeout $timeout) : URL
 	{
-		$this->curlTimeout = $curlTimeout;
+		$this->timeout = $timeout;
 
 		return $this;
 	}
 
-	public function getCurlTimeout()
+	public function getTimeout() : Timeout
 	{
-		return $this->curlTimeout;
+		return $this->timeout;
 	}
 
-	public function setCurlConnectTimeout(int $curlConnectTimeout)
+	public function setCurl(?\Curl\Curl $curl = null) : URL
 	{
-		$this->curlConnectTimeout = $curlConnectTimeout;
+		$this->curl = $curl;
 
 		return $this;
 	}
 
-	public function getCurlConnectTimeout()
+	public function getCurl() : \Curl\Curl
 	{
-		return $this->curlConnectTimeout;
+		if ($this->curl) {
+			return $this->curl;
+		}
+
+		$curl = new \Curl\Curl;
+		$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+
+		return $curl;
 	}
 
-	public function setCurlEncoding($curlEncoding)
+	public function getCallback() : callable
 	{
-		$this->curlEncoding = $curlEncoding;
-
-		return $this;
-	}
-
-	public function getCurlEncoding()
-	{
-		return $this->curlEncoding;
-	}
-
-	public function generateCallback()
-	{
-		return function ($url) {
-			$curl = new \Curl\Curl;
-
-			try {
-				$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
-			} catch (\Exception $e) {
-				// Nevermind.
-			}
-
-			$curl->setTimeout($this->curlTimeout);
-			$curl->setConnectTimeout($this->curlConnectTimeout);
-
-			if ($this->curlEncoding) {
-				$curl->setOpt(CURLOPT_ENCODING, $this->curlEncoding);
-			}
-
-			$src = $curl->get((string)$url);
+		return function () {
+			$curl = $this->getCurl();
+			$src = $curl->get((string)$this->getURL());
 
 			if (!isset($curl->errorCode)) {
 				throw new \Katu\Exceptions\CacheCallbackException(strtr("Error fetching URL %url%.", [
-					'url' => (string)$url,
+					'url' => (string)$this->getURL(),
 				]));
 			}
+
 			if ($curl->errorCode) {
 				throw new \Katu\Exceptions\CacheCallbackException(strtr("Error fetching URL %url%, error code %errorCode%, error %error%.", [
-					'%url%' => (string)$url,
+					'%url%' => (string)$this->getURL(),
 					'%errorCode%' => $curl->errorCode,
 					'%error%' => $curl->error,
 				]));
@@ -129,6 +86,7 @@ class URL extends \Katu\Cache\General
 			if (!isset($curlInfo['http_code'])) {
 				throw new \Katu\Exceptions\CacheCallbackException;
 			}
+
 			if ($curlInfo['http_code'] != 200) {
 				throw new \Katu\Exceptions\CacheCallbackException;
 			}
@@ -137,15 +95,11 @@ class URL extends \Katu\Cache\General
 		};
 	}
 
-	public static function get()
+	public static function get(TURL $url, Timeout $timeout, ?\Curl\Curl $curl = null)
 	{
-		$args = func_get_args();
+		$urlCache = new static($url, $timeout, $curl);
+		$cache = new General(new TIdentifier('url', $url), $timeout, $urlCache->getCallback());
 
-		$object = new static((string)$args[0]);
-		if (isset($args[1])) {
-			$object->setTimeout($args[1]);
-		}
-
-		return $object->getResult();
+		return $cache->getResult();
 	}
 }

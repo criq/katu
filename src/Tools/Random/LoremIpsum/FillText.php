@@ -2,16 +2,19 @@
 
 namespace Katu\Tools\Random\LoremIpsum;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class FillText extends \Katu\Tools\Random\LoremIpsum
 {
 	public static function loadSentences()
 	{
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], static::TIMEOUT, function () {
+		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout(static::TIMEOUT), function () {
 			$url = \Katu\Types\TURL::make('http://www.filltext.com/', [
 				'rows' => 1,
 				'lorem' => '{lorem|200}',
 			]);
-			$src = \Katu\Cache\URL::get($url, static::TIMEOUT);
+			$src = \Katu\Cache\URL::get($url, new Timeout(static::TIMEOUT));
 			$words = (new \Katu\Types\TArray(explode(' ', $src[0]->lorem)))->unique();
 
 			$sentences = new \Katu\Types\TArray;

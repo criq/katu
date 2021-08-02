@@ -2,14 +2,17 @@
 
 namespace Katu\Tools\System;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class System
 {
 	public static function getNumberOfCpus() : int
 	{
-		$cacheName = ['system', 'numberOfCpus'];
+		$cacheIdentifier = new TIdentifier('system', 'numberOfCpus');
 
-		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
-			return \Katu\Cache\General::get($cacheName, '1 day', function () {
+		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
+			return \Katu\Cache\General::get($cacheIdentifier, new Timeout('1 day'), function () {
 				$numCpus = 1;
 				if (is_file('/proc/cpuinfo')) {
 					$cpuinfo = file_get_contents('/proc/cpuinfo');

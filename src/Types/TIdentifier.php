@@ -164,4 +164,14 @@ class TIdentifier implements Packaged
 	{
 		return implode('/', $this->getPathParts($extension));
 	}
+
+	public function getKey() : string
+	{
+		$key = $this->getPath();
+		if (strlen($key) > 250) {
+			$key = sha1($key);
+		}
+
+		return $key;
+	}
 }

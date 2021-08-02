@@ -414,7 +414,7 @@ abstract class View extends Base
 
 		(new \Katu\Tools\Locks\Lock(new TIdentifier('databases', static::getConnection()->getConfig()->database, 'views', 'cache', $class), new Timeout(static::TIMEOUT), $callback))
 			->setUseLock(false)
-			->setArgs([$class])
+			->setArgs($class)
 			->run()
 			;
 
@@ -442,7 +442,7 @@ abstract class View extends Base
 			};
 
 			(new \Katu\Tools\Locks\Lock(new TIdentifier('databases', static::getConnection()->getConfig()->database, 'views', 'materialize', $class), new Timeout(static::TIMEOUT), $callback))
-				->setArgs([$class])
+				->setArgs($class)
 				->run()
 				;
 		} catch (\Katu\Exceptions\LockException $e) {

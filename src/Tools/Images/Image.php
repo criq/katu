@@ -2,6 +2,9 @@
 
 namespace Katu\Tools\Images;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class Image
 {
 	protected $source;
@@ -66,10 +69,10 @@ class Image
 
 	public function getColors($number = 1)
 	{
-		$timeout = '1 year';
+		$timeout = new Timeout('1 year');
 
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], $timeout, function ($image, $number) use ($timeout) {
-			$palette = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], $timeout, function ($image) {
+		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), $timeout, function ($image, $number) use ($timeout) {
+			$palette = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), $timeout, function ($image) {
 				try {
 					return \League\ColorExtractor\Palette::fromGD($image->getInterventionImage()->getCore());
 				} catch (\Throwable $e) {
@@ -91,7 +94,7 @@ class Image
 
 	public function getImageSize()
 	{
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], '1 year', function ($image) {
+		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 year'), function ($image) {
 			try {
 				$size = getimagesize($image->getSource()->getUri());
 				return new \Katu\Types\TImageSize($size[0], $size[1]);
@@ -104,7 +107,7 @@ class Image
 
 	public function getMime()
 	{
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], '1 year', function ($image) {
+		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 year'), function ($image) {
 			try {
 				$size = getimagesize($image->getSource()->getUri());
 				return $size['mime'];

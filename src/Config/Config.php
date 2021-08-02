@@ -2,6 +2,8 @@
 
 namespace Katu\Config;
 
+use Katu\Types\TIdentifier;
+
 class Config
 {
 	const FILENAME_REGEXP = "/^(?<name>[a-z0-9]+)(\.(?<platform>[a-z0-9]+))?\.(?<type>php|yaml)$/i";
@@ -32,9 +34,7 @@ class Config
 
 	public static function getAll()
 	{
-		$cacheName = ['config'];
-
-		return \Katu\Cache\Runtime::get($cacheName, function () {
+		return \Katu\Cache\Runtime::get(new TIdentifier('config'), function () {
 			$cacheConfigFile = new \Katu\Files\File(\Katu\App::getBaseDir(), '.cacheconfig');
 			if ($cacheConfigFile->exists()) {
 				$cacheFile = new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'config', \Katu\Config\Env::getVersion());

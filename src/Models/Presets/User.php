@@ -2,7 +2,9 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Tools\DateTime\Timeout;
 use Katu\Types\TClass;
+use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
 
 class User extends \Katu\Models\Model
@@ -331,10 +333,10 @@ class User extends \Katu\Models\Model
 
 	public function getAllPermissions()
 	{
-		$cacheName = ['users', $this->getId(), 'allPermissions'];
+		$cacheIdentifier = new TIdentifier('users', $this->getId(), 'allPermissions');
 
-		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
-			return \Katu\Cache\General::get($cacheName, '1 day', function () {
+		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
+			return \Katu\Cache\General::get($cacheIdentifier, new Timeout('1 day'), function () {
 				return array_filter(array_unique(array_merge((array)$this->getRolePermissions(), (array)$this->getUserPermissions())));
 			});
 		});

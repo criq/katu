@@ -2,6 +2,9 @@
 
 namespace Katu\PDO;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class View extends Table
 {
 	public function getCreateSyntax()
@@ -14,7 +17,7 @@ class View extends Table
 
 	public function getSourceTables()
 	{
-		$tableNames = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400, function ($table) {
+		$tableNames = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 day'), function ($table) {
 			$tableNames = [];
 
 			$sql = " EXPLAIN SELECT * FROM " . $table . " ";

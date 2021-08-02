@@ -59,11 +59,16 @@ class Lock
 		return $this->callback;
 	}
 
-	public function setArgs(array $args) : Lock
+	public function setArgs() : Lock
 	{
-		$this->args = $args;
+		$this->args = func_get_args();
 
 		return $this;
+	}
+
+	public function getArgs() : array
+	{
+		return $this->args;
 	}
 
 	public function setUseLock(bool $useLock) : Lock

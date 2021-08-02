@@ -2,16 +2,19 @@
 
 namespace Katu\Tools\Services\Google;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class UrlShortener
 {
-	public static function getApiKey()
+	public static function getApiKey() : string
 	{
 		return \Katu\Config\Config::get('google', 'api', 'key');
 	}
 
-	public static function shorten($url, $timeout = '1 year')
+	public static function shorten($url, Timeout $timeout) : ?string
 	{
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], $timeout, function ($url) {
+		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), $timeout, function ($url) {
 			$apiUrl = \Katu\Types\TURL::make('https://www.googleapis.com/urlshortener/v1/url', [
 				'key' => static::getApiKey(),
 			]);

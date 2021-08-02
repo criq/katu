@@ -2,10 +2,12 @@
 
 namespace Katu\Files;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class File
 {
-	const HASH_ALGO = 'crc32';
-	const TYPE_DIR  = 'dir';
+	const TYPE_DIR = 'dir';
 	const TYPE_FILE = 'file';
 
 	public $path;
@@ -18,109 +20,6 @@ class File
 	public function __toString()
 	{
 		return $this->getPath();
-	}
-
-	public static function generatePath($input, ?string $extension = null) : string
-	{
-		/**************************************************************************
-		 * Generate hash.
-		 */
-		$hash = hash(static::HASH_ALGO, serialize($input));
-		// var_dump($hash);
-
-		/**************************************************************************
-		 * Make sure input in an array.
-		 */
-		$output = is_array($input) ? $input : [$input];
-		// var_dump($input);
-
-		/**************************************************************************
-		 * Flatten array.
-		 */
-		$output = (new \Katu\Types\TArray($output))->flatten()->getArray();
-		// var_dump($output);
-
-		/**************************************************************************
-		 * Make sure everything is a string.
-		 */
-		$output = array_map(function ($i) {
-			try {
-				return (string)$i;
-			} catch (\Throwable $e) {
-				return sha1(serialize($i));
-			}
-		}, $output);
-		// var_dump($output);
-
-		/**************************************************************************
-		 * Separate into directories.
-		 */
-		$output = array_map(function ($i) {
-			return preg_split('/[\/\\\\&\?=]/', $i);
-		}, $output);
-		// var_dump($output);
-
-		/**************************************************************************
-		 * Flatten array.
-		 */
-		$output = (new \Katu\Types\TArray($output))->flatten()->getArray();
-		// var_dump($output);
-
-		/**************************************************************************
-		 * Underscore capital letters.
-		 */
-		$output = array_map(function ($i) {
-			return preg_replace_callback('/\p{Lu}/u', function ($matches) {
-				return '_' . mb_strtolower($matches[0]);
-			}, $i);
-		}, $output);
-		// var_dump($output);
-
-		/**************************************************************************
-		 * Sanitize dashes and underscores.
-		 */
-		$output = array_map(function ($i) {
-			$i = strtr($i, '-', '_');
-			$i = trim($i, '_');
-
-			return $i;
-		}, $output);
-		// var_dump($output);
-
-		/**************************************************************************
-		 * Remove invalid characters.
-		 */
-		$output = array_map(function ($i) {
-			$i = strtr($i, '\\', '/');
-			$i = mb_strtolower($i);
-			$i = preg_replace('/[^a-z0-9_\/\.]/i', '', $i);
-			return $i;
-		}, $output);
-		// var_dump($output);
-
-		/**************************************************************************
-		 * Filter.
-		 */
-		$output = array_values(array_filter($output));
-
-		try {
-			$filename = array_slice($output, -1, 1)[0];
-			$pathinfo = pathinfo($filename);
-
-			$hashedFilename = implode('.', array_filter([
-				$pathinfo['filename'],
-				$hash,
-				$extension ?: ($pathinfo['extension'] ?? null),
-			]));
-
-			$output = array_merge(array_slice($output, 0, -1), [
-				$hashedFilename,
-			]);
-		} catch (\Throwable $e) {
-			$output[] = $hash;
-		}
-
-		return implode('/', $output);
 	}
 
 	public static function joinPaths()
@@ -500,9 +399,9 @@ class File
 			;
 	}
 
-	public function getCachedHashedURL($timeout = null, ?string $algo = 'sha1', ?string $paramName = 'hash')
+	public function getCachedHashedURL(Timeout $timeout = null, ?string $algo = 'sha1', ?string $paramName = 'hash')
 	{
-		return \Katu\Cache\General::get([__CLASS__, __FUNCTION__], $timeout, function ($file, $algo, $paramName) {
+		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__), $timeout, function ($file, $algo, $paramName) {
 			return $file->getHashedURL($algo, $paramName);
 		}, $this, $algo, $paramName);
 	}

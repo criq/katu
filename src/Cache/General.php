@@ -2,6 +2,9 @@
 
 namespace Katu\Cache;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class General
 {
 	const DIR_NAME = 'cache';
@@ -11,70 +14,61 @@ class General
 	protected $enableApcu = true;
 	protected $enableMemcached = true;
 	protected $enableRedis = true;
-	protected $name;
+	protected $identifier;
 	protected $timeout;
 	protected static $memcached;
 	protected static $redis;
 
-	public function __construct($name = null, $timeout = null, ?callable $callback = null)
+	public function __construct(TIdentifier $identifier, Timeout $timeout, ?callable $callback = null)
 	{
-		$this->setName($name);
+		$this->setIdentifier($identifier);
 		$this->setTimeout($timeout);
-
-		if ($callback) {
-			$this->setCallback($callback);
-		}
+		$this->setCallback($callback);
+		$this->setArgs(...array_slice(func_get_args(), 3));
 	}
 
-	public function setName() : General
+	public function setIdentifier(TIdentifier $identifier) : General
 	{
-		$args = func_get_args();
-
-		if (count($args) == 1 && is_array($args[0]) && $args[0]) {
-			$name = func_get_arg(0);
-		} else {
-			$name = $args;
-		}
-
-		$this->name = $name;
+		$this->identifier = $identifier;
 
 		return $this;
 	}
 
-	public function getName()
+	public function getIdentifier() : TIdentifier
 	{
-		return $this->name;
+		return $this->identifier;
 	}
 
-	public function setTimeout($timeout) : General
+	public function getIdentifierWithArgs() : TIdentifier
 	{
-		if ($timeout instanceof \Katu\Tools\DateTime\Timeout) {
-			$this->timeout = $timeout;
-		} else {
-			$this->timeout = new \Katu\Tools\DateTime\Timeout($timeout);
-		}
+		return new TIdentifier(...array_merge($this->getIdentifier()->getParts(), $this->getArgs()));
+	}
+
+	public function setTimeout(Timeout $timeout) : General
+	{
+		$this->timeout = $timeout;
 
 		return $this;
 	}
 
-	public function getTimeout() : ?\Katu\Tools\DateTime\Timeout
+	public function getTimeout() : Timeout
 	{
 		return $this->timeout;
 	}
 
-	public function setCallback($callback)
+	public function setCallback(?callable $callback) : General
 	{
 		$this->callback = $callback;
 
 		return $this;
 	}
 
-	public function getCallback()
+	public function getCallback() : ?callable
 	{
 		return $this->callback;
 	}
 
-	public function setArgs()
+	public function setArgs() : General
 	{
 		$this->args = func_get_args();
 
@@ -83,10 +77,10 @@ class General
 
 	public function getArgs() : array
 	{
-		return (array)$this->args;
+		return $this->args;
 	}
 
-	public function disableMemory()
+	public function disableMemory() : General
 	{
 		$this->enableApcu = false;
 		$this->enableMemcached = false;
@@ -95,30 +89,14 @@ class General
 		return $this;
 	}
 
-	public static function generateMemoryKey()
-	{
-		$key = \Katu\Files\File::generatePath(array_merge([\Katu\Config\Env::getVersion()], func_get_args()));
-		if (mb_strlen($key) > 250) {
-			$key = sha1($key);
-		}
-
-		return $key;
-	}
-
 	public function getMemoryKey()
 	{
-		return static::generateMemoryKey([
-			$this->name,
-			$this->args,
-		]);
+		return $this->getIdentifierWithArgs()->getKey();
 	}
 
 	public function getFile() : \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, \Katu\Files\File::generatePath([
-			$this->name,
-			$this->args,
-		], 'txt'));
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifierWithArgs()->getPath('txt'));
 	}
 
 	/****************************************************************************
@@ -431,14 +409,10 @@ class General
 	/****************************************************************************
 	 * Code sugar.
 	 */
-	public static function get()
+	public static function get(TIdentifier $identifier, Timeout $timeout, ?callable $callback = null)
 	{
-		$cache = new static(func_get_arg(0), func_get_arg(1));
-		if (func_get_arg(2)) {
-			$cache->setCallback(func_get_arg(2));
-		}
-
-		$cache->setArgs(...(array)array_slice(func_get_args(), 3));
+		$cache = new static($identifier, $timeout, $callback);
+		$cache->setArgs(...array_slice(func_get_args(), 3));
 
 		return $cache->getResult();
 	}

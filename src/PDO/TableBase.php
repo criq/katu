@@ -2,6 +2,9 @@
 
 namespace Katu\PDO;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 abstract class TableBase extends \Sexy\Expression
 {
 	public $connection;
@@ -53,12 +56,12 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getColumnDescriptions()
 	{
-		$cacheName = ['databases', $this->getConnection()->getName(), 'tables', 'descriptions', $this->name];
+		$cacheIdentifier = new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'descriptions', $this->name);
 
-		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
+		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
 			$table = $this;
 
-			return \Katu\Cache\General::get($cacheName, '10 minutes', function () use ($table) {
+			return \Katu\Cache\General::get($cacheIdentifier, new Timeout('10 minutes'), function () use ($table) {
 				$columns = [];
 				foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
 					$columns[$properties['Field']] = $properties;
@@ -200,7 +203,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getUsedInViews()
 	{
-		return \Katu\Cache\General::get($this->getUsedInViewsCacheName(), null, function ($table) {
+		return \Katu\Cache\General::get($this->getUsedInViewsCacheIdentifier(), new Timeout('1 day'), function ($table) {
 			$views = [];
 
 			foreach ($this->getConnection()->getViewNames() as $viewName) {
@@ -214,14 +217,14 @@ abstract class TableBase extends \Sexy\Expression
 		}, $this);
 	}
 
-	public function getUsedInViewsCacheName()
+	public function getUsedInViewsCacheIdentifier() : TIdentifier
 	{
-		return ['databases', $this->getConnection()->getName(), 'tables', 'usedInViews', $this->name];
+		return new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'usedInViews', $this->name);
 	}
 
-	public function getTotalUsage($timeout = null)
+	public function getTotalUsage(Timeout $timeout)
 	{
-		return \Katu\Cache\General::get($this->getTotalUsageCacheName(), $timeout, function ($table) {
+		return \Katu\Cache\General::get($this->getUsedInViewsCacheIdentifier(), $timeout, function ($table) {
 			$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 
 			$sql = " SELECT COUNT(1) AS total FROM " . $table->name;
@@ -234,9 +237,9 @@ abstract class TableBase extends \Sexy\Expression
 		}, $this);
 	}
 
-	public function getTotalUsageCacheName()
+	public function getTotalUsageCacheIdentifier() : TIdentifier
 	{
-		return ['databases', $this->getConnection()->getName(), 'tables', 'totalRows', $this->name];
+		return new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'totalRows', $this->name);
 	}
 
 	public function getLastUpdatedTemporaryFile()
@@ -246,10 +249,10 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getPrimaryKeyColumnName() : ?string
 	{
-		$cacheName = ['databases', $this->getConnection()->getName(), 'tables', 'idColumn', $this->getName()->getName()];
+		$cacheIdentifier = new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'idColumn', $this->getName()->getName());
 
-		return \Katu\Cache\Runtime::get($cacheName, function () use ($cacheName) {
-			return \Katu\Cache\General::get($cacheName, '10 minutes', function () {
+		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
+			return \Katu\Cache\General::get($cacheIdentifier, new Timeout('10 minutes'), function () {
 				foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
 					if (isset($row['Key']) && $row['Key'] == 'PRI') {
 						return $row['Field'];

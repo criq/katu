@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\DOM;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TURL;
 use Symfony\Component\DomCrawler\Crawler;
 
 class DOM
@@ -22,7 +24,7 @@ class DOM
 		return $crawler;
 	}
 
-	public static function crawlUrl($url, $timeout = null)
+	public static function crawlUrl(TURL $url, Timeout $timeout)
 	{
 		return static::crawlHtml(\Katu\Cache\URL::get($url, $timeout));
 	}

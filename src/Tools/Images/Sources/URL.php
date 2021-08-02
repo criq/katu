@@ -2,6 +2,9 @@
 
 namespace Katu\Tools\Images\Sources;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class URL extends \Katu\Tools\Images\Source
 {
 	public function __construct(\Katu\Types\TURL $input)
@@ -22,7 +25,7 @@ class URL extends \Katu\Tools\Images\Source
 				return $pathinfo['extension'];
 			}
 
-			$size = \Katu\Cache\General::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($source) {
+			$size = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 year'), function ($source) {
 				return getimagesize($source->getUri());
 			}, $this);
 

@@ -2,6 +2,8 @@
 
 namespace Katu\PDO;
 
+use Katu\Tools\DateTime\Timeout;
+
 class Connection
 {
 	protected $config;
@@ -151,7 +153,7 @@ class Connection
 
 		foreach ($this->getViews() as $view) {
 			$views[$view->name->name]['usedIn'] = $view->getUsedInViews();
-			$views[$view->name->name]['usage'] = $view->getTotalUsage();
+			$views[$view->name->name]['usage'] = $view->getTotalUsage(new Timeout('1 day'));
 		}
 
 		return $views;
