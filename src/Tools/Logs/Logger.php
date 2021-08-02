@@ -2,25 +2,38 @@
 
 namespace Katu\Tools\Logs;
 
+use Katu\Types\TIdentifier;
+
 class Logger extends \Monolog\Logger
 {
 	const DIR_NAME = 'logs';
 
-	public function __construct($name = 'app')
+	protected $identifier;
+
+	public function __construct(TIdentifier $identifier)
 	{
-		parent::__construct(\Katu\Files\File::generatePath($name));
+		$this->setIdentifier($identifier);
+
+		parent::__construct(implode('.', $this->getIdentifier()->getSanitizedParts()));
 
 		$this->pushHandler(new \Monolog\Handler\StreamHandler((string)$this->getFile()));
 	}
 
-	public function getDir()
+	public function setIdentifier(TIdentifier $identifier) : Logger
 	{
-		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::DIR_NAME);
+		$this->identifier = $identifier;
+
+		return $this;
 	}
 
-	public function getFile()
+	public function getIdentifier() : TIdentifier
 	{
-		return new \Katu\Files\File($this->getDir(), \Katu\Files\File::generatePath($this->name, 'log'));
+		return $this->identifier;
+	}
+
+	public function getFile() : \Katu\Files\File
+	{
+		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::DIR_NAME, $this->getIdentifier()->getPath('log'));
 	}
 
 	public function log($level, $message, array $context = []) : void

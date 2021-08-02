@@ -2,6 +2,8 @@
 
 namespace Katu\Errors;
 
+use Katu\Types\TIdentifier;
+
 class Handler
 {
 	const ERROR_LOG = 'error.log';
@@ -13,7 +15,7 @@ class Handler
 
 	public static function getLogger()
 	{
-		return new \Katu\Tools\Logs\Logger('error');
+		return new \Katu\Tools\Logs\Logger(new TIdentifier('error'));
 	}
 
 	public static function init()
