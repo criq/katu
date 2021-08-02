@@ -3,15 +3,18 @@
 namespace Katu\Cache;
 
 use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
 use Katu\Types\TSeconds;
 
 class Pickle
 {
-	protected $name;
+	const DIR_NAME = 'pickles';
 
-	public function __construct($name, $value = null)
+	protected $identifier;
+
+	public function __construct(TIdentifier $identifier, $value = null)
 	{
-		$this->name = $name;
+		$this->setIdentifier($identifier);
 
 		if (!$this->getFile()->exists()) {
 			$this->set(null);
@@ -22,14 +25,21 @@ class Pickle
 		}
 	}
 
-	public function getName()
+	public function setIdentifier(TIdentifier $identifier) : Pickle
 	{
-		return $this->name;
+		$this->identifier = $identifier;
+
+		return $this;
+	}
+
+	public function getIdentifier() : TIdentifier
+	{
+		return $this->identifier;
 	}
 
 	public function getFile() : \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'pickles', \Katu\Files\File::generatePath($this->getName(), 'txt'));
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('txt'));
 	}
 
 	public function get()

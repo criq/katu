@@ -2,7 +2,9 @@
 
 namespace Katu\Types;
 
-class TKey
+use Katu\Interfaces\Packaged;
+
+class TIdentifier implements Packaged
 {
 	const HASH_ALGO = 'crc32';
 
@@ -13,7 +15,24 @@ class TKey
 		$this->setParts(...func_get_args());
 	}
 
-	public function setParts() : TKey
+	public function __toString() : string
+	{
+		return (string)$this->getPath();
+	}
+
+	public static function createFromPackage(TPackage $package) : TIdentifier
+	{
+		return new static(...$package->getPayload()['parts']);
+	}
+
+	public function getPackage() : TPackage
+	{
+		return new TPackage([
+			'parts' => $this->getParts(),
+		]);
+	}
+
+	public function setParts() : TIdentifier
 	{
 		$this->parts = func_get_args();
 

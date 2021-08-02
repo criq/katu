@@ -2,6 +2,9 @@
 
 namespace Katu\Tools\Locks;
 
+use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TIdentifier;
+
 class Lock
 {
 	const DIR_NAME = 'locks';
@@ -9,90 +12,85 @@ class Lock
 	private $args = [];
 	private $callback;
 	private $excludedPlatforms = [];
-	private $name;
+	private $identifier;
 	private $timeout;
 	private $useLock = true;
 
-	public function __construct(\Katu\Tools\DateTime\Timeout $timeout, $name = null, callable $callback = null)
+	public function __construct(TIdentifier $identifier, Timeout $timeout, ?callable $callback = null)
 	{
+		$this->setIdentifier($identifier);
 		$this->setTimeout($timeout);
-		$this->setName($name);
 		$this->setCallback($callback);
-
-		if (!$this->getName()) {
-			$origin = debug_backtrace()[1];
-			$this->setName([$origin['class'], $origin['function']]);
-		}
 	}
 
-	public function setName($name)
+	public function setIdentifier(TIdentifier $identifier) : Lock
 	{
-		$this->name = $name;
+		$this->identifier = $identifier;
 
 		return $this;
 	}
 
-	public function getName()
+	public function getIdentifier() : TIdentifier
 	{
-		return $this->name;
+		return $this->identifier;
 	}
 
-	public function setTimeout(\Katu\Tools\DateTime\Timeout $timeout)
+	public function setTimeout(Timeout $timeout) : Lock
 	{
 		$this->timeout = $timeout;
 
 		return $this;
 	}
 
-	public function getTimeout() : ?\Katu\Tools\DateTime\Timeout
+	public function getTimeout() : Timeout
 	{
 		return $this->timeout;
 	}
 
-	public function setCallback(callable $callback)
+	public function setCallback(?callable $callback) : Lock
 	{
 		$this->callback = $callback;
 
 		return $this;
 	}
 
-	public function getCallback()
+	public function getCallback() : ?callable
 	{
 		return $this->callback;
 	}
 
-	public function setArgs(array $args)
+	public function setArgs(array $args) : Lock
 	{
 		$this->args = $args;
 
 		return $this;
 	}
 
-	public function setUseLock($useLock)
+	public function setUseLock(bool $useLock) : Lock
 	{
 		$this->useLock = $useLock;
 
 		return $this;
 	}
 
-	public function getUseLock()
+	public function getUseLock() : bool
 	{
-		return $this->useLock && !in_array(\Katu\Config\Env::getPlatform(), $this->excludedPlatforms);
+		return (bool)($this->useLock && !in_array(\Katu\Config\Env::getPlatform(), $this->excludedPlatforms));
 	}
 
-	public function excludePlatform($platform)
+	public function excludePlatform(string $platform) : Lock
 	{
 		$this->excludedPlatforms[] = $platform;
 
 		return $this;
 	}
 
-	public function getFile()
+	public function getFile() : \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, \Katu\Files\File::generatePath($this->name, 'lock'));
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('lock'));
 	}
 
-	public function isLocked()
+	public function isLocked() : bool
 	{
 		$file = $this->getFile();
 		if (!$file->exists()) {
@@ -106,7 +104,7 @@ class Lock
 		return false;
 	}
 
-	public function lock()
+	public function lock() : Lock
 	{
 		if ($this->isLocked()) {
 			throw new \Katu\Exceptions\LockException;
@@ -114,17 +112,17 @@ class Lock
 
 		$this->getFile()->touch();
 
-		return true;
+		return $this;
 	}
 
-	public function unlock()
+	public function unlock() : Lock
 	{
 		$file = $this->getFile();
 		if ($file->exists()) {
 			$file->delete();
 		}
 
-		return true;
+		return $this;
 	}
 
 	public function run()
