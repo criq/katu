@@ -13,6 +13,14 @@ class TFileSize
 		$this->unit = $unit;
 	}
 
+	public function __toString() : string
+	{
+		return implode(" ", [
+			round($this->getAmount()),
+			$this->getUnit(),
+		]);
+	}
+
 	public function getAmount()
 	{
 		return $this->amount;
