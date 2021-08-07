@@ -4,10 +4,10 @@ namespace Katu\Types;
 
 class TFileSize
 {
-	private $amount;
-	private $unit;
+	protected $amount;
+	protected $unit;
 
-	public function __construct(float $amount, string $unit)
+	public function __construct(float $amount, string $unit = 'B')
 	{
 		$this->amount = $amount;
 		$this->unit = $unit;
@@ -15,19 +15,73 @@ class TFileSize
 
 	public function __toString() : string
 	{
-		return implode(" ", [
-			round($this->getAmount()),
-			$this->getUnit(),
-		]);
+		return (string)$this->getInB()->getAmount();
 	}
 
-	public function getAmount()
+	public static function createFromINI(string $string) : TFileSize
+	{
+		if (preg_match('/([0-9]+)M/', $string, $match)) {
+			return new static($match[1], 'MB');
+		}
+
+		return new static($string);
+	}
+
+	public function getAmount() : float
 	{
 		return $this->amount;
 	}
 
-	public function getUnit()
+	public function getUnit() : string
 	{
 		return $this->unit;
+	}
+
+	public function getInB() : TFileSize
+	{
+		switch ($this->getUnit()) {
+			case 'B':
+				return new static($this->getAmount(), 'B');
+				break;
+			case 'kB':
+				return new static($this->getAmount() * 1024, 'B');
+				break;
+			case 'MB':
+				return new static($this->getAmount() * 1024 * 1024, 'B');
+				break;
+			case 'GB':
+				return new static($this->getAmount() * 1024 * 1024 * 1024, 'B');
+				break;
+		}
+
+		return new static($this->getAmount(), "B");
+	}
+
+	public function getInKB() : TFileSize
+	{
+		return new static($this->getInB()->getAmount() / 1024, 'kB');
+	}
+
+	public function getInMB() : TFileSize
+	{
+		return new static($this->getInB()->getAmount() / 1024 / 1024, 'MB');
+	}
+
+	public function getInGB() : TFileSize
+	{
+		return new static($this->getInB()->getAmount() / 1024 / 1024 / 1024, 'GB');
+	}
+
+	public function getReadable() : TFileSize
+	{
+		if ($this->getInGB()->getAmount() >= 1) {
+			return $this->getInGB();
+		} elseif ($this->getInMB()->getAmount() >= 1) {
+			return $this->getInMB();
+		} elseif ($this->getInKB()->getAmount() >= 1) {
+			return $this->getInKB();
+		}
+
+		return $this->getInB();
 	}
 }

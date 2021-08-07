@@ -174,8 +174,11 @@ class Upload
 		return sha1(file_get_contents($this->path));
 	}
 
-	public static function getMaxSize() : \Katu\Files\Size
+	public static function getMaxSize() : \Katu\Types\TFileSize
 	{
-		return min(\Katu\Files\Size::createFromIni(ini_get('upload_max_filesize')), \Katu\Files\Size::createFromIni(ini_get('post_max_size')));
+		return min(
+			\Katu\Types\TFileSize::createFromINI(ini_get('upload_max_filesize')),
+			\Katu\Types\TFileSize::createFromINI(ini_get('post_max_size')),
+		);
 	}
 }

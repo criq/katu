@@ -180,11 +180,11 @@ class File
 		return false;
 	}
 
-	public function getSize()
+	public function getSize() : \Katu\Types\TFileSize
 	{
 		clearstatcache();
 
-		return new \Katu\Files\Size(filesize($this));
+		return new \Katu\Types\TFileSize(filesize($this));
 	}
 
 	public function getMime()

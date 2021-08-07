@@ -231,6 +231,6 @@ class File extends \Katu\Models\Model
 
 	public function getSize()
 	{
-		return new \Katu\Files\Size($this->size);
+		return new \Katu\Types\TFileSize($this->size);
 	}
 }

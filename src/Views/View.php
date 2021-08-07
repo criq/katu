@@ -302,7 +302,7 @@ class View
 		$data['_flash'] = \Katu\Tools\Session\Flash::get();
 		$data['_cookies'] = \Katu\Tools\Cookies\Cookie::get();
 		$data['_upload'] = [
-			'maxSize' => \Katu\Files\Upload::getMaxSize(),
+			'maxSize' => \Katu\Files\Upload::getMaxSize()->getInB(),
 		];
 
 		return $data;

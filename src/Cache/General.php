@@ -122,11 +122,18 @@ class General
 		return $appEnabled && $this->enableApcu && static::isApcSupported();
 	}
 
-	public static function getMaxApcSize()
+	public static function getMaxApcFileSize() : ?\Katu\Types\TFileSize
 	{
-		$size = \Katu\Files\Size::createFromIni(ini_get('apc.max_file_size'))->size ?: 1024 * 1024;
+		try {
+			$ini = ini_get('apc.max_file_size');
+			if (!$ini) {
+				return null;
+			}
 
-		return $size * .75;
+			return new \Katu\Types\TFileSize(round(\Katu\Types\TFileSize::createFromINI($ini) * .8));
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	/****************************************************************************
@@ -295,7 +302,8 @@ class General
 		}
 
 		// Try to save into APC.
-		if ($this->isApcEnabled() && strlen($serializedRes) <= static::getMaxApcSize()) {
+		$maxApcFileSize = static::getMaxApcFileSize();
+		if ($this->isApcEnabled() && $maxApcFileSize && strlen($serializedRes) <= $maxApcFileSize->getInB()->getAmount()) {
 			// Add to APC.
 			try {
 				if (!\apcu_store($memoryKey, $res, $this->getTimeout()->getSeconds()->getValue())) {

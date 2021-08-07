@@ -73,8 +73,8 @@ class System
 				$res[trim($array[0])] = [
 					'filesystem' => trim($array[0]),
 					'mount' => trim($array[5]),
-					'capacity' => new \Katu\Files\Size((int)trim($array[1]) * 1024),
-					'used' => new \Katu\Files\Size((int)trim($array[2]) * 1024),
+					'capacity' => new \Katu\Types\TFileSize((int)trim($array[1]), 'kB'),
+					'used' => new \Katu\Types\TFileSize((int)trim($array[2]), 'kB'),
 				];
 			}
 		}
