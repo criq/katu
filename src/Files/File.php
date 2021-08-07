@@ -22,7 +22,7 @@ class File
 		return $this->getPath();
 	}
 
-	public static function joinPaths()
+	public static function joinPaths() : string
 	{
 		return preg_replace('/(\/)+/', '/', implode('/', array_map(function ($i) {
 			return implode('.', (array)$i);
@@ -81,7 +81,7 @@ class File
 		return static::createTemporaryFromSrc($src, $extension);
 	}
 
-	public function getPath()
+	public function getPath() : string
 	{
 		if (file_exists($this->path)) {
 			return realpath($this->path);
@@ -93,6 +93,11 @@ class File
 		}
 
 		return $this->path;
+	}
+
+	public function getRelativePath() : string
+	{
+		return ltrim(preg_replace('/^' . preg_quote(\Katu\App::getBaseDir(), '/') . '/', '', $this->getPath()), '/');
 	}
 
 	public function getURL()
