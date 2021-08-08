@@ -2,7 +2,9 @@
 
 namespace Katu\Types;
 
-class TClass
+use Katu\Interfaces\Packaged;
+
+class TClass implements Packaged
 {
 	const STORABLE_NAME_DELIMITER = '-';
 
@@ -15,6 +17,8 @@ class TClass
 		} else {
 			$this->name = $name;
 		}
+
+		$this->name = ltrim($this->name, '\\');
 	}
 
 	public function __toString() : string
@@ -32,12 +36,12 @@ class TClass
 		return $this->name;
 	}
 
-	// public function getPackage() : \Katu\Types\TPackage
-	// {
-	// 	return new \Katu\Types\TPackage([
-	// 		'name' => $this->name,
-	// 	]);
-	// }
+	public function getPackage() : \Katu\Types\TPackage
+	{
+		return new \Katu\Types\TPackage([
+			'name' => $this->getName(),
+		]);
+	}
 
 	public static function createFromPackage(\Katu\Types\TPackage $package) : TClass
 	{
