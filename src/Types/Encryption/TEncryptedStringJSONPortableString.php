@@ -4,7 +4,7 @@ namespace Katu\Types\Encryption;
 
 use Katu\Types\TJSON;
 
-class TEncryptedStringJSONStorableString
+class TEncryptedStringJSONPortableString
 {
 	protected $string;
 

@@ -20,8 +20,8 @@ class TEncryptedStringJSON
 		return new TEncryptedString($array['method'], hex2bin($array['ivHex']), $array['encrypted']);
 	}
 
-	public function getStorableString() : TEncryptedStringJSONStorableString
+	public function getPortableString() : TEncryptedStringJSONPortableString
 	{
-		return TEncryptedStringJSONStorableString::createFromJSON($this->json);
+		return TEncryptedStringJSONPortableString::createFromJSON($this->json);
 	}
 }
