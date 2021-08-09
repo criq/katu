@@ -6,7 +6,7 @@ use Katu\Interfaces\Packaged;
 
 class TClass implements Packaged
 {
-	const STORABLE_NAME_DELIMITER = '-';
+	const PORTABLE_NAME_DELIMITER = '-';
 
 	public $name;
 
@@ -26,9 +26,9 @@ class TClass implements Packaged
 		return $this->getName();
 	}
 
-	public static function createFromStorableName(string $storableName) : TClass
+	public static function createFromPortableName(string $storableName) : TClass
 	{
-		return new static(strtr($storableName, static::STORABLE_NAME_DELIMITER, '\\'));
+		return new static(strtr($storableName, static::PORTABLE_NAME_DELIMITER, '\\'));
 	}
 
 	public function getName() : string
@@ -62,8 +62,8 @@ class TClass implements Packaged
 		return array_slice(explode('\\', $this->name), -1, 1)[0];
 	}
 
-	public function getStorableName() : string
+	public function getPortableName() : string
 	{
-		return strtr($this->getName(), '\\', static::STORABLE_NAME_DELIMITER);
+		return strtr($this->getName(), '\\', static::PORTABLE_NAME_DELIMITER);
 	}
 }
