@@ -183,28 +183,11 @@ class View
 
 		$twig->addFunction(new \Twig\TwigFunction('getHashedFile', function ($path) {
 			try {
-				$placeholderFile = new \Katu\Files\File(\Katu\App::getBaseDir(), $path);
-				$platformDir = new \Katu\Files\File(preg_replace('/{platform}/', \Katu\Config\Env::getPlatform(), $placeholderFile->getDir()));
+				$hashedFiles = \Katu\Files\File::getHashedFiles(\Katu\App::getBaseDir(), ...func_get_args());
 
-				$fileRegexp = $placeholderFile->getBasename();
-				$fileRegexp = preg_replace('/{hash}/', '([0-9a-f]+)?', $fileRegexp);
-				$fileRegexp = preg_replace('/{dash}/', '-?', $fileRegexp);
-				$fileRegexp = '/^' . $fileRegexp . '$/';
-
-				$matchedFiles = [];
-				foreach ($platformDir->getFiles() as $file) {
-					if (preg_match($fileRegexp, $file->getBasename())) {
-						$matchedFiles[] = $file;
-					}
-				}
-
-				usort($matchedFiles, function ($a, $b) {
-					return filemtime($a) > filemtime($b) ? -1 : 1;
-				});
-
-				return $matchedFiles[0] ?? false;
+				return $hashedFiles[0] ?? null;
 			} catch (\Throwable $e) {
-				return false;
+				return null;
 			}
 		}));
 

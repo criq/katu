@@ -388,6 +388,36 @@ class File
 		});
 	}
 
+	public static function getHashedFiles() : array
+	{
+		clearstatcache();
+
+		$placeholderFile = new \Katu\Files\File(...func_get_args());
+		$platformDir = new \Katu\Files\File(preg_replace('/{platform}/', \Katu\Config\Env::getPlatform(), $placeholderFile->getDir()));
+
+		$fileRegexp = $placeholderFile->getBasename();
+		$fileRegexp = preg_replace('/{hash}/', '([0-9a-f]+)?', $fileRegexp);
+		$fileRegexp = preg_replace('/{dash}/', '-?', $fileRegexp);
+		$fileRegexp = '/^' . $fileRegexp . '$/';
+
+		$matchedFiles = [];
+		foreach ($platformDir->getFiles() as $file) {
+			if (preg_match($fileRegexp, $file->getBasename())) {
+				$matchedFiles[] = $file;
+			}
+		}
+
+		usort($matchedFiles, function ($a, $b) {
+			return filemtime($a) > filemtime($b) ? -1 : 1;
+		});
+
+		foreach (array_slice($matchedFiles, 1) as $file) {
+			$file->delete();
+		}
+
+		return array_slice($matchedFiles, 0, 1);
+	}
+
 	public function getHash($function = 'sha1')
 	{
 		return hash($function, $this->get());
