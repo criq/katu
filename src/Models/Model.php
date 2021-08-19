@@ -332,9 +332,7 @@ class Model extends Base
 			->from(\App\Models\FileAttachment::getTable())
 			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()->getName()))
 			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
-			->orderBy([
-				SX::orderBy(\App\Models\FileAttachment::getColumn('position'))
-			])
+			->orderBy(SX::orderBy(\App\Models\FileAttachment::getColumn('position')))
 			->joinColumns(\App\Models\FileAttachment::getColumn('fileId'), \App\Models\File::getIdColumn())
 			;
 
