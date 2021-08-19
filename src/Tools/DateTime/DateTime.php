@@ -217,4 +217,9 @@ class DateTime extends \DateTime
 	{
 		return $this->diff($dateTime ?: new static);
 	}
+
+	public function change($value) : DateTime
+	{
+		return (clone $this)->modify($value);
+	}
 }
