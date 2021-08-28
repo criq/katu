@@ -2,6 +2,9 @@
 
 namespace Katu\Controllers;
 
+use Slim\Http\Request;
+use Slim\Http\Response;
+
 class Controller
 {
 	public $container;
@@ -15,7 +18,7 @@ class Controller
 	/****************************************************************************
 	 * Render.
 	 */
-	public function render(string $template, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [])
+	public function render(string $template, Request $request = null, Response $response = null, array $args = []) : Response
 	{
 		try {
 			$request = $request ?: $this->container->get('request');
@@ -42,19 +45,19 @@ class Controller
 		}
 	}
 
-	public function renderError(\Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [], $status = 500)
+	public function renderError(Request $request = null, Response $response = null, array $args = [], $status = 500) : Response
 	{
 		return $this->render("Errors/" . $status . ".twig", $request, $response, $args)
 			->withStatus($status)
 			;
 	}
 
-	public function renderNotFound(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 404)
+	public function renderNotFound(Request $request, Response $response, array $args = [], $status = 404) : Response
 	{
 		return $this->renderError($request, $response, $args, $status);
 	}
 
-	public function renderUnauthorized(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 401)
+	public function renderUnauthorized(Request $request, Response $response, array $args = [], $status = 401) : Response
 	{
 		return $this->renderError($request, $response, $args, $status);
 	}
@@ -62,7 +65,7 @@ class Controller
 	/****************************************************************************
 	 * Redirect.
 	 */
-	public function redirect($urls, $status = 302)
+	public function redirect($urls, $status = 302) : Response
 	{
 		$urls = is_array($urls) ? $urls : [$urls];
 		$urls = array_values(array_filter($urls));
@@ -80,17 +83,17 @@ class Controller
 	/****************************************************************************
 	 * Form submission.
 	 */
-	public function isSubmitted(\Slim\Http\Request $request, string $name = null)
+	public function isSubmitted(Request $request, string $name = null) : bool
 	{
 		return $request->getParam('formSubmitted') && $request->getParam('formName') == $name;
 	}
 
-	public function isSubmittedWithToken(\Slim\Http\Request $request, string $name = null)
+	public function isSubmittedWithToken(Request $request, string $name = null) : bool
 	{
 		return $this->isSubmitted($request, $name) && \Katu\Tools\Security\CSRF::isValidToken($request->getParam('formToken'));
 	}
 
-	public function isSubmittedByHuman(\Slim\Http\Request $request, string $name = null)
+	public function isSubmittedByHuman(Request $request, string $name = null) : bool
 	{
 		// Check basic form params.
 		if (!$this->isSubmittedWithToken($request, $name)) {
@@ -112,14 +115,14 @@ class Controller
 		if ($request->getParam('yourName_' . $token->secret) !== '') {
 			return false;
 		}
-		
+
 		return true;
 	}
 
 	/****************************************************************************
 	 * Errors.
 	 */
-	public function addErrors(\Katu\Exceptions\Exception $e)
+	public function addErrors(\Katu\Exceptions\Exception $e) : bool
 	{
 		if (!($this->data['_errors'] ?? null)) {
 			$this->data['_errors'] = new \Katu\Exceptions\Exceptions;
@@ -130,7 +133,7 @@ class Controller
 		return true;
 	}
 
-	public function hasErrors()
+	public function hasErrors() : bool
 	{
 		return (bool)$this->data['_errors'] ?? null;
 	}
