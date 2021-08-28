@@ -52,7 +52,7 @@ class App
 		}
 	}
 
-	public static function init()
+	public static function initialize()
 	{
 		// Timezone.
 		try {
@@ -70,7 +70,7 @@ class App
 	public static function get()
 	{
 		if (!static::$app) {
-			static::init();
+			static::initialize();
 
 			try {
 				$config = \Katu\Config\Config::get('app', 'slim');

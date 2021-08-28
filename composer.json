@@ -27,6 +27,7 @@
 		"ralouphie/mimey": "@stable",
 		"sendgrid/sendgrid": "@stable",
 		"slim/extras": "@stable",
+		"slim/psr7": "@stable",
 		"slim/slim": "^4",
 		"squizlabs/php_codesniffer": "@stable",
 		"symfony/css-selector": "@stable",

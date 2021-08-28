@@ -8,17 +8,17 @@ class Handler
 {
 	const ERROR_LOG = 'error.log';
 
-	public function __invoke(\Slim\Http\Request $request, \Slim\Http\Response $response, \Throwable $exception)
-	{
-		return static::handleException($exception, $request, $response);
-	}
+	// public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Throwable $exception)
+	// {
+	// 	return static::handleException($exception, $request, $response);
+	// }
 
 	public static function getLogger()
 	{
 		return new \Katu\Tools\Logs\Logger(new TIdentifier('error'));
 	}
 
-	public static function init()
+	public static function initialize()
 	{
 		ini_set('display_errors', false);
 		ini_set('error_log', (string)static::getLogger()->getFile());
@@ -60,14 +60,14 @@ class Handler
 		return static::getLogger('error')->error($error, $data);
 	}
 
-	public static function handleException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
+	public static function handleException(\Throwable $exception)
 	{
 		$className = \Katu\App::getErrorHandlerClass()->getName();
 
 		return $className::resolveException($exception, $request, $response);
 	}
 
-	public static function resolveException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
+	public static function resolveException(\Throwable $exception)
 	{
 		$controllerClass = \Katu\App::getControllerClass()->getName();
 
