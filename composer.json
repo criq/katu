@@ -11,7 +11,7 @@
 		"illuminate/support": "<=5.4.17",
 		"intervention/image": "2.*",
 		"ircmaxell/random-lib": "1.*",
-		"criq/amiko": "dev-master",
+		"criq/amiko": "@stable",
 		"criq/sexy": "@stable",
 		"jbroadway/urlify": "1.0.*@dev",
 		"jenssegers/agent": "@stable",
