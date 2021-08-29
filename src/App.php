@@ -3,6 +3,7 @@
 namespace Katu;
 
 use Katu\Types\TClass;
+use Katu\Types\TIdentifier;
 
 class App
 {
@@ -28,22 +29,22 @@ class App
 		return static::getExtendedClass(new TClass("App\Extensions\Errors\Handler"), new TClass("Katu\Errors\Handler"));
 	}
 
-	public static function getBaseDir() : \Katu\Files\File
+	public static function getBaseDir()
 	{
 		return new \Katu\Files\File(realpath(__DIR__ . '/../../../../'));
 	}
 
-	public static function getFileDir() : \Katu\Files\File
+	public static function getFileDir()
 	{
 		return \Katu\Models\Presets\File::getDir();
 	}
 
-	public static function getTemporaryDir() : \Katu\Files\File
+	public static function getTemporaryDir()
 	{
 		return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_DIR);
 	}
 
-	public static function getPublicTemporaryDir() : \Katu\Files\File
+	public static function getPublicTemporaryDir()
 	{
 		try {
 			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'publicDir'));
@@ -133,5 +134,16 @@ class App
 		} catch (\Throwable $e) {
 			throw $e;
 		}
+	}
+
+	public static function isProfilerOn() : bool
+	{
+		return \Katu\Cache\Runtime::get(new TIdentifier('profiler', 'on'), function () {
+			try {
+				return \Katu\Config\Config::get('app', 'profiler');
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
+				return false;
+			}
+		});
 	}
 }
