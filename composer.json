@@ -1,5 +1,5 @@
 {
-	"name": "jabli/katu",
+	"name": "criq/katu",
 	"description": "katu framework",
 	"type": "library",
 	"require" : {
