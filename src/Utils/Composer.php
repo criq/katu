@@ -2,9 +2,10 @@
 
 namespace Katu\Utils;
 
-class Composer {
-
-	static function getJSON() {
+class Composer
+{
+	public static function getJSON()
+	{
 		$path = FileSystem::joinPaths(BASE_DIR, 'composer.json');
 		if (!file_exists($path)) {
 			throw new \Exception("Missing composer.json file.");
@@ -17,7 +18,8 @@ class Composer {
 		return JSON::decodeAsArray(file_get_contents($path));
 	}
 
-	static function getDir() {
+	public static function getDir()
+	{
 		$json = self::getJSON();
 		if (isset($json['config']['vendor-dir'])) {
 			return realpath(FileSystem::joinPaths(BASE_DIR, $json['config']['vendor-dir']));
@@ -26,14 +28,17 @@ class Composer {
 		return realpath(FileSystem::joinPaths(BASE_DIR, 'vendor'));
 	}
 
-	static function getInstalledJSON() {
+	public static function getInstalledJSON()
+	{
 		$file = new \Katu\Utils\File(static::getDir(), 'composer', 'installed.json');
+		$res = \Katu\Utils\JSON::decodeAsArray($file->get());
 
-		return \Katu\Utils\JSON::decodeAsArray($file->get());
+		return $res['packages'] ?? $res;
 	}
 
-	static function getPackageInfo($packageName) {
-		$packages = array_values(array_filter(static::getInstalledJSON(), function($i) use($packageName) {
+	public static function getPackageInfo($packageName)
+	{
+		$packages = array_values(array_filter(static::getInstalledJSON(), function ($i) use ($packageName) {
 			return $i['name'] == $packageName;
 		}));
 
@@ -44,7 +49,8 @@ class Composer {
 		return null;
 	}
 
-	static function getVersion($packageName) {
+	public static function getVersion($packageName)
+	{
 		$packageInfo = static::getPackageInfo($packageName);
 
 		if (isset($packageInfo['version_normalized'])) {
@@ -53,5 +59,4 @@ class Composer {
 
 		return null;
 	}
-
 }

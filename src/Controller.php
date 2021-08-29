@@ -6,10 +6,10 @@ use \Katu\App;
 
 class Controller
 {
-
 	public static $data = [];
 
-	public static function init() {
+	public static function init()
+	{
 		return true;
 	}
 
@@ -34,7 +34,8 @@ class Controller
 		return false;
 	}
 
-	static function prepareBody($body) {
+	public static function prepareBody($body)
+	{
 		$app = App::get();
 
 		if (in_array('gzip', array_map('trim', (array)explode(',', $app->request->headers('Accept-Encoding'))))) {
@@ -45,11 +46,11 @@ class Controller
 		return $body;
 	}
 
-	static function render($template, $code = 200, $headers = []) {
+	public static function render($template, $code = 200, $headers = [])
+	{
 		$app = App::get();
 
 		try {
-
 			$viewClass = App::getViewClass();
 
 			$app->response->setStatus($code);
@@ -60,25 +61,28 @@ class Controller
 			Flash::reset();
 
 			return true;
-
 		} catch (\Exception $e) {
 			throw new Exceptions\TemplateException($e);
 		}
 	}
 
-	static function renderError($code = 500) {
+	public static function renderError($code = 500)
+	{
 		return static::render('Errors/' . $code, $code);
 	}
 
-	static function renderNotFound($code = 404) {
+	public static function renderNotFound($code = 404)
+	{
 		return static::renderError($code);
 	}
 
-	static function renderUnauthorized($code = 401) {
+	public static function renderUnauthorized($code = 401)
+	{
 		return static::renderError($code);
 	}
 
-	static function isSubmitted($name = null) {
+	public static function isSubmitted($name = null)
+	{
 		$app = App::get();
 
 		return $app->request->params('formSubmitted')
@@ -86,7 +90,8 @@ class Controller
 			;
 	}
 
-	static function isSubmittedWithToken($name = null) {
+	public static function isSubmittedWithToken($name = null)
+	{
 		$app = App::get();
 
 		return static::isSubmitted($name)
@@ -94,7 +99,8 @@ class Controller
 			;
 	}
 
-	static function isSubmittedByHuman($name = null) {
+	public static function isSubmittedByHuman($name = null)
+	{
 		$app = App::get();
 
 		// Check basic form params.
@@ -121,9 +127,8 @@ class Controller
 		return true;
 	}
 
-	static function getSubmittedFormWithToken($name = null) {
-		$app = App::get();
-
+	public static function getSubmittedFormWithToken($name = null)
+	{
 		if (static::isSubmittedWithToken($name)) {
 			return new Form\Evaluation($name);
 		}
@@ -131,7 +136,8 @@ class Controller
 		return false;
 	}
 
-	static function addError($error) {
+	public static function addError($error)
+	{
 		if (!isset(static::$data['_errors'])) {
 			static::$data['_errors'] = new Errors;
 		}
@@ -141,8 +147,8 @@ class Controller
 		return true;
 	}
 
-	static function hasErrors() {
+	public static function hasErrors()
+	{
 		return (bool) (isset(static::$data['_errors']) ? static::$data['_errors'] : false);
 	}
-
 }

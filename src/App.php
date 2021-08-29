@@ -239,4 +239,14 @@ class App
 			throw $e;
 		}
 	}
+
+	public static function getParams() : array
+	{
+		$app = static::get();
+		if (preg_match('/application\/json/', $app->request->headers('Content-Type'))) {
+			return \Katu\Utils\JSON::decodeAsArray($app->request->getBody());
+		}
+
+		return $app->request->params();
+	}
 }

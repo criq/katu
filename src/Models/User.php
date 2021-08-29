@@ -92,6 +92,8 @@ class User extends \Katu\Model
 
 	public static function getByAccessToken($token)
 	{
+		$token = preg_replace('/^Bearer\s+/', null, $token);
+
 		$accessTokenClass = static::getAccessTokenClass();
 
 		$accessToken = $accessTokenClass::getOneBy([
@@ -194,11 +196,16 @@ class User extends \Katu\Model
 		return true;
 	}
 
-	public function setName($name)
+	public function setName(?string $value) : User
 	{
-		$this->update('name', trim($name));
+		$this->update('name', trim($value));
 
-		return true;
+		return $this;
+	}
+
+	public function getName()
+	{
+		return $this->name;
 	}
 
 	public function login()
@@ -356,22 +363,9 @@ class User extends \Katu\Model
 		});
 	}
 
-	public function hasPermission()
+	public function hasPermission($permission)
 	{
-		$args = func_get_args();
-		$permissions = is_string($args[0]) ? [$args[0]] : $args[0];
-		$any = isset($args[1]) ? $args[1] : false;
-
-		$status = [];
-		foreach ((array)$permissions as $permission) {
-			$status[$permission] = in_array($permission, $this->getAllPermissions());
-		}
-
-		if ($any) {
-			return in_array(true, $status);
-		}
-
-		return !in_array(false, $status);
+		return in_array($permission, $this->getAllPermissions());
 	}
 
 	public function hasRolePermission($permission)

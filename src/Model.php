@@ -465,9 +465,10 @@ class Model extends ModelBase {
 			->from(FileAttachment::getTable())
 			->joinColumns(FileAttachment::getColumn('fileId'), File::getColumn('id'))
 			->whereIn(File::getColumn('type'), [
+				'image/gif',
 				'image/jpeg',
 				'image/png',
-				'image/gif',
+				'image/webp',
 			])
 			->whereEq(FileAttachment::getColumn('objectModel'), (string) $this->getClass())
 			->whereEq(FileAttachment::getColumn('objectId'), (int) $this->getId())

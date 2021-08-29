@@ -2,29 +2,31 @@
 
 namespace Katu\Cache;
 
-class Url extends \Katu\Cache {
-
-	protected $url;
-
-	protected $curlTimeout = 5;
+class Url extends \Katu\Cache
+{
 	protected $curlConnectTimeout = 5;
 	protected $curlEncoding = null;
+	protected $curlTimeout = 5;
+	protected $url;
 
-	public function __construct($url = null, $timeout = null) {
+	public function __construct($url = null, $timeout = null)
+	{
 		$this->setUrl($url);
 		$this->setTimeout($timeout);
 		$this->setCallback($this->generateCallback());
 		$this->setArgs($url);
 	}
 
-	public function setUrl($url) {
+	public function setUrl($url)
+	{
 		$this->url = $url;
 		$this->setName(static::generateNameFromUrl($this->url));
 
 		return $this;
 	}
 
-	static function generateNameFromUrl($url) {
+	public static function generateNameFromUrl($url)
+	{
 		$name = [];
 
 		$url = new \Katu\Types\TUrl((string)$url);
@@ -49,43 +51,50 @@ class Url extends \Katu\Cache {
 		return $name;
 	}
 
-	public function getUrl() {
+	public function getUrl()
+	{
 		return $this->url;
 	}
 
-	public function setCurlTimeout($curlTimeout) {
+	public function setCurlTimeout($curlTimeout)
+	{
 		$this->curlTimeout = $curlTimeout;
 
 		return $this;
 	}
 
-	public function getCurlTimeout() {
+	public function getCurlTimeout()
+	{
 		return $this->curlTimeout;
 	}
 
-	public function setCurlConnectTimeout($curlConnectTimeout) {
+	public function setCurlConnectTimeout($curlConnectTimeout)
+	{
 		$this->curlConnectTimeout = $curlConnectTimeout;
 
 		return $this;
 	}
 
-	public function getCurlConnectTimeout() {
+	public function getCurlConnectTimeout()
+	{
 		return $this->curlConnectTimeout;
 	}
 
-	public function setCurlEncoding($curlEncoding) {
+	public function setCurlEncoding($curlEncoding)
+	{
 		$this->curlEncoding = $curlEncoding;
 
 		return $this;
 	}
 
-	public function getCurlEncoding() {
+	public function getCurlEncoding()
+	{
 		return $this->curlEncoding;
 	}
 
-	public function generateCallback() {
-		return function($url) {
-
+	public function generateCallback()
+	{
+		return function ($url) {
 			$curl = new \Curl\Curl;
 
 			try {
@@ -125,11 +134,11 @@ class Url extends \Katu\Cache {
 			}
 
 			return $src;
-
 		};
 	}
 
-	static function get() {
+	public static function get()
+	{
 		$args = func_get_args();
 
 		$object = new static((string)$args[0]);
@@ -139,5 +148,4 @@ class Url extends \Katu\Cache {
 
 		return $object->getResult();
 	}
-
 }

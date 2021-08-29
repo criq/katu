@@ -4,12 +4,12 @@ namespace Katu\Utils;
 
 class DateTime extends \DateTime
 {
-	public function __toString()
+	public function __toString() : string
 	{
 		return $this->getDbDateTimeFormat();
 	}
 
-	public static function get($string = null)
+	public static function get($string = null) : DateTime
 	{
 		if (is_int($string)) {
 			return new DateTime('@' . $string);
@@ -18,21 +18,21 @@ class DateTime extends \DateTime
 		return new DateTime($string);
 	}
 
-	public static function createFromTimestamp($timestamp)
+	public static function createFromTimestamp($timestamp) : DateTime
 	{
 		return new static('@' . $timestamp);
 	}
 
-	public static function createFromDateTime($dateTime)
+	public static function createFromDateTime($dateTime) : ?DateTime
 	{
 		if ($dateTime) {
 			return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
 		} else {
-			return false;
+			return null;
 		}
 	}
 
-	public static function createFromFormat($format, $string, $dateTimeZone = null)
+	public static function createFromFormat($format, $string, $dateTimeZone = null) : ?DateTime
 	{
 		if ($dateTimeZone) {
 			return static::createFromDateTime(\DateTime::createFromFormat($format, $string, $dateTimeZone));
@@ -41,86 +41,94 @@ class DateTime extends \DateTime
 		}
 	}
 
-	public function toLocalTimezone()
+	public function change($change) : DateTime
+	{
+		$datetime = clone $this;
+		$datetime->modify($change);
+
+		return $datetime;
+	}
+
+	public function toLocalTimezone() : DateTime
 	{
 		return $this->setTimezone(new \DateTimeZone(\Katu\Config::get('app', 'timezone')));
 	}
 
-	public function getDbDateFormat()
+	public function getDbDateFormat() : string
 	{
 		return $this->format('Y-m-d');
 	}
 
-	public function getDbTimeFormat()
+	public function getDbTimeFormat() : string
 	{
 		return $this->format('H:i:s');
 	}
 
-	public function getDbDateTimeFormat()
+	public function getDbDateTimeFormat() : string
 	{
 		return $this->format('Y-m-d H:i:s');
 	}
 
-	public function isValid()
+	public function isValid() : bool
 	{
 		return $this->getTimestamp() > 0;
 	}
 
-	public function isInTimeout($timeout)
+	public function isInTimeout($timeout) : bool
 	{
 		return ($this->getTimestamp() + $timeout) >= time();
 	}
 
-	public function isYesterday()
+	public function isYesterday() : bool
 	{
 		return (new static('- 1 day', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isToday()
+	public function isToday() : bool
 	{
 		return (new static('now', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isTomorrow()
+	public function isTomorrow() : bool
 	{
 		return (new static('+ 1 day', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isInFuture()
+	public function isInFuture() : bool
 	{
 		return $this->getTimestamp() > time();
 	}
 
-	public function isInPast()
+	public function isInPast() : bool
 	{
 		return $this->getTimestamp() < time();
 	}
 
-	public function isNow()
+	public function isNow() : bool
 	{
 		return $this->getTimestamp() == time();
 	}
 
-	public function getAge()
+	public function getAge() : int
 	{
 		return time() - $this->getTimestamp();
 	}
 
-	public static function getMicroseconds()
+	public static function getMicroseconds() : float
 	{
 		list($micro, $timestamp) = explode(' ', microtime(false));
 
-		return (float) $micro;
+		return (float)$micro;
 	}
 
-	public static function getMicrotime()
+	public static function getMicrotime() : float
 	{
 		list($micro, $timestamp) = explode(' ', microtime(false));
 
-		return (float) ($timestamp + $micro);
+		return (float)($timestamp + $micro);
 	}
 
-	public function getThisWeekday($weekday)
+	public function getThisWeekday($weekday) : ?DateTime
 	{
 		$date = clone $this;
 
@@ -142,47 +150,47 @@ class DateTime extends \DateTime
 			}
 		}
 
-		return false;
+		return null;
 	}
 
-	public function getNextWeekday($weekday)
+	public function getNextWeekday($weekday) : DateTime
 	{
 		$date = clone $this;
 
 		return $date->modify($weekday);
 	}
 
-	public function setYear($n)
+	public function setYear($n) : DateTime
 	{
 		return $this->setDate($n, $this->format('n'), $this->format('j'));
 	}
 
-	public function setMonth($n)
+	public function setMonth($n) : DateTime
 	{
 		return $this->setDate($this->format('Y'), $n, $this->format('j'));
 	}
 
-	public function setDay($n)
+	public function setDay($n) : DateTime
 	{
 		return $this->setDate($this->format('Y'), $this->format('n'), $n);
 	}
 
-	public function setHour($n)
+	public function setHour($n) : DateTime
 	{
 		return $this->setTime($n, $this->format('i'), $this->format('s'));
 	}
 
-	public function setMinute($n)
+	public function setMinute($n) : DateTime
 	{
 		return $this->setTime($this->format('H'), $n, $this->format('s'));
 	}
 
-	public function setSecond($n)
+	public function setSecond($n) : DateTime
 	{
 		return $this->setTime($this->format('H'), $this->format('i'), $n);
 	}
 
-	public function getDiff($dateTime = null)
+	public function getDiff($dateTime = null) : \DateInterval
 	{
 		return $this->diff($dateTime ?: new static);
 	}

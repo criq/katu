@@ -2,8 +2,6 @@
 
 namespace Katu;
 
-use \Katu\App;
-
 class Route
 {
 	public $name;

@@ -4,7 +4,6 @@ namespace Katu\Types;
 
 class TUrl
 {
-
 	const DEFAULT_SCHEME = 'http';
 
 	public $value;
@@ -18,7 +17,7 @@ class TUrl
 			throw new \Exception("Invalid URL '" . $value . "'.");
 		}
 
-		$this->value = (string) (trim($value));
+		$this->value = (string)trim($value);
 	}
 
 	public function __toString()

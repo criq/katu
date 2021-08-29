@@ -356,7 +356,7 @@ class ViewModel extends ModelBase
 				$dir->includeAllPhpFiles();
 			}
 		} catch (\Exception $e) {
-			/* Nevermind. */
+			// Nevermind.
 		}
 
 		return array_values(array_filter(array_filter(get_declared_classes(), function ($i) {

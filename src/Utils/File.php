@@ -133,6 +133,7 @@ class File
 	{
 		try {
 			$this->getDir()->makeDir();
+			$this->touch();
 			return file_put_contents($this, $data, LOCK_EX);
 		} catch (\Exception $e) {
 			\Katu\ErrorHandler::log($e);
@@ -323,16 +324,17 @@ class File
 		}
 	}
 
-	public function includeOnce() {
+	public function includeOnce()
+	{
 		return include_once $this;
 	}
 
-	public function includeAllPhpFiles() {
-		return $this->eachRecursive(function($i) {
+	public function includeAllPhpFiles()
+	{
+		return $this->eachRecursive(function ($i) {
 			if ($i->isPhpFile()) {
 				$i->includeOnce();
 			}
 		});
 	}
-
 }

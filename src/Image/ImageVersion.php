@@ -66,7 +66,7 @@ class ImageVersion
 			}
 
 			return new \Katu\Image($this->getFile());
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			\App\Extensions\ErrorHandler::log($e);
 			return false;
 		}
