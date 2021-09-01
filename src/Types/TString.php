@@ -47,9 +47,13 @@ class TString
 		return \URLify::filter($this->string, isset($options['maxLength']) ? $options['maxLength'] : 255, isset($options['language']) ? $options['language'] : null);
 	}
 
-	public function getAsFloat()
+	public function getAsFloat() : ?float
 	{
-		return (float)floatval(trim(strtr(preg_replace('/\s/u', null, $this->string), ',', '.')));
+		try {
+			return (float)floatval(trim(strtr(preg_replace('/\s/u', '', $this->string), ',', '.')));
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public function getAsFloatIfNumeric()
