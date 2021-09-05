@@ -92,7 +92,7 @@ class User extends \Katu\Model
 
 	public static function getByAccessToken($token)
 	{
-		$token = preg_replace('/^Bearer\s+/', null, $token);
+		$token = preg_replace('/^Bearer\s+/', '', $token);
 
 		$accessTokenClass = static::getAccessTokenClass();
 
@@ -201,11 +201,6 @@ class User extends \Katu\Model
 		$this->update('name', trim($value));
 
 		return $this;
-	}
-
-	public function getName()
-	{
-		return $this->name;
 	}
 
 	public function getName()
