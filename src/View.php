@@ -40,8 +40,8 @@ class View
 		$twig->addFunction(new \Twig\TwigFunction('getImage', function ($uri) {
 			try {
 				return new \Katu\Image($uri);
-			} catch (\Katu\Exceptions\ImageErrorException $e) {
-				return false;
+			} catch (\Throwable $e) {
+				return null;
 			}
 		}));
 
