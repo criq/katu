@@ -19,24 +19,24 @@ class Logger extends \Monolog\Logger
 		$this->pushHandler(new \Monolog\Handler\StreamHandler((string)$this->getFile()));
 	}
 
-	public function setIdentifier(TIdentifier $identifier) : Logger
+	public function setIdentifier(TIdentifier $identifier): Logger
 	{
 		$this->identifier = $identifier;
 
 		return $this;
 	}
 
-	public function getIdentifier() : TIdentifier
+	public function getIdentifier(): TIdentifier
 	{
 		return $this->identifier;
 	}
 
-	public function getFile() : \Katu\Files\File
+	public function getFile(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::DIR_NAME, $this->getIdentifier()->getPath('log'));
 	}
 
-	public function log($level, $message, array $context = []) : void
+	public function log($level, $message, array $context = []): void
 	{
 		if ($message instanceof \Throwable) {
 			$context['class'] = get_class($message);
@@ -51,7 +51,7 @@ class Logger extends \Monolog\Logger
 		parent::log($level, $message, $context);
 	}
 
-	public function error($message, array $context = []) : void
+	public function error($message, array $context = []): void
 	{
 		$this->log('error', $message, $context);
 	}

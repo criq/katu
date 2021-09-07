@@ -2,19 +2,19 @@
 
 namespace Katu\Exceptions;
 
-class Exceptions extends Exception implements \ArrayAccess, \Iterator, \Countable
+class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, \Countable
 {
 	protected $iteratorPosition = 0;
 	public $collection = [];
 
-	public function add() : Exceptions
+	public function add() : ExceptionCollection
 	{
 		return $this->addException(...func_get_args());
 	}
 
-	public function addException(\Exception $exception) : Exceptions
+	public function addException(\Exception $exception) : ExceptionCollection
 	{
-		if ($exception instanceof Exceptions) {
+		if ($exception instanceof ExceptionCollection) {
 			foreach ($exception as $e) {
 				$this->collection[] = $e;
 			}
@@ -50,7 +50,7 @@ class Exceptions extends Exception implements \ArrayAccess, \Iterator, \Countabl
 		return array_values(array_filter(array_unique($errorNames)));
 	}
 
-	public function replaceErrorName(string $errorName, string $replacement) : Exceptions
+	public function replaceErrorName(string $errorName, string $replacement) : ExceptionCollection
 	{
 		foreach ($this->collection as $exception) {
 			$exception->replaceErrorName($errorName, $replacement);
