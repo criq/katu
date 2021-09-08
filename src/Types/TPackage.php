@@ -38,7 +38,7 @@ class TPackage
 
 	public function getJSON() : TJSON
 	{
-		return TJSON::createFromArray($this->payload);
+		return TJSON::createFromContents($this->payload);
 	}
 
 	public function getPortableString() : TEncryptedStringJSONPortableString
