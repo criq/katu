@@ -2,16 +2,20 @@
 
 namespace Katu\Exceptions;
 
+use ArrayAccess;
+use Countable;
+use Iterator;
 use Katu\Interfaces\Packaged;
 use Katu\Types\TPackage;
 
-class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, \Countable, Packaged
+class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Countable, Packaged
 {
 	protected $iteratorPosition = 0;
 	protected $storage = [];
 
 	public static function createFromPackage(TPackage $package): ExceptionCollection
 	{
+		return new static;
 	}
 
 	public function getPackage(): TPackage
@@ -24,11 +28,6 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 		return new TPackage([
 			'exceptionPackagePayloads' => $exceptionPackagePayloads,
 		]);
-	}
-
-	public function add(): ExceptionCollection
-	{
-		return $this->addException(...func_get_args());
 	}
 
 	public function addException(\Exception $exception): ExceptionCollection
@@ -44,14 +43,19 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 		return $this;
 	}
 
-	public function has(): bool
+	public function add(): ExceptionCollection
 	{
-		return $this->hasExceptions();
+		return $this->addException(...func_get_args());
 	}
 
 	public function hasExceptions(): bool
 	{
 		return (bool) $this->countExceptions();
+	}
+
+	public function has(): bool
+	{
+		return $this->hasExceptions();
 	}
 
 	public function countExceptions(): int
