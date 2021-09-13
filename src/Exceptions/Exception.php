@@ -2,7 +2,11 @@
 
 namespace Katu\Exceptions;
 
-class Exception extends \Exception
+use Katu\Interfaces\Packaged;
+use Katu\Types\TClass;
+use Katu\Types\TPackage;
+
+class Exception extends \Exception implements Packaged
 {
 	const HTTP_CODE = 400;
 
@@ -21,6 +25,20 @@ class Exception extends \Exception
 	public function __toString() : string
 	{
 		return (string) $this->getTranslatedMessage();
+	}
+
+	public static function createFromPackage(TPackage $package): ?Exception
+	{
+		return new static($package->getPayload()['message'], $package->getPayload()['code']);
+	}
+
+	public function getPackage(): TPackage
+	{
+		return new TPackage([
+			'classPortableName' => (new TClass($this))->getPortableName(),
+			'message' => $this->getMessage(),
+			'code' => $this->getCode(),
+		]);
 	}
 
 	public function getHttpCode() : int

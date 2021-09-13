@@ -2,10 +2,29 @@
 
 namespace Katu\Exceptions;
 
-class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, \Countable
+use Katu\Interfaces\Packaged;
+use Katu\Types\TPackage;
+
+class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, \Countable, Packaged
 {
 	protected $iteratorPosition = 0;
-	public $collection = [];
+	protected $storage = [];
+
+	public static function createFromPackage(TPackage $package): ExceptionCollection
+	{
+	}
+
+	public function getPackage(): TPackage
+	{
+		$exceptionPackagePayloads = [];
+		foreach ($this->storage as $exception) {
+			$exceptionPackagePayloads[] = $exception->getPackage()->getPayload();
+		}
+
+		return new TPackage([
+			'exceptionPackagePayloads' => $exceptionPackagePayloads,
+		]);
+	}
 
 	public function add(): ExceptionCollection
 	{
@@ -16,10 +35,10 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 	{
 		if ($exception instanceof ExceptionCollection) {
 			foreach ($exception as $e) {
-				$this->collection[] = $e;
+				$this->storage[] = $e;
 			}
 		} else {
-			$this->collection[] = $exception;
+			$this->storage[] = $exception;
 		}
 
 		return $this;
@@ -37,13 +56,13 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 
 	public function countExceptions(): int
 	{
-		return (int)count($this->collection);
+		return (int)count($this->storage);
 	}
 
 	public function getErrorNames(): array
 	{
 		$errorNames = [];
-		foreach ($this->collection as $exception) {
+		foreach ($this->storage as $exception) {
 			$errorNames = array_merge($errorNames, $exception->getErrorNames());
 		}
 
@@ -52,7 +71,7 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 
 	public function replaceErrorName(string $errorName, string $replacement): ExceptionCollection
 	{
-		foreach ($this->collection as $exception) {
+		foreach ($this->storage as $exception) {
 			$exception->replaceErrorName($errorName, $replacement);
 		}
 
@@ -64,7 +83,7 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 		return [
 			'errors' => array_map(function ($e) {
 				return $e->getResponseArray();
-			}, $this->collection),
+			}, $this->storage),
 		];
 	}
 
@@ -74,25 +93,25 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 	public function offsetSet($offset, $value)
 	{
 		if (is_null($offset)) {
-			$this->collection[] = $value;
+			$this->storage[] = $value;
 		} else {
-			$this->collection[$offset] = $value;
+			$this->storage[$offset] = $value;
 		}
 	}
 
 	public function offsetExists($offset)
 	{
-		return isset($this->collection[$offset]);
+		return isset($this->storage[$offset]);
 	}
 
 	public function offsetUnset($offset)
 	{
-		unset($this->collection[$offset]);
+		unset($this->storage[$offset]);
 	}
 
 	public function offsetGet($offset)
 	{
-		return isset($this->collection[$offset]) ? $this->collection[$offset] : null;
+		return isset($this->storage[$offset]) ? $this->storage[$offset] : null;
 	}
 
 	/****************************************************************************
@@ -105,7 +124,7 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 
 	public function current()
 	{
-		return $this->collection[$this->iteratorPosition];
+		return $this->storage[$this->iteratorPosition];
 	}
 
 	public function key()
@@ -120,7 +139,7 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 
 	public function valid()
 	{
-		return isset($this->collection[$this->iteratorPosition]);
+		return isset($this->storage[$this->iteratorPosition]);
 	}
 
 	/****************************************************************************
@@ -128,6 +147,6 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 	 */
 	public function count()
 	{
-		return count($this->collection);
+		return count($this->storage);
 	}
 }
