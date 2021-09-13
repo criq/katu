@@ -7,12 +7,12 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 	protected $iteratorPosition = 0;
 	public $collection = [];
 
-	public function add() : ExceptionCollection
+	public function add(): ExceptionCollection
 	{
 		return $this->addException(...func_get_args());
 	}
 
-	public function addException(\Exception $exception) : ExceptionCollection
+	public function addException(\Exception $exception): ExceptionCollection
 	{
 		if ($exception instanceof ExceptionCollection) {
 			foreach ($exception as $e) {
@@ -25,22 +25,22 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 		return $this;
 	}
 
-	public function has() : bool
+	public function has(): bool
 	{
 		return $this->hasExceptions();
 	}
 
-	public function hasExceptions() : bool
+	public function hasExceptions(): bool
 	{
 		return (bool) $this->countExceptions();
 	}
 
-	public function countExceptions() : int
+	public function countExceptions(): int
 	{
 		return (int)count($this->collection);
 	}
 
-	public function getErrorNames() : array
+	public function getErrorNames(): array
 	{
 		$errorNames = [];
 		foreach ($this->collection as $exception) {
@@ -50,7 +50,7 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 		return array_values(array_filter(array_unique($errorNames)));
 	}
 
-	public function replaceErrorName(string $errorName, string $replacement) : ExceptionCollection
+	public function replaceErrorName(string $errorName, string $replacement): ExceptionCollection
 	{
 		foreach ($this->collection as $exception) {
 			$exception->replaceErrorName($errorName, $replacement);
@@ -59,7 +59,7 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 		return $this;
 	}
 
-	public function getResponseArray() : array
+	public function getResponseArray(): array
 	{
 		return [
 			'errors' => array_map(function ($e) {
