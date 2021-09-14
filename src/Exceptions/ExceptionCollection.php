@@ -6,6 +6,7 @@ use ArrayAccess;
 use Countable;
 use Iterator;
 use Katu\Interfaces\Packaged;
+use Katu\Types\TClass;
 use Katu\Types\TPackage;
 
 class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Countable, Packaged
@@ -15,7 +16,14 @@ class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Co
 
 	public static function createFromPackage(TPackage $package): ExceptionCollection
 	{
-		return new static;
+		$exceptions = new static;
+
+		foreach ($package->getPayload()['exceptionPackagePayloads'] as $exceptionPackagePayload) {
+			$exception = Exception::createFromPackage(new TPackage($exceptionPackagePayload));
+			$exceptions->addException($exception);
+		}
+
+		return $exceptions;
 	}
 
 	public function getPackage(): TPackage
@@ -26,6 +34,7 @@ class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Co
 		}
 
 		return new TPackage([
+			'classPortableName' => (new TClass($this))->getPortableName(),
 			'exceptionPackagePayloads' => $exceptionPackagePayloads,
 		]);
 	}

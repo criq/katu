@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Errors;
+namespace Katu\Exceptions;
 
 use Katu\Types\TIdentifier;
 

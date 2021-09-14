@@ -26,7 +26,7 @@ class App
 
 	public static function getErrorHandlerClass() : TClass
 	{
-		return static::getExtendedClass(new TClass("App\Extensions\Errors\Handler"), new TClass("Katu\Errors\Handler"));
+		return static::getExtendedClass(new TClass("App\Extensions\Exceptions\Handler"), new TClass("Katu\Exceptions\Handler"));
 	}
 
 	public static function getBaseDir()

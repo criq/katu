@@ -99,7 +99,7 @@ class Image
 				$size = getimagesize($image->getSource()->getUri());
 				return new \Katu\Types\TImageSize($size[0], $size[1]);
 			} catch (\Throwable $e) {
-				\App\Extensions\Errors\Handler::log($e);
+				\App\Extensions\Exceptions\Handler::log($e);
 				throw new \Katu\Exceptions\DoNotCacheException;
 			}
 		}, $this);
@@ -112,7 +112,7 @@ class Image
 				$size = getimagesize($image->getSource()->getUri());
 				return $size['mime'];
 			} catch (\Throwable $e) {
-				\App\Extensions\Errors\Handler::log($e);
+				\App\Extensions\Exceptions\Handler::log($e);
 				throw new \Katu\Exceptions\DoNotCacheException;
 			}
 		}, $this);
