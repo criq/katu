@@ -14,34 +14,39 @@ class TPackage
 		$this->payload = $payload;
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return $this->getPortableString();
 	}
 
-	public static function createFromJSON(TJSON $json) : TPackage
+	public static function createFromJSON(TJSON $json): TPackage
 	{
 		return new static($json->getArray());
 	}
 
-	public static function createFromPortableString(string $string) : TPackage
+	public static function createFromPortableString(string $string): TPackage
 	{
 		$original = (new TEncryptedStringJSONPortableString($string))->getJSON()->getEncryptedString()->getOriginal();
 
 		return static::createFromJSON(new TJSON($original));
 	}
 
-	public function getPayload() : array
+	public function getPayload(): array
 	{
 		return $this->payload;
 	}
 
-	public function getJSON() : TJSON
+	public function getJSON(): TJSON
 	{
 		return TJSON::createFromContents($this->payload);
 	}
 
-	public function getPortableString() : TEncryptedStringJSONPortableString
+	public function getHash(): string
+	{
+		return sha1($this->getJSON());
+	}
+
+	public function getPortableString(): TEncryptedStringJSONPortableString
 	{
 		return TEncryptedString::encrypt($this->getJSON())->getJSON()->getPortableString();
 	}
