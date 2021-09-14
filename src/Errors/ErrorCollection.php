@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Exceptions;
+namespace Katu\Errors;
 
 class ErrorCollection extends \ArrayObject
 {
