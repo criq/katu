@@ -42,7 +42,7 @@ class Controller
 		}
 	}
 
-	public function renderError(\Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [], $status = 500)
+	public function renderError(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 500)
 	{
 		return $this->render("Errors/" . $status . ".twig", $request, $response, $args)
 			->withStatus($status)

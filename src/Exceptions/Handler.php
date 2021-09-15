@@ -69,17 +69,19 @@ class Handler
 
 	public static function resolveException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
 	{
+		$app = \Katu\App::get();
+
 		$controllerClassName = \Katu\App::getControllerClass()->getName();
 		$controller = new $controllerClassName(\Katu\App::get()->getContainer());
 
 		try {
 			throw $exception;
 		} catch (\Katu\Exceptions\NotFoundException $exception) {
-			return $controller->renderNotFound();
+			return $controller->renderNotFound($app->getContainer()->request, $app->getContainer()->response);
 		} catch (\Katu\Exceptions\UnauthorizedException $exception) {
-			return $controller->renderUnauthorized();
+			return $controller->renderUnauthorized($app->getContainer()->request, $app->getContainer()->response);
 		} catch (\Katu\Exceptions\UserErrorException $exception) {
-			return $controller->renderError($exception->getMessage());
+			return $controller->renderError($app->getContainer()->request, $app->getContainer()->response);
 		}
 	}
 }
