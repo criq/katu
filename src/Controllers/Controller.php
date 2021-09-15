@@ -112,7 +112,7 @@ class Controller
 		if ($request->getParam('yourName_' . $token->secret) !== '') {
 			return false;
 		}
-		
+
 		return true;
 	}
 

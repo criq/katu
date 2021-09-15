@@ -70,7 +70,7 @@ class Handler
 	public static function resolveException(\Throwable $exception, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null)
 	{
 		$controllerClassName = \Katu\App::getControllerClass()->getName();
-		$controller = new $controllerClassName;
+		$controller = new $controllerClassName(\Katu\App::get()->getContainer());
 
 		try {
 			throw $exception;
