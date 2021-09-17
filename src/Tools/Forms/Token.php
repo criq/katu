@@ -95,7 +95,7 @@ class Token
 			$token = $freshTokenCollection[0];
 		} else {
 			$token = new static;
-			$tokenCollection[$token->getCode()] = $token;
+			$tokenCollection->append($token);
 			$tokenCollection->saveToSession();
 		}
 
@@ -110,8 +110,9 @@ class Token
 	public static function validate(string $code): bool
 	{
 		try {
-			return TokenCollection::getSessionTokenCollection()[$code]->isAcceptable();
+			return TokenCollection::getSessionTokenCollection()->filterByCode($code)[0]->isAcceptable();
 		} catch (\Throwable $e) {
+			var_dump($e);die;
 			return false;
 		}
 	}

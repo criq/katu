@@ -97,11 +97,6 @@ class Controller
 			return false;
 		}
 
-		// Check the token.
-		if (!\Katu\Tools\Forms\Token::validate($request->getParam('formToken'))) {
-			return false;
-		}
-
 		// Check captcha. Should be empty.
 		if ($request->getParam('yourName_' . $token->secret) !== '') {
 			return false;

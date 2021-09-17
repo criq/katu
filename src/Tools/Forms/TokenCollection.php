@@ -34,6 +34,13 @@ class TokenCollection extends \ArrayObject
 		})));
 	}
 
+	public function filterByCode(string $code): TokenCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Token $token) use ($code) {
+			return $token->getCode() == $code;
+		})));
+	}
+
 	public function sortByTTL(): TokenCollection
 	{
 		$array = $this->getArrayCopy();
