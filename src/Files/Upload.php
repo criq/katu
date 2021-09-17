@@ -25,17 +25,17 @@ class Upload
 		$this->error = (int)$upload->getError();
 	}
 
-	public function getError() : int
+	public function getError(): int
 	{
 		return $this->error;
 	}
 
-	public function isInError() : bool
+	public function isInError(): bool
 	{
 		return (bool)$this->getErrorId();
 	}
 
-	public function getErrorMessage() : string
+	public function getErrorMessage(): string
 	{
 		switch ($this->getError()) {
 			// 0
@@ -80,7 +80,7 @@ class Upload
 		}
 	}
 
-	public function getErrorId() : int
+	public function getErrorId(): int
 	{
 		switch ($this->getError()) {
 			// 0
@@ -125,7 +125,7 @@ class Upload
 		}
 	}
 
-	public function getException() : ?\Throwable
+	public function getException(): ?\Throwable
 	{
 		if ($this->getErrorId()) {
 			return new \Exception($this->getErrorMessage(), $this->getErrorId());
@@ -134,47 +134,47 @@ class Upload
 		return null;
 	}
 
-	public function getFileName() : string
+	public function getFileName(): string
 	{
 		return $this->fileName;
 	}
 
-	public function getFileSize() : int
+	public function getFileSize(): int
 	{
 		return $this->fileSize;
 	}
 
-	public function getFileType() : string
+	public function getFileType(): string
 	{
 		return $this->fileType;
 	}
 
-	public function isType(array $types) : bool
+	public function isType(array $types): bool
 	{
 		return in_array($this->fileType, $types);
 	}
 
-	public function isSupportedImage() : bool
+	public function isSupportedImage(): bool
 	{
 		return in_array($this->fileType, \Katu\Models\Presets\File::getSupportedImageTypes());
 	}
 
-	public function getPath() : string
+	public function getPath(): string
 	{
 		return $this->path;
 	}
 
-	public function getFile() : \Katu\Files\File
+	public function getFile(): \Katu\Files\File
 	{
 		return new \Katu\Files\File($this->path);
 	}
 
-	public function getHash() : string
+	public function getHash(): string
 	{
 		return sha1(file_get_contents($this->path));
 	}
 
-	public static function getMaxSize() : \Katu\Types\TFileSize
+	public static function getMaxSize(): \Katu\Types\TFileSize
 	{
 		return min(
 			\Katu\Types\TFileSize::createFromINI(ini_get('upload_max_filesize')),

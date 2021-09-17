@@ -87,7 +87,7 @@ class Controller
 
 	public function isSubmittedWithToken(\Slim\Http\Request $request, string $name = null)
 	{
-		return $this->isSubmitted($request, $name) && \Katu\Tools\Security\CSRF::isValidToken($request->getParam('formToken'));
+		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getParam('formToken'));
 	}
 
 	public function isSubmittedByHuman(\Slim\Http\Request $request, string $name = null)
@@ -97,14 +97,8 @@ class Controller
 			return false;
 		}
 
-		// Get the token.
-		$token = \Katu\Tools\Security\CSRF::getValidTokenByToken($request->getParam('formToken'));
-		if (!$token) {
-			return false;
-		}
-
-		// Check token age. Compare with tokens minDuration.
-		if (abs($token->getAge()->getValue()) < $token->minDuration) {
+		// Check the token.
+		if (!\Katu\Tools\Forms\Token::validate($request->getParam('formToken'))) {
 			return false;
 		}
 

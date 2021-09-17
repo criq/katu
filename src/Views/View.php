@@ -169,9 +169,7 @@ class View
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getCsrfToken', function () {
-			$params = (array) @func_get_arg(0);
-
-			return \Katu\Tools\Security\CSRF::getFreshToken($params);
+			return \Katu\Tools\Forms\Token::getFreshToken();
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getFile', function () {
