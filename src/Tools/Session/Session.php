@@ -19,7 +19,7 @@ class Session
 	{
 		try {
 			return static::getPath()->makeDir();
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			// Nevermind.
 		}
 	}
@@ -39,7 +39,7 @@ class Session
 	{
 		try {
 			$config = \Katu\Config\Config::get('app', 'session');
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$config = [];
 		}
 
@@ -126,7 +126,7 @@ class Session
 	{
 		try {
 			$config = \Katu\Config\Config::get('app', 'cookie');
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$config = [];
 		}
 

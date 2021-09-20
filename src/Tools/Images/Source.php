@@ -42,7 +42,7 @@ abstract class Source
 		} elseif (is_string($input)) {
 			try {
 				return new Sources\URL(new \Katu\Types\TURL($input));
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				// Nevermind.
 			}
 
@@ -53,7 +53,7 @@ abstract class Source
 				}
 
 				throw new \Exception;
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				// Nevermind.
 			}
 		}

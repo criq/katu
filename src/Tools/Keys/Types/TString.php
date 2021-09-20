@@ -23,7 +23,7 @@ class TString extends \Katu\Tools\Keys\Key
 				if (isset($urlParts['query'])) {
 					$parts->append($this->getHashWithPrefix($urlParts['query']));
 				}
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				$parts->append($this->getSanitizedString($this->source));
 			}
 		} else {

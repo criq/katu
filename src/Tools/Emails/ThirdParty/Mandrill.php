@@ -12,7 +12,7 @@ class Mandrill extends \Katu\Tools\Emails\ThirdParty
 	{
 		try {
 			$key = \Katu\Config\Config::get('app', 'email', 'useMandrillKey');
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$key = 'live';
 		}
 

@@ -21,7 +21,7 @@ class Generator
 			$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::LOW));
 
 			return $generator->generateString($length, $chars);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			return static::generateString($length, $chars);
 		}
 	}

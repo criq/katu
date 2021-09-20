@@ -113,7 +113,7 @@ class Version
 		if (!$dir->isWritable()) {
 			try {
 				$dir->makeDir();
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				throw new \Katu\Exceptions\ErrorException("Can't create image version folder at $dir.");
 			}
 		}

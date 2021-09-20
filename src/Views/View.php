@@ -94,7 +94,7 @@ class View
 		$twig->addFilter(new \Twig\TwigFilter('isValidDateTime', function ($date) {
 			try {
 				return (new \Katu\Tools\DateTime\DateTime($date))->isValid();
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				return false;
 			}
 		}));

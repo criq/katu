@@ -392,7 +392,7 @@ abstract class View extends Base
 		// Drop the original table.
 		try {
 			$destinationTable->delete();
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			// Nevermind.
 		}
 
@@ -455,7 +455,7 @@ abstract class View extends Base
 		if (static::isMaterializeExpiredAdvance()) {
 			try {
 				return static::materialize();
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				\App\Extensions\Exceptions\Handler::log($e);
 			}
 		}
