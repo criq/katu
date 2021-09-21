@@ -333,7 +333,7 @@ class User extends \Katu\Models\Model
 
 	public function getAllPermissions(): array
 	{
-		return \Katu\Cache\General::get(new TIdentifier('users', $this->getId(), 'allPermissions'), new Timeout('5 seconds'), function () {
+		return \Katu\Cache\Runtime::get(new TIdentifier('users', $this->getId(), 'allPermissions'), function () {
 			return array_filter(array_unique(array_merge((array)$this->getRolePermissions(), (array)$this->getUserPermissions())));
 		});
 	}
