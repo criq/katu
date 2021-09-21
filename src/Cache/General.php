@@ -19,7 +19,7 @@ class General
 	protected static $memcached;
 	protected static $redis;
 
-	public function __construct(TIdentifier $identifier, Timeout $timeout, ?callable $callback = null)
+	public function __construct(TIdentifier $identifier, ?Timeout $timeout = null, ?callable $callback = null)
 	{
 		$this->setIdentifier($identifier);
 		$this->setTimeout($timeout);
@@ -44,7 +44,7 @@ class General
 		return new TIdentifier(...array_merge($this->getIdentifier()->getParts(), $this->getArgs()));
 	}
 
-	public function setTimeout(Timeout $timeout) : General
+	public function setTimeout(?Timeout $timeout = null) : General
 	{
 		$this->timeout = $timeout;
 
