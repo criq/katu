@@ -44,6 +44,11 @@ class Error implements Packaged
 		return $this->message;
 	}
 
+	public function getMessageWithoutPeriod(): ?string
+	{
+		return rtrim($this->getMessage(), '.');
+	}
+
 	public function getCode(): ?string
 	{
 		return $this->code;
