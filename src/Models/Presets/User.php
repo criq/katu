@@ -331,14 +331,10 @@ class User extends \Katu\Models\Model
 		])->getColumnValues('permission');
 	}
 
-	public function getAllPermissions()
+	public function getAllPermissions(): array
 	{
-		$cacheIdentifier = new TIdentifier('users', $this->getId(), 'allPermissions');
-
-		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
-			return \Katu\Cache\General::get($cacheIdentifier, new Timeout('1 day'), function () {
-				return array_filter(array_unique(array_merge((array)$this->getRolePermissions(), (array)$this->getUserPermissions())));
-			});
+		return \Katu\Cache\Runtime::get(new TIdentifier('users', $this->getId(), 'allPermissions'), function () {
+			return array_filter(array_unique(array_merge((array)$this->getRolePermissions(), (array)$this->getUserPermissions())));
 		});
 	}
 

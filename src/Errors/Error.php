@@ -17,6 +17,11 @@ class Error implements Packaged
 		$this->code = $code;
 	}
 
+	public function __toString(): string
+	{
+		return (string)$this->getMessage();
+	}
+
 	public static function createFromPackage(TPackage $package): Error
 	{
 		$class = TClass::createFromPortableName($package->getPayload()['classPortableName']);
@@ -37,6 +42,11 @@ class Error implements Packaged
 	public function getMessage(): ?string
 	{
 		return $this->message;
+	}
+
+	public function getMessageWithoutPeriod(): ?string
+	{
+		return rtrim($this->getMessage(), '.');
 	}
 
 	public function getCode(): ?string

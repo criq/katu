@@ -110,6 +110,10 @@ class View
 			return new \Twig\Markup($text, 'UTF-8');
 		}));
 
+		$twig->addFilter(new \Twig\TwigFilter('str', function ($value) {
+			return (string)$value;
+		}));
+
 		/***************************************************************************
 		 * Functions.
 		 */
