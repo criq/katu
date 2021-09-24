@@ -2,69 +2,73 @@
 
 namespace Katu\Exceptions;
 
-class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, \Countable
+use ArrayAccess;
+use Countable;
+use Iterator;
+
+class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Countable
 {
 	protected $iteratorPosition = 0;
-	public $collection = [];
+	protected $storage = [];
 
-	public function add() : ExceptionCollection
-	{
-		return $this->addException(...func_get_args());
-	}
-
-	public function addException(\Exception $exception) : ExceptionCollection
+	public function addException(\Exception $exception): ExceptionCollection
 	{
 		if ($exception instanceof ExceptionCollection) {
 			foreach ($exception as $e) {
-				$this->collection[] = $e;
+				$this->storage[] = $e;
 			}
 		} else {
-			$this->collection[] = $exception;
+			$this->storage[] = $exception;
 		}
 
 		return $this;
 	}
 
-	public function has() : bool
+	public function add(): ExceptionCollection
 	{
-		return $this->hasExceptions();
+		return $this->addException(...func_get_args());
 	}
 
-	public function hasExceptions() : bool
+	public function hasExceptions(): bool
 	{
 		return (bool) $this->countExceptions();
 	}
 
-	public function countExceptions() : int
+	public function has(): bool
 	{
-		return (int)count($this->collection);
+		return $this->hasExceptions();
 	}
 
-	public function getErrorNames() : array
+	public function countExceptions(): int
+	{
+		return (int)count($this->storage);
+	}
+
+	public function getErrorNames(): array
 	{
 		$errorNames = [];
-		foreach ($this->collection as $exception) {
+		foreach ($this->storage as $exception) {
 			$errorNames = array_merge($errorNames, $exception->getErrorNames());
 		}
 
 		return array_values(array_filter(array_unique($errorNames)));
 	}
 
-	public function replaceErrorName(string $errorName, string $replacement) : ExceptionCollection
+	public function replaceErrorName(string $errorName, string $replacement): ExceptionCollection
 	{
-		foreach ($this->collection as $exception) {
+		foreach ($this->storage as $exception) {
 			$exception->replaceErrorName($errorName, $replacement);
 		}
 
 		return $this;
 	}
 
-	public function getResponseArray() : array
+	public function getResponseArray(): array
 	{
 		return [
 			'errors' => array_map(function ($e) {
 				return $e->getResponseArray();
-			}, $this->collection),
+			}, $this->storage),
 		];
 	}
 
@@ -74,25 +78,25 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 	public function offsetSet($offset, $value)
 	{
 		if (is_null($offset)) {
-			$this->collection[] = $value;
+			$this->storage[] = $value;
 		} else {
-			$this->collection[$offset] = $value;
+			$this->storage[$offset] = $value;
 		}
 	}
 
 	public function offsetExists($offset)
 	{
-		return isset($this->collection[$offset]);
+		return isset($this->storage[$offset]);
 	}
 
 	public function offsetUnset($offset)
 	{
-		unset($this->collection[$offset]);
+		unset($this->storage[$offset]);
 	}
 
 	public function offsetGet($offset)
 	{
-		return isset($this->collection[$offset]) ? $this->collection[$offset] : null;
+		return isset($this->storage[$offset]) ? $this->storage[$offset] : null;
 	}
 
 	/****************************************************************************
@@ -105,7 +109,7 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 
 	public function current()
 	{
-		return $this->collection[$this->iteratorPosition];
+		return $this->storage[$this->iteratorPosition];
 	}
 
 	public function key()
@@ -120,7 +124,7 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 
 	public function valid()
 	{
-		return isset($this->collection[$this->iteratorPosition]);
+		return isset($this->storage[$this->iteratorPosition]);
 	}
 
 	/****************************************************************************
@@ -128,6 +132,6 @@ class ExceptionCollection extends Exception implements \ArrayAccess, \Iterator, 
 	 */
 	public function count()
 	{
-		return count($this->collection);
+		return count($this->storage);
 	}
 }

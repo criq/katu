@@ -2,6 +2,9 @@
 
 namespace Katu\Exceptions;
 
+use Katu\Types\TClass;
+use Katu\Types\TPackage;
+
 class Exception extends \Exception
 {
 	const HTTP_CODE = 400;

@@ -67,7 +67,7 @@ class ImageVersion
 
 			return new Image($this->getFile());
 		} catch (\Throwable $e) {
-			\App\Extensions\Errors\Handler::log($e);
+			\App\Extensions\Exceptions\Handler::log($e);
 			return false;
 		}
 	}

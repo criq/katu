@@ -42,7 +42,7 @@ class Controller
 		}
 	}
 
-	public function renderError(\Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [], $status = 500)
+	public function renderError(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 500)
 	{
 		return $this->render("Errors/" . $status . ".twig", $request, $response, $args)
 			->withStatus($status)
@@ -87,7 +87,7 @@ class Controller
 
 	public function isSubmittedWithToken(\Slim\Http\Request $request, string $name = null)
 	{
-		return $this->isSubmitted($request, $name) && \Katu\Tools\Security\CSRF::isValidToken($request->getParam('formToken'));
+		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getParam('formToken'));
 	}
 
 	public function isSubmittedByHuman(\Slim\Http\Request $request, string $name = null)
@@ -97,22 +97,11 @@ class Controller
 			return false;
 		}
 
-		// Get the token.
-		$token = \Katu\Tools\Security\CSRF::getValidTokenByToken($request->getParam('formToken'));
-		if (!$token) {
-			return false;
-		}
-
-		// Check token age. Compare with tokens minDuration.
-		if (abs($token->getAge()->getValue()) < $token->minDuration) {
-			return false;
-		}
-
 		// Check captcha. Should be empty.
 		if ($request->getParam('yourName_' . $token->secret) !== '') {
 			return false;
 		}
-		
+
 		return true;
 	}
 

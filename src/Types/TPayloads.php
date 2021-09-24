@@ -4,17 +4,17 @@ namespace Katu\Types;
 
 class TPayloads extends \ArrayObject
 {
-	public static function createFromJSON(TJSON $json) : TPayloads
+	public static function createFromJSON(TJSON $json): TPayloads
 	{
 		return new static($json->getArray());
 	}
 
-	public function getJSON() : TJSON
+	public function getJSON(): TJSON
 	{
-		return TJSON::createFromArray($this->getArrayCopy());
+		return TJSON::createFromContents($this->getArrayCopy());
 	}
 
-	public function getPackages() : TPackages
+	public function getPackages(): TPackages
 	{
 		$packages = new TPackages;
 		foreach ($this as $payload) {

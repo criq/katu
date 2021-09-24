@@ -2,34 +2,10 @@
 
 namespace Katu\Files\Formats;
 
+use Katu\Types\TJSON;
+
 class JSON
 {
-	// public static function respond($var, $options = [])
-	// {
-	// 	$app = \Katu\App::get();
-
-	// 	$app->response->headers->set('Content-Type', 'application/json; charset=UTF-8');
-
-	// 	if (isset($options['format']) && $options['format'] == 'standard') {
-	// 		$body = static::encodeStandard($var);
-	// 	} else {
-	// 		$body = static::encode($var);
-	// 	}
-
-	// 	$app->response->setBody(\Katu\Controllers\Controller::prepareBody($body));
-
-	// 	return true;
-	// }
-
-	// static function respondError($var = null, $options = []) {
-	// 	static::respond($var);
-
-	// 	$app = \Katu\App::get();
-	// 	$app->response->setStatus(500);
-
-	// 	return true;
-	// }
-
 	public static function getEncodeBitmask()
 	{
 		return
@@ -49,17 +25,17 @@ class JSON
 
 	public static function encode($var)
 	{
-		return json_encode($var, static::getEncodeBitmask());
+		return new TJSON(json_encode($var, static::getEncodeBitmask()));
 	}
 
 	public static function encodeInline($var)
 	{
-		return json_encode($var, static::getInlineEncodeBitmask());
+		return new TJSON(json_encode($var, static::getInlineEncodeBitmask()));
 	}
 
 	public static function encodeStandard($var)
 	{
-		return json_encode($var);
+		return new TJSON(json_encode($var));
 	}
 
 	public static function decodeAsObjects($var)

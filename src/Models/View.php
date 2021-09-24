@@ -365,7 +365,7 @@ abstract class View extends Base
 	{
 		$name = implode(static::SEPARATOR, [
 			'mv',
-			preg_replace('/^view_/', null, static::getViewName()->getName()),
+			preg_replace('/^view_/', '', static::getViewName()->getName()),
 		]);
 
 		return new \Katu\PDO\Name($name);
@@ -392,7 +392,7 @@ abstract class View extends Base
 		// Drop the original table.
 		try {
 			$destinationTable->delete();
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			// Nevermind.
 		}
 
@@ -455,8 +455,8 @@ abstract class View extends Base
 		if (static::isMaterializeExpiredAdvance()) {
 			try {
 				return static::materialize();
-			} catch (\Exception $e) {
-				\App\Extensions\Errors\Handler::log($e);
+			} catch (\Throwable $e) {
+				\App\Extensions\Exceptions\Handler::log($e);
 			}
 		}
 	}
@@ -546,7 +546,7 @@ abstract class View extends Base
 				}
 			} catch (\Throwable $e) {
 				// TODO - throw into a different log.
-				\App\Extensions\Errors\Handler::log($e);
+				\App\Extensions\Exceptions\Handler::log($e);
 			}
 		}
 	}

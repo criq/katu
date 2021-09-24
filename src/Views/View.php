@@ -94,7 +94,7 @@ class View
 		$twig->addFilter(new \Twig\TwigFilter('isValidDateTime', function ($date) {
 			try {
 				return (new \Katu\Tools\DateTime\DateTime($date))->isValid();
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				return false;
 			}
 		}));
@@ -108,6 +108,10 @@ class View
 			$text = preg_replace('/([0-9])\s+(%)/i', '\\1&nbsp;\\2', $text);
 
 			return new \Twig\Markup($text, 'UTF-8');
+		}));
+
+		$twig->addFilter(new \Twig\TwigFilter('str', function ($value) {
+			return (string)$value;
 		}));
 
 		/***************************************************************************
@@ -169,9 +173,7 @@ class View
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getCsrfToken', function () {
-			$params = (array) @func_get_arg(0);
-
-			return \Katu\Tools\Security\CSRF::getFreshToken($params);
+			return \Katu\Tools\Forms\Token::getFreshToken();
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getFile', function () {

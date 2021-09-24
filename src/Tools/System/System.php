@@ -7,7 +7,7 @@ use Katu\Types\TIdentifier;
 
 class System
 {
-	public static function getNumberOfCpus() : int
+	public static function getNumberOfCpus(): int
 	{
 		$cacheIdentifier = new TIdentifier('system', 'numberOfCpus');
 
@@ -42,19 +42,19 @@ class System
 		});
 	}
 
-	public static function getLoadAverage() : array
+	public static function getLoadAverage(): array
 	{
 		return sys_getloadavg();
 	}
 
-	public static function getLoadAveragePerCpu() : array
+	public static function getLoadAveragePerCpu(): array
 	{
 		return array_map(function ($i) {
 			return $i / static::getNumberOfCpus();
 		}, static::getLoadAverage());
 	}
 
-	public static function assertMaxLoadAverage(float $loadAverage) : bool
+	public static function assertMaxLoadAverage(float $loadAverage): bool
 	{
 		if (static::getLoadAveragePerCpu()[0] > $loadAverage) {
 			throw new \Katu\Exceptions\LoadAverageExceededException("System load average per CPU is higher than " . $loadAverage . ".");

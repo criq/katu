@@ -37,7 +37,7 @@ class URL extends \Katu\Tools\Images\Source
 			}
 
 			throw new \Exception;
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			return false;
 		}
 	}

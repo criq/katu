@@ -1,10 +1,8 @@
-{% set token = getCsrfToken({
-	minDuration: minDuration,
-}) %}
+{% set token = getCsrfToken() %}
 
 <input type="hidden" name="formSubmitted" value="1" />
 <input type="hidden" name="formName" value="{{ name }}" />
-<input type="hidden" name="formToken" value="{{ token.token }}" />
+<input type="hidden" name="formToken" value="{{ token }}" />
 {% if captcha %}
 {% include "Blocks/formCaptcha.twig" with { token: token, minDuration: minDuration } %}
 {% endif %}
