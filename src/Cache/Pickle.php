@@ -12,32 +12,24 @@ class Pickle
 
 	protected $identifier;
 
-	public function __construct(TIdentifier $identifier, $value = null)
+	public function __construct(TIdentifier $identifier)
 	{
 		$this->setIdentifier($identifier);
-
-		if (!$this->getFile()->exists()) {
-			$this->set(null);
-		}
-
-		if ($value) {
-			$this->set($value);
-		}
 	}
 
-	public function setIdentifier(TIdentifier $identifier) : Pickle
+	public function setIdentifier(TIdentifier $identifier): Pickle
 	{
 		$this->identifier = $identifier;
 
 		return $this;
 	}
 
-	public function getIdentifier() : TIdentifier
+	public function getIdentifier(): TIdentifier
 	{
 		return $this->identifier;
 	}
 
-	public function getFile() : \Katu\Files\File
+	public function getFile(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('txt'));
 	}
@@ -47,9 +39,11 @@ class Pickle
 		return unserialize($this->getFile()->get());
 	}
 
-	public function set($value)
+	public function set($value): Pickle
 	{
-		return $this->getFile()->set(serialize($value));
+		$this->getFile()->set(serialize($value));
+
+		return $this;
 	}
 
 	public function delete()
@@ -57,17 +51,17 @@ class Pickle
 		return $this->getFile()->delete();
 	}
 
-	public function getDateTimeModified()
+	public function getDateTimeModified(): ?\Katu\Tools\DateTime\DateTime
 	{
-		return $this->getFile()->getDateTimeModified();
+		return $this->getFile()->getDateTimeModified() ?: null;
 	}
 
-	public function hasContents() : bool
+	public function hasContents(): bool
 	{
 		return !is_null($this->get());
 	}
 
-	public function getAge() : ?TSeconds
+	public function getAge(): ?TSeconds
 	{
 		try {
 			return $this->getFile()->getDateTimeModified()->getAge();
@@ -76,12 +70,16 @@ class Pickle
 		}
 	}
 
-	public function isExpired(Timeout $timeout) : bool
+	public function isExpired(Timeout $timeout): bool
 	{
-		return (bool)(!$this->hasContents() || !$timeout->fits($this->getDateTimeModified()));
+		try {
+			return (bool)(!$this->hasContents() || !$timeout->fits($this->getDateTimeModified()));
+		} catch (\Throwable $e) {
+			return true;
+		}
 	}
 
-	public function isValid(?Timeout $timeout = null) : bool
+	public function isValid(?Timeout $timeout = null): bool
 	{
 		if ($timeout && $this->isExpired($timeout)) {
 			return false;
