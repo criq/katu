@@ -24,19 +24,19 @@ class Query
 		$this->setSql($sql);
 	}
 
-	public function setConnection(Connection $connection) : Query
+	public function setConnection(Connection $connection): Query
 	{
 		$this->connection = $connection;
 
 		return $this;
 	}
 
-	public function getConnection() : Connection
+	public function getConnection(): Connection
 	{
 		return $this->connection;
 	}
 
-	public function setSql($sql) : Query
+	public function setSql($sql): Query
 	{
 		$this->sql = $sql;
 		if ($sql instanceof \Sexy\Select && $sql->getPage()) {
@@ -51,45 +51,45 @@ class Query
 		return $this->sql;
 	}
 
-	public function setParam(string $name, $value) : Query
+	public function setParam(string $name, $value): Query
 	{
 		$this->params[$name] = $value;
 
 		return $this;
 	}
 
-	public function setParams(?array $params = []) : Query
+	public function setParams(?array $params = []): Query
 	{
 		$this->params = array_merge($this->params, $params);
 
 		return $this;
 	}
 
-	public function getParams() : array
+	public function getParams(): array
 	{
 		return $this->params;
 	}
 
-	public function setPage(\Sexy\Page $page) : Query
+	public function setPage(\Sexy\Page $page): Query
 	{
 		$this->page = $page;
 
 		return $this;
 	}
 
-	public function getPage() : ?\Sexy\Page
+	public function getPage(): ?\Sexy\Page
 	{
 		return $this->page;
 	}
 
-	public function setFactory(\Katu\Interfaces\Factory $factory) : Query
+	public function setFactory(\Katu\Interfaces\Factory $factory): Query
 	{
 		$this->factory = $factory;
 
 		return $this;
 	}
 
-	public function getFactory() : ?\Katu\Interfaces\Factory
+	public function getFactory(): ?\Katu\Interfaces\Factory
 	{
 		if (!$this->factory) {
 			$this->factory = new \Katu\Tools\Factories\ArrayFactory;
@@ -98,7 +98,7 @@ class Query
 		return $this->factory;
 	}
 
-	public function getStatement() : \PDOStatement
+	public function getStatement(): \PDOStatement
 	{
 		if (!$this->statement) {
 			$this->statement = $this->getConnection()->getConnection()->prepare($this->getSql());
@@ -119,50 +119,50 @@ class Query
 		return $this->statement;
 	}
 
-	public function setStatementDump(StatementDump $statementDump) : Query
+	public function setStatementDump(StatementDump $statementDump): Query
 	{
 		$this->statementDump = $statementDump;
 
 		return $this;
 	}
 
-	public function getStatementDump() : StatementDump
+	public function getStatementDump(): StatementDump
 	{
 		return $this->statementDump;
 	}
 
-	public function setDuration(TSeconds $duration) : Query
+	public function setDuration(TSeconds $duration): Query
 	{
 		$this->duration = $duration;
 
 		return $this;
 	}
 
-	public function getDuration() : ?TSeconds
+	public function getDuration(): ?TSeconds
 	{
 		return $this->duration;
 	}
 
-	public function setFoundRows(int $foundRows) : Query
+	public function setFoundRows(int $foundRows): Query
 	{
 		$this->foundRows = $foundRows;
 
 		return $this;
 	}
 
-	public function getFoundRows() : ?int
+	public function getFoundRows(): ?int
 	{
 		return $this->foundRows;
 	}
 
-	public function setResult(Result $result) : Query
+	public function setResult(Result $result): Query
 	{
 		$this->result = $result;
 
 		return $this;
 	}
 
-	public function getResult() : Result
+	public function getResult(): Result
 	{
 		if (!$this->result) {
 			$statement = $this->getStatement();
