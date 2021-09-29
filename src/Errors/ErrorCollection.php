@@ -42,4 +42,14 @@ class ErrorCollection extends \ArrayObject implements Packaged
 
 		return $this;
 	}
+
+	public function hasErrors(): bool
+	{
+		return (bool)count($this);
+	}
+
+	public function isEmpty(): bool
+	{
+		return !(bool)count($this);
+	}
 }
