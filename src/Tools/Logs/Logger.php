@@ -47,7 +47,13 @@ class Logger extends \Monolog\Logger
 			$context['context'] = $message->getContext();
 		}
 
-		// $this->getFile()->chmod(0777);
+		try {
+			$this->getFile()->touch();
+			$this->getFile()->chmod(0777);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
 		parent::log($level, $message, $context);
 	}
 
