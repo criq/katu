@@ -475,11 +475,11 @@ abstract class View extends Base
 	public static function getLastCachedTemporaryFile()
 	{
 		return new \Katu\Files\Temporary([
-			'!databases',
-			'!' . static::getConnection()->getConfig()->database,
-			'!views',
-			'!cached',
-			'!' . static::TABLE,
+			'databases',
+			static::getConnection()->getConfig()->database,
+			'views',
+			'cached',
+			static::TABLE,
 		]);
 	}
 
