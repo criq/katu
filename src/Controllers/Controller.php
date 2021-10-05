@@ -80,17 +80,17 @@ class Controller
 	/****************************************************************************
 	 * Form submission.
 	 */
-	public function isSubmitted(\Slim\Http\Request $request, string $name = null)
+	public function isSubmitted(\Slim\Http\Request $request, ?string $name = null)
 	{
 		return $request->getParam('formSubmitted') && $request->getParam('formName') == $name;
 	}
 
-	public function isSubmittedWithToken(\Slim\Http\Request $request, string $name = null)
+	public function isSubmittedWithToken(\Slim\Http\Request $request, ?string $name = null)
 	{
 		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getParam('formToken'));
 	}
 
-	public function isSubmittedByHuman(\Slim\Http\Request $request, string $name = null)
+	public function isSubmittedByHuman(\Slim\Http\Request $request, ?string $name = null)
 	{
 		// Check basic form params.
 		if (!$this->isSubmittedWithToken($request, $name)) {
