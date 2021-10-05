@@ -19,7 +19,7 @@ class Config
 
 	public function __construct(string $host, string $user, string $password, string $database, string $charset)
 	{
-		$this->charset  = $charset;
+		$this->charset = $charset;
 		$this->database = $database;
 		$this->host = $host;
 		$this->password = $password;
