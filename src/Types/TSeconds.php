@@ -11,17 +11,17 @@ class TSeconds
 		$this->value = $value;
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return (string)$this->getValue();
 	}
 
-	public function getValue() : float
+	public function getValue(): float
 	{
 		return (float)$this->value;
 	}
 
-	public function getDateTime() : \Katu\Tools\DateTime\DateTime
+	public function getDateTime(): \Katu\Tools\DateTime\DateTime
 	{
 		return new \Katu\Tools\DateTime\DateTime($this->getValue() . ' seconds');
 	}
