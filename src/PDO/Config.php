@@ -6,9 +6,9 @@ use Katu\Types\TClass;
 
 class Config
 {
-	const DRIVER = null;
-	const SCHEMA = null;
-	const TYPE = null;
+	const DRIVER = '';
+	const SCHEMA = '';
+	const TYPE = '';
 
 	public $charset;
 	public $database;
