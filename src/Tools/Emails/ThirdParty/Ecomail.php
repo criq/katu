@@ -50,7 +50,12 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		$curl = new \Curl\Curl;
 		$curl->setHeader('key', \Katu\Config\Config::get('ecomail', 'api', 'key'));
 
-		$res = $curl->post('http://api2.ecomailapp.cz/transactional/send-template', $this->getEmail());
+		if ($this->template) {
+			$res = $curl->post('http://api2.ecomailapp.cz/transactional/send-template', $this->getEmail());
+		} else {
+			$res = $curl->post('http://api2.ecomailapp.cz/transactional/send-message', $this->getEmail());
+		}
+
 		$info = $curl->getInfo();
 
 		if ($info['http_code'] != 200) {
