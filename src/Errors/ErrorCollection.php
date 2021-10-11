@@ -43,13 +43,18 @@ class ErrorCollection extends \ArrayObject implements Packaged
 		return $this;
 	}
 
+	public function getTotal(): int
+	{
+		return count($this);
+	}
+
 	public function hasErrors(): bool
 	{
-		return (bool)count($this);
+		return (bool)$this->getTotal();
 	}
 
 	public function isEmpty(): bool
 	{
-		return !(bool)count($this);
+		return !(bool)$this->getTotal();
 	}
 }
