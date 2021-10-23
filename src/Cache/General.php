@@ -227,6 +227,7 @@ class General
 	public function getResult()
 	{
 		$memoryKey = $this->getMemoryKey();
+
 		// Try Redis.
 		if ($this->isRedisEnabled()) {
 			$redis = static::getRedis();
@@ -273,7 +274,7 @@ class General
 					$memoryKey,
 					serialize($res),
 				];
-				$seconds = $this->getTimeout()->getSeconds()->getValue();
+				$seconds = abs($this->getTimeout()->getSeconds()->getValue());
 				if ($seconds) {
 					$args[] = 'EX';
 					$args[] = $seconds;
@@ -281,7 +282,8 @@ class General
 				$redis->set(...$args);
 				return $res;
 			} catch (\Throwable $e) {
-				// (new \Katu\Tools\Logs\Logger('cache'))->error($e);
+				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+
 				$redis->del($memoryKey);
 			}
 		}
@@ -291,12 +293,14 @@ class General
 			// Add to Memcached.
 			$memcached = static::getMemcached();
 			try {
-				$seconds = $this->getTimeout()->getSeconds()->getValue();
+				$seconds = abs($this->getTimeout()->getSeconds()->getValue());
 				if (!$memcached->set($memoryKey, $res, $seconds ? time() + $seconds : 0)) {
 					throw new \Exception;
 				}
 				return $res;
 			} catch (\Throwable $e) {
+				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+
 				$memcached->delete($memoryKey);
 			}
 		}
@@ -306,11 +310,13 @@ class General
 		if ($this->isApcEnabled() && $maxApcFileSize && strlen($serializedRes) <= $maxApcFileSize->getInB()->getAmount()) {
 			// Add to APC.
 			try {
-				if (!\apcu_store($memoryKey, $res, $this->getTimeout()->getSeconds()->getValue())) {
+				if (!\apcu_store($memoryKey, $res, abs($this->getTimeout()->getSeconds()->getValue()))) {
 					throw new \Exception;
 				}
 				return $res;
 			} catch (\Throwable $e) {
+				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+
 				\apcu_delete($memoryKey);
 			}
 		}
