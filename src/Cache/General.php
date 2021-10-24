@@ -117,6 +117,13 @@ class General
 		return $value;
 	}
 
+	public function disableMemory(): General
+	{
+		$this->setAdapters($this->getAdapters()->filterWithoutMemory());
+
+		return $this;
+	}
+
 	public function clear()
 	{
 		foreach ($this->getAdapters() as $adapter) {
