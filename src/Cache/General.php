@@ -101,20 +101,27 @@ class General
 	public function getResult()
 	{
 		foreach ($this->getAdapters() as $adapter) {
-			$value = $adapter->get($this->getIdentifierWithArgs(), $this->getTimeout());
-			if (!is_null($value)) {
-				return $value;
+			$res = $adapter->get($this->getIdentifierWithArgs(), $this->getTimeout());
+			if (!is_null($res)) {
+				return $res;
 			}
 		}
 
-		$value = call_user_func_array($this->getCallback(), $this->getArgs());
+		$res = call_user_func_array($this->getCallback(), $this->getArgs());
+		$this->setResult($res);
+
+		return $res;
+	}
+
+	public function setResult($res): bool
+	{
 		foreach ($this->getAdapters() as $adapter) {
-			if ($adapter->set($this->getIdentifierWithArgs(), $this->getTimeout(), $value)) {
-				break;
+			if ($adapter->set($this->getIdentifierWithArgs(), $this->getTimeout(), $res)) {
+				return true;
 			}
 		}
 
-		return $value;
+		return false;
 	}
 
 	public function disableMemory(): General
