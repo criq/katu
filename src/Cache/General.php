@@ -138,6 +138,11 @@ class General
 		}
 	}
 
+	public function delete()
+	{
+		return $this->clear();
+	}
+
 	public static function clearMemory()
 	{
 		foreach (static::getAvailableAdapters() as $adapter) {
