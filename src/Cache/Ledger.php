@@ -21,24 +21,24 @@ class Ledger
 		}
 	}
 
-	public function setIdentifier(TIdentifier $identifier) : Ledger
+	public function setIdentifier(TIdentifier $identifier): Ledger
 	{
 		$this->identifier = $identifier;
 
 		return $this;
 	}
 
-	public function getIdentifier() : TIdentifier
+	public function getIdentifier(): TIdentifier
 	{
 		return $this->identifier;
 	}
 
-	public function getFile() : \Katu\Files\File
+	public function getFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('json'));
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('txt'));
 	}
 
-	public function populateKeys(array $keys) : Ledger
+	public function populateKeys(array $keys): Ledger
 	{
 		$contents = $this->get();
 
@@ -53,21 +53,21 @@ class Ledger
 		return $this;
 	}
 
-	public function get() : array
+	public function get(): array
 	{
-		return (array)\Katu\Files\Formats\JSON::decodeAsArray($this->getFile()->get());
+		return unserialize($this->getFile()->get()) ?: [];
 	}
 
-	public function set($contents) : Ledger
+	public function set($contents): Ledger
 	{
 		ksort($contents, \SORT_NATURAL);
 
-		$this->getFile()->set(\Katu\Files\Formats\JSON::encode($contents));
+		$this->getFile()->set(serialize($contents));
 
 		return $this;
 	}
 
-	public function setKey($key, $value) : Ledger
+	public function setKey($key, $value): Ledger
 	{
 		$contents = $this->get();
 		$contents[$key] = $value;
@@ -76,7 +76,7 @@ class Ledger
 		return $this;
 	}
 
-	public function setKeyLoaded($key) : Ledger
+	public function setKeyLoaded($key): Ledger
 	{
 		$this->setKey($key, array_merge((array)$this->getKey($key), [
 			'timeLoaded' => (new \Katu\Tools\DateTime\DateTime)->format('r'),
@@ -95,7 +95,7 @@ class Ledger
 		return null;
 	}
 
-	public function getExpiredKeys(Timeout $timeout, $timeKey = 'timeLoaded') : array
+	public function getExpiredKeys(Timeout $timeout, $timeKey = 'timeLoaded'): array
 	{
 		$expired = [];
 		foreach ($this->get() as $key => $value) {
@@ -114,7 +114,7 @@ class Ledger
 		return array_keys($expired);
 	}
 
-	public function removeKey($key) : Ledger
+	public function removeKey($key): Ledger
 	{
 		$contents = $this->get();
 		unset($contents[$key]);
@@ -123,7 +123,7 @@ class Ledger
 		return $this;
 	}
 
-	public function count() : int
+	public function count(): int
 	{
 		return count($this->get());
 	}
