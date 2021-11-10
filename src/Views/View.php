@@ -34,7 +34,7 @@ class View
 				new \Katu\Files\File(\Katu\Tools\Services\Composer\Composer::getDir(), substr(__DIR__, strcmp(\Katu\Tools\Services\Composer\Composer::getDir(), __DIR__))),
 				new \Katu\Files\File(\Katu\App::getBaseDir(), 'vendor'),
 			];
-			
+
 			$dirs = array_unique(array_filter(array_map(function ($dir) {
 				return $dir->exists() ? $dir->getPath() : null;
 			}, $dirs)));

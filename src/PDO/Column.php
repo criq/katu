@@ -13,31 +13,31 @@ class Column extends \Sexy\Expression
 		$this->name = $name;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->getSql();
 	}
 
-	public function getName()
+	public function getName(): Name
 	{
 		return $this->name;
+	}
+
+	public function getTable(): TableBase
+	{
+		return $this->table;
+	}
+
+	public function getProperties(): ColumnProperties
+	{
+		return new ColumnProperties($this->getTable()->getColumnDescription($this->getName()));
 	}
 
 	public function getSql(&$context = [])
 	{
 		return implode('.', [
-			$this->table->getSql($context),
-			$this->name == '*' ? '*' : $this->name,
+			$this->getTable()->getSql($context),
+			$this->getName() == '*' ? '*' : $this->getName(),
 		]);
-	}
-
-	public function getTable()
-	{
-		return $this->table;
-	}
-
-	public function getProperties()
-	{
-		return new ColumnProperties($this->getTable()->getColumnDescription($this->name));
 	}
 }

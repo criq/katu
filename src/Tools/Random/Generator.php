@@ -14,7 +14,7 @@ class Generator
 	const IDSTRING = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
 	const NUM = '0123456789';
 
-	public static function getFromChars($chars, $length = 32)
+	public static function getFromChars(string $chars, int $length = 32): string
 	{
 		try {
 			$factory = new \RandomLib\Factory;
@@ -26,7 +26,7 @@ class Generator
 		}
 	}
 
-	public static function generateString($length, $chars)
+	public static function generateString(int $length, $chars): string
 	{
 		$characters = [];
 		foreach (range(1, $length) as $i) {
@@ -36,27 +36,27 @@ class Generator
 		return implode($characters);
 	}
 
-	public static function getFileName($length = 32)
+	public static function getFileName(int $length = 32): string
 	{
 		return static::getFromChars(static::ALPHA_LOWER, $length);
 	}
 
-	public static function getString($length = 32)
+	public static function getString(int $length = 32): string
 	{
 		return static::getFromChars(static::ALNUM, $length);
 	}
 
-	public static function getIdString($length = 32)
+	public static function getIdString(int $length = 32): string
 	{
 		return static::getFromChars(static::IDSTRING, $length);
 	}
 
-	public static function getNumber($length = 32)
+	public static function getNumber(int $length = 32): string
 	{
 		return static::getFromChars(static::NUM, $length);
 	}
 
-	public static function getWord($length = 8, $seed = null)
+	public static function getWord(int $length = 8, ?int $seed = null): string
 	{
 		$seed = is_null($seed) ? rand(0, 1) : $seed;
 		$word = '';
