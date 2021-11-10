@@ -456,7 +456,7 @@ abstract class View extends Base
 			try {
 				return static::materialize();
 			} catch (\Throwable $e) {
-				\App\Extensions\Exceptions\Handler::log($e);
+				\Katu\Exceptions\Handler::log($e);
 			}
 		}
 	}
@@ -546,7 +546,7 @@ abstract class View extends Base
 				}
 			} catch (\Throwable $e) {
 				// TODO - throw into a different log.
-				\App\Extensions\Exceptions\Handler::log($e);
+				\Katu\Exceptions\Handler::log($e);
 			}
 		}
 	}
