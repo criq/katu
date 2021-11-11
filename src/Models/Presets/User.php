@@ -84,9 +84,9 @@ class User extends \Katu\Models\Model
 		]);
 	}
 
-	public static function getCurrent()
+	public static function getCurrent(): ?User
 	{
-		return static::get(\Katu\Tools\Session\Session::get('katu.user.id'));
+		return static::getByAccessToken(\Katu\Tools\Cookies\Cookie::get('accessToken'));
 	}
 
 	public static function getByAccessToken(?string $token): ?User
@@ -218,9 +218,8 @@ class User extends \Katu\Models\Model
 		return true;
 	}
 
-	public static function logout()
+	public static function logout(): bool
 	{
-		\Katu\Tools\Session\Session::reset('katu.user.id');
 		\Katu\Tools\Cookies\Cookie::remove('accessToken');
 
 		return true;
