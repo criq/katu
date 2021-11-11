@@ -13,12 +13,12 @@ class Handler
 		return static::handleException($exception, $request, $response);
 	}
 
-	public static function getLogger()
+	public static function getLogger(): \Katu\Tools\Logs\Logger
 	{
 		return new \Katu\Tools\Logs\Logger(new TIdentifier('error'));
 	}
 
-	public static function init()
+	public static function init(): void
 	{
 		ini_set('display_errors', false);
 		ini_set('error_log', (string)static::getLogger()->getFile());
