@@ -16,13 +16,18 @@ class AccessToken extends \Katu\Models\Model
 		return new \Katu\Tools\DateTime\DateTime('+ ' . static::EXPIRES . ' seconds');
 	}
 
+	public static function generateToken(): string
+	{
+		return \Katu\Tools\Random\Generator::getIdString(static::LENGTH);
+	}
+
 	public static function create(\Katu\Models\Presets\User $user): AccessToken
 	{
 		return static::insert([
 			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
 			'timeExpires' => static::generateTimeExpires(),
 			'userId' => $user->getId(),
-			'token' => \Katu\Tools\Random\Generator::getString(static::LENGTH),
+			'token' => static::generateToken(),
 		]);
 	}
 
