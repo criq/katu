@@ -2,6 +2,7 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Types\TSeconds;
 use Sexy\Sexy as SX;
 
 class AccessToken extends \Katu\Models\Model
@@ -10,11 +11,16 @@ class AccessToken extends \Katu\Models\Model
 	const LENGTH = 128;
 	const TABLE = 'access_tokens';
 
+	public static function generateTimeExpires(): \Katu\Tools\DateTime\DateTime
+	{
+		return new \Katu\Tools\DateTime\DateTime('+ ' . static::EXPIRES . ' seconds');
+	}
+
 	public static function create(\Katu\Models\Presets\User $user): AccessToken
 	{
 		return static::insert([
 			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
-			'timeExpires' => new \Katu\Tools\DateTime\DateTime('+ ' . static::EXPIRES . ' seconds'),
+			'timeExpires' => static::generateTimeExpires(),
 			'userId' => $user->getId(),
 			'token' => \Katu\Tools\Random\Generator::getString(static::LENGTH),
 		]);
@@ -36,13 +42,31 @@ class AccessToken extends \Katu\Models\Model
 		return $object;
 	}
 
+	public function getIsValid(): bool
+	{
+		return !(new \Katu\Tools\DateTime\DateTime($this->timeExpires))->isInPast();
+	}
+
 	public function getToken(): string
 	{
 		return $this->token;
 	}
 
-	public function getRemainingTime()
+	public function setCookie()
 	{
-		return (new \Katu\Tools\DateTime\DateTime($this->timeExpires))->getTimestamp() - (new \Katu\Tools\DateTime\DateTime())->getTimestamp();
+		\Katu\Tools\Cookies\Cookie::set('accessToken', $this->getToken(), $this->getTTL()->getValue());
+	}
+
+	public function extend(): AccessToken
+	{
+		$this->timeExpires = static::generateTimeExpires();
+		$this->save();
+
+		return $this;
+	}
+
+	public function getTTL(): TSeconds
+	{
+		return (new \Katu\Tools\DateTime\DateTime($this->timeExpires))->getAge();
 	}
 }

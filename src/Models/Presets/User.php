@@ -92,14 +92,17 @@ class User extends \Katu\Models\Model
 	public static function getByAccessToken(?string $token): ?User
 	{
 		$accessTokenClass = static::getAccessTokenClass()->getName();
-
 		$accessToken = $accessTokenClass::getOneBy([
 			'token' => preg_replace('/^(Bearer)\s+/', '', $token),
 			SX::cmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
 		]);
 
-		if ($accessToken) {
-			return static::get($accessToken->userId);
+		if ($accessToken && $accessToken->getIsValid()) {
+			$user = static::get($accessToken->userId);
+			$accessToken->extend();
+			$accessToken->setCookie();
+
+			return $user;
 		}
 
 		return null;
@@ -213,7 +216,7 @@ class User extends \Katu\Models\Model
 
 	public function login(): bool
 	{
-		\Katu\Tools\Cookies\Cookie::set('accessToken', $this->createAccessToken()->getToken());
+		$this->createAccessToken()->setCookie();
 
 		return true;
 	}
