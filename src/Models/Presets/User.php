@@ -2,7 +2,6 @@
 
 namespace Katu\Models\Presets;
 
-use Katu\Tools\DateTime\Timeout;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
@@ -19,42 +18,42 @@ class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Classes.
 	 */
-	public static function getAccessTokenClass() : TClass
+	public static function getAccessTokenClass(): TClass
 	{
 		return new TClass("App\Models\AccessToken");
 	}
 
-	public static function getEmailAddressClass() : TClass
+	public static function getEmailAddressClass(): TClass
 	{
 		return new TClass("App\Models\EmailAddress");
 	}
 
-	public static function getRoleClass() : TClass
+	public static function getRoleClass(): TClass
 	{
 		return new TClass("App\Models\Role");
 	}
 
-	public static function getRolePermissionClass() : TClass
+	public static function getRolePermissionClass(): TClass
 	{
 		return new TClass("App\Models\RolePermission");
 	}
 
-	public static function getUserRoleClass() : TClass
+	public static function getUserRoleClass(): TClass
 	{
 		return new TClass("App\Models\UserRole");
 	}
 
-	public static function getUserPermissionClass() : TClass
+	public static function getUserPermissionClass(): TClass
 	{
 		return new TClass("App\Models\UserPermission");
 	}
 
-	public static function getUserServiceClass() : TClass
+	public static function getUserServiceClass(): TClass
 	{
 		return new TClass("App\Models\UserService");
 	}
 
-	public static function getUserSettingClass() : TClass
+	public static function getUserSettingClass(): TClass
 	{
 		return new TClass("App\Models\UserSetting");
 	}
@@ -62,14 +61,14 @@ class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Create & Delete.
 	 */
-	public static function create() : User
+	public static function create(): User
 	{
 		return static::insert([
 			static::$columnNames['timeCreated'] => new \Katu\Tools\DateTime\DateTime,
 		]);
 	}
 
-	public static function createWithEmailAddress(\Katu\Models\Presets\EmailAddress $emailAddress) : User
+	public static function createWithEmailAddress(\Katu\Models\Presets\EmailAddress $emailAddress): User
 	{
 		if (static::getBy([
 			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
@@ -90,7 +89,7 @@ class User extends \Katu\Models\Model
 		return static::get(\Katu\Tools\Session\Session::get('katu.user.id'));
 	}
 
-	public static function getByAccessToken(?string $token) : ?User
+	public static function getByAccessToken(?string $token): ?User
 	{
 		$accessTokenClass = static::getAccessTokenClass()->getName();
 
@@ -109,14 +108,14 @@ class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Getters & Setters.
 	 */
-	public function setName(?string $name) : User
+	public function setName(?string $name): User
 	{
 		$this->update('name', trim($name) ?: null);
 
 		return $this;
 	}
 
-	public function getName() : ?string
+	public function getName(): ?string
 	{
 		return $this->name;
 	}
@@ -168,7 +167,12 @@ class User extends \Katu\Models\Model
 		}
 	}
 
-	public function getValidAccessToken()
+	public function createAccessToken(): AccessToken
+	{
+		return static::getAccessTokenClass()->getName()::create($this);
+	}
+
+	public function getValidAccessToken(): AccessToken
 	{
 		return static::getAccessTokenClass()->getName()::makeValidForUser($this);
 	}
@@ -207,9 +211,9 @@ class User extends \Katu\Models\Model
 		return (bool) $this->{static::$columnNames['emailAddressId']};
 	}
 
-	public function login()
+	public function login(): bool
 	{
-		\Katu\Tools\Session\Session::set('katu.user.id', (int)$this->getId());
+		\Katu\Tools\Cookies\Cookie::set('accessToken', $this->createAccessToken()->getToken());
 
 		return true;
 	}
@@ -338,7 +342,7 @@ class User extends \Katu\Models\Model
 		});
 	}
 
-	public function hasPermission()
+	public function hasPermission(): bool
 	{
 		$args = func_get_args();
 		$permissions = is_string($args[0]) ? [$args[0]] : $args[0];
@@ -356,12 +360,12 @@ class User extends \Katu\Models\Model
 		return !in_array(false, $status);
 	}
 
-	public function hasRolePermission($permission)
+	public function hasRolePermission($permission): bool
 	{
 		return in_array($permission, $this->getRolePermissions());
 	}
 
-	public function hasUserPermission($permission)
+	public function hasUserPermission($permission): bool
 	{
 		return in_array($permission, $this->getUserPermissions());
 	}

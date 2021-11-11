@@ -10,17 +10,17 @@ class AccessToken extends \Katu\Models\Model
 	const LENGTH = 128;
 	const TABLE = 'access_tokens';
 
-	public static function create(\Katu\Models\Presets\User $user)
+	public static function create(\Katu\Models\Presets\User $user): AccessToken
 	{
 		return static::insert([
-			'timeCreated' => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
-			'timeExpires' => (string) (\Katu\Tools\DateTime\DateTime::get('+ ' . static::EXPIRES . ' seconds')->getDbDateTimeFormat()),
-			'userId'      => (int)    ($user->getId()),
-			'token'       => (string) (\Katu\Tools\Random\Generator::getString(static::LENGTH)),
+			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeExpires' => new \Katu\Tools\DateTime\DateTime('+ ' . static::EXPIRES . ' seconds'),
+			'userId' => $user->getId(),
+			'token' => \Katu\Tools\Random\Generator::getString(static::LENGTH),
 		]);
 	}
 
-	public static function makeValidForUser(\Katu\Models\Presets\User $user)
+	public static function makeValidForUser(\Katu\Models\Presets\User $user): AccessToken
 	{
 		$sql = SX::select()
 			->from(static::getTable())
@@ -34,6 +34,11 @@ class AccessToken extends \Katu\Models\Model
 		}
 
 		return $object;
+	}
+
+	public function getToken(): string
+	{
+		return $this->token;
 	}
 
 	public function getRemainingTime()
