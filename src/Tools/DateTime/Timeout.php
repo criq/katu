@@ -13,7 +13,7 @@ class Timeout
 		$this->timeout = $timeout;
 	}
 
-	public function getSeconds() : TSeconds
+	public function getSeconds(): TSeconds
 	{
 		if (is_numeric($this->timeout)) {
 			return new TSeconds(abs($this->timeout) * -1);
@@ -24,12 +24,12 @@ class Timeout
 		throw new \Katu\Exceptions\InputErrorException("Invalid timeout.");
 	}
 
-	public function getDateTime() : DateTime
+	public function getDateTime(): DateTime
 	{
 		return new DateTime($this->getSeconds()->getValue() . ' seconds');
 	}
 
-	public function fits(\DateTime $datetime) : bool
+	public function fits(\DateTime $datetime): bool
 	{
 		return $this->getDateTime()->getTimestamp() <= $datetime->getTimestamp();
 	}
