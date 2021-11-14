@@ -83,6 +83,6 @@ class Formatter
 		$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
 		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
 
-		return $numberFormatter->format($number);
+		return $numberFormatter->format((float)$number);
 	}
 }
