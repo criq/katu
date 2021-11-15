@@ -39,7 +39,7 @@ class TArray extends \ArrayObject
 		return $this[$index];
 	}
 
-	public function getWithoutKeys() : TArray
+	public function getWithoutKeys(): TArray
 	{
 		$res = [];
 		foreach ($this as $key => $value) {
@@ -90,7 +90,7 @@ class TArray extends \ArrayObject
 		return $res;
 	}
 
-	public function flatten() : TArray
+	public function flatten(): TArray
 	{
 		$iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($this));
 		$values = [];
@@ -102,27 +102,27 @@ class TArray extends \ArrayObject
 		return new static($values);
 	}
 
-	public function reverse() : TArray
+	public function reverse(): TArray
 	{
 		return new static(array_reverse($this->getArray()));
 	}
 
-	public function unique() : TArray
+	public function unique(): TArray
 	{
 		return new static(array_unique($this->getArray()));
 	}
 
-	public function keys() : TArray
+	public function keys(): TArray
 	{
 		return new static(array_keys($this->getArray()));
 	}
 
-	public function values() : TArray
+	public function values(): TArray
 	{
 		return new static(array_values($this->getArray()));
 	}
 
-	public function natsort() : TArray
+	public function natsort(): TArray
 	{
 		$array = $this->getArray();
 		natsort($array);
@@ -130,7 +130,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function asort($sortFlags = \SORT_REGULAR) : TArray
+	public function asort($sortFlags = \SORT_REGULAR): TArray
 	{
 		$array = $this->getArray();
 		asort($array, $sortFlags);
@@ -138,7 +138,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function ksort($sortFlags = \SORT_REGULAR) : TArray
+	public function ksort($sortFlags = \SORT_REGULAR): TArray
 	{
 		$array = $this->getArray();
 		ksort($array, $sortFlags);
@@ -146,7 +146,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function usort(callable $callback) : TArray
+	public function usort(callable $callback): TArray
 	{
 		$array = $this->getArray();
 		usort($array, $callback);
@@ -154,7 +154,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function shuffle() : TArray
+	public function shuffle(): TArray
 	{
 		$array = $this->getArray();
 		shuffle($array);
@@ -162,17 +162,17 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function slice($offset, $length, $preserveKeys = false) : TArray
+	public function slice($offset, $length, $preserveKeys = false): TArray
 	{
 		return new static(array_slice($this->getArray(), $offset, $length, $preserveKeys));
 	}
 
-	public function getPage($page, $perPage) : TArray
+	public function getPage($page, $perPage): TArray
 	{
 		return new static(array_slice($this->getArray(), (($page - 1) * $perPage), $perPage));
 	}
 
-	public function orderBy($key, $flags = 0) : TArray
+	public function orderBy($key, $flags = 0): TArray
 	{
 		$array = $this->getArray();
 
@@ -191,14 +191,14 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function map($callback) : TArray
+	public function map($callback): TArray
 	{
 		$array = array_map($callback, $this->getArray());
 
 		return new static($array);
 	}
 
-	public function filter($callback = null) : TArray
+	public function filter($callback = null): TArray
 	{
 		if (!$callback) {
 			$callback = function ($i) {
@@ -221,7 +221,7 @@ class TArray extends \ArrayObject
 		return $this->search($needle) !== false;
 	}
 
-	public function getIntervals() : array
+	public function getIntervals(): array
 	{
 		$numbers = $this->map(function ($i) {
 			return (int)$i;
