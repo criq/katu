@@ -193,7 +193,6 @@ abstract class View extends Base
 			return static::$cachedTableNames[$className];
 		}
 
-		// No cached table found, cache!
 		if (static::cache()) {
 			return static::getCachedTableName();
 		}
