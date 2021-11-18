@@ -134,7 +134,7 @@ class Connection
 		}, $res);
 	}
 
-	public function getViews()
+	public function getViews(): array
 	{
 		$connection = $this;
 
@@ -143,7 +143,7 @@ class Connection
 		}, $this->getViewNames());
 	}
 
-	public function getViewNames()
+	public function getViewNames(): array
 	{
 		$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
 		$res = $this->createQuery($sql)->getResult()->getItems();
@@ -154,10 +154,9 @@ class Connection
 		}, $res);
 	}
 
-	public function getViewReport()
+	public function getViewReport(): array
 	{
 		$views = [];
-
 		foreach ($this->getViews() as $view) {
 			$views[$view->name->name]['usedIn'] = $view->getUsedInViews();
 			$views[$view->name->name]['usage'] = $view->getTotalUsage(new Timeout('1 day'));
