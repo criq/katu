@@ -101,7 +101,7 @@ class Query
 	public function getStatement(): \PDOStatement
 	{
 		if (!$this->statement) {
-			$this->statement = $this->getConnection()->getConnection()->prepare($this->getSql());
+			$this->statement = $this->getConnection()->getPdo()->prepare($this->getSql());
 
 			foreach ($this->getParams() as $name => $value) {
 				if (is_string($value)) {

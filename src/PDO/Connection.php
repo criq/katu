@@ -7,12 +7,12 @@ use Katu\Tools\DateTime\Timeout;
 class Connection
 {
 	protected $config;
-	protected $connection;
+	protected $pdo;
 	protected $name;
 	protected $sessionId;
 	protected static $connections = [];
 
-	public function __construct($name)
+	public function __construct(string $name)
 	{
 		$this->setName($name);
 		$this->setSessionId(implode('.', [
@@ -29,7 +29,7 @@ class Connection
 		// Try to connect.
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->connection = new \PDO($this->config->getPDODSN(), $this->config->user, $this->config->password);
+				$this->setPdo(new \PDO($this->config->getPDODSN(), $this->config->user, $this->config->password));
 				break;
 			} catch (\Throwable $e) {
 				if (strpos($e->getMessage(), 'driver does not support setting attributes.')) {
@@ -44,46 +44,53 @@ class Connection
 		return ['name', 'config'];
 	}
 
-	public function getConnection()
+	public function setPdo(\PDO $pdo): Connection
 	{
-		return $this->connection;
+		$this->pdo = $pdo;
+
+		return $this;
 	}
 
-	public function getConfig()
+	public function getPdo(): \PDO
+	{
+		return $this->pdo;
+	}
+
+	public function getConfig(): Config
 	{
 		return $this->config;
 	}
 
-	public function setName(string $name) : Connection
+	public function setName(string $name): Connection
 	{
 		$this->name = $name;
 
 		return $this;
 	}
 
-	public function getName() : string
+	public function getName(): string
 	{
 		return (string)$this->name;
 	}
 
-	public function setSessionId(string $sessionId) : Connection
+	public function setSessionId(string $sessionId): Connection
 	{
 		$this->sessionId = $sessionId;
 
 		return $this;
 	}
 
-	public function getSessionId() : string
+	public function getSessionId(): string
 	{
 		return $this->sessionId;
 	}
 
-	public function getVersion() : string
+	public function getVersion(): string
 	{
-		return (string)$this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
+		return (string)$this->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
-	public static function getInstance($name) : Connection
+	public static function getInstance($name): Connection
 	{
 		if (!(static::$connections[$name] ?? null)) {
 			static::$connections[$name] = new static($name);
@@ -94,15 +101,15 @@ class Connection
 
 	public function getLastInsertId()
 	{
-		return $this->connection->lastInsertId();
+		return $this->getPdo()->lastInsertId();
 	}
 
-	public function tableExists(Name $tableName) : bool
+	public function tableExists(Name $tableName): bool
 	{
 		return in_array($tableName, $this->getTableNames());
 	}
 
-	public function getTables() : array
+	public function getTables(): array
 	{
 		$connection = $this;
 
@@ -111,12 +118,12 @@ class Connection
 		}, $this->getTableNames());
 	}
 
-	public function getTable($tableName) : Table
+	public function getTable($tableName): Table
 	{
 		return new Table($this, $tableName);
 	}
 
-	public function getTableNames() : array
+	public function getTableNames(): array
 	{
 		$sql = " SHOW TABLES ";
 		$res = $this->createQuery($sql)->getResult()->getItems();
@@ -159,7 +166,7 @@ class Connection
 		return $views;
 	}
 
-	public function select(\Sexy\Select $select, array $params = []) : Query
+	public function select(\Sexy\Select $select, array $params = []): Query
 	{
 		$query = new Query($this, $select->getSql(), array_merge($select->getParams(), $params));
 		if ($select->getPage()) {
@@ -169,7 +176,7 @@ class Connection
 		return $query;
 	}
 
-	public function createQuery($sql, array $params = []) : Query
+	public function createQuery($sql, array $params = []): Query
 	{
 		return new Query($this, $sql, $params);
 	}
@@ -190,20 +197,20 @@ class Connection
 
 	public function begin()
 	{
-		return $this->connection->beginTransaction();
+		return $this->getPdo()->beginTransaction();
 	}
 
 	public function commit()
 	{
-		return $this->connection->commit();
+		return $this->getPdo()->commit();
 	}
 
 	public function rollback()
 	{
-		return $this->connection->rollBack();
+		return $this->getPdo()->rollBack();
 	}
 
-	public function getSqlModes() : array
+	public function getSqlModes(): array
 	{
 		$sql = " SELECT @@SESSION.sql_mode AS sql_mode ";
 		$array = explode(',', $this->createQuery($sql)->getResult()->getItems()[0]['sql_mode'] ?? null);
@@ -250,5 +257,12 @@ class Connection
 		}
 
 		return $result;
+	}
+
+	public function getProcesslist(): array
+	{
+		$sql = " SHOW FULL PROCESSLIST ";
+
+		return $this->createQuery($sql)->getResult()->getItems();
 	}
 }
