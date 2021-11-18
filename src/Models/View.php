@@ -29,27 +29,27 @@ abstract class View extends Base
 
 	protected static $cachedTableNames;
 
-	public static function getTableClass() : TClass
+	public static function getTableClass(): TClass
 	{
 		return new TClass("Katu\PDO\Table");
 	}
 
-	public static function getViewClass() : TClass
+	public static function getViewClass(): TClass
 	{
 		return new TClass("Katu\PDO\View");
 	}
 
-	public static function getColumnClass() : TClass
+	public static function getColumnClass(): TClass
 	{
 		return new TClass("Katu\PDO\Column");
 	}
 
-	public static function getTable() : \Katu\PDO\Table
+	public static function getTable(): \Katu\PDO\Table
 	{
 		return static::isCached() ? static::getCachedTable() : static::getView();
 	}
 
-	public static function getTableName() : \Katu\PDO\Name
+	public static function getTableName(): \Katu\PDO\Name
 	{
 		return static::isCached() ? static::getCachedTableName() : static::getViewName();
 	}
@@ -61,12 +61,12 @@ abstract class View extends Base
 		return new $viewClass(static::getConnection(), static::getViewName());
 	}
 
-	public static function getViewName() : \Katu\PDO\Name
+	public static function getViewName(): \Katu\PDO\Name
 	{
 		return new \Katu\PDO\Name(static::TABLE);
 	}
 
-	public static function getColumn($name, $options = []) : \Katu\PDO\Column
+	public static function getColumn($name, $options = []): \Katu\PDO\Column
 	{
 		if (isset($options['cache']) && $options['cache'] === false) {
 			$table = static::getView();
@@ -198,14 +198,6 @@ abstract class View extends Base
 
 		// Try again after caching.
 		return static::getCachedTableName();
-
-		// TODO - ošéfovat
-		$name = static::getCachedTableNameBase();
-		if (strlen($name) > static::MAX_NAME_LENGTH) {
-			return substr($name, 0, 60) . substr(sha1($name), 0, 4);
-		}
-
-		return new \Katu\PDO\Name($name);
 	}
 
 	public static function generateCachedTable()
@@ -404,19 +396,16 @@ abstract class View extends Base
 
 	public static function cache()
 	{
+		foreach (static::getConnection()->getProcesslist() as $process) {
+			if (preg_match("/CREATE TABLE.+AS SELECT \* FROM.+" . static::getViewName() . "/", $process['Info'])) {
+				return false;
+			}
+		}
+
 		$class = static::getClass()->getName();
-
-		$callback = function ($class) {
-			$class::materializeSourceViews();
-			$class::copy($class::getView(), $class::generateCachedTable());
-			$class::updateLastCachedTime();
-		};
-
-		(new \Katu\Tools\Locks\Lock(new TIdentifier('databases', static::getConnection()->getConfig()->database, 'views', 'cache', $class), new Timeout(static::TIMEOUT), $callback))
-			->setUseLock(false)
-			->setArgs($class)
-			->run()
-			;
+		$class::materializeSourceViews();
+		$class::copy($class::getView(), $class::generateCachedTable());
+		$class::updateLastCachedTime();
 
 		return true;
 	}
@@ -522,7 +511,7 @@ abstract class View extends Base
 		return (float)static::getLastMaterializedTemporaryFile()->get();
 	}
 
-	public static function getAllViewClasses() : array
+	public static function getAllViewClasses(): array
 	{
 		$dir = new \Katu\Files\File('app', 'Models');
 		if ($dir->exists()) {
