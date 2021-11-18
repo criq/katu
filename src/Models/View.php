@@ -194,10 +194,11 @@ abstract class View extends Base
 		}
 
 		// No cached table found, cache!
-		static::cache();
+		if (static::cache()) {
+			return static::getCachedTableName();
+		}
 
-		// Try again after caching.
-		return static::getCachedTableName();
+		return static::getViewName();
 	}
 
 	public static function generateCachedTable()
@@ -394,7 +395,7 @@ abstract class View extends Base
 		return true;
 	}
 
-	public static function cache()
+	public static function cache(): bool
 	{
 		foreach (static::getConnection()->getProcesslist() as $process) {
 			if (preg_match("/CREATE TABLE.+AS SELECT \* FROM.+" . static::getViewName() . "/", $process['Info'])) {
