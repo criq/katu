@@ -204,4 +204,14 @@ class TPagination
 
 		return $this;
 	}
+
+	public function getIsIncomplete(): ?bool
+	{
+		return $this->isIncomplete;
+	}
+
+	public function getIsPractical(): bool
+	{
+		return $this->getPages() > 1 || $this->getIsIncomplete();
+	}
 }
