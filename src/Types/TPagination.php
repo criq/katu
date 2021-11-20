@@ -6,16 +6,17 @@ class TPagination
 {
 	const DEFAULT_COPY_NEXT = 'Next';
 	const DEFAULT_COPY_PREV = 'Previous';
+	const DEFAULT_PAGE_QUERY_PARAM = 'page';
 	const DEFAULT_PER_PAGE = 50;
-	const DEFAULT_QUERY_PARAM = 'page';
 	const PAGINATION_ALL_PAGES_LIMIT = 10;
 	const PAGINATION_CURRENT_OFFSET = 3;
 	const PAGINATION_ENDS_OFFSET = 0;
 
-	public $page;
-	public $pages;
-	public $perPage;
-	public $total;
+	protected $isIncomplete;
+	protected $page;
+	protected $pages;
+	protected $perPage;
+	protected $total;
 
 	public function __construct(int $total, int $perPage, int $page)
 	{
@@ -25,7 +26,7 @@ class TPagination
 		$this->setPages((int)ceil($total / $perPage));
 	}
 
-	public function setTotal(int $total)
+	public function setTotal(int $total): TPagination
 	{
 		if ($total < 0) {
 			throw new \Katu\Exceptions\ErrorException("Invalid total.");
@@ -41,12 +42,12 @@ class TPagination
 		return $this;
 	}
 
-	public function getTotal()
+	public function getTotal(): ?int
 	{
 		return $this->total;
 	}
 
-	public function setPerPage(int $perPage)
+	public function setPerPage(int $perPage): TPagination
 	{
 		if ((int)$perPage < 1) {
 			throw new \Katu\Exceptions\ErrorException("Invalid per page.");
@@ -57,12 +58,12 @@ class TPagination
 		return $this;
 	}
 
-	public function getPerPage()
+	public function getPerPage(): ?int
 	{
 		return $this->perPage;
 	}
 
-	public function setPage(int $page)
+	public function setPage(int $page): TPagination
 	{
 		if ((int)$page < 1) {
 			throw new \Katu\Exceptions\ErrorException("Invalid page.");
@@ -73,33 +74,33 @@ class TPagination
 		return $this;
 	}
 
-	public function getPage()
+	public function getPage(): ?int
 	{
 		return $this->page;
 	}
 
-	public function setPages(int $pages)
+	public function setPages(int $pages): TPagination
 	{
 		$this->pages = $pages;
 
 		return $this;
 	}
 
-	public function getPages()
+	public function getPages(): ?int
 	{
 		return $this->pages;
 	}
 
-	public static function getAppQueryParam()
+	public static function getPageQueryParam(): string
 	{
 		try {
 			return \Katu\Config\Config::get('pagination', 'queryParam');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return static::DEFAULT_QUERY_PARAM;
+			return static::DEFAULT_PAGE_QUERY_PARAM;
 		}
 	}
 
-	public static function getAppPerPage()
+	public static function getResolvedPerPage(): int
 	{
 		try {
 			return \Katu\Config\Config::get('pagination', 'perPage');
@@ -108,36 +109,36 @@ class TPagination
 		}
 	}
 
-	public static function getRequestPageExpression(\Slim\Http\Request $request, int $perPage = null)
+	public static function getRequestPageExpression(\Slim\Http\Request $request, int $perPage = null): \Sexy\Page
 	{
-		return new \Sexy\Page(static::getPageFromRequest($request), $perPage ?: static::getAppPerPage());
+		return new \Sexy\Page(static::getPageFromRequest($request), $perPage ?: static::getResolvedPerPage());
 	}
 
-	public static function getPageFromRequest(\Slim\Http\Request $request) : int
+	public static function getPageFromRequest(\Slim\Http\Request $request): int
 	{
 		$params = $request->getParams();
-		if (!($params[static::getAppQueryParam()] ?? null)) {
+		if (!($params[static::getPageQueryParam()] ?? null)) {
 			return 1;
 		}
 
-		if ($params[static::getAppQueryParam()] < 1) {
+		if ($params[static::getPageQueryParam()] < 1) {
 			return 1;
 		}
 
-		return (int)$params[static::getAppQueryParam()];
+		return (int)$params[static::getPageQueryParam()];
 	}
 
-	public function getMinPage()
+	public function getMinPage(): int
 	{
 		return 1;
 	}
 
-	public function getMaxPage()
+	public function getMaxPage(): int
 	{
-		return (int) (ceil($this->total / $this->perPage));
+		return (int)(ceil($this->total / $this->perPage));
 	}
 
-	public function getTemplatePages()
+	public function getTemplatePages(): array
 	{
 		$options = [
 			'allPagesLimit' => static::PAGINATION_ALL_PAGES_LIMIT,
@@ -167,19 +168,19 @@ class TPagination
 		return $pages;
 	}
 
-	public function getPageURL($url, $page)
+	public function getPageURL($url, $page): \Katu\Types\TURL
 	{
 		$url = new \Katu\Types\TURL($url);
-		$url->removeQueryParam(static::getAppQueryParam());
+		$url->removeQueryParam(static::getPageQueryParam());
 
 		if ($page > 1) {
-			$url->addQueryParam(static::getAppQueryParam(), $page);
+			$url->addQueryParam(static::getPageQueryParam(), $page);
 		}
 
 		return $url;
 	}
 
-	public function getCopy()
+	public function getCopy(): array
 	{
 		return [
 			'prev' => \Katu\Config\Config::getWithDefault('pagination', 'copy', 'prev', static::DEFAULT_COPY_PREV),
@@ -187,7 +188,7 @@ class TPagination
 		];
 	}
 
-	public function getResponseArray()
+	public function getResponseArray(): array
 	{
 		return [
 			'total' => $this->getTotal(),
@@ -195,5 +196,12 @@ class TPagination
 			'perPage' => $this->getPerPage(),
 			'page' => $this->getPage(),
 		];
+	}
+
+	public function setIsIncomplete(bool $value): TPagination
+	{
+		$this->isIncomplete = $value;
+
+		return $this;
 	}
 }
