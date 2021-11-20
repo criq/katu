@@ -242,7 +242,7 @@ class Query
 				$result->setPagination(new \Katu\Types\TPagination($this->getFoundRows(), $this->getPage()->getPerPage(), $this->getPage()->getPage()));
 			} else {
 				$rowCount = $statement->rowCount();
-				$result->setPagination(new \Katu\Types\TPagination($rowCount, $rowCount ?: 1, 1));
+				$result->setPagination(new \Katu\Types\TPagination($rowCount, $rowCount ?: 1, $this->getPage() ? $this->getPage()->getPage() : 1));
 			}
 
 			// Items.

@@ -22,8 +22,8 @@ class TPagination
 	{
 		$this->setPage((int)$page);
 		$this->setPerPage((int)$perPage);
-		$this->setTotal((int)$total);
-		$this->setPages((int)ceil($total / $perPage));
+		$this->setTotal((int)max($total, $page * $perPage));
+		$this->setPages((int)ceil(max($total, $page * $perPage) / $perPage));
 	}
 
 	public function setTotal(int $total): TPagination
@@ -213,5 +213,45 @@ class TPagination
 	public function getIsPractical(): bool
 	{
 		return $this->getPages() > 1 || $this->getIsIncomplete();
+	}
+
+	public function getShowFirstPageButton(): bool
+	{
+		return true;
+	}
+
+	public function getFirstPageButtonEnabled(): bool
+	{
+		return $this->getPage() > 1;
+	}
+
+	public function getShowPreviousPageButton(): bool
+	{
+		return true;
+	}
+
+	public function getPreviousPageButtonEnabled(): bool
+	{
+		return $this->getPage() > 1;
+	}
+
+	public function getShowNextPageButton(): bool
+	{
+		return true;
+	}
+
+	public function getNextPageButtonEnabled(): bool
+	{
+		return $this->getPage() < $this->getPages() || $this->getIsIncomplete();
+	}
+
+	public function getShowLastPageButton(): bool
+	{
+		return !$this->getIsIncomplete();
+	}
+
+	public function getLastPageButtonEnabled(): bool
+	{
+		return $this->getPage() < $this->getPages();
 	}
 }
