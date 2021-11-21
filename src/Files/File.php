@@ -22,31 +22,31 @@ class File
 		return $this->getPath();
 	}
 
-	public static function joinPaths() : string
+	public static function joinPaths(): string
 	{
 		return preg_replace('/(\/)+/', '/', implode('/', array_map(function ($i) {
 			return implode('.', (array)$i);
 		}, func_get_args())));
 	}
 
-	public static function prepareFileName(string $fileName) : string
+	public static function prepareFileName(string $fileName): string
 	{
 		return preg_replace_callback('/\{(?<length>[0-9+])\}/', function ($i) {
 			return \Katu\Tools\Random\Generator::getIdString($i['length']);
 		}, $fileName);
 	}
 
-	public static function createTemporaryWithFileName(string $fileName) : File
+	public static function createTemporaryWithFileName(string $fileName): File
 	{
 		return new static(\Katu\App::getTemporaryDir(), 'files', static::prepareFileName($fileName));
 	}
 
-	public static function createTemporaryWithExtension(string $extension) : File
+	public static function createTemporaryWithExtension(string $extension): File
 	{
 		return new static(\Katu\App::getTemporaryDir(), 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 	}
 
-	public static function createTemporaryFromSrc($src, string $extension) : File
+	public static function createTemporaryFromSrc($src, string $extension): File
 	{
 		if ($extension) {
 			$file = static::createTemporaryWithExtension($extension);
@@ -59,7 +59,7 @@ class File
 		return $file;
 	}
 
-	public static function createTemporaryFromURL($url, string $extension = null) : File
+	public static function createTemporaryFromURL($url, string $extension = null): File
 	{
 		$url = new \Katu\Types\TURL($url);
 
@@ -81,7 +81,7 @@ class File
 		return static::createTemporaryFromSrc($src, $extension);
 	}
 
-	public function getPath() : string
+	public function getPath(): string
 	{
 		if (file_exists($this->path)) {
 			return realpath($this->path);
@@ -95,7 +95,7 @@ class File
 		return $this->path;
 	}
 
-	public function getRelativePath() : string
+	public function getRelativePath(): string
 	{
 		return ltrim(preg_replace('/^' . preg_quote(\Katu\App::getBaseDir(), '/') . '/', '', $this->getPath()), '/');
 	}
@@ -180,11 +180,15 @@ class File
 		return false;
 	}
 
-	public function getSize() : \Katu\Types\TFileSize
+	public function getSize(): ?\Katu\Types\TFileSize
 	{
 		clearstatcache();
 
-		return new \Katu\Types\TFileSize(filesize($this));
+		try {
+			return new \Katu\Types\TFileSize(filesize($this));
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public function getMime()
@@ -388,7 +392,7 @@ class File
 		});
 	}
 
-	public static function getHashedFiles() : array
+	public static function getHashedFiles(): array
 	{
 		clearstatcache();
 

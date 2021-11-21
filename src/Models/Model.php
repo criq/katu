@@ -6,14 +6,16 @@ use Sexy\Sexy as SX;
 
 class Model extends Base
 {
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return (string)$this->getId();
 	}
 
-	public static function insert(?array $values = [])
+	/****************************************************************************
+	 * CRUD.
+	 */
+	public static function insert(?array $values = []): Model
 	{
-		// var_dump($values);die;
 		$connection = static::getConnection();
 
 		$columns = array_map(function ($i) {
@@ -21,13 +23,12 @@ class Model extends Base
 		}, array_keys($values));
 
 		$placeholders = array_map(function ($i) {
-			return ':' . $i;
+			return ":{$i}";
 		}, array_keys($values));
 
 		$sql = " INSERT INTO " . static::getTable() . "
 				( " . implode(", ", $columns) . " )
 			VALUES ( " . implode(", ", $placeholders) . " ) ";
-		// echo $sql;die;
 
 		$query = $connection->createQuery($sql, $values);
 		$query->getResult();
@@ -36,51 +37,20 @@ class Model extends Base
 
 		$primaryKey = $connection->getLastInsertId();
 		if ($primaryKey) {
-			return static::get($primaryKey);
+			$object = static::get($primaryKey);
 		} else {
 			throw (new \Katu\Exceptions\NoPrimaryKeyReturnedException)->setContext([
 				'sql' => $query->getStatementDump()->getSentSQL(),
 			]);
 		}
+
+		$object->afterInsertCallback();
+		static::afterAnyCallback();
+
+		return $object;
 	}
 
-	public static function insertMultiple(?array $items = [])
-	{
-		$items = array_values($items);
-
-		$columns = array_map(function ($i) {
-			return new \Katu\PDO\Name($i);
-		}, array_keys($items[0]));
-
-		$sql = " INSERT INTO " . static::getTable() . " ( " . implode(", ", $columns) . " ) VALUES ";
-
-		$params = [];
-		$sqlRows = [];
-		foreach ($items as $row => $values) {
-			$sqlRowParams = [];
-			foreach ($values as $key => $value) {
-				$paramKey = implode('_', [
-					'row',
-					$row,
-					$key,
-				]);
-				$params[$paramKey] = $value;
-				$sqlRowParams[] = ":" . $paramKey;
-			}
-			$sqlRows[] = " ( " . implode(', ', $sqlRowParams) . " ) ";
-		}
-
-		$sql .= implode(", ", $sqlRows);
-
-		$query = static::getConnection()->createQuery($sql, $params);
-		$query->getResult();
-
-		static::change();
-
-		return static::get(static::getConnection()->getLastInsertId());
-	}
-
-	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [])
+	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = []): Model
 	{
 		$object = static::getOneBy($getByParams);
 		if ($object) {
@@ -95,7 +65,7 @@ class Model extends Base
 		return $object;
 	}
 
-	public function update(string $property, $value = null)
+	public function update(string $property, $value = null): Model
 	{
 		if ($this->$property !== $value) {
 			$this->$property = $value;
@@ -106,22 +76,7 @@ class Model extends Base
 		return $this;
 	}
 
-	public function delete()
-	{
-		$sql = " DELETE FROM " . static::getTable() . " WHERE " . static::getPrimaryKeyColumnName() . " = :" . static::getPrimaryKeyColumnName();
-
-		$query = static::getConnection()->createQuery($sql, [
-			static::getPrimaryKeyColumnName() => $this->getId(),
-		]);
-
-		$res = $query->getResult();
-
-		static::change();
-
-		return $res;
-	}
-
-	public function save()
+	public function save(): Model
 	{
 		$columnsNames = array_map(function ($columnName) {
 			return $columnName->getName();
@@ -140,7 +95,9 @@ class Model extends Base
 		}
 
 		if ($set) {
-			$sql = " UPDATE " . static::getTable() . " SET " . implode(", ", $set) . " WHERE ( " . $this->getPrimaryKeyColumnName() . " = :" . $this->getPrimaryKeyColumnName() . " ) ";
+			$sql = " UPDATE " . static::getTable() . "
+				SET " . implode(", ", $set) . "
+				WHERE ( " . $this->getPrimaryKeyColumnName() . " = :" . $this->getPrimaryKeyColumnName() . " ) ";
 
 			$query = static::getConnection()->createQuery($sql, $values);
 			$query->setParam(static::getPrimaryKeyColumnName(), $this->getId());
@@ -149,27 +106,74 @@ class Model extends Base
 
 		static::change();
 
+		$this->afterUpdateCallback();
+		static::afterAnyCallback();
+
 		return $this;
 	}
 
-	public static function change()
+	public function delete(): bool
+	{
+		$sql = " DELETE FROM " . static::getTable() . "
+			WHERE " . static::getPrimaryKeyColumnName() . " = :" . static::getPrimaryKeyColumnName();
+
+		$query = static::getConnection()->createQuery($sql, [
+			static::getPrimaryKeyColumnName() => $this->getId(),
+		]);
+
+		$res = $query->getResult();
+
+		static::change();
+		static::afterDeleteCallback();
+		static::afterAnyCallback();
+
+		return !$res->hasError();
+	}
+
+	public static function change(): bool
 	{
 		static::getTable()->touch();
 
 		return true;
 	}
 
-	public static function getIdColumn() : \Katu\PDO\Column
+	/****************************************************************************
+	 * Callbacks.
+	 */
+	public function afterInsertCallback(): bool
+	{
+		return true;
+	}
+
+	public function afterUpdateCallback(): bool
+	{
+		return true;
+	}
+
+	public static function afterDeleteCallback(): bool
+	{
+		return true;
+	}
+
+	public static function afterAnyCallback(): bool
+	{
+		return true;
+	}
+
+	/****************************************************************************
+	 * Properties.
+	 */
+	public static function getIdColumn(): \Katu\PDO\Column
 	{
 		return static::getColumn(static::getPrimaryKeyColumnName());
 	}
 
-	public static function getPrimaryKeyColumnName() : ?string
+	public static function getPrimaryKeyColumnName(): ?string
 	{
 		return static::getTable()->getPrimaryKeyColumnName();
 	}
 
-	public function getId() : ?string
+	public function getId(): ?string
 	{
 		try {
 			return $this->{static::getPrimaryKeyColumnName()};
@@ -178,7 +182,7 @@ class Model extends Base
 		}
 	}
 
-	public static function get($primaryKey)
+	public static function get(?string $primaryKey): ?Model
 	{
 		return static::getOneBy([
 			static::getPrimaryKeyColumnName() => $primaryKey,

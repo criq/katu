@@ -13,11 +13,11 @@ class File extends \Katu\Models\Model
 	{
 		return static::insert([
 			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
-			'creatorId'   => $creator ? $creator->getId() : null,
-			'path'        => (string)$path,
-			'name'        => (string)$fileName,
-			'type'        => (string)$fileType,
-			'size'        => (string)$fileSize,
+			'creatorId' => $creator ? $creator->getId() : null,
+			'path' => $path,
+			'name' => $fileName,
+			'type' => $fileType,
+			'size' => $fileSize,
 		]);
 	}
 
@@ -86,7 +86,7 @@ class File extends \Katu\Models\Model
 		return $file;
 	}
 
-	public function delete()
+	public function delete(): bool
 	{
 		foreach (\Katu\Models\Presets\FileAttachment::getBy([
 			'fileId' => $this->getId(),

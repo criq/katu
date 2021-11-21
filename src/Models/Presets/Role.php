@@ -37,7 +37,7 @@ class Role extends \Katu\Models\Model
 		]);
 	}
 
-	public function delete()
+	public function delete(): bool
 	{
 		foreach (static::getRolePermissionClass()->getName()::getBy([
 			'roleId' => $this->getId(),

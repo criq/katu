@@ -21,12 +21,12 @@ class Result extends \ArrayObject
 		return $this;
 	}
 
-	public function getQuery() : Query
+	public function getQuery(): Query
 	{
 		return $this->query;
 	}
 
-	public function setError($error) : Result
+	public function setError($error): Result
 	{
 		$this->error = $error;
 
@@ -38,19 +38,24 @@ class Result extends \ArrayObject
 		return $this->error;
 	}
 
-	public function setPagination(TPagination $pagination) : Result
+	public function hasError(): bool
+	{
+		return (bool)$this->error;
+	}
+
+	public function setPagination(TPagination $pagination): Result
 	{
 		$this->pagination = $pagination;
 
 		return $this;
 	}
 
-	public function getPagination() : TPagination
+	public function getPagination(): TPagination
 	{
 		return $this->pagination;
 	}
 
-	public function getItems() : array
+	public function getItems(): array
 	{
 		return $this->getArrayCopy();
 	}
@@ -74,7 +79,7 @@ class Result extends \ArrayObject
 		return $res;
 	}
 
-	public function getColumnValues($column) : array
+	public function getColumnValues($column): array
 	{
 		$values = [];
 		foreach ($this->getItems() as $item) {
@@ -88,22 +93,22 @@ class Result extends \ArrayObject
 		return $values;
 	}
 
-	public function getPage() : int
+	public function getPage(): int
 	{
 		return $this->getPagination()->getPage();
 	}
 
-	public function getPerPage() : int
+	public function getPerPage(): int
 	{
 		return $this->getPagination()->getPerPage();
 	}
 
-	public function getPages() : int
+	public function getPages(): int
 	{
 		return $this->getPagination()->getPages();
 	}
 
-	public function getTotal() : int
+	public function getTotal(): int
 	{
 		return $this->getPagination()->getTotal();
 	}

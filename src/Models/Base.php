@@ -10,7 +10,7 @@ abstract class Base
 	const DATABASE = 'app';
 	const TABLE = null;
 
-	public static function createFromArray(array $array)
+	public static function createFromArray(array $array): Base
 	{
 		$object = new static;
 		foreach ($array as $key => $value) {
@@ -20,27 +20,27 @@ abstract class Base
 		return $object;
 	}
 
-	public static function getTableClass() : TClass
+	public static function getTableClass(): TClass
 	{
 		return new TClass("Katu\PDO\Table");
 	}
 
-	public static function getColumnClass() : TClass
+	public static function getColumnClass(): TClass
 	{
 		return new TClass("Katu\PDO\Column");
 	}
 
-	public static function getClass() : TClass
+	public static function getClass(): TClass
 	{
 		return new TClass(get_called_class());
 	}
 
-	public function getClassMethods()
+	public function getClassMethods(): array
 	{
 		return get_class_methods($this);
 	}
 
-	public static function getConnection() : \Katu\PDO\Connection
+	public static function getConnection(): \Katu\PDO\Connection
 	{
 		if (!defined('static::DATABASE')) {
 			throw new \Katu\Exceptions\Exception("Undefined database.");
@@ -49,7 +49,7 @@ abstract class Base
 		return \Katu\PDO\Connection::getInstance(static::DATABASE);
 	}
 
-	public static function getTableName() : \Katu\PDO\Name
+	public static function getTableName(): \Katu\PDO\Name
 	{
 		if (!defined('static::TABLE')) {
 			throw new \Katu\Exceptions\Exception("Undefined table.");
@@ -58,21 +58,21 @@ abstract class Base
 		return new \Katu\PDO\Name(static::TABLE);
 	}
 
-	public static function getTable() : \Katu\PDO\Table
+	public static function getTable(): \Katu\PDO\Table
 	{
 		$tableClass = (string)static::getTableClass()->getName();
 
 		return new $tableClass(static::getConnection(), static::getTableName());
 	}
 
-	public static function getColumn(string $name) : \Katu\PDO\Column
+	public static function getColumn(string $name): \Katu\PDO\Column
 	{
 		$columnClass = static::getColumnClass()->getName();
 
 		return new $columnClass(static::getTable(), new \Katu\PDO\Name($name));
 	}
 
-	public static function select() : \Katu\PDO\Query
+	public static function select(): \Katu\PDO\Query
 	{
 		$factory = new \Katu\Tools\Factories\ClassFactory(static::getClass());
 
@@ -115,7 +115,7 @@ abstract class Base
 		return $filteredParams;
 	}
 
-	public static function getBy(?array $where = [], $orderBy = null, $limitOrPage = null) : \Katu\PDO\Result
+	public static function getBy(?array $where = [], $orderBy = null, $limitOrPage = null): \Katu\PDO\Result
 	{
 		$sql = SX::select();
 		$sql->from(static::getTable());
@@ -150,7 +150,7 @@ abstract class Base
 		return $query->getResult();
 	}
 
-	public static function getBySql(\Sexy\Select $sql) : \Katu\PDO\Result
+	public static function getBySql(\Sexy\Select $sql): \Katu\PDO\Result
 	{
 		return static::select($sql)->getResult();
 	}
@@ -160,12 +160,12 @@ abstract class Base
 		return static::getBySql($sql->setGetFoundRows(false))->getOne();
 	}
 
-	public static function getOneBy(?array $where = [], $orderBy = null)
+	public static function getOneBy(?array $where = [], $orderBy = null): ?Model
 	{
 		return static::getBy($where, $orderBy)->getOne();
 	}
 
-	public static function getAll($orderBy = null) : \Katu\PDO\Result
+	public static function getAll($orderBy = null): \Katu\PDO\Result
 	{
 		return static::getBy([], $orderBy);
 	}

@@ -143,6 +143,11 @@ class General
 		return $this->clear();
 	}
 
+	public function flush()
+	{
+		return $this->clear();
+	}
+
 	public static function clearMemory()
 	{
 		foreach (static::getAvailableAdapters() as $adapter) {
