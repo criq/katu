@@ -15,41 +15,41 @@ class TIdentifier implements Packaged
 		$this->setParts(...func_get_args());
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return (string)$this->getPath();
 	}
 
-	public static function createFromPackage(TPackage $package) : TIdentifier
+	public static function createFromPackage(TPackage $package): TIdentifier
 	{
 		return new static(...$package->getPayload()['parts']);
 	}
 
-	public function getPackage() : TPackage
+	public function getPackage(): TPackage
 	{
 		return new TPackage([
 			'parts' => $this->getParts(),
 		]);
 	}
 
-	public function setParts() : TIdentifier
+	public function setParts(): TIdentifier
 	{
 		$this->parts = func_get_args();
 
 		return $this;
 	}
 
-	public function getParts() : array
+	public function getParts(): array
 	{
 		return $this->parts;
 	}
 
-	public function getChecksum() : string
+	public function getChecksum(): string
 	{
 		return hash(static::HASH_ALGO, serialize($this->getParts()));
 	}
 
-	public function getSanitizedParts() : array
+	public function getSanitizedParts(): array
 	{
 		/**************************************************************************
 		 * Make sure input in an array.
@@ -130,7 +130,7 @@ class TIdentifier implements Packaged
 		return $parts;
 	}
 
-	public function getPathParts(?string $extension = null) : array
+	public function getPathParts(?string $extension = null): array
 	{
 		$parts = $this->getSanitizedParts();
 		// var_dump($parts);die;
@@ -160,12 +160,12 @@ class TIdentifier implements Packaged
 		return $parts;
 	}
 
-	public function getPath(?string $extension = null) : string
+	public function getPath(?string $extension = null): string
 	{
 		return implode('/', $this->getPathParts($extension));
 	}
 
-	public function getKey() : string
+	public function getKey(): string
 	{
 		$key = $this->getPath();
 		if (strlen($key) > 250) {
