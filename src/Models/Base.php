@@ -160,7 +160,7 @@ abstract class Base
 		return static::getBySql($sql->setGetFoundRows(false))->getOne();
 	}
 
-	public static function getOneBy(?array $where = [], $orderBy = null): ?Model
+	public static function getOneBy(?array $where = [], $orderBy = null): ?Base
 	{
 		return static::getBy($where, $orderBy)->getOne();
 	}
