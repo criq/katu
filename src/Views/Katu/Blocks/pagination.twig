@@ -1,39 +1,45 @@
 {% set templatePages = pagination.getTemplatePages %}
 
-{% if templatePages|length > 1 %}
+{% if pagination.getIsPractical %}
 	<p class="pagination">
 
-		<span class="pagination__segment pagination__prev">
-			{% if pagination.page > 1 %}
-				<a class="pagination__node pagination__skip pagination__prev pagination__active" href="{{ pagination.getPageURL(url, pagination.page - 1) }}">{{ pagination.getCopy.prev }}</a>
-			{% else %}
-				<span class="pagination__node pagination__skip pagination__prev pagination__inactive">{{ pagination.getCopy.prev }}</span>
-			{% endif %}
-		</span>
-
-		<span class="pagination__segment pagination__pages">
-			{% for key, page in templatePages %}
-
-				{% if page != pagination.page %}
-					<a class="pagination__node pagination__page pagination__active" href="{{ pagination.getPageURL(url, page) }}">{{ page }}</a>
+		{% if pagination.getShowPreviousPageButton %}
+			<span class="pagination__segment pagination__prev">
+				{% if pagination.getPreviousPageButtonEnabled %}
+					<a class="pagination__node pagination__skip pagination__prev pagination__active" href="{{ pagination.getPageURL(url, pagination.page - 1) }}">{{ pagination.getCopy.prev }}</a>
 				{% else %}
-					<span class="pagination__node pagination__page pagination__inactive pagination__current">{{ page }}</span>
+					<span class="pagination__node pagination__skip pagination__prev pagination__inactive">{{ pagination.getCopy.prev }}</span>
 				{% endif %}
+			</span>
+		{% endif %}
 
-				{% if page + 1 != templatePages[key + 1] and page + 1 <= pagination.getMaxPage %}
-					<span class="pagination__node pagination__hellip">&hellip;</span>
+		{% if templatePages|length > 1 %}
+			<span class="pagination__segment pagination__pages">
+				{% for key, page in templatePages %}
+
+					{% if page != pagination.page %}
+						<a class="pagination__node pagination__page pagination__active" href="{{ pagination.getPageURL(url, page) }}">{{ page }}</a>
+					{% else %}
+						<span class="pagination__node pagination__page pagination__inactive pagination__current">{{ page }}</span>
+					{% endif %}
+
+					{% if page + 1 != templatePages[key + 1] and page + 1 <= pagination.getMaxPage %}
+						<span class="pagination__node pagination__hellip">&hellip;</span>
+					{% endif %}
+
+				{% endfor %}
+			</span>
+		{% endif %}
+
+		{% if pagination.getShowNextPageButton %}
+			<span class="pagination__segment pagination__next">
+				{% if pagination.getNextPageButtonEnabled %}
+					<a class="pagination__node pagination__skip pagination__next pagination__active" href="{{ pagination.getPageURL(url, pagination.page + 1) }}">{{ pagination.getCopy.next }}</a>
+				{% else %}
+					<span class="pagination__node pagination__skip pagination__next pagination__active">{{ pagination.getCopy.next }}</span>
 				{% endif %}
-
-			{% endfor %}
-		</span>
-
-		<span class="pagination__segment pagination__next">
-			{% if pagination.page < pagination.getMaxPage %}
-				<a class="pagination__node pagination__skip pagination__next pagination__active" href="{{ pagination.getPageURL(url, pagination.page + 1) }}">{{ pagination.getCopy.next }}</a>
-			{% else %}
-				<span class="pagination__node pagination__skip pagination__next pagination__active">{{ pagination.getCopy.next }}</span>
-			{% endif %}
-		</span>
+			</span>
+		{% endif %}
 
 	</p>
 {% endif %}
