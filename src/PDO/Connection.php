@@ -258,10 +258,12 @@ class Connection
 		return $result;
 	}
 
-	public function getProcesslist(): array
+	public function getProcesslist(): Processlist
 	{
 		$sql = " SHOW FULL PROCESSLIST ";
 
-		return $this->createQuery($sql)->getResult()->getItems();
+		return new Processlist(array_map(function (array $item) {
+			return new Process($item);
+		}, $this->createQuery($sql)->getResult()->getItems()));
 	}
 }
