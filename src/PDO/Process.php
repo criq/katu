@@ -15,12 +15,12 @@ class Process
 
 	public function __construct(array $item)
 	{
-		$this->id = $item['Id'];
+		$this->id = (int)$item['Id'];
 		$this->user = $item['User'];
 		$this->host = $item['Host'];
 		$this->database = $item['db'];
 		$this->command = $item['Command'];
-		$this->time = $item['Time'];
+		$this->time = (int)$item['Time'];
 		$this->state = $item['State'];
 		$this->info = $item['Info'];
 	}
