@@ -263,7 +263,7 @@ class Connection
 		$sql = " SHOW FULL PROCESSLIST ";
 
 		return new Processlist(array_map(function (array $item) {
-			return new Process($item);
+			return new Process($this, $item);
 		}, $this->createQuery($sql)->getResult()->getItems()));
 	}
 }

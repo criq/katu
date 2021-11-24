@@ -4,6 +4,7 @@ namespace Katu\PDO;
 
 class Process
 {
+	public $connection;
 	public $id;
 	public $user;
 	public $host;
@@ -13,8 +14,9 @@ class Process
 	public $state;
 	public $info;
 
-	public function __construct(array $item)
+	public function __construct(Connection $connection, array $item)
 	{
+		$this->connection = $connection;
 		$this->id = (int)$item['Id'];
 		$this->user = $item['User'];
 		$this->host = $item['Host'];
@@ -23,5 +25,12 @@ class Process
 		$this->time = (int)$item['Time'];
 		$this->state = $item['State'];
 		$this->info = $item['Info'];
+	}
+
+	public function kill(): Result
+	{
+		$sql = " KILL {$this->id} ";
+
+		return $this->connection->createQuery($sql)->getResult();
 	}
 }
