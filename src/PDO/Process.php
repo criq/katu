@@ -4,14 +4,14 @@ namespace Katu\PDO;
 
 class Process
 {
-	protected $id;
-	protected $user;
-	protected $host;
-	protected $database;
-	protected $command;
-	protected $time;
-	protected $state;
-	protected $info;
+	public $id;
+	public $user;
+	public $host;
+	public $database;
+	public $command;
+	public $time;
+	public $state;
+	public $info;
 
 	public function __construct(array $item)
 	{
