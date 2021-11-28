@@ -78,6 +78,11 @@ class Model extends Base
 
 	public function save(): Model
 	{
+		return $this->saveWithCallback();
+	}
+
+	public function saveWithoutCallback(): Model
+	{
 		$columnsNames = array_map(function ($columnName) {
 			return $columnName->getName();
 		}, static::getTable()->getColumnNames());
@@ -106,6 +111,12 @@ class Model extends Base
 
 		static::change();
 
+		return $this;
+	}
+
+	public function saveWithCallback(): Model
+	{
+		$this->saveWithoutCallback();
 		$this->afterUpdateCallback();
 		static::afterAnyCallback();
 
