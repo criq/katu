@@ -19,22 +19,22 @@ class DateTime extends \DateTime
 		return parent::__construct($time, $timezone);
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return $this->getDbDateTimeFormat();
 	}
 
-	public static function createFromTimestamp(int $timestamp) : DateTime
+	public static function createFromTimestamp(int $timestamp): DateTime
 	{
 		return new static('@' . $timestamp);
 	}
 
-	public static function createFromDateTime(\DateTime $dateTime) : DateTime
+	public static function createFromDateTime(\DateTime $dateTime): DateTime
 	{
 		return new static($dateTime->format('Y-m-d H:i:s'), $dateTime->getTimezone());
 	}
 
-	public static function createFromString(?string $string) : ?DateTime
+	public static function createFromString(?string $string): ?DateTime
 	{
 		if (!trim($string)) {
 			return null;
@@ -58,12 +58,12 @@ class DateTime extends \DateTime
 		return null;
 	}
 
-	public function getLocalTimeZone() : \DateTimeZone
+	public function getLocalTimeZone(): \DateTimeZone
 	{
 		return new \DateTimeZone(\Katu\Config\Config::get('app', 'timezone'));
 	}
 
-	public static function get($time = null, \DateTimeZone $timezone = null)
+	public static function get($time = null, \DateTimeZone $timezone = null): DateTime
 	{
 		if (is_int($time)) {
 			return new static('@' . $time, $timezone);
@@ -72,86 +72,86 @@ class DateTime extends \DateTime
 		return new static($time, $timezone);
 	}
 
-	public function toLocalTimezone()
+	public function toLocalTimezone(): DateTime
 	{
 		return $this->setTimezone($this->getLocalTimeZone());
 	}
 
-	public function getDbDateFormat()
+	public function getDbDateFormat(): string
 	{
 		return $this->format('Y-m-d');
 	}
 
-	public function getDbTimeFormat()
+	public function getDbTimeFormat(): string
 	{
 		return $this->format('H:i:s');
 	}
 
-	public function getDbDateTimeFormat()
+	public function getDbDateTimeFormat(): string
 	{
 		return $this->format('Y-m-d H:i:s');
 	}
 
-	public function isValid() : bool
+	public function isValid(): bool
 	{
 		return $this->getTimestamp() > 0;
 	}
 
-	public function fitsInTimeout(Timeout $timeout)
+	public function fitsInTimeout(Timeout $timeout): bool
 	{
 		return $timeout->fits($this);
 	}
 
-	public function isYesterday()
+	public function isYesterday(): bool
 	{
 		return (new static('- 1 day', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isToday() : bool
+	public function isToday(): bool
 	{
 		return (new static('now', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isTomorrow() : bool
+	public function isTomorrow(): bool
 	{
 		return (new static('+ 1 day', $this->getTimezone()))->format('Y-m-d') == $this->format('Y-m-d');
 	}
 
-	public function isInFuture() : bool
+	public function isInFuture(): bool
 	{
 		return $this->getTimestamp() > time();
 	}
 
-	public function isInPast() : bool
+	public function isInPast(): bool
 	{
 		return $this->getTimestamp() < time();
 	}
 
-	public function isNow() : bool
+	public function isNow(): bool
 	{
 		return $this->getTimestamp() == time();
 	}
 
-	public function getAge() : TSeconds
+	public function getAge(): TSeconds
 	{
 		return new \Katu\Types\TSeconds($this->getTimestamp() - time());
 	}
 
-	public static function getMicroseconds()
+	public static function getMicroseconds(): float
 	{
 		list($micro, $timestamp) = explode(' ', microtime(false));
 
-		return (float) $micro;
+		return (float)$micro;
 	}
 
-	public static function getMicrotime()
+	public static function getMicrotime(): float
 	{
 		list($micro, $timestamp) = explode(' ', microtime(false));
 
-		return (float) ($timestamp + $micro);
+		return (float)($timestamp + $micro);
 	}
 
-	public function getThisWeekday($weekday)
+	public function getThisWeekday($weekday): DateTime
 	{
 		$date = clone $this;
 
@@ -173,10 +173,10 @@ class DateTime extends \DateTime
 			}
 		}
 
-		return false;
+		return null;
 	}
 
-	public function getNextWeekday($weekday)
+	public function getNextWeekday($weekday): DateTime
 	{
 		$date = clone $this;
 
@@ -218,7 +218,7 @@ class DateTime extends \DateTime
 		return $this->diff($dateTime ?: new static);
 	}
 
-	public function change($value) : DateTime
+	public function change($value): DateTime
 	{
 		return (clone $this)->modify($value);
 	}
