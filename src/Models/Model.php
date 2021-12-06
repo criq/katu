@@ -14,7 +14,7 @@ class Model extends Base
 	/****************************************************************************
 	 * CRUD.
 	 */
-	public static function insert(?array $values = []): Model
+	public static function insert(?array $values = [])
 	{
 		$connection = static::getConnection();
 
@@ -50,7 +50,7 @@ class Model extends Base
 		return $object;
 	}
 
-	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = []): Model
+	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [])
 	{
 		$object = static::getOneBy($getByParams);
 		if ($object) {
@@ -65,7 +65,7 @@ class Model extends Base
 		return $object;
 	}
 
-	public function update(string $property, $value = null): Model
+	public function update(string $property, $value = null)
 	{
 		if ($this->$property !== $value) {
 			$this->$property = $value;
@@ -76,12 +76,12 @@ class Model extends Base
 		return $this;
 	}
 
-	public function save(): Model
+	public function save()
 	{
 		return $this->saveWithCallback();
 	}
 
-	public function saveWithoutCallback(): Model
+	public function saveWithoutCallback()
 	{
 		$columnsNames = array_map(function ($columnName) {
 			return $columnName->getName();
@@ -114,7 +114,7 @@ class Model extends Base
 		return $this;
 	}
 
-	public function saveWithCallback(): Model
+	public function saveWithCallback()
 	{
 		$this->saveWithoutCallback();
 		$this->afterUpdateCallback();
@@ -193,7 +193,7 @@ class Model extends Base
 		}
 	}
 
-	public static function get(?string $primaryKey): ?Model
+	public static function get(?string $primaryKey)
 	{
 		return static::getOneBy([
 			static::getPrimaryKeyColumnName() => $primaryKey,
