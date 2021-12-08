@@ -24,7 +24,7 @@
 		"mustangostang/spyc": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"ralouphie/mimey": "@stable",
-		"sendgrid/sendgrid": "@stable",
+		"sendgrid/sendgrid": "^7",
 		"slim/extras": "@stable",
 		"slim/slim": "2.*@stable",
 		"swiftmailer/swiftmailer": "5.*",
