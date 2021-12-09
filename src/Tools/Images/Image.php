@@ -115,37 +115,25 @@ class Image
 
 	public function getImageSize(): ?TImageSize
 	{
-		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 year'), function ($image) {
-			try {
-				$size = getimagesize($image->getSource()->getUri());
-				return new \Katu\Types\TImageSize($size[0], $size[1]);
-			} catch (\Throwable $e) {
-				\Katu\Exceptions\Handler::log($e);
-				throw new \Katu\Exceptions\DoNotCacheException;
-			}
-		}, $this);
+		$interventionImage = $this->getInterventionImage();
+
+		return new \Katu\Types\TImageSize($interventionImage->width(), $interventionImage->height());
 	}
 
 	public function getMime(): ?string
 	{
-		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 year'), function ($image) {
-			try {
-				$size = getimagesize($image->getSource()->getUri());
-				return $size['mime'];
-			} catch (\Throwable $e) {
-				\Katu\Exceptions\Handler::log($e);
-				throw new \Katu\Exceptions\DoNotCacheException;
-			}
-		}, $this);
+		return $this->getInterventionImage()->mime;
 	}
 
 	public function getEmbedSrc(): ?string
 	{
 		$mime = $this->getMime();
-		$base64 = @base64_encode(@file_get_contents($this->getSource()->getUri()));
+		$file = $this->getTemporaryFile();
+		$base64 = base64_encode($file->get());
+		$file->delete();
 
 		if ($mime && $base64) {
-			return 'data:' . $mime . ';base64,' . $base64;
+			return "data:{$mime};base64,{$base64}";
 		}
 
 		return null;
