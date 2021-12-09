@@ -52,9 +52,9 @@ class Image
 			return \Intervention\Image\ImageManagerStatic::make($uri);
 		} catch (\Throwable $e) {
 			if (preg_match("/(SSL operation failed|Peer certificate)/", $e->getMessage())) {
-				$uri = preg_replace('/^https/', 'http', $uri);
-
 				$curl = new \Curl\Curl;
+				$curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
+				$curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
 				$res = $curl->get($uri);
 				var_dump($res);
 
