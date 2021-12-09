@@ -56,11 +56,8 @@ class Image
 				$curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
 				$curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
 				$res = $curl->get($uri);
-				var_dump($res);
 
-				die;
-
-				return \Intervention\Image\ImageManagerStatic::make($uri);
+				return \Intervention\Image\ImageManagerStatic::make($res);
 			} else {
 				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __METHOD__)))->error($e);
 
