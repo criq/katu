@@ -54,7 +54,11 @@ class Image
 			if (preg_match("/(SSL operation failed|Peer certificate)/", $e->getMessage())) {
 				$uri = preg_replace('/^https/', 'http', $uri);
 
-				var_dump(file_get_contents($uri));die;
+				$curl = new \Curl\Curl;
+				$res = $curl->get($uri);
+				var_dump($res);
+
+				die;
 
 				return \Intervention\Image\ImageManagerStatic::make($uri);
 			} else {
