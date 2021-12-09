@@ -6,110 +6,89 @@ class Version
 {
 	const SEPARATOR = ".";
 
-	protected $extension = 'jpg';
-	protected $filters = [];
-	protected $name = null;
-	protected $quality = 100;
+	protected $extension;
+	protected $filters;
+	protected $name;
+	protected $quality;
 
-	public function __construct($name = null)
+	public function __construct(?string $name = null, ?array $filters = [], ?string $extension = 'jpg', ?int $quality = 100)
 	{
-		$this->name = (string)$name;
+		$this->setName($name);
+		$this->setFilters($filters);
+		$this->setExtension($extension);
+		$this->setQuality($quality);
 	}
 
-	public static function createFromConfig()
+	public static function createFromConfig(string $name): Version
 	{
-		$args = func_get_args();
+		$config = \Katu\Config\Config::get('image', 'versions', $name);
 
-		try {
-			if (isset($args[0]) && is_string($args[0])) {
-				$name = $args[0];
+		$version = new static($name);
 
-				$config = \Katu\Config\Config::get('image', 'versions', $name);
-
-				$version = new static($name);
-
-				if (isset($config['filters'])) {
-					foreach ((array)$config['filters'] as $filterConfig) {
-						$filter = \Katu\Tools\Images\Filter::createByCode($filterConfig['filter']);
-						unset($filterConfig['filter']);
-						$filter->setParams($filterConfig);
-						$version->addFilter($filter);
-					}
-				}
-
-				if (isset($config['quality'])) {
-					$version->setQuality($config['quality']);
-				}
-
-				if (isset($config['extension'])) {
-					$version->setExtension($config['extension']);
-				}
-
-				return $version;
-			}
-
-			throw new \Katu\Exceptions\MissingConfigException;
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			$versionClass = '\\App\\Extensions\\Image\\Version';
-			if (class_exists($versionClass)) {
-				$version = call_user_func_array([$versionClass, 'createFromConfig'], func_get_args());
-
-				return $version;
+		if (isset($config['filters'])) {
+			foreach ((array)$config['filters'] as $filterConfig) {
+				$filter = \Katu\Tools\Images\Filter::createByCode($filterConfig['filter']);
+				unset($filterConfig['filter']);
+				$filter->setParams($filterConfig);
+				$version->addFilter($filter);
 			}
 		}
-	}
 
-	public function getName()
-	{
-		return $this->name ?: $this->getHash();
-	}
-
-	public function getArray()
-	{
-		$array = [];
-
-		foreach ($this->filters as $filter) {
-			$array[] = $filter->getArray();
+		if (isset($config['quality'])) {
+			$version->setQuality($config['quality']);
 		}
 
-		$array['quality'] = $this->quality;
-		$array['extension'] = $this->extension;
+		if (isset($config['extension'])) {
+			$version->setExtension($config['extension']);
+		}
 
-		return $array;
+		return $version;
 	}
 
-	public function getHash()
+	public function setName(?string $value): Version
+	{
+		$this->name = $value;
+
+		return $this;
+	}
+
+	public function getName(): ?string
+	{
+		return $this->name;
+	}
+
+	public function getHash(): string
 	{
 		return sha1(\Katu\Files\Formats\JSON::encodeStandard($this->getArray()));
 	}
 
-	public function setQuality($quality)
+	public function setQuality(int $quality): Version
 	{
 		$this->quality = $quality;
 
 		return $this;
 	}
 
-	public function getQuality()
+	public function getQuality(): int
 	{
 		return $this->quality;
 	}
 
-	public function setExtension($extension)
+	public function setExtension(string $extension): Version
 	{
 		$this->extension = $extension;
 
 		return $this;
 	}
 
-	public function getExtension()
+	public function getExtension(): ?string
 	{
 		return $this->extension;
 	}
 
-	public function getDir()
+	public function getDir(): \Katu\Files\File
 	{
-		$dir = new \Katu\Files\File(\Katu\App::getPublicTemporaryDir(), 'image', 'versions', $this->getName());
+		$dir = new \Katu\Files\File(\Katu\App::getPublicTemporaryDir(), 'image', 'versions', $this->getName(), $this->getHash());
 		if (!$dir->isWritable()) {
 			try {
 				$dir->makeDir();
@@ -121,15 +100,39 @@ class Version
 		return $dir;
 	}
 
-	public function addFilter(Filter $filter)
+	public function setFilters(?array $filters): Version
+	{
+		$this->filters = [];
+
+		foreach ((array)$filters as $filter) {
+			$this->addFilter($filter);
+		}
+
+		return $this;
+	}
+
+	public function addFilter(Filter $filter): Version
 	{
 		$this->filters[] = $filter;
 
 		return $this;
 	}
 
-	public function getFilters()
+	public function getFilters(): array
 	{
 		return $this->filters;
+	}
+
+	public function getArray(): array
+	{
+		$array = [];
+		foreach ($this->filters as $filter) {
+			$array[] = $filter->getArray();
+		}
+
+		$array['quality'] = $this->quality;
+		$array['extension'] = $this->extension;
+
+		return $array;
 	}
 }

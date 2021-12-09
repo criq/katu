@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Images;
 
+use Katu\Types\TIdentifier;
+
 class ImageVersion
 {
 	protected $image;
@@ -13,32 +15,36 @@ class ImageVersion
 		$this->version = $version;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
-		if ($this->image->getSource() instanceof Sources\File) {
-			return (string)\Katu\Tools\Routing\URL::getFor('images.getVersionSrc.file', [
-				'fileId' => $this->image->getSource()->getInput()->getId(),
-				'fileSecret' => $this->image->getSource()->getInput()->getSecret(),
-				'version' => $this->version->getName(),
-				'name' => $this->image->getSource()->getInput()->name,
-			]);
-		} elseif ($this->image->getSource() instanceof Sources\URL) {
-			return (string)\Katu\Tools\Routing\URL::getFor('images.getVersionSrc.url', [
-				'version' => $this->version->getName(),
-			], [
-				'url' => $this->image->getSource()->geTURL(),
-			]);
+		try {
+			if ($this->getImage()->getSource() instanceof Sources\File) {
+				return (string)\Katu\Tools\Routing\URL::getFor('images.getVersionSrc.file', [
+					'fileId' => $this->getImage()->getSource()->getInput()->getId(),
+					'fileSecret' => $this->getImage()->getSource()->getInput()->getSecret(),
+					'version' => $this->getVersion()->getName(),
+					'name' => $this->getImage()->getSource()->getInput()->name,
+				]);
+			} elseif ($this->getImage()->getSource() instanceof Sources\URL) {
+				return (string)\Katu\Tools\Routing\URL::getFor('images.getVersionSrc.url', [
+					'version' => $this->getVersion()->getName(),
+				], [
+					'url' => $this->getImage()->getSource()->geTURL(),
+				]);
+			}
+		} catch (\Throwable $e) {
+			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
 		}
 
 		return '';
 	}
 
-	public function getExtension()
+	public function getExtension(): string
 	{
-		return $this->version->getExtension() ?: $this->image->getSource()->getExtension();
+		return $this->getVersion()->getExtension() ?: $this->getImage()->getSource()->getExtension();
 	}
 
-	public function getFile()
+	public function getFile(): \Katu\Files\File
 	{
 		$pathSegments = [];
 
@@ -48,31 +54,37 @@ class ImageVersion
 		$pathSegments[] = substr($hash, 4, 2);
 		$pathSegments[] = $hash . '.' . $this->getExtension();
 
-		return new \Katu\Files\File($this->version->getDir(), implode('/', $pathSegments));
+		return new \Katu\Files\File($this->getVersion()->getDir(), implode('/', $pathSegments));
 	}
 
-	public function getImage()
+	public function getImage(): ?Image
 	{
 		try {
 			if (!$this->getFile()->exists()) {
 				$interventionImage = $this->image->getInterventionImage();
-				foreach ($this->version->getFilters() as $filter) {
+				foreach ($this->getVersion()->getFilters() as $filter) {
 					$filter->apply($interventionImage);
 				}
 
 				$this->getFile()->getDir()->makeDir();
 
-				$interventionImage->save($this->getFile(), $this->version->getQuality());
+				$interventionImage->save($this->getFile(), $this->getVersion()->getQuality());
 			}
 
 			return new Image($this->getFile());
 		} catch (\Throwable $e) {
-			\Katu\Exceptions\Handler::log($e);
-			return false;
+			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __METHOD__)))->error($e);
+
+			return null;
 		}
 	}
 
-	public function getEmbedSrc()
+	public function getVersion(): Version
+	{
+		return $this->version;
+	}
+
+	public function getEmbedSrc(): ?string
 	{
 		$this->getImage();
 
@@ -84,6 +96,6 @@ class ImageVersion
 			return 'data:' . $mime . ';base64,' . $base64;
 		}
 
-		return false;
+		return null;
 	}
 }

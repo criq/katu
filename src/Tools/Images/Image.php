@@ -3,7 +3,9 @@
 namespace Katu\Tools\Images;
 
 use Katu\Tools\DateTime\Timeout;
+use Katu\Types\TArray;
 use Katu\Types\TIdentifier;
+use Katu\Types\TImageSize;
 
 class Image
 {
@@ -14,85 +16,101 @@ class Image
 		$this->source = Source::createFromInput($source);
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return (string)$this->getSource()->getURL();
 	}
 
-	public function getSource()
+	public function getSource(): Source
 	{
 		return $this->source;
 	}
 
-	public function getImageVersion()
+	public function getImageVersion(): ?ImageVersion
 	{
-		$args = func_get_args();
-		if (isset($args[0]) && $args[0] instanceof Version) {
-			$version = $args[0];
-		} else {
-			$version = Version::createFromConfig(...$args);
-		}
+		try {
+			$args = func_get_args();
+			if (isset($args[0]) && $args[0] instanceof Version) {
+				$version = $args[0];
+			} else {
+				$version = Version::createFromConfig(...$args);
+			}
 
-		return new ImageVersion($this, $version);
+			return new ImageVersion($this, $version);
+		} catch (\Throwable $e) {
+			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __METHOD__)))->error($e);
+
+			return null;
+		}
 	}
 
-	public function getInterventionImage()
+	public function getInterventionImage(): ?\Intervention\Image\Image
 	{
 		$uri = $this->getSource()->getUri();
+
 		try {
 			return \Intervention\Image\ImageManagerStatic::make($uri);
 		} catch (\Throwable $e) {
 			if (preg_match('/SSL operation failed/', $e->getMessage())) {
 				$uri = preg_replace('/^https/', 'http', $uri);
+
 				return \Intervention\Image\ImageManagerStatic::make($uri);
 			} else {
-				throw $e;
+				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __METHOD__)))->error($e);
+
+				return null;
 			}
 		}
 	}
 
-	public function getPixel()
+	public function getPixel(): Image
 	{
-		$version = (new Version('pixel'))
-			->addFilter(new Filters\Fit([
+		$version = new Version('pixel', [
+			new Filters\Fit([
 				'width' => 1,
 				'height' => 1,
-			]))
-			->setQuality(100)
-			->setExtension('png')
-			;
+			]),
+		], 'png', 100);
 
 		$imageVersion = new ImageVersion($this, $version);
 
 		return $imageVersion->getImage();
 	}
 
-	public function getColors($number = 1)
+	public function getTemporaryFile(): \Katu\Files\File
 	{
-		$timeout = new Timeout('1 year');
+		$file = \Katu\Files\File::createTemporaryWithExtension('png');
+		$file->touch();
 
-		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), $timeout, function ($image, $number) use ($timeout) {
-			$palette = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), $timeout, function ($image) {
-				try {
-					return \League\ColorExtractor\Palette::fromGD($image->getInterventionImage()->getCore());
-				} catch (\Throwable $e) {
-					return false;
-				}
-			}, $image);
+		$interventionImage = $this->getInterventionImage();
+		$interventionImage->save($file);
 
-			if (!$palette) {
-				return false;
-			}
-
-			$mostUsedColors = array_keys($palette->getMostUsedColors($number));
-
-			return array_map(function ($color) {
-				return new \Katu\Types\TColor(\League\ColorExtractor\Color::fromIntToHex($color));
-			}, $mostUsedColors);
-		}, $this, $number);
+		return $file;
 	}
 
-	public function getImageSize()
+	public function getColors()
+	{
+		set_time_limit(600);
+		\Katu\Tools\System\Memory::setLimit('2G');
+
+		$interventionImage = $this->getInterventionImage();
+
+		$array = [];
+		for ($x = 0; $x < $interventionImage->width(); $x++) {
+			for ($y = 0; $y < $interventionImage->height(); $y++) {
+				$array[] = $interventionImage->pickColor($x, $y, 'hex');
+			}
+		}
+
+		return $array;
+	}
+
+	public function getSortedColors(): array
+	{
+		return (new TArray(array_count_values($this->getColors())))->natsort()->reverse()->getArray();
+	}
+
+	public function getImageSize(): ?TImageSize
 	{
 		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 year'), function ($image) {
 			try {
@@ -105,7 +123,7 @@ class Image
 		}, $this);
 	}
 
-	public function getMime()
+	public function getMime(): ?string
 	{
 		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 year'), function ($image) {
 			try {
@@ -118,7 +136,7 @@ class Image
 		}, $this);
 	}
 
-	public function getEmbedSrc()
+	public function getEmbedSrc(): ?string
 	{
 		$mime = $this->getMime();
 		$base64 = @base64_encode(@file_get_contents($this->getSource()->getUri()));
@@ -127,6 +145,6 @@ class Image
 			return 'data:' . $mime . ';base64,' . $base64;
 		}
 
-		return false;
+		return null;
 	}
 }
