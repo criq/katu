@@ -51,7 +51,7 @@ class Image
 		try {
 			return \Intervention\Image\ImageManagerStatic::make($uri);
 		} catch (\Throwable $e) {
-			var_dump($e);die;
+			var_dump($e->getMessage());die;
 			if (preg_match('/(SSL operation failed|Peer certificate)/', $e->getMessage())) {
 				$uri = preg_replace('/^https/', 'http', $uri);
 
