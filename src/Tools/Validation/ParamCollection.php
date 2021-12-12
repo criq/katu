@@ -11,7 +11,7 @@ class ParamCollection extends \ArrayObject
 		}
 	}
 
-	public function offsetSet(mixed $key, mixed $value): void
+	public function offsetSet($key, $value)
 	{
 		parent::offsetSet($value->getKey(), $value);
 	}
