@@ -5,14 +5,20 @@ namespace Katu\Tools\Validation;
 class Param
 {
 	protected $key;
+	protected $alias;
 	protected $value;
-	protected $originalValue;
+	protected $validatedValue;
 
-	public function __construct(string $key, $value = null, $originalValue = null)
+	public function __construct(string $key, $value = null, ?string $alias = null)
 	{
 		$this->setKey($key);
 		$this->setValue($value);
-		$this->setOriginalValue($originalValue);
+		$this->setAlias($alias);
+	}
+
+	public function __toString(): string
+	{
+		return (string)$this->getValue();
 	}
 
 	public function setKey(string $value): Param
@@ -27,6 +33,18 @@ class Param
 		return $this->key;
 	}
 
+	public function setAlias(?string $value): Param
+	{
+		$this->alias = $value;
+
+		return $this;
+	}
+
+	public function getAlias(): string
+	{
+		return $this->alias ?: $this->getKey();
+	}
+
 	public function setValue($value): Param
 	{
 		$this->value = $value;
@@ -39,15 +57,24 @@ class Param
 		return $this->value;
 	}
 
-	public function setOriginalValue($value): Param
+	public function setValidatedValue($value): Param
 	{
-		$this->originalValue = $value;
+		$this->validatedValue = $value;
 
 		return $this;
 	}
 
-	public function getOriginalValue()
+	public function getValidatedValue()
 	{
-		return $this->originalValue;
+		return $this->validatedValue;
+	}
+
+	public function getResponseArray(): array
+	{
+		return [
+			"key" => $this->getKey(),
+			"alias" => $this->getAlias(),
+			"value" => $this->getValue(),
+		];
 	}
 }

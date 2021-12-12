@@ -8,17 +8,16 @@ use Katu\Types\TPackage;
 
 class Error implements Packaged
 {
-	protected $message;
-	protected $names = [];
 	protected $code;
-	protected $versions = [];
-	protected $comment;
-	protected $payload = [];
+	protected $help;
+	protected $message;
+	protected $paramCollection;
+	protected $options;
+	protected $versions;
 
-	public function __construct(string $message = null, ?array $names = [], ?string $code = null, ?array $versions = [])
+	public function __construct(string $message = null, ?string $code = null, ?array $versions = [])
 	{
 		$this->setMessage($message);
-		$this->setNames($names);
 		$this->setCode($code);
 		$this->setVersions($versions);
 	}
@@ -62,18 +61,6 @@ class Error implements Packaged
 		return rtrim($this->getMessage(), '.');
 	}
 
-	public function setNames(?array $value)
-	{
-		$this->names = $value;
-
-		return $this;
-	}
-
-	public function getNames(): array
-	{
-		return $this->names ?: [];
-	}
-
 	public function setCode(?string $value): Error
 	{
 		$this->code = $value;
@@ -105,39 +92,68 @@ class Error implements Packaged
 		return $this->versions ?: [];
 	}
 
-	public function setComment(?string $value): Error
+	public function setHelp(?string $value): Error
 	{
-		$this->comment = $value;
+		$this->help = $value;
 
 		return $this;
 	}
 
-	public function getComment(): ?string
+	public function getHelp(): ?string
 	{
-		return $this->comment;
+		return $this->help;
 	}
 
-	public function setPayload(?array $value): Error
+	public function setOptions(?array $value): Error
 	{
-		$this->payload = $value;
+		$this->options = $value;
 
 		return $this;
 	}
 
-	public function getPayload(): array
+	public function getOptions(): ?array
 	{
-		return $this->payload ?: [];
+		return $this->options;
+	}
+
+	public function setParamCollection(\Katu\Tools\Validation\ParamCollection $paramCollection): Error
+	{
+		$this->paramCollection = $paramCollection;
+
+		return $this;
+	}
+
+	public function getParamCollection(): \Katu\Tools\Validation\ParamCollection
+	{
+		if (!$this->paramCollection) {
+			$this->paramCollection = new \Katu\Tools\Validation\ParamCollection;
+		}
+
+		return $this->paramCollection;
 	}
 
 	public function getResponseArray(): array
 	{
-		return [
+		$array = [
 			"message" => $this->getMessage(),
-			"code" => $this->getCode(),
-			"versions" => $this->getVersions(),
-			"names" => $this->getNames(),
-			"comment" => $this->getComment(),
-			"payload" => $this->getPayload(),
 		];
+
+		if ($this->getCode()) {
+			$array["code"] = $this->getCode();
+		}
+		if ($this->getVersions()) {
+			$array["versions"] = $this->getVersions();
+		}
+		if ($this->getHelp()) {
+			$array["help"] = $this->getHelp();
+		}
+		if ($this->getOptions()) {
+			$array["options"] = $this->getOptions();
+		}
+		if (count($this->getParamCollection())) {
+			$array["params"] = $this->getParamCollection()->getResponseArray();
+		}
+
+		return $array;
 	}
 }
