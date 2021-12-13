@@ -69,6 +69,20 @@ class Param
 		return $this->output;
 	}
 
+	public function forward(): Param
+	{
+		$this->setOutput($this->getInput());
+
+		return $this;
+	}
+
+	public function map(callable $callback): Param
+	{
+		$this->setOutput(call_user_func_array($callback, [$this->getOutput()]));
+
+		return $this;
+	}
+
 	public function getResponseArray(): array
 	{
 		return [
