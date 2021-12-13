@@ -2,25 +2,23 @@
 
 namespace Katu\Tools\Validation;
 
-use Katu\Errors\ErrorCollection;
-
-class Result extends \ArrayObject
+class Result implements \ArrayAccess
 {
+	protected $paramCollection;
 	protected $errorCollection;
 
-	public function __construct(?array $params = [])
+	public function __construct(?ParamCollection $paramCollection = null)
 	{
-		foreach ($params as $param) {
-			$this->append($param);
-		}
+		$this->paramCollection = $paramCollection ?: new ParamCollection;
+		$this->errorCollection = new \Katu\Errors\ErrorCollection;
 	}
 
-	public function offsetSet($key, $value)
+	public function getParamCollection(): ParamCollection
 	{
-		parent::offsetSet($value->getKey(), $value);
+		return $this->paramCollection;
 	}
 
-	public function getErrorCollection(): ErrorCollection
+	public function getErrorCollection(): \Katu\Errors\ErrorCollection
 	{
 		if (!$this->errorCollection) {
 			$this->errorCollection = new ErrorCollection;
@@ -44,5 +42,28 @@ class Result extends \ArrayObject
 	public function getParam(string $key): ?Param
 	{
 		return $this[$key] ?? null;
+	}
+
+	/****************************************************************************
+	 * ArrayAccess.
+	 */
+	public function offsetExists($offset)
+	{
+		return isset($this->getParamCollection()[$offset]);
+	}
+
+	public function offsetGet($offset)
+	{
+		return $this->getParamCollection()[$offset];
+	}
+
+	public function offsetSet($offset, $value)
+	{
+		$this->getParamCollection()[$offset] = $value;
+	}
+
+	public function offsetUnset($offset)
+	{
+		unset($this->getParamCollection()[$offset]);
 	}
 }

@@ -6,19 +6,19 @@ class Param
 {
 	protected $key;
 	protected $alias;
-	protected $value;
-	protected $validatedValue;
+	protected $input;
+	protected $output;
 
-	public function __construct(string $key, $value = null, ?string $alias = null)
+	public function __construct(string $key, $input = null, ?string $alias = null)
 	{
 		$this->setKey($key);
-		$this->setValue($value);
+		$this->setInput($input);
 		$this->setAlias($alias);
 	}
 
 	public function __toString(): string
 	{
-		return (string)$this->getValue();
+		return (string)$this->getInput();
 	}
 
 	public function setKey(string $value): Param
@@ -45,28 +45,28 @@ class Param
 		return $this->alias ?: $this->getKey();
 	}
 
-	public function setValue($value): Param
+	public function setInput($value): Param
 	{
-		$this->value = $value;
+		$this->input = $value;
 
 		return $this;
 	}
 
-	public function getValue()
+	public function getInput()
 	{
-		return $this->value;
+		return $this->input;
 	}
 
-	public function setValidatedValue($value): Param
+	public function setOutput($value): Param
 	{
-		$this->validatedValue = $value;
+		$this->output = $value;
 
 		return $this;
 	}
 
-	public function getValidatedValue()
+	public function getOutput()
 	{
-		return $this->validatedValue;
+		return $this->output;
 	}
 
 	public function getResponseArray(): array
@@ -74,7 +74,7 @@ class Param
 		return [
 			"key" => $this->getKey(),
 			"alias" => $this->getAlias(),
-			"value" => $this->getValue(),
+			"input" => $this->getInput(),
 		];
 	}
 }

@@ -13,7 +13,16 @@ class ParamCollection extends \ArrayObject
 
 	public function offsetSet($key, $value)
 	{
-		parent::offsetSet($value->getKey(), $value);
+		parent::offsetSet($key ?: $value->getKey(), $value);
+	}
+
+	public function addParamCollection(ParamCollection $paramCollection): ParamCollection
+	{
+		foreach ($paramCollection as $param) {
+			$this->append($param);
+		}
+
+		return $this;
 	}
 
 	public function getAliasArray(): array
