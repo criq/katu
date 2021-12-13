@@ -57,30 +57,31 @@ class Formatter
 		return $numberFormatter->format($number);
 	}
 
-	public static function getLocalPercent($locale, $number)
+	public static function getLocalPercent($locale, float $number)
 	{
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::PERCENT);
 
 		return $numberFormatter->format($number);
 	}
 
-	public static function getLocalCurrency($locale, $number, $currency)
+	public static function getLocalCurrency($locale, float $number, string $currencyCode)
 	{
 		$number = (string)$number;
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
 		if ((int)$number == (float)$number) {
-			$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
-			$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
+			$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currencyCode);
+			$numberFormatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 0);
+			$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 2);
 		}
 
-		return $numberFormatter->formatCurrency((float)$number, $currency);
+		return $numberFormatter->formatCurrency((float)$number, $currencyCode);
 	}
 
-	public static function getLocalWholeCurrency($locale, $number, $currency)
+	public static function getLocalWholeCurrency($locale, float $number, string $currencyCode)
 	{
 		$number = (string)$number;
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
-		$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
+		$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currencyCode);
 		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
 
 		return $numberFormatter->format((float)$number);
