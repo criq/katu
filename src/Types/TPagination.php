@@ -23,7 +23,7 @@ class TPagination
 		$this->setPage((int)$page);
 		$this->setPerPage((int)$perPage);
 		$this->setTotal($total);
-		$this->setPages($page * $perPage);
+		$this->setPages(ceil($total / $perPage));
 	}
 
 	public function setTotal(int $total): TPagination

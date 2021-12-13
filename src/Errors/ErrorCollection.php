@@ -43,6 +43,24 @@ class ErrorCollection extends \ArrayObject implements Packaged
 		return $this;
 	}
 
+	public function addErrorCollection(ErrorCollection $errorCollection): ErrorCollection
+	{
+		foreach ($errorCollection as $error) {
+			$this->append($error);
+		}
+
+		return $this;
+	}
+
+	public function addValidationResults(array $validationResults): ErrorCollection
+	{
+		foreach ($validationResults as $validationResult) {
+			$this->addErrorCollection($validationResult->getErrorCollection());
+		}
+
+		return $this;
+	}
+
 	public function getTotal(): int
 	{
 		return count($this);
@@ -56,5 +74,14 @@ class ErrorCollection extends \ArrayObject implements Packaged
 	public function isEmpty(): bool
 	{
 		return !(bool)$this->getTotal();
+	}
+
+	public function getResponseArray(): array
+	{
+		return [
+			'errors' => array_map(function (Error $error) {
+				return $error->getResponseArray();
+			}, $this->getArrayCopy()),
+		];
 	}
 }
