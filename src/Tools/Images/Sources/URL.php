@@ -4,6 +4,7 @@ namespace Katu\Tools\Images\Sources;
 
 use Katu\Tools\DateTime\Timeout;
 use Katu\Types\TIdentifier;
+use Katu\Types\TURL;
 
 class URL extends \Katu\Tools\Images\Source
 {
@@ -12,15 +13,15 @@ class URL extends \Katu\Tools\Images\Source
 		return parent::__construct($input);
 	}
 
-	public function getDir()
+	public function getFile(): \Katu\Files\File
 	{
-		return pathinfo($this->input->getParts()['path'])['dirname'];
+		return pathinfo($this->getInput()->getParts()['path'])['dirname'];
 	}
 
-	public function getExtension()
+	public function getExtension(): string
 	{
 		try {
-			$pathinfo = pathinfo($this->input->getParts()['path']);
+			$pathinfo = pathinfo($this->getInput()->getParts()['path']);
 			if (isset($pathinfo['extension'])) {
 				return $pathinfo['extension'];
 			}
@@ -42,13 +43,13 @@ class URL extends \Katu\Tools\Images\Source
 		}
 	}
 
-	public function getURI()
+	public function getURI(): string
 	{
-		return (string)$this->input;
+		return (string)$this->getInput();
 	}
 
-	public function getURL()
+	public function getURL(): ?TURL
 	{
-		return (string)$this->input;
+		return $this->getInput();
 	}
 }

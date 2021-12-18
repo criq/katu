@@ -4,6 +4,7 @@ namespace Katu\Files;
 
 use Katu\Tools\DateTime\Timeout;
 use Katu\Types\TIdentifier;
+use Katu\Types\TURL;
 
 class File
 {
@@ -100,22 +101,26 @@ class File
 		return ltrim(preg_replace('/^' . preg_quote(\Katu\App::getBaseDir(), '/') . '/', '', $this->getPath()), '/');
 	}
 
-	public function getURL()
+	public function getURL(): ?TURL
 	{
 		try {
 			$publicRoot = \Katu\Config\Config::get('app', 'publicRoot');
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			$publicRoot = './public/';
+			$publicRoot = "./public/";
 		}
 
-		$publicPath = realpath(new static(\Katu\App::getBaseDir(), $publicRoot));
-		if (preg_match('#^' . $publicPath . '(.*)$#', $this->getPath(), $match)) {
-			return new \Katu\Types\TURL(implode('/', array_map(function ($i) {
-				return trim($i, '/');
-			}, [
-				\Katu\Config\Config::get('app', 'baseUrl'),
-				$match[1],
-			])));
+		try {
+			$publicPath = realpath(new static(\Katu\App::getBaseDir(), $publicRoot));
+			if (preg_match("/^" . preg_quote($publicPath, "/") . "(.*)$/", (string)$this->getPath(), $match)) {
+				return new TURL(implode("/", array_map(function ($i) {
+					return trim($i, "/");
+				}, [
+					\Katu\Config\Config::get('app', 'baseUrl'),
+					$match[1],
+				])));
+			}
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
 		return null;

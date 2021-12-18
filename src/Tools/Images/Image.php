@@ -2,23 +2,33 @@
 
 namespace Katu\Tools\Images;
 
-use Katu\Tools\DateTime\Timeout;
 use Katu\Types\TArray;
 use Katu\Types\TIdentifier;
 use Katu\Types\TImageSize;
+use Katu\Types\TURL;
 
 class Image
 {
 	protected $source;
 
-	public function __construct($source = null)
+	public function __construct($source)
 	{
 		$this->source = Source::createFromInput($source);
 	}
 
 	public function __toString(): string
 	{
-		return (string)$this->getSource()->getURL();
+		return (string)$this->getURL();
+	}
+
+	public function getURI(): string
+	{
+		return $this->getSource()->getURI();
+	}
+
+	public function getURL(): ?TURL
+	{
+		return $this->getSource()->getURL();
 	}
 
 	public function getSource(): Source
@@ -46,7 +56,7 @@ class Image
 
 	public function getInterventionImage(): ?\Intervention\Image\Image
 	{
-		$uri = $this->getSource()->getUri();
+		$uri = $this->getSource()->getURI();
 
 		try {
 			return \Intervention\Image\ImageManagerStatic::make($uri);

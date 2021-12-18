@@ -2,21 +2,23 @@
 
 namespace Katu\Tools\Images;
 
+use Katu\Types\TURL;
+
 abstract class Source
 {
 	protected $input;
 
-	abstract public function getDir();
-	abstract public function getExtension();
-	abstract public function getURI();
-	abstract public function getURL();
+	abstract public function getExtension(): string;
+	abstract public function getFile(): \Katu\Files\File;
+	abstract public function getURI(): string;
+	abstract public function getURL(): ?TURL;
 
 	public function __construct($input)
 	{
 		$this->input = $input;
 	}
 
-	public static function createFromInput($input)
+	public static function createFromInput($input): ?Source
 	{
 		// Image.
 		if ($input instanceof Image) {
@@ -28,7 +30,7 @@ abstract class Source
 
 		// File on filesystem.
 		} elseif ($input instanceof \Katu\Files\File) {
-			return new Sources\URL($input->getURL());
+			return new Sources\File($input);
 
 		// URL.
 		} elseif ($input instanceof \Katu\Types\TURL) {
@@ -36,7 +38,7 @@ abstract class Source
 
 		// File model.
 		} elseif ($input instanceof \Katu\Models\Presets\File) {
-			return new Sources\File($input);
+			return new Sources\FileModel($input);
 
 		// String.
 		} elseif (is_string($input)) {
@@ -49,7 +51,7 @@ abstract class Source
 			try {
 				$file = new \Katu\Files\File($input);
 				if ($file->exists()) {
-					return new Sources\URL($file->geTURL());
+					return new Sources\File($file);
 				}
 
 				throw new \Exception;
@@ -58,7 +60,7 @@ abstract class Source
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	public function getInput()
@@ -66,8 +68,8 @@ abstract class Source
 		return $this->input;
 	}
 
-	public function getHash()
+	public function getHash(): string
 	{
-		return sha1($this->getUri());
+		return sha1($this->getURI());
 	}
 }

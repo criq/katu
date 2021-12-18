@@ -4,16 +4,16 @@ namespace Katu\Tools\Images\Sources;
 
 use Katu\Types\TURL;
 
-class File extends \Katu\Tools\Images\Source
+class FileModel extends \Katu\Tools\Images\Source
 {
-	public function __construct(\Katu\Files\File $input)
+	public function __construct(\Katu\Models\Presets\File $input)
 	{
 		return parent::__construct($input);
 	}
 
 	public function getFile(): \Katu\Files\File
 	{
-		return $this->getInput();
+		return $this->getInput()->getFile();
 	}
 
 	public function getExtension(): string
@@ -23,11 +23,11 @@ class File extends \Katu\Tools\Images\Source
 
 	public function getURI(): string
 	{
-		return (string)$this->getInput();
+		return (string)$this->getInput()->getFile();
 	}
 
 	public function getURL(): ?TURL
 	{
-		return $this->getInput()->getURL();
+		return null;
 	}
 }

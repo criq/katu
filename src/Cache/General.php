@@ -131,19 +131,21 @@ class General
 		return $this;
 	}
 
-	public function clear()
+	public function clear(): General
 	{
 		foreach ($this->getAdapters() as $adapter) {
 			$adapter->delete($this->getIdentifierWithArgs());
 		}
+
+		return $this;
 	}
 
-	public function delete()
+	public function delete(): General
 	{
 		return $this->clear();
 	}
 
-	public function flush()
+	public function flush(): General
 	{
 		return $this->clear();
 	}
