@@ -13,7 +13,7 @@ class TImageSize
 		$this->y = $y;
 	}
 
-	public function getSurfaceSize()
+	public function getSurfaceSize(): int
 	{
 		return $this->x * $this->y;
 	}
