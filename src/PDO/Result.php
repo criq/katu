@@ -113,6 +113,11 @@ class Result extends \ArrayObject
 		return $this->getPagination()->getTotal();
 	}
 
+	public function getSQL(): string
+	{
+		return $this->getQuery()->getStatementDump()->getSentSQL();
+	}
+
 	/****************************************************************************
 	 * REST.
 	 */
