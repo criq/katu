@@ -21,34 +21,34 @@ class TClass implements Packaged
 		$this->name = ltrim($this->name, '\\');
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return $this->getName();
 	}
 
-	public static function createFromPortableName(string $storableName) : TClass
+	public static function createFromPortableName(string $storableName): TClass
 	{
 		return new static(strtr($storableName, static::PORTABLE_NAME_DELIMITER, '\\'));
 	}
 
-	public function getName() : string
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
-	public function getPackage() : \Katu\Types\TPackage
+	public function getPackage(): \Katu\Types\TPackage
 	{
 		return new \Katu\Types\TPackage([
 			'name' => $this->getName(),
 		]);
 	}
 
-	public static function createFromPackage(\Katu\Types\TPackage $package) : TClass
+	public static function createFromPackage(\Katu\Types\TPackage $package): TClass
 	{
 		return new static($package->getPayload()['name']);
 	}
 
-	public function exists() : bool
+	public function exists(): bool
 	{
 		try {
 			return class_exists($this->getName());
@@ -57,13 +57,32 @@ class TClass implements Packaged
 		}
 	}
 
-	public function getShortName() : string
+	public function getShortName(): string
 	{
 		return array_slice(explode('\\', $this->name), -1, 1)[0];
 	}
 
-	public function getPortableName() : string
+	public function getPortableName(): string
 	{
 		return strtr($this->getName(), '\\', static::PORTABLE_NAME_DELIMITER);
+	}
+
+	public static function getStandardString(string $string): string
+	{
+		$string = preg_replace("/[^A-Za-z0-9\\\\]/", " ", $string);
+		$string = trim($string);
+		$string = ucfirst($string);
+		$string = preg_replace_callback("/([A-Z])([A-Z]+)/", function () {
+			return implode([
+				strtoupper(func_get_arg(0)[1]),
+				strtolower(func_get_arg(0)[2]),
+			]);
+		}, $string);
+		$string = preg_replace_callback("/\s([a-z])/", function () {
+			return strtoupper(func_get_arg(0)[1]);
+		}, $string);
+		$string = preg_replace("/\s/", "", $string);
+
+		return $string;
 	}
 }
