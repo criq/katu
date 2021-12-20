@@ -134,8 +134,9 @@ class Model extends Base
 
 		$res = $query->getResult();
 
+		$this->afterDeleteCallback();
+
 		static::change();
-		static::afterDeleteCallback();
 		static::afterAnyCallback();
 
 		return !$res->hasError();
@@ -161,7 +162,7 @@ class Model extends Base
 		return true;
 	}
 
-	public static function afterDeleteCallback(): bool
+	public function afterDeleteCallback(): bool
 	{
 		return true;
 	}
