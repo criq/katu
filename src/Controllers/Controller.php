@@ -97,10 +97,10 @@ class Controller
 			return false;
 		}
 
-		// Check captcha. Should be empty.
-		if ($request->getParam('yourName_' . $token->secret) !== '') {
-			return false;
-		}
+		// // Check captcha. Should be empty.
+		// if ($request->getParam('yourName_' . $request->getParam('')->secret) !== '') {
+		// 	return false;
+		// }
 
 		return true;
 	}
@@ -108,19 +108,52 @@ class Controller
 	/****************************************************************************
 	 * Errors.
 	 */
-	public function addErrors(\Katu\Exceptions\Exception $e)
+	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
 		if (!($this->data['_errors'] ?? null)) {
-			$this->data['_errors'] = new \Katu\Exceptions\ExceptionCollection;
+			$this->data['_errors'] = new \Katu\Errors\ErrorCollection;
 		}
 
-		$this->data['_errors']->add($e);
-
-		return true;
+		return $this->data['_errors'];
 	}
 
-	public function hasErrors()
+	public function addError(\Katu\Errors\Error $error): Controller
 	{
-		return (bool)$this->data['_errors'] ?? null;
+		$this->getErrors()->addError($error);
+
+		return $this;
+	}
+
+	public function addErrors(\Katu\Errors\ErrorCollection $errorCollection): Controller
+	{
+		$this->getErrors()->addErrorCollection($errorCollection);
+
+		return $this;
+	}
+
+	public function hasErrors(): bool
+	{
+		return (bool)count($this->getErrors());
+	}
+
+	public function getExceptions(): \Katu\Exceptions\ExceptionCollection
+	{
+		if (!($this->data['_exceptions'] ?? null)) {
+			$this->data['_exceptions'] = new \Katu\Exceptions\ExceptionCollection;
+		}
+
+		return $this->data['_exceptions'];
+	}
+
+	public function addExceptions(\Katu\Exceptions\Exception $e): Controller
+	{
+		$this->getExceptions()->add($e);
+
+		return $this;
+	}
+
+	public function hasExceptions(): bool
+	{
+		return (bool)count($this->getExceptions());
 	}
 }
