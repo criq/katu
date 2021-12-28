@@ -13,17 +13,17 @@ class TEmailAddress
 		$this->setName($name);
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return (string)$this->value;
 	}
 
-	public static function validateEmailAddress(string $emailAddress) : bool
+	public static function validateEmailAddress(string $emailAddress): bool
 	{
 		return (bool)filter_var($emailAddress, \FILTER_VALIDATE_EMAIL);
 	}
 
-	public function setEmailAddress($emailAddress)
+	public function setEmailAddress($emailAddress): TEmailAddress
 	{
 		if ($emailAddress instanceof \App\Models\EmailAddress) {
 			$emailAddress = $emailAddress->getEmailAddress();
@@ -39,7 +39,7 @@ class TEmailAddress
 		return $this;
 	}
 
-	public function getEmailAddress()
+	public function getEmailAddress(): ?string
 	{
 		return $this->emailAddress;
 	}
@@ -51,16 +51,19 @@ class TEmailAddress
 		return $this;
 	}
 
-	public function getName()
+	public function getName(): ?string
 	{
 		return $this->name;
 	}
 
-	public function getDomain() : string
+	public function getDomain(): string
 	{
 		return explode('@', $this->getEmailAddress())[1];
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function createFromEnvelope(?string $encoded = null)
 	{
 		if (preg_match('/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U', $encoded, $match)) {
@@ -70,6 +73,9 @@ class TEmailAddress
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function getEnvelope()
 	{
 		return implode(" ", array_filter([
