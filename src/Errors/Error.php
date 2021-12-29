@@ -132,6 +132,13 @@ class Error implements Packaged
 		return $this->paramCollection;
 	}
 
+	public function addParam(\Katu\Tools\Validation\Param $param): Error
+	{
+		$this->getParamCollection()->append($param);
+
+		return $this;
+	}
+
 	public function getResponseArray(): array
 	{
 		$array = [
