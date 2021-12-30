@@ -11,7 +11,7 @@ class EmailAddress extends \Katu\Models\Model
 		'emailAddress' => 'emailAddress',
 	];
 
-	public static function create(string $emailAddress) : EmailAddress
+	public static function create(string $emailAddress): EmailAddress
 	{
 		if (!static::sanitizeEmailAddress($emailAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
@@ -23,9 +23,9 @@ class EmailAddress extends \Katu\Models\Model
 		]);
 	}
 
-	public static function getOrCreate(string $emailAddress) : EmailAddress
+	public static function getOrCreate(string $emailAddress): EmailAddress
 	{
-		$emailAddress = preg_replace('/\s/', "", $emailAddress);
+		$emailAddress = preg_replace("/\s/", "", $emailAddress);
 
 		if (!static::sanitizeEmailAddress($emailAddress)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
@@ -36,7 +36,7 @@ class EmailAddress extends \Katu\Models\Model
 		]);
 	}
 
-	public static function sanitizeEmailAddress(string $value) : string
+	public static function sanitizeEmailAddress(string $value): string
 	{
 		$value = trim($value);
 		if (!$value) {

@@ -111,7 +111,7 @@ class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Getters & Setters.
 	 */
-	public function setName(?string $name): User
+	public function setName($name)
 	{
 		$this->update('name', trim($name) ?: null);
 
@@ -123,7 +123,7 @@ class User extends \Katu\Models\Model
 		return $this->name;
 	}
 
-	public function setEmailAddress(?\Katu\Models\Presets\EmailAddress $emailAddress)
+	public function setEmailAddress($emailAddress)
 	{
 		$emailAddressClass = static::getEmailAddressClass()->getName();
 		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
