@@ -2,6 +2,6 @@
 
 namespace Katu\Tools\Validation\Params;
 
-class Id extends \Katu\Tools\Validation\Param
+class ObjectId extends \Katu\Tools\Validation\Param
 {
 }

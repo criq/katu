@@ -41,4 +41,16 @@ class ParamCollection extends \ArrayObject
 			return $param->getResponseArray();
 		}, $this->getAliasArray());
 	}
+
+	public function filterWithoutKeys(array $keys): ParamCollection
+	{
+		$res = new static;
+		foreach ($this as $param) {
+			if (!in_array($param->getKey(), $keys)) {
+				$res[] = $param;
+			}
+		}
+
+		return $res;
+	}
 }

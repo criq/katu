@@ -27,9 +27,16 @@ class Result implements \ArrayAccess
 		return $this->errorCollection;
 	}
 
-	public function addError(\Katu\Errors\Error $e): Result
+	public function addError(\Katu\Errors\Error $error): Result
 	{
-		$this->getErrorCollection()->addError($e);
+		$this->getErrorCollection()->addError($error);
+
+		return $this;
+	}
+
+	public function addErrorCollection(\Katu\Errors\ErrorCollection $errorCollection): Result
+	{
+		$this->getErrorCollection()->addErrorCollection($errorCollection);
 
 		return $this;
 	}

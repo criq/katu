@@ -2,11 +2,11 @@
 
 namespace Katu\Tools\Validation\Params;
 
-class Property extends \Katu\Tools\Validation\Param
+class ObjectProperty extends \Katu\Tools\Validation\Param
 {
 	protected $property;
 
-	public function setProperty(string $value): Property
+	public function setProperty(string $value): ObjectProperty
 	{
 		$this->property = trim($value);
 

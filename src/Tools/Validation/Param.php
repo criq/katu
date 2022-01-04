@@ -8,6 +8,7 @@ class Param
 	protected $alias;
 	protected $input;
 	protected $output;
+	protected $display;
 
 	public function __construct(string $key, $input = null, ?string $alias = null)
 	{
@@ -67,6 +68,18 @@ class Param
 	public function getOutput()
 	{
 		return $this->output;
+	}
+
+	public function setDisplay(string $value): Param
+	{
+		$this->display = $value;
+
+		return $this;
+	}
+
+	public function getDisplay(): ?string
+	{
+		return $this->display;
 	}
 
 	public function forward(): Param
