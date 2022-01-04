@@ -87,7 +87,7 @@ class Image
 
 		$imageVersion = new ImageVersion($this, $version);
 
-		return $imageVersion->getImage();
+		return $imageVersion->getVersionImage();
 	}
 
 	public function getTemporaryFile(): \Katu\Files\File
