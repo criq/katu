@@ -74,17 +74,17 @@ class TString
 		return $chars;
 	}
 
-	public function getWbr()
+	public function getWbr(): TString
 	{
-		return implode('<wbr />', $this->getAsArray());
+		return new static(implode('<wbr />', $this->getAsArray()));
 	}
 
-	public function normalizeSpaces()
+	public function normalizeSpaces(): TString
 	{
 		return new static(str_replace("\xc2\xa0", "\x20", $this));
 	}
 
-	public function trim()
+	public function trim(): TString
 	{
 		return new static(trim($this));
 	}
