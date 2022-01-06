@@ -18,30 +18,29 @@ abstract class TableBase extends \Sexy\Expression
 		$this->name = new Name($name);
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->getSql();
 	}
 
-	public function getConnection()
+	public function getConnection(): Connection
 	{
 		return $this->connection;
 	}
 
-	public function getName()
+	public function getName(): Name
 	{
 		return $this->name;
 	}
 
-	public function getSql(&$context = [])
+	public function getSQL(&$context = []): string
 	{
 		return implode('.', [new Name($this->getConnection()->getConfig()->database), $this->name]);
 	}
 
-	public function getColumns()
+	public function getColumns(): array
 	{
 		$columns = [];
-
 		foreach ($this->getColumnNames() as $columnName) {
 			$columns[] = new Column($this, new Name($columnName));
 		}
@@ -49,26 +48,20 @@ abstract class TableBase extends \Sexy\Expression
 		return $columns;
 	}
 
-	public function getColumn(string $column)
+	public function getColumn(string $column): Column
 	{
 		return new Column($this, new Name($column));
 	}
 
-	public function getColumnDescriptions()
+	public function getColumnDescriptions(): array
 	{
-		$cacheIdentifier = new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'descriptions', $this->name);
+		return \Katu\Cache\Runtime::get(new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'descriptions', $this->getName()), function () {
+			$columns = [];
+			foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this->getName())->getResult() as $properties) {
+				$columns[$properties['Field']] = $properties;
+			}
 
-		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
-			$table = $this;
-
-			return \Katu\Cache\General::get($cacheIdentifier, new Timeout('10 minutes'), function () use ($table) {
-				$columns = [];
-				foreach ($table->getConnection()->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
-					$columns[$properties['Field']] = $properties;
-				}
-
-				return $columns;
-			});
+			return $columns;
 		});
 	}
 
@@ -86,7 +79,7 @@ abstract class TableBase extends \Sexy\Expression
 		}, $this->getColumnDescriptions()));
 	}
 
-	public function exists()
+	public function exists(): bool
 	{
 		return $this->getConnection()->tableExists($this->name);
 	}
