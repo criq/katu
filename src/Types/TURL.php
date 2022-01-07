@@ -28,6 +28,20 @@ class TURL
 		return (string)$this->value;
 	}
 
+	public static function validate(\Katu\Tools\Validation\Param $param): \Katu\Tools\Validation\Result
+	{
+		$result = new \Katu\Tools\Validation\Result;
+
+		if (static::isValid($param->getInput())) {
+			$result[] = $param->setOutput($param->getInput());
+			$result->setResponse($param->getOutput());
+		} else {
+			$result->addError((new \Katu\Errors\Error("Invalid URL."))->addParam($param));
+		}
+
+		return $result;
+	}
+
 	public static function make($url, $params = []): TURL
 	{
 		$params = array_filter((array)$params, function ($i) {
@@ -64,7 +78,7 @@ class TURL
 		return new static($url);
 	}
 
-	public static function isValid($value): bool
+	public static function isValid(string $value): bool
 	{
 		return filter_var(trim($value), FILTER_VALIDATE_URL) !== false;
 	}

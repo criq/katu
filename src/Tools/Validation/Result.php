@@ -4,7 +4,7 @@ namespace Katu\Tools\Validation;
 
 class Result implements \ArrayAccess
 {
-	protected $output;
+	protected $response;
 	protected $paramCollection;
 	protected $errorCollection;
 
@@ -14,16 +14,16 @@ class Result implements \ArrayAccess
 		$this->errorCollection = new \Katu\Errors\ErrorCollection;
 	}
 
-	public function setOutput($value): Result
+	public function setResponse($value): Result
 	{
-		$this->output = $value;
+		$this->response = $value;
 
 		return $this;
 	}
 
-	public function getOutput()
+	public function getResponse()
 	{
-		return $this->output;
+		return $this->response;
 	}
 
 	public function getParamCollection(): ParamCollection
@@ -39,7 +39,7 @@ class Result implements \ArrayAccess
 	public function getErrorCollection(): \Katu\Errors\ErrorCollection
 	{
 		if (!$this->errorCollection) {
-			$this->errorCollection = new ErrorCollection;
+			$this->errorCollection = new \Katu\Errors\ErrorCollection;
 		}
 
 		return $this->errorCollection;
