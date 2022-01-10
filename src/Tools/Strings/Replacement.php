@@ -10,7 +10,7 @@ class Replacement
 	protected $key;
 	protected $value;
 
-	public function __construct(string $key, string $value)
+	public function __construct(string $key, ?string $value)
 	{
 		$this->enclosures = [
 			new Enclosure("[", "]"),
@@ -24,7 +24,7 @@ class Replacement
 		return $this->key;
 	}
 
-	public function getValue(): string
+	public function getValue(): ?string
 	{
 		return $this->value;
 	}
