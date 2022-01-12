@@ -26,6 +26,13 @@ class Result implements \ArrayAccess
 		return $this->response;
 	}
 
+	public function addParam(Param $param): Result
+	{
+		$this[] = $param;
+
+		return $this;
+	}
+
 	public function getParamCollection(): ParamCollection
 	{
 		return $this->paramCollection;
