@@ -36,6 +36,13 @@ class Result implements \ArrayAccess
 		return $this[$key] ?? null;
 	}
 
+	public function addParamCollection(ParamCollection $paramCollection): Result
+	{
+		$this->getParamCollection()->addParamCollection($paramCollection);
+
+		return $this;
+	}
+
 	public function getErrorCollection(): \Katu\Errors\ErrorCollection
 	{
 		if (!$this->errorCollection) {
@@ -55,6 +62,14 @@ class Result implements \ArrayAccess
 	public function addErrorCollection(\Katu\Errors\ErrorCollection $errorCollection): Result
 	{
 		$this->getErrorCollection()->addErrorCollection($errorCollection);
+
+		return $this;
+	}
+
+	public function addResult(Result $result): Result
+	{
+		$this->addParamCollection($result->getParamCollection());
+		$this->addErrorCollection($result->getErrorCollection());
 
 		return $this;
 	}
