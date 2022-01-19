@@ -39,7 +39,7 @@ class TableBase extends \Sexy\Expression {
 	public function getColumnDescriptions() {
 		$table = $this;
 
-		return Cache::getFromMemory(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], function() use($table) {
+		return Cache::getRuntime(['databases', $this->pdo->name, 'tables', 'descriptions', $this->name], function () use ($table) {
 
 			$columns = [];
 			foreach ($table->pdo->createQuery(" DESCRIBE " . $table->name)->getResult() as $properties) {
