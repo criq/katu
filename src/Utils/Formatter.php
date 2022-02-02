@@ -6,7 +6,7 @@ class Formatter
 {
 	public static function getPreferredLocales()
 	{
-		return \Katu\Types\TLocale::getPreferredFromRequest(\Katu\App::get()->request->headers->get('Accept-Language'));
+		return \Katu\Types\TLocale::getPreferredFromRequest(\Katu\App::get()->request->headers->get("Accept-Language"));
 	}
 
 	public static function getPreferredLocale($locale = null)
@@ -41,7 +41,7 @@ class Formatter
 			$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
 
 			$res = $numberFormatter->format($number);
-			$res = preg_replace('/\s/u', null, $res);
+			$res = preg_replace("/\s/u", "", $res);
 
 			return $res;
 		} catch (\Throwable $e) {
