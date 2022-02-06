@@ -8,11 +8,11 @@ use Sexy\Sexy as SX;
 
 class User extends \Katu\Models\Model
 {
-	const TABLE = 'users';
+	const TABLE = "users";
 
 	public static $columnNames = [
-		'emailAddressId' => 'emailAddressId',
-		'timeCreated' => 'timeCreated',
+		"emailAddressId" => "emailAddressId",
+		"timeCreated" => "timeCreated",
 	];
 
 	/****************************************************************************
@@ -64,37 +64,38 @@ class User extends \Katu\Models\Model
 	public static function create(): User
 	{
 		return static::insert([
-			static::$columnNames['timeCreated'] => new \Katu\Tools\DateTime\DateTime,
+			static::$columnNames["timeCreated"] => new \Katu\Tools\DateTime\DateTime,
 		]);
 	}
 
 	public static function createWithEmailAddress(\Katu\Models\Presets\EmailAddress $emailAddress): User
 	{
 		if (static::getBy([
-			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
+			static::$columnNames["emailAddressId"] => $emailAddress->getId(),
 		])->getTotal()) {
 			throw (new \Katu\Exceptions\InputErrorException("E-mail address is already in use."))
-				->setAbbr('emailAddressInUse')
+				->setAbbr("emailAddressInUse")
 				;
 		}
 
-		return static::insert([
-			static::$columnNames['timeCreated'] => (string)\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat(),
-			static::$columnNames['emailAddressId'] => (int)$emailAddress->getId(),
-		]);
+		$user = static::create();
+		$user->setEmailAddress($emailAddress);
+		$user->save();
+
+		return $user;
 	}
 
 	public static function getCurrent(): ?User
 	{
-		return static::getByAccessToken(\Katu\Tools\Cookies\Cookie::get('accessToken'));
+		return static::getByAccessToken(\Katu\Tools\Cookies\Cookie::get("accessToken"));
 	}
 
 	public static function getByAccessToken(?string $token): ?User
 	{
 		$accessTokenClass = static::getAccessTokenClass()->getName();
 		$accessToken = $accessTokenClass::getOneBy([
-			'token' => preg_replace('/^(Bearer)\s+/', '', $token),
-			SX::cmpGreaterThanOrEqual($accessTokenClass::getColumn('timeExpires'), new \Katu\Tools\DateTime\DateTime),
+			"token" => preg_replace("/^(Bearer)\s+/", "", $token),
+			SX::cmpGreaterThanOrEqual($accessTokenClass::getColumn("timeExpires"), new \Katu\Tools\DateTime\DateTime),
 		]);
 
 		if ($accessToken && $accessToken->getIsValid()) {
@@ -113,7 +114,7 @@ class User extends \Katu\Models\Model
 	 */
 	public function setName($name)
 	{
-		$this->update('name', trim($name) ?: null);
+		$this->update("name", trim($name) ?: null);
 
 		return $this;
 	}
@@ -128,35 +129,35 @@ class User extends \Katu\Models\Model
 		$emailAddressClass = static::getEmailAddressClass()->getName();
 		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
-				->setAbbr('invalidEmailAddress')
-				->addErrorName('emailAddress')
+				->setAbbr("invalidEmailAddress")
+				->addErrorName("emailAddress")
 				;
 		}
 
 		// Look for another user with this e-mail address.
 		if (static::getBy([
-			static::$columnNames['emailAddressId'] => $emailAddress->getId(),
+			static::$columnNames["emailAddressId"] => $emailAddress->getId(),
 			SX::cmpNotEq(static::getIdColumn(), $this->getId()),
 		])->getTotal()) {
 			throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
-				->setAbbr('emailAddressInUse')
-				->addErrorName('emailAddress')
+				->setAbbr("emailAddressInUse")
+				->addErrorName("emailAddress")
 				;
 		}
 
-		$this->update(static::$columnNames['emailAddressId'], $emailAddress->getId());
+		$this->update(static::$columnNames["emailAddressId"], $emailAddress->getId());
 
 		return true;
 	}
 
 	public function getEmailAddress()
 	{
-		return static::getEmailAddressClass()->getName()::get($this->{static::$columnNames['emailAddressId']});
+		return static::getEmailAddressClass()->getName()::get($this->{static::$columnNames["emailAddressId"]});
 	}
 
 	public function setPlainPassword(string $password)
 	{
-		$this->update('password', (new \Katu\Tools\Security\Password($password))->getEncoded());
+		$this->update("password", (new \Katu\Tools\Security\Password($password))->getEncoded());
 
 		return $this;
 	}
@@ -188,19 +189,19 @@ class User extends \Katu\Models\Model
 	public function makeUserService($serviceName, $serviceUserId)
 	{
 		return static::getUserServiceClass()->getName()::upsert([
-			'userId' => $this->getId(),
-			'serviceName' => (string)$serviceName,
-			'serviceUserId' => (string)$serviceUserId,
+			"userId" => $this->getId(),
+			"serviceName" => (string)$serviceName,
+			"serviceUserId" => (string)$serviceUserId,
 		], [
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			"timeCreated" => new \Katu\Tools\DateTime\DateTime,
 		]);
 	}
 
 	public function getDefaultUserServiceByName($serviceName)
 	{
 		return static::getUserServiceClass()->getName()::getOneBy([
-			'userId' => $this->getId(),
-			'serviceName' => (string)$serviceName,
+			"userId" => $this->getId(),
+			"serviceName" => (string)$serviceName,
 		]);
 	}
 
@@ -211,7 +212,7 @@ class User extends \Katu\Models\Model
 
 	public function hasEmailAddress()
 	{
-		return (bool) $this->{static::$columnNames['emailAddressId']};
+		return (bool) $this->{static::$columnNames["emailAddressId"]};
 	}
 
 	public function login(): bool
@@ -223,7 +224,7 @@ class User extends \Katu\Models\Model
 
 	public static function logout(): bool
 	{
-		\Katu\Tools\Cookies\Cookie::remove('accessToken');
+		\Katu\Tools\Cookies\Cookie::remove("accessToken");
 
 		return true;
 	}
@@ -240,7 +241,7 @@ class User extends \Katu\Models\Model
 			$role = static::getRoleClass()->getName()::get($roleId);
 			if (!$role) {
 				throw (new \Katu\Exceptions\InputErrorException("Invalid role ID."))
-					->setAbbr('invalidRoleId')
+					->setAbbr("invalidRoleId")
 					;
 			}
 
@@ -257,22 +258,22 @@ class User extends \Katu\Models\Model
 	public function hasRole($role)
 	{
 		return (bool)static::getUserRoleClass()->getName()::getOneBy([
-			'userId' => $this->getId(),
-			'roleId' => $role->getId(),
+			"userId" => $this->getId(),
+			"roleId" => $role->getId(),
 		]);
 	}
 
 	public function getUserRoles()
 	{
 		return static::getUserRoleClass()->getName()::getBy([
-			'userId' => $this->getId(),
+			"userId" => $this->getId(),
 		]);
 	}
 
 	public function deleteAllRoles()
 	{
 		foreach (static::getUserRoleClass()->getName()::getBy([
-			'userId' => $this->getId(),
+			"userId" => $this->getId(),
 		]) as $userRole) {
 			$userRole->delete();
 		}
@@ -297,7 +298,7 @@ class User extends \Katu\Models\Model
 	public function deleteAllUserPermissions()
 	{
 		foreach (static::getUserPermissionClass()->getName()::getBy([
-			'userId' => $this->getId(),
+			"userId" => $this->getId(),
 		]) as $userPermission) {
 			$userPermission->delete();
 		}
@@ -312,7 +313,7 @@ class User extends \Katu\Models\Model
 			return false;
 		}
 
-		return call_user_func_array([$user, 'hasPermission'], func_get_args());
+		return call_user_func_array([$user, "hasPermission"], func_get_args());
 	}
 
 	public function getRolePermissions()
@@ -320,26 +321,26 @@ class User extends \Katu\Models\Model
 		$userRoleClass = static::getUserRoleClass()->getName();
 		$rolePermissionClass = static::getRolePermissionClass()->getName();
 
-		$sql = (SX::select($rolePermissionClass::getColumn('permission')))
+		$sql = (SX::select($rolePermissionClass::getColumn("permission")))
 			->from($rolePermissionClass::getTable())
-			->joinColumns($rolePermissionClass::getColumn('roleId'), $userRoleClass::getColumn('roleId'))
-			->where(SX::eq($userRoleClass::getColumn('userId'), $this->getId()))
-			->groupBy(SX::groupBy($rolePermissionClass::getColumn('permission')))
+			->joinColumns($rolePermissionClass::getColumn("roleId"), $userRoleClass::getColumn("roleId"))
+			->where(SX::eq($userRoleClass::getColumn("userId"), $this->getId()))
+			->groupBy(SX::groupBy($rolePermissionClass::getColumn("permission")))
 			;
 
-		return static::getConnection()->select($sql)->getResult()->getColumnValues('permission');
+		return static::getConnection()->select($sql)->getResult()->getColumnValues("permission");
 	}
 
 	public function getUserPermissions()
 	{
 		return static::getUserPermissionClass()->getName()::getBy([
-			'userId' => $this->getId(),
-		])->getColumnValues('permission');
+			"userId" => $this->getId(),
+		])->getColumnValues("permission");
 	}
 
 	public function getAllPermissions(): array
 	{
-		return \Katu\Cache\Runtime::get(new TIdentifier('users', $this->getId(), 'allPermissions'), function () {
+		return \Katu\Cache\Runtime::get(new TIdentifier("users", $this->getId(), "allPermissions"), function () {
 			return array_filter(array_unique(array_merge((array)$this->getRolePermissions(), (array)$this->getUserPermissions())));
 		});
 	}
@@ -380,8 +381,8 @@ class User extends \Katu\Models\Model
 	public function getUserSetting($name)
 	{
 		return static::getUserSettingClass()->getName()::getOneBy([
-			'userId' => $this->getId(),
-			'name' => $name,
+			"userId" => $this->getId(),
+			"name" => $name,
 		]);
 	}
 
