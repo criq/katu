@@ -79,7 +79,7 @@ class User extends \Katu\Models\Model
 		}
 
 		$user = static::create();
-		$user->setEmailAddress($emailAddress);
+		$user->setEmailAddress(new \Katu\Tools\Validation\Params\ObjectSelf("emailAddress", $emailAddress));
 		$user->save();
 
 		return $user;

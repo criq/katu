@@ -18,8 +18,8 @@ class EmailAddress extends \Katu\Models\Model
 		}
 
 		return static::insert([
-			static::$columnNames['timeCreated']  => (string) (\Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat()),
-			static::$columnNames['emailAddress'] => (string) (trim($emailAddress)),
+			static::$columnNames['timeCreated'] => new \Katu\Tools\DateTime\DateTime,
+			static::$columnNames['emailAddress'] => trim($emailAddress),
 		]);
 	}
 
@@ -33,6 +33,8 @@ class EmailAddress extends \Katu\Models\Model
 
 		return static::upsert([
 			static::$columnNames['emailAddress'] => $emailAddress,
+		], [
+			static::$columnNames['timeCreated'] => new \Katu\Tools\DateTime\DateTime,
 		]);
 	}
 
