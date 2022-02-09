@@ -6,7 +6,7 @@ use Katu\Interfaces\Packaged;
 
 class TClass implements Packaged
 {
-	const PORTABLE_NAME_DELIMITER = '-';
+	const PORTABLE_NAME_DELIMITER = "-";
 
 	public $name;
 
@@ -18,7 +18,7 @@ class TClass implements Packaged
 			$this->name = $name;
 		}
 
-		$this->name = ltrim($this->name, '\\');
+		$this->name = ltrim($this->name, "\\");
 	}
 
 	public function __toString(): string
@@ -28,7 +28,12 @@ class TClass implements Packaged
 
 	public static function createFromPortableName(string $storableName): TClass
 	{
-		return new static(strtr($storableName, static::PORTABLE_NAME_DELIMITER, '\\'));
+		return new static(strtr($storableName, static::PORTABLE_NAME_DELIMITER, "\\"));
+	}
+
+	public static function createFromArray(array $array): TClass
+	{
+		return new static(implode("\\", $array));
 	}
 
 	public function getName(): string
@@ -39,13 +44,13 @@ class TClass implements Packaged
 	public function getPackage(): \Katu\Types\TPackage
 	{
 		return new \Katu\Types\TPackage([
-			'name' => $this->getName(),
+			"name" => $this->getName(),
 		]);
 	}
 
 	public static function createFromPackage(\Katu\Types\TPackage $package): TClass
 	{
-		return new static($package->getPayload()['name']);
+		return new static($package->getPayload()["name"]);
 	}
 
 	public function exists(): bool
@@ -59,12 +64,12 @@ class TClass implements Packaged
 
 	public function getShortName(): string
 	{
-		return array_slice(explode('\\', $this->name), -1, 1)[0];
+		return array_slice(explode("\\", $this->name), -1, 1)[0];
 	}
 
 	public function getPortableName(): string
 	{
-		return strtr($this->getName(), '\\', static::PORTABLE_NAME_DELIMITER);
+		return strtr($this->getName(), "\\", static::PORTABLE_NAME_DELIMITER);
 	}
 
 	public static function getStandardString(string $string): string
