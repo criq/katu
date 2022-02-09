@@ -8,8 +8,8 @@ use Katu\Types\TURL;
 
 class File
 {
-	const TYPE_DIR = 'dir';
-	const TYPE_FILE = 'file';
+	const TYPE_DIR = "dir";
+	const TYPE_FILE = "file";
 
 	public $path;
 
@@ -25,26 +25,26 @@ class File
 
 	public static function joinPaths(): string
 	{
-		return preg_replace('/(\/)+/', '/', implode('/', array_map(function ($i) {
-			return implode('.', (array)$i);
+		return preg_replace("/(\/)+/", "/", implode("/", array_map(function ($i) {
+			return implode(".", (array)$i);
 		}, func_get_args())));
 	}
 
 	public static function prepareFileName(string $fileName): string
 	{
-		return preg_replace_callback('/\{(?<length>[0-9+])\}/', function ($i) {
-			return \Katu\Tools\Random\Generator::getIdString($i['length']);
+		return preg_replace_callback("/\{(?<length>[0-9+])\}/", function ($i) {
+			return \Katu\Tools\Random\Generator::getIdString($i["length"]);
 		}, $fileName);
 	}
 
 	public static function createTemporaryWithFileName(string $fileName): File
 	{
-		return new static(\Katu\App::getTemporaryDir(), 'files', static::prepareFileName($fileName));
+		return new static(\Katu\App::getTemporaryDir(), "files", static::prepareFileName($fileName));
 	}
 
 	public static function createTemporaryWithExtension(string $extension): File
 	{
-		return new static(\Katu\App::getTemporaryDir(), 'files', [\Katu\Tools\Random\Generator::getFileName(), $extension]);
+		return new static(\Katu\App::getTemporaryDir(), "files", [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 	}
 
 	public static function createTemporaryFromSrc($src, string $extension): File
@@ -71,12 +71,12 @@ class File
 
 		$info = $curl->getInfo();
 
-		if ($info['http_code'] != 200) {
+		if ($info["http_code"] != 200) {
 			return false;
 		}
 
-		if (!$extension && isset($url->getParts()['path']['extension'])) {
-			$extension = pathinfo($url->getParts()['path']['extension']);
+		if (!$extension && isset($url->getParts()["path"]["extension"])) {
+			$extension = pathinfo($url->getParts()["path"]["extension"]);
 		}
 
 		return static::createTemporaryFromSrc($src, $extension);
@@ -98,13 +98,13 @@ class File
 
 	public function getRelativePath(): string
 	{
-		return ltrim(preg_replace('/^' . preg_quote(\Katu\App::getBaseDir(), '/') . '/', '', $this->getPath()), '/');
+		return ltrim(preg_replace("/^" . preg_quote(\Katu\App::getBaseDir(), "/") . "/", "", $this->getPath()), "/");
 	}
 
 	public function getURL(): ?TURL
 	{
 		try {
-			$publicRoot = \Katu\Config\Config::get('app', 'publicRoot');
+			$publicRoot = \Katu\Config\Config::get("app", "publicRoot");
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			$publicRoot = "./public/";
 		}
@@ -115,7 +115,7 @@ class File
 				return new TURL(implode("/", array_map(function ($i) {
 					return trim($i, "/");
 				}, [
-					\Katu\Config\Config::get('app', 'baseUrl'),
+					\Katu\Config\Config::get("app", "baseUrl"),
 					$match[1],
 				])));
 			}
@@ -216,8 +216,8 @@ class File
 	{
 		$pathinfo = $this->getPathInfo();
 
-		if (isset($pathinfo['extension'])) {
-			return $pathinfo['extension'];
+		if (isset($pathinfo["extension"])) {
+			return $pathinfo["extension"];
 		}
 
 		return false;
@@ -244,9 +244,9 @@ class File
 			}
 		}
 
-		if (isset($filters['regexp'])) {
+		if (isset($filters["regexp"])) {
 			$files = array_filter($files, function ($i) use ($filters) {
-				return preg_match($filters['regexp'], $i);
+				return preg_match($filters["regexp"], $i);
 			});
 		}
 
@@ -258,7 +258,7 @@ class File
 		$files = [];
 
 		foreach (scandir($this) as $file) {
-			if ($file != '.' && $file != '..') {
+			if ($file != "." && $file != "..") {
 				$file = new static($this, $file);
 				if ($file->isDir()) {
 					$files[] = $file;
@@ -281,7 +281,7 @@ class File
 
 	public function isPhpFile()
 	{
-		return $this->isFile() && ($this->getMime() == 'text/x-c++' || $this->getExtension() == 'php');
+		return $this->isFile() && ($this->getMime() == "text/x-c++" || $this->getExtension() == "php");
 	}
 
 	public function isReadable()
@@ -320,14 +320,14 @@ class File
 	{
 		if (!$this->exists()) {
 			throw (new \Katu\Exceptions\ErrorException("Source file doesn't exist."))
-				->setAbbr('sourceFileUnavailable')
+				->setAbbr("sourceFileUnavailable")
 				;
 		}
 
 		$destination->touch();
 		if (!copy($this, $destination)) {
 			throw (new \Katu\Exceptions\ErrorException("Couldn't copy the file."))
-				->setAbbr('fileCopyFailed')
+				->setAbbr("fileCopyFailed")
 				;
 		}
 
@@ -367,7 +367,7 @@ class File
 	public function getDateTimeModified()
 	{
 		try {
-			return new \Katu\Tools\DateTime\DateTime('@' . filemtime((string)$this));
+			return new \Katu\Tools\DateTime\DateTime("@" . filemtime((string)$this));
 		} catch (\Throwable $e) {
 			return false;
 		}
@@ -402,12 +402,12 @@ class File
 		clearstatcache();
 
 		$placeholderFile = new \Katu\Files\File(...func_get_args());
-		$platformDir = new \Katu\Files\File(preg_replace('/{platform}/', \Katu\Config\Env::getPlatform(), $placeholderFile->getDir()));
+		$platformDir = new \Katu\Files\File(preg_replace("/{platform}/", \Katu\Config\Env::getPlatform(), $placeholderFile->getDir()));
 
 		$fileRegexp = $placeholderFile->getBasename();
-		$fileRegexp = preg_replace('/{hash}/', '([0-9a-f]+)?', $fileRegexp);
-		$fileRegexp = preg_replace('/{dash}/', '-?', $fileRegexp);
-		$fileRegexp = '/^' . $fileRegexp . '$/';
+		$fileRegexp = preg_replace("/{hash}/", "([0-9a-f]+)?", $fileRegexp);
+		$fileRegexp = preg_replace("/{dash}/", "-?", $fileRegexp);
+		$fileRegexp = "/^" . $fileRegexp . "$/";
 
 		$matchedFiles = [];
 		foreach ($platformDir->getFiles() as $file) {
@@ -427,15 +427,15 @@ class File
 		return array_slice($matchedFiles, 0, 1);
 	}
 
-	public function getHash($function = 'sha1')
+	public function getHash($function = "sha1")
 	{
 		return hash($function, $this->get());
 	}
 
-	public function getHashedURL(?string $algo = 'sha1', ?string $paramName = 'hash')
+	public function getHashedURL(?string $algo = "sha1", ?string $paramName = "hash")
 	{
 		if (!$algo) {
-			$algo = 'sha1';
+			$algo = "sha1";
 		}
 
 		return (new \Katu\Types\TURL($this->getURL()))
@@ -443,7 +443,7 @@ class File
 			;
 	}
 
-	public function getCachedHashedURL(Timeout $timeout = null, ?string $algo = 'sha1', ?string $paramName = 'hash')
+	public function getCachedHashedURL(Timeout $timeout = null, ?string $algo = "sha1", ?string $paramName = "hash")
 	{
 		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__), $timeout, function ($file, $algo, $paramName) {
 			return $file->getHashedURL($algo, $paramName);

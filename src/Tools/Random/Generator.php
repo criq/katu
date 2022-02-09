@@ -4,15 +4,15 @@ namespace Katu\Tools\Random;
 
 class Generator
 {
-	const ALNUM = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-	const ALNUM_LOWER = 'abcdefghijklmnopqrstuvwxyz0123456789';
-	const ALNUM_SPECIAL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$-_.+!*()';
-	const ALNUM_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-	const ALPHA = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
-	const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	const IDSTRING = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
-	const NUM = '0123456789';
+	const ALNUM = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const ALNUM_LOWER = "abcdefghijklmnopqrstuvwxyz0123456789";
+	const ALNUM_SPECIAL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$-_.+!*()";
+	const ALNUM_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const ALPHA_LOWER = "abcdefghijklmnopqrstuvwxyz";
+	const ALPHA_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const IDSTRING = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
+	const NUM = "0123456789";
 
 	public static function getFromChars(string $chars, int $length = 32): string
 	{
@@ -59,13 +59,13 @@ class Generator
 	public static function getWord(int $length = 8, ?int $seed = null): string
 	{
 		$seed = is_null($seed) ? rand(0, 1) : $seed;
-		$word = '';
+		$word = "";
 
 		for ($i = $seed; $i < $length + $seed; $i++) {
 			if ($i % 2) {
-				$word .= static::getFromChars('bcdfghjklmnpqrstvwxz', 1);
+				$word .= static::getFromChars("bcdfghjklmnpqrstvwxz", 1);
 			} else {
-				$word .= static::getFromChars('aeiouy', 1);
+				$word .= static::getFromChars("aeiouy", 1);
 			}
 		}
 
