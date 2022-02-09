@@ -42,12 +42,12 @@ class Config
 	public function getPDOArray(): array
 	{
 		return [
-			"charset" => $this->charset,
-			"dbname" => $this->database,
+			"charset" => $this->getCharset(),
+			"dbname" => $this->getDatabase(),
 			"driver" => $this->getDriver(),
-			"host" => $this->host,
-			"password" => $this->password,
-			"user" => $this->user,
+			"host" => $this->getHost(),
+			"password" => $this->getPassword(),
+			"user" => $this->getUser(),
 		];
 	}
 
@@ -61,18 +61,33 @@ class Config
 		return static::DRIVER;
 	}
 
+	public function getCharset(): string
+	{
+		return (string)$this->charset;
+	}
+
+	public function getDatabase(): string
+	{
+		return (string)$this->database;
+	}
+
+	public function getHost(): string
+	{
+		return (string)$this->host;
+	}
+
 	public function getUser(): string
 	{
-		return $this->user;
+		return (string)$this->user;
 	}
 
 	public function getPassword(): string
 	{
-		return $this->password;
+		return (string)$this->password;
 	}
 
 	public function getPDODSN(): string
 	{
-		return "{$this->getSchema()}:dbname={$this->database};host={$this->host};charset={$this->charset}";
+		return "{$this->getSchema()}:dbname={$this->getDatabase()};host={$this->getHost()};charset={$this->getCharset()}";
 	}
 }
