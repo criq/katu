@@ -11,18 +11,18 @@ abstract class View extends Base
 	const AUTO_INDICES = true;
 	const CACHE = true;
 	const CACHE_ADVANCE = .75;
-	const CACHE_DATETIME_FORMAT = 'YmdHis';
+	const CACHE_DATETIME_FORMAT = "YmdHis";
 	const CACHE_ON_UPDATE = true;
 	const CACHE_TIMEOUT = 86400;
 	const COMPOSITE_INDEX = true;
-	const CUSTOM_INDICES = '';
+	const CUSTOM_INDICES = "";
 	const MATERIALIZE = false;
 	const MATERIALIZE_ADVANCE = 1;
-	const MATERIALIZE_HOURS = '';
+	const MATERIALIZE_HOURS = "";
 	const MATERIALIZE_TIMEOUT = 86400;
 	const MAX_NAME_LENGTH = 64;
-	const PREFIX_CACHE = '_cache';
-	const SEPARATOR = '_';
+	const PREFIX_CACHE = "_cache";
+	const SEPARATOR = "_";
 	const TABLE = null;
 	const TIMEOUT = 3600;
 	const TMP_LENGTH = 8;
@@ -68,7 +68,7 @@ abstract class View extends Base
 
 	public static function getColumn($name, $options = []): \Katu\PDO\Column
 	{
-		if (isset($options['cache']) && $options['cache'] === false) {
+		if (isset($options["cache"]) && $options["cache"] === false) {
 			$table = static::getView();
 		} else {
 			$table = static::getTable();
@@ -81,7 +81,7 @@ abstract class View extends Base
 
 	public static function getViewColumn($name, $options = [])
 	{
-		$options['cache'] = false;
+		$options["cache"] = false;
 
 		return static::getColumn($name, $options);
 	}
@@ -110,11 +110,11 @@ abstract class View extends Base
 
 	public static function getCachedTableShortNameBase()
 	{
-		$hash = substr(hash('sha1', static::getViewName()->getName()), 0, 8);
+		$hash = substr(hash("sha1", static::getViewName()->getName()), 0, 8);
 
 		$str = implode(static::SEPARATOR, array_merge([static::PREFIX_CACHE], array_map(function ($i) {
 			return substr($i, 0, 3);
-		}, explode('_', static::getViewName()->getName()))));
+		}, explode("_", static::getViewName()->getName()))));
 
 		$maxLength = static::MAX_NAME_LENGTH - static::getMetaStringLength() - strlen($hash) + strlen(static::PREFIX_CACHE);
 		$str = substr($str, 0, $maxLength);
@@ -158,9 +158,9 @@ abstract class View extends Base
 	public static function getCachedTableNameRegexp()
 	{
 		return implode(static::SEPARATOR, [
-			'(' . implode('|', [static::getCachedTableNameBase(), static::getCachedTableShortNameBase()]) . ')',
-			'(?<datetime>[0-9]{' . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . '})',
-			'([' . \Katu\Tools\Random\Generator::IDSTRING . ']{' . static::TMP_LENGTH . '})',
+			"(" . implode("|", [static::getCachedTableNameBase(), static::getCachedTableShortNameBase()]) . ")",
+			"(?<datetime>[0-9]{" . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . "})",
+			"([" . \Katu\Tools\Random\Generator::IDSTRING . "]{" . static::TMP_LENGTH . "})",
 		]);
 	}
 
@@ -169,9 +169,9 @@ abstract class View extends Base
 		$sql = static::getCachedTablesSql();
 
 		$query = static::getConnection()->createQuery($sql, [
-			'tableSchema' => static::getConnection()->getConfig()->database,
-			'tableRegexp' => strtr(static::getCachedTableNameRegexp(), [
-				'?<datetime>' => null,
+			"tableSchema" => static::getConnection()->getConfig()->database,
+			"tableRegexp" => strtr(static::getCachedTableNameRegexp(), [
+				"?<datetime>" => null,
 			]),
 		]);
 
@@ -188,8 +188,8 @@ abstract class View extends Base
 
 		$array = static::getCachedTablesQuery()->getResult();
 
-		if ($array[0]['TABLE_NAME'] ?? null) {
-			static::$cachedTableNames[$className] = new \Katu\PDO\Name($array[0]['TABLE_NAME']);
+		if ($array[0]["TABLE_NAME"] ?? null) {
+			static::$cachedTableNames[$className] = new \Katu\PDO\Name($array[0]["TABLE_NAME"]);
 			return static::$cachedTableNames[$className];
 		}
 
@@ -339,11 +339,11 @@ abstract class View extends Base
 
 	public static function isMaterializable()
 	{
-		if (!static::MATERIALIZE_HOURS || \Katu\Config\Env::getPlatform() == 'dev') {
+		if (!static::MATERIALIZE_HOURS || \Katu\Config\Env::getPlatform() == "dev") {
 			return true;
 		}
 
-		return in_array((int)(new \Katu\Tools\DateTime\DateTime)->format('h'), explode(',', static::MATERIALIZE_HOURS));
+		return in_array((int)(new \Katu\Tools\DateTime\DateTime)->format("h"), explode(",", static::MATERIALIZE_HOURS));
 	}
 
 	public static function getMaterializedTable()
@@ -356,8 +356,8 @@ abstract class View extends Base
 	public static function getMaterializedTableName()
 	{
 		$name = implode(static::SEPARATOR, [
-			'mv',
-			preg_replace('/^view_/', '', static::getViewName()->getName()),
+			"mv",
+			preg_replace("/^view_/", "", static::getViewName()->getName()),
 		]);
 
 		return new \Katu\PDO\Name($name);
@@ -368,16 +368,16 @@ abstract class View extends Base
 		@set_time_limit(static::TIMEOUT);
 
 		// Get a temporary table.
-		$temporaryTableName = new \Katu\PDO\Name('_tmp_' . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)));
+		$temporaryTableName = new \Katu\PDO\Name("_tmp_" . strtoupper(\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH)));
 		$tableClass = static::getTableClass()->getName();
 		$temporaryTable = new $tableClass($destinationTable->getConnection(), $temporaryTableName);
 
 		// Copy into temporary table view.
 		$params = [
-			'disableNull' => true,
-			'autoIndices' => static::AUTO_INDICES,
-			'compositeIndex' => static::COMPOSITE_INDEX,
-			'customIndices' => array_values(array_filter(explode(',', static::CUSTOM_INDICES))),
+			"disableNull" => true,
+			"autoIndices" => static::AUTO_INDICES,
+			"compositeIndex" => static::COMPOSITE_INDEX,
+			"customIndices" => array_values(array_filter(explode(",", static::CUSTOM_INDICES))),
 		];
 		$sourceTable->copy($temporaryTable, $params);
 
@@ -430,7 +430,7 @@ abstract class View extends Base
 				return true;
 			};
 
-			(new \Katu\Tools\Locks\Lock(new TIdentifier('databases', static::getConnection()->getConfig()->database, 'views', 'materialize', $class), new Timeout(static::TIMEOUT), $callback))
+			(new \Katu\Tools\Locks\Lock(new TIdentifier("databases", static::getConnection()->getConfig()->database, "views", "materialize", $class), new Timeout(static::TIMEOUT), $callback))
 				->setArgs($class)
 				->run()
 				;
@@ -461,15 +461,9 @@ abstract class View extends Base
 		return true;
 	}
 
-	public static function getLastCachedTemporaryFile()
+	public static function getLastCachedTemporaryFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\Temporary([
-			'databases',
-			static::getConnection()->getConfig()->database,
-			'views',
-			'cached',
-			static::TABLE,
-		]);
+		return new \Katu\Files\Temporary("databases", static::getConnection()->getConfig()->getDatabase(), "views", "cached", static::TABLE);
 	}
 
 	public static function updateLastCachedTime()
@@ -483,22 +477,16 @@ abstract class View extends Base
 		$array = $query->getResult()->getItems();
 		$regexp = static::getCachedTableNameRegexp();
 
-		if (($array[0]['TABLE_NAME'] ?? null) && preg_match("/$regexp/", $array[0]['TABLE_NAME'], $match)) {
-			return \Katu\Tools\DateTime\DateTime::createFromFormat(static::CACHE_DATETIME_FORMAT, $match['datetime']);
+		if (($array[0]["TABLE_NAME"] ?? null) && preg_match("/$regexp/", $array[0]["TABLE_NAME"], $match)) {
+			return \Katu\Tools\DateTime\DateTime::createFromFormat(static::CACHE_DATETIME_FORMAT, $match["datetime"]);
 		}
 
 		return false;
 	}
 
-	public static function getLastMaterializedTemporaryFile()
+	public static function getLastMaterializedTemporaryFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\Temporary([
-			'!databases',
-			'!' . static::getConnection()->getConfig()->database,
-			'!views',
-			'!materialized',
-			'!' . static::TABLE,
-		]);
+		return new \Katu\Files\Temporary("databases", static::getConnection()->getConfig()->getDatabase(), "views", "materialized", static::TABLE);
 	}
 
 	public static function updateLastMaterializedTime()
@@ -513,7 +501,7 @@ abstract class View extends Base
 
 	public static function getAllViewClasses(): array
 	{
-		$dir = new \Katu\Files\File('app', 'Models');
+		$dir = new \Katu\Files\File("app", "Models");
 		if ($dir->exists()) {
 			$dir->includeAllPhpFiles();
 		}
@@ -550,7 +538,7 @@ abstract class View extends Base
 			foreach (array_slice($array, 1) as $tableArray) {
 				$table = new $tableClass(
 					$class->getName()::getConnection(),
-					new \Katu\PDO\Name($tableArray['TABLE_NAME']),
+					new \Katu\PDO\Name($tableArray["TABLE_NAME"]),
 				);
 				$table->delete();
 			}

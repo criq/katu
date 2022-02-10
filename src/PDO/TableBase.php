@@ -35,7 +35,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getSQL(&$context = []): string
 	{
-		return implode('.', [new Name($this->getConnection()->getConfig()->database), $this->name]);
+		return implode(".", [new Name($this->getConnection()->getConfig()->database), $this->name]);
 	}
 
 	public function getColumns(): array
@@ -55,10 +55,10 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getColumnDescriptions(): array
 	{
-		return \Katu\Cache\Runtime::get(new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'descriptions', $this->getName()), function () {
+		return \Katu\Cache\Runtime::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "descriptions", $this->getName()), function () {
 			$columns = [];
 			foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this->getName())->getResult() as $properties) {
-				$columns[$properties['Field']] = $properties;
+				$columns[$properties["Field"]] = $properties;
 			}
 
 			return $columns;
@@ -75,7 +75,7 @@ abstract class TableBase extends \Sexy\Expression
 	public function getColumnNames()
 	{
 		return array_values(array_map(function ($i) {
-			return new Name($i['Field']);
+			return new Name($i["Field"]);
 		}, $this->getColumnDescriptions()));
 	}
 
@@ -114,50 +114,50 @@ abstract class TableBase extends \Sexy\Expression
 		}
 
 		$sql = $this->getCreateSyntax();
-		if (preg_match('/^CREATE ALGORITHM/', $sql)) {
+		if (preg_match("/^CREATE ALGORITHM/", $sql)) {
 			// View.
 			$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 		} else {
 			// Table.
-			$sql = preg_replace_callback('/^CREATE TABLE `([a-z0-9_]+)`/', function ($i) use ($destinationTable) {
+			$sql = preg_replace_callback("/^CREATE TABLE `([a-z0-9_]+)`/", function ($i) use ($destinationTable) {
 				return " CREATE TABLE `" . $destinationTable->name->name . "` ";
 			}, $sql);
 
-			if ($options['createSqlSanitizeCallback'] ?? null) {
-				$callback = $options['createSqlSanitizeCallback'];
+			if ($options["createSqlSanitizeCallback"] ?? null) {
+				$callback = $options["createSqlSanitizeCallback"];
 				$sql = $callback($sql);
 			}
 
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 			// Create table and copy the data.
-			$sql = " INSERT " . (($options['insertIgnore'] ?? null) ? " IGNORE " : null) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
+			$sql = " INSERT " . (($options["insertIgnore"] ?? null) ? " IGNORE " : null) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 		}
 
 		// Disable NULL.
-		if (isset($options['disableNull']) && $options['disableNull']) {
+		if (isset($options["disableNull"]) && $options["disableNull"]) {
 		}
 
 		// Create automatic indices.
-		if (isset($options['autoIndices']) && $options['autoIndices']) {
+		if (isset($options["autoIndices"]) && $options["autoIndices"]) {
 			$indexableColumns = [];
 
 			foreach ($destinationTable->getColumns() as $column) {
 				if (in_array($column->getProperties()->type, [
-					'date', 'datetime', 'timestamp', 'year',
-					'tinyint', 'smallint', 'mediumint', 'int', 'bigint',
-					'float', 'double', 'real', 'decimal',
-					'char', 'varchar',
+					"date", "datetime", "timestamp", "year",
+					"tinyint", "smallint", "mediumint", "int", "bigint",
+					"float", "double", "real", "decimal",
+					"char", "varchar",
 				])) {
 					$indexableColumns[] = $column;
 				}
 			}
 
 			// Composite index.
-			if ($indexableColumns && $options['compositeIndex']) {
-				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', array_map(function ($i) {
+			if ($indexableColumns && $options["compositeIndex"]) {
+				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(", ", array_map(function ($i) {
 					return $i->name;
 				}, $indexableColumns)) . "); ";
 
@@ -180,9 +180,9 @@ abstract class TableBase extends \Sexy\Expression
 		}
 
 		// Create custom indices.
-		foreach (($options['customIndices'] ?? []) as $customIndex) {
+		foreach (($options["customIndices"] ?? []) as $customIndex) {
 			try {
-				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(', ', $customIndex) . ") ";
+				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(", ", $customIndex) . ") ";
 				$destinationTable->getConnection()->createQuery($sql)->getResult();
 			} catch (\Throwable $e) {
 				// Nevermind.
@@ -196,7 +196,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getUsedInViews()
 	{
-		return \Katu\Cache\General::get($this->getUsedInViewsCacheIdentifier(), new Timeout('1 day'), function ($table) {
+		return \Katu\Cache\General::get($this->getUsedInViewsCacheIdentifier(), new Timeout("1 day"), function ($table) {
 			$views = [];
 
 			foreach ($this->getConnection()->getViewNames() as $viewName) {
@@ -210,9 +210,9 @@ abstract class TableBase extends \Sexy\Expression
 		}, $this);
 	}
 
-	public function getUsedInViewsCacheIdentifier() : TIdentifier
+	public function getUsedInViewsCacheIdentifier(): TIdentifier
 	{
-		return new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'usedInViews', $this->name);
+		return new TIdentifier("databases", $this->getConnection()->getName(), "tables", "usedInViews", $this->name);
 	}
 
 	public function getTotalUsage(Timeout $timeout)
@@ -224,31 +224,31 @@ abstract class TableBase extends \Sexy\Expression
 			$res = $table->getConnection()->createQuery($sql)->getResult()->getItems();
 
 			return [
-				'rows' => (int) $res[0]['total'],
-				'duration' => $stopwatch->getDuration(),
+				"rows" => (int) $res[0]["total"],
+				"duration" => $stopwatch->getDuration(),
 			];
 		}, $this);
 	}
 
-	public function getTotalUsageCacheIdentifier() : TIdentifier
+	public function getTotalUsageCacheIdentifier(): TIdentifier
 	{
-		return new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'totalRows', $this->name);
+		return new TIdentifier("databases", $this->getConnection()->getName(), "tables", "totalRows", $this->name);
 	}
 
 	public function getLastUpdatedTemporaryFile()
 	{
-		return new \Katu\Files\Temporary('databases', $this->getConnection()->getName(), 'tables', 'updated', $this->name);
+		return new \Katu\Files\Temporary("databases", $this->getConnection()->getName(), "tables", "updated", $this->name);
 	}
 
-	public function getPrimaryKeyColumnName() : ?string
+	public function getPrimaryKeyColumnName(): ?string
 	{
-		$cacheIdentifier = new TIdentifier('databases', $this->getConnection()->getName(), 'tables', 'idColumn', $this->getName()->getName());
+		$cacheIdentifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getName());
 
 		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
-			return \Katu\Cache\General::get($cacheIdentifier, new Timeout('10 minutes'), function () {
+			return \Katu\Cache\General::get($cacheIdentifier, new Timeout("10 minutes"), function () {
 				foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
-					if (isset($row['Key']) && $row['Key'] == 'PRI') {
-						return $row['Field'];
+					if (isset($row["Key"]) && $row["Key"] == "PRI") {
+						return $row["Field"];
 					}
 				}
 

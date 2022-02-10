@@ -7,24 +7,24 @@ use Katu\Types\TIdentifier;
 
 class View extends Table
 {
-	public function getCreateSyntax()
+	public function getCreateSyntax(): string
 	{
 		$sql = " SHOW CREATE TABLE " . $this->getName();
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-		return $res[0]['Create View'];
+		return $res[0]["Create View"];
 	}
 
-	public function getSourceTables()
+	public function getSourceTables(): array
 	{
-		$tableNames = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 day'), function ($table) {
+		$tableNames = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout("1 day"), function ($table) {
 			$tableNames = [];
 
 			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
 			$res = $table->getConnection()->createQuery($sql)->getResult()->getItems();
 			foreach ($res as $row) {
-				if (!preg_match('/^<.+>$/', $row['table'])) {
-					$tableNames[] = new \Katu\PDO\Name($row['table']);
+				if (!preg_match("/^<.+>$/", $row["table"])) {
+					$tableNames[] = new \Katu\PDO\Name($row["table"]);
 				}
 			}
 
@@ -39,27 +39,26 @@ class View extends Table
 		return $tables;
 	}
 
-	public function getSourceMaterializedViewNames()
+	public function getSourceMaterializedViewNames(): array
 	{
-		if (preg_match_all('/`(mv_[a-z0-9_]+)`/', $this->getCreateSyntax(), $matches)) {
+		if (preg_match_all("/`(mv_[a-z0-9_]+)`/", $this->getCreateSyntax(), $matches)) {
 			return array_values(array_unique($matches[1]));
 		}
 
 		return false;
 	}
 
-	public function getSourceViewsInMaterializedViews()
+	public function getSourceViewsInMaterializedViews(): array
 	{
 		$views = [];
-
 		foreach (array_filter((array) $this->getSourceMaterializedViewNames()) as $tableName) {
-			$views[] = new static($this->getConnection(), new Name(preg_replace('/^mv_/', 'view_', $tableName)));
+			$views[] = new static($this->getConnection(), new Name(preg_replace("/^mv_/", "view_", $tableName)));
 		}
 
 		return $views;
 	}
 
-	public function getModels() : array
+	public function getModels(): array
 	{
 		$models = [];
 		foreach (\Katu\Models\View::getAllViewClasses() as $class) {
