@@ -15,7 +15,7 @@ class TEmailAddress
 
 	public function __toString(): string
 	{
-		return (string)$this->value;
+		return (string)$this->emailAddress;
 	}
 
 	public static function validateEmailAddress(string $emailAddress): bool
