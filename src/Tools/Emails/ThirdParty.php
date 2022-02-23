@@ -10,25 +10,25 @@ abstract class ThirdParty extends \Katu\Tools\Emails\Email
 
 	abstract public function send();
 
-	public function setTemplate($template)
+	public function setTemplate($template): ThirdParty
 	{
 		$this->template = $template;
 
 		return $this;
 	}
 
-	public function addAttachment($file, $params = [])
+	public function addAttachment($file, $params = []): ThirdParty
 	{
 		$this->attachments[] = [
-			'file' => new \Katu\Files\File($file),
-			'name' => $params['name'] ?? null,
-			'cid' => $params['cid'] ?? null,
+			"file" => new \Katu\Files\File($file),
+			"name" => $params["name"] ?? null,
+			"cid" => $params["cid"] ?? null,
 		];
 
 		return $this;
 	}
 
-	public function setVariable($name, $value)
+	public function setVariable($name, $value): ThirdParty
 	{
 		if (trim($name)) {
 			$this->variables[$name] = $value;
@@ -37,7 +37,7 @@ abstract class ThirdParty extends \Katu\Tools\Emails\Email
 		return $this;
 	}
 
-	public function setRecipientVariable($emailAddress, $name, $value)
+	public function setRecipientVariable($emailAddress, $name, $value): ThirdParty
 	{
 		foreach (static::resolveEmailAddress($emailAddress) as $emailAddress) {
 			if (trim($name)) {

@@ -58,7 +58,7 @@ class TEmailAddress
 
 	public function getDomain(): string
 	{
-		return explode('@', $this->getEmailAddress())[1];
+		return explode("@", $this->getEmailAddress())[1];
 	}
 
 	/**
@@ -66,8 +66,8 @@ class TEmailAddress
 	 */
 	public static function createFromEnvelope(?string $encoded = null)
 	{
-		if (preg_match('/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U', $encoded, $match)) {
-			return new static($match['emailAddress'], $match['name']);
+		if (preg_match("/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U", $encoded, $match)) {
+			return new static($match["emailAddress"], $match["name"]);
 		} else {
 			return new static($encoded);
 		}
