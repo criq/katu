@@ -7,7 +7,7 @@ use Katu\Types\TIdentifier;
 
 class Ledger
 {
-	const DIR_NAME = 'ledgers';
+	const DIR_NAME = "ledgers";
 
 	protected $identifier;
 
@@ -35,7 +35,7 @@ class Ledger
 
 	public function getFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('txt'));
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath("txt"));
 	}
 
 	public function populateKeys(array $keys): Ledger
@@ -79,37 +79,42 @@ class Ledger
 	public function setKeyLoaded($key): Ledger
 	{
 		$this->setKey($key, array_merge((array)$this->getKey($key), [
-			'timeLoaded' => (new \Katu\Tools\DateTime\DateTime)->format('r'),
+			"timeLoaded" => (new \Katu\Tools\DateTime\DateTime)->format("r"),
 		]));
 
 		return $this;
 	}
 
-	public function getKey($key)
+	public function getKeyLoaded($key, Timeout $timeout, string $timeoutKey = "timeLoaded"): bool
 	{
-		$contents = $this->get();
-		if (isset($contents[$key])) {
-			return $contents[$key];
+		try {
+			return (new \Katu\Tools\DateTime\DateTime($this->getKey($key)[$timeoutKey]))->fitsInTimeout($timeout);
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
-		return null;
+		return false;
 	}
 
-	public function getExpiredKeys(Timeout $timeout, $timeKey = 'timeLoaded'): array
+	public function getKey($key)
+	{
+		return $this->get()[$key] ?? null;
+	}
+
+	public function getExpiredKeys(Timeout $timeout, string $timeoutKey = "timeLoaded"): array
 	{
 		$expired = [];
 		foreach ($this->get() as $key => $value) {
-			if (isset($value[$timeKey]) && (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->fitsInTimeout($timeout)) {
+			if (isset($value[$timeoutKey]) && (new \Katu\Tools\DateTime\DateTime($value[$timeoutKey]))->fitsInTimeout($timeout)) {
 				// Not expired.
-			} elseif (isset($value[$timeKey])) {
-				$expired[$key] = 'B' . (new \Katu\Tools\DateTime\DateTime($value[$timeKey]))->getTimestamp();
+			} elseif (isset($value[$timeoutKey])) {
+				$expired[$key] = "B" . (new \Katu\Tools\DateTime\DateTime($value[$timeoutKey]))->getTimestamp();
 			} else {
-				$expired[$key] = 'A' . $key;
+				$expired[$key] = "A" . $key;
 			}
 		}
 
 		natsort($expired);
-		// var_dump($expired);die;
 
 		return array_keys($expired);
 	}
@@ -126,5 +131,19 @@ class Ledger
 	public function count(): int
 	{
 		return count($this->get());
+	}
+
+	public function getKeys(): array
+	{
+		return array_keys($this->get());
+	}
+
+	public function getMaxKey()
+	{
+		try {
+			return max($this->getKeys());
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 }
