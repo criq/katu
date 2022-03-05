@@ -45,7 +45,7 @@ class View extends Table
 			return array_values(array_unique($matches[1]));
 		}
 
-		return false;
+		return [];
 	}
 
 	public function getSourceViewsInMaterializedViews(): array
