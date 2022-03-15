@@ -35,9 +35,9 @@ class Column extends \Sexy\Expression
 
 	public function getSql(&$context = [])
 	{
-		return implode('.', [
+		return implode(".", [
 			$this->getTable()->getSql($context),
-			$this->getName() == '*' ? '*' : $this->getName(),
+			$this->getName() == "*" ? "*" : $this->getName(),
 		]);
 	}
 }
