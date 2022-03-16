@@ -256,4 +256,13 @@ abstract class TableBase extends \Sexy\Expression
 			});
 		});
 	}
+
+	public function getPrimaryKeyColumn(): ?Column
+	{
+		try {
+			return $this->getColumn($this->getPrimaryKeyColumnName());
+		} catch (\Throwable $e) {
+			return null;
+		}
+	}
 }
