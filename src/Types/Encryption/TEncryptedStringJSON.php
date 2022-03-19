@@ -17,7 +17,7 @@ class TEncryptedStringJSON
 	{
 		$array = \Katu\Files\Formats\JSON::decodeAsArray($this->json);
 
-		return new TEncryptedString($array['method'], hex2bin($array['ivHex']), $array['encrypted']);
+		return new TEncryptedString($array["method"], hex2bin($array["ivHex"]), $array["encrypted"]);
 	}
 
 	public function getPortableString() : TEncryptedStringJSONPortableString
