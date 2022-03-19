@@ -13,14 +13,14 @@ class TEncryptedStringJSON
 		$this->json = $json;
 	}
 
-	public function getEncryptedString() : TEncryptedString
+	public function getEncryptedString(): TEncryptedString
 	{
 		$array = \Katu\Files\Formats\JSON::decodeAsArray($this->json);
 
 		return new TEncryptedString($array["method"], hex2bin($array["ivHex"]), $array["encrypted"]);
 	}
 
-	public function getPortableString() : TEncryptedStringJSONPortableString
+	public function getPortableString(): TEncryptedStringJSONPortableString
 	{
 		return TEncryptedStringJSONPortableString::createFromJSON($this->json);
 	}

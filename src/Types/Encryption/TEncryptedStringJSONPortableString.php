@@ -13,17 +13,17 @@ class TEncryptedStringJSONPortableString
 		$this->string = $string;
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return $this->string;
 	}
 
-	public static function createFromJSON(TJSON $json)
+	public static function createFromJSON(TJSON $json): TEncryptedStringJSONPortableString
 	{
 		return new static(bin2hex(gzencode($json, 9)));
 	}
 
-	public function getJSON() : TEncryptedStringJSON
+	public function getJSON(): TEncryptedStringJSON
 	{
 		return new TEncryptedStringJSON(new TJSON(gzdecode(hex2bin($this->string))));
 	}
