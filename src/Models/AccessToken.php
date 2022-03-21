@@ -58,6 +58,6 @@ class AccessToken extends \Katu\Model
 
 	public function getIsValid(): bool
 	{
-		return !(new \Katu\Utils\DateTime($this->timeCreated))->isInPast();
+		return !(new \Katu\Utils\DateTime($this->timeCreated))->isInFuture() && !(new \Katu\Utils\DateTime($this->timeExpires))->isInPast();
 	}
 }
