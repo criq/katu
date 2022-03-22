@@ -4,18 +4,18 @@ namespace Katu\Utils;
 
 class Random {
 
-	const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
-	const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	const ALPHA = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	const ALPHA_LOWER = "abcdefghijklmnopqrstuvwxyz";
+	const ALPHA_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-	const ALNUM_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-	const ALNUM_LOWER = 'abcdefghijklmnopqrstuvwxyz0123456789';
-	const ALNUM = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-	const ALNUM_SPECIAL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$-_.+!*()';
+	const ALNUM_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const ALNUM_LOWER = "abcdefghijklmnopqrstuvwxyz0123456789";
+	const ALNUM = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const ALNUM_SPECIAL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$-_.+!*()";
 
-	const NUM = '0123456789';
+	const NUM = "0123456789";
 
-	const IDSTRING = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
+	const IDSTRING = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
 
 	public static function getFromChars($chars, $length = 32) {
 		try {
@@ -55,13 +55,13 @@ class Random {
 
 	public static function getWord($length = 8, $seed = null) {
 		$seed = is_null($seed) ? rand(0, 1) : $seed;
-		$word = '';
+		$word = "";
 
 		for ($i = $seed; $i < $length + $seed; $i++) {
 			if ($i % 2) {
-				$word .= static::getFromChars('bcdfghjklmnpqrstvwxz', 1);
+				$word .= static::getFromChars("bcdfghjklmnpqrstvwxz", 1);
 			} else {
-				$word .= static::getFromChars('aeiouy', 1);
+				$word .= static::getFromChars("aeiouy", 1);
 			}
 		}
 
