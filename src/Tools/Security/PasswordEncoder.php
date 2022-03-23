@@ -2,10 +2,10 @@
 
 namespace Katu\Tools\Security;
 
-class Password
+class PasswordEncoder
 {
-	protected $delimiter = '$';
-	protected $algo = 'sha512';
+	protected $delimiter = "$";
+	protected $algo = "sha512";
 	protected $saltLength = 64;
 	protected $salt;
 	protected $iterations = 3;
@@ -16,7 +16,7 @@ class Password
 		$this->password = $password;
 	}
 
-	public static function createFromEncoded(string $encoded) : Password
+	public static function createFromEncoded(string $encoded): PasswordEncoder
 	{
 		$password = new static;
 		$password->setDelimiter(substr($encoded, 0, 1));
@@ -30,7 +30,7 @@ class Password
 		return $password;
 	}
 
-	public function setDelimiter(string $delimiter) : Password
+	public function setDelimiter(string $delimiter): PasswordEncoder
 	{
 		if (strlen($delimiter) != 1) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid delimiter $delimiter.");
@@ -41,7 +41,7 @@ class Password
 		return $this;
 	}
 
-	public function setAlgo(string $algo) : Password
+	public function setAlgo(string $algo): PasswordEncoder
 	{
 		if (!in_array($algo, hash_algos())) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid hashing algorithm $algo.");
@@ -52,26 +52,26 @@ class Password
 		return $this;
 	}
 
-	public function getAlgo() : string
+	public function getAlgo(): string
 	{
 		return $this->algo;
 	}
 
-	public function setSaltLength(int $saltLength) : Password
+	public function setSaltLength(int $saltLength): PasswordEncoder
 	{
 		$this->saltLength = $saltLength;
 
 		return $this;
 	}
 
-	public function setSalt(string $salt) : Password
+	public function setSalt(string $salt): PasswordEncoder
 	{
 		$this->salt = $salt;
 
 		return $this;
 	}
 
-	public function getSalt() : string
+	public function getSalt(): string
 	{
 		if (!$this->salt) {
 			$this->salt = \Katu\Tools\Random\Generator::getString($this->saltLength);
@@ -80,36 +80,36 @@ class Password
 		return $this->salt;
 	}
 
-	public function setIterations(int $iterations) : Password
+	public function setIterations(int $iterations): PasswordEncoder
 	{
 		$this->iterations = $iterations;
 
 		return $this;
 	}
 
-	public function getIterations() : int
+	public function getIterations(): int
 	{
 		return $this->iterations;
 	}
 
-	public function setPassword(string $password) : Password
+	public function setPassword(string $password): PasswordEncoder
 	{
 		$this->password = $password;
 
 		return $this;
 	}
 
-	public function getPassword() : string
+	public function getPassword(): string
 	{
 		return $this->password;
 	}
 
-	public function getDelimiter() : string
+	public function getDelimiter(): string
 	{
 		return $this->delimiter;
 	}
 
-	public function getHash() : string
+	public function getHash(): string
 	{
 		$iteration = 1;
 		$password = $this->getPassword();
@@ -126,7 +126,7 @@ class Password
 		return $hash;
 	}
 
-	public function getEncoded() : string
+	public function getEncoded(): string
 	{
 		return implode([
 			$this->getDelimiter(),

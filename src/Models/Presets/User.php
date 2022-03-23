@@ -85,9 +85,22 @@ class User extends \Katu\Models\Model
 		return $user;
 	}
 
-	public static function getCurrent(): ?User
+	public static function getFromRequest(\Slim\Http\Request $request): ?User
 	{
-		return static::getByAccessToken(\Katu\Tools\Cookies\Cookie::get("accessToken"));
+		// Cookie.
+		$user = static::getByAccessToken($request->getCookieParam("accessToken"));
+		if ($user) {
+			return $user;
+		}
+
+		// Access token.
+		$header = $request->getHeaderLine("Authorization") ?: $request->getHeaderLine("X-Auth");
+		$user = static::getByAccessToken($header);
+		if ($user) {
+			return $user;
+		}
+
+		return null;
 	}
 
 	public static function getByAccessToken(?string $token): ?User
@@ -157,18 +170,24 @@ class User extends \Katu\Models\Model
 
 	public function setPlainPassword(string $password)
 	{
-		$this->update("password", (new \Katu\Tools\Security\Password($password))->getEncoded());
+		$this->update("password", (new \Katu\Tools\Security\PasswordEncoder($password))->getEncoded());
 
 		return $this;
 	}
 
-	public function getPassword()
+	public function getEncodedPassword(): ?string
 	{
-		try {
-			return \Katu\Tools\Security\Password::createFromEncoded($this->password);
-		} catch (\Throwable $e) {
-			return false;
-		}
+		return $this->password;
+	}
+
+	public function hasEncodedPassword()
+	{
+		return (bool)$this->password;
+	}
+
+	public function getPasswordEncoder(): \Katu\Tools\Security\PasswordEncoder
+	{
+		return \Katu\Tools\Security\PasswordEncoder::createFromEncoded($this->getEncodedPassword());
 	}
 
 	public function createAccessToken(): AccessToken
@@ -203,11 +222,6 @@ class User extends \Katu\Models\Model
 			"userId" => $this->getId(),
 			"serviceName" => (string)$serviceName,
 		]);
-	}
-
-	public function hasPassword()
-	{
-		return (bool) $this->password;
 	}
 
 	public function hasEmailAddress()
