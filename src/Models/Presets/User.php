@@ -196,9 +196,9 @@ class User extends \Katu\Models\Model
 		return static::getAccessTokenClass()->getName()::create($this);
 	}
 
-	public function getValidAccessToken(): AccessToken
+	public function getSafeAccessToken(): AccessToken
 	{
-		return static::getAccessTokenClass()->getName()::makeValidForUser($this);
+		return static::getAccessTokenClass()->getName()::getOrCreateSafe($this);
 	}
 
 	public function addUserService($serviceName, $serviceUserId)
