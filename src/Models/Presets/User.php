@@ -113,7 +113,8 @@ class User extends \Katu\Models\Model
 
 		if ($accessToken && $accessToken->getIsValid()) {
 			$user = static::get($accessToken->userId);
-			$accessToken->extend();
+
+			// TODO - to je prostě divný.
 			$accessToken->setCookie();
 
 			return $user;

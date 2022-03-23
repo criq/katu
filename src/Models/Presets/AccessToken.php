@@ -9,11 +9,11 @@ class AccessToken extends \Katu\Models\Model
 {
 	const EXPIRES = 86400;
 	const LENGTH = 128;
-	const TABLE = 'access_tokens';
+	const TABLE = "access_tokens";
 
 	public static function generateTimeExpires(): \Katu\Tools\DateTime\DateTime
 	{
-		return new \Katu\Tools\DateTime\DateTime('+ ' . static::EXPIRES . ' seconds');
+		return new \Katu\Tools\DateTime\DateTime("+ " . static::EXPIRES . " seconds");
 	}
 
 	public static function generateToken(): string
@@ -24,10 +24,10 @@ class AccessToken extends \Katu\Models\Model
 	public static function create(\Katu\Models\Presets\User $user): AccessToken
 	{
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
-			'timeExpires' => static::generateTimeExpires(),
-			'userId' => $user->getId(),
-			'token' => static::generateToken(),
+			"timeCreated" => new \Katu\Tools\DateTime\DateTime,
+			"timeExpires" => static::generateTimeExpires(),
+			"userId" => $user->getId(),
+			"token" => static::generateToken(),
 		]);
 	}
 
@@ -35,8 +35,8 @@ class AccessToken extends \Katu\Models\Model
 	{
 		$sql = SX::select()
 			->from(static::getTable())
-			->where(SX::eq(static::getColumn('userId'), (int)$user->getId()))
-			->where(SX::cmpGreaterThanOrEqual(static::getColumn('timeExpires'), (new \Katu\Tools\DateTime\DateTime())->getDbDateTimeFormat()))
+			->where(SX::eq(static::getColumn("userId"), (int)$user->getId()))
+			->where(SX::cmpGreaterThanOrEqual(static::getColumn("timeExpires"), (new \Katu\Tools\DateTime\DateTime())->getDbDateTimeFormat()))
 			;
 
 		$object = static::getOneBySql($sql);
@@ -59,15 +59,7 @@ class AccessToken extends \Katu\Models\Model
 
 	public function setCookie()
 	{
-		\Katu\Tools\Cookies\Cookie::set('accessToken', $this->getToken(), $this->getTTL()->getValue());
-	}
-
-	public function extend(): AccessToken
-	{
-		$this->timeExpires = static::generateTimeExpires();
-		$this->save();
-
-		return $this;
+		\Katu\Tools\Cookies\Cookie::set("accessToken", $this->getToken(), $this->getTTL()->getValue());
 	}
 
 	public function getTTL(): TSeconds
