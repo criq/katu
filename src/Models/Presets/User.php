@@ -110,12 +110,8 @@ class User extends \Katu\Models\Model
 			"token" => preg_replace("/^(Bearer)\s+/", "", $token),
 		]);
 		if ($accessToken && $accessToken->getIsValid()) {
-			$user = $accessToken->getUser();
-			$accessToken->setCookie();
-
-			return $user;
+			return $accessToken->getUser();
 		}
-
 
 		return null;
 	}
