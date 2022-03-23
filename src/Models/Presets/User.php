@@ -108,17 +108,14 @@ class User extends \Katu\Models\Model
 		$accessTokenClass = static::getAccessTokenClass()->getName();
 		$accessToken = $accessTokenClass::getOneBy([
 			"token" => preg_replace("/^(Bearer)\s+/", "", $token),
-			SX::cmpGreaterThanOrEqual($accessTokenClass::getColumn("timeExpires"), new \Katu\Tools\DateTime\DateTime),
 		]);
-
 		if ($accessToken && $accessToken->getIsValid()) {
-			$user = static::get($accessToken->userId);
-
-			// TODO - to je prostě divný.
+			$user = $accessToken->getUser();
 			$accessToken->setCookie();
 
 			return $user;
 		}
+
 
 		return null;
 	}

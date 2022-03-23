@@ -9,7 +9,7 @@ class Cookie
 	const DEFAULT_PATH = '/';
 	const DEFAULT_SECURE = false;
 
-	public static function set($name, $value = null, $lifetime = null, $path = null, $domain = null)
+	public static function set($name, $value = null, $lifetime = null, $path = null, $domain = null): bool
 	{
 		$config = static::getConfig();
 

@@ -2,6 +2,7 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Types\TClass;
 use Katu\Types\TSeconds;
 use Sexy\Sexy as SX;
 
@@ -11,6 +12,18 @@ class AccessToken extends \Katu\Models\Model
 	const LENGTH = 128;
 	const SAFE_TIMEOUT = 3600;
 	const TABLE = "access_tokens";
+
+	public static function getUserClass(): TClass
+	{
+		return new TClass("\\Katu\\Models\\Presets\\User");
+	}
+
+	public function getUser(): \Katu\Models\Presets\User
+	{
+		$className = static::getUserClass()->getName();
+
+		return $className::get($this->userId);
+	}
 
 	public static function generateTimeExpires(): \Katu\Tools\DateTime\DateTime
 	{
@@ -61,9 +74,9 @@ class AccessToken extends \Katu\Models\Model
 		return $this->token;
 	}
 
-	public function setCookie()
+	public function setCookie(): bool
 	{
-		\Katu\Tools\Cookies\Cookie::set("accessToken", $this->getToken(), $this->getTTL()->getValue());
+		return \Katu\Tools\Cookies\Cookie::set("accessToken", $this->getToken(), $this->getTTL()->getValue());
 	}
 
 	public function getTTL(): TSeconds
