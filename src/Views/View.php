@@ -275,7 +275,7 @@ class View
 		$data["_agent"] = new \Jenssegers\Agent\Agent();
 
 		if (class_exists("App\Models\User")) {
-			$data["_user"] = \App\Models\User::getCurrent();
+			$data["_user"] = \App\Models\User::getFromRequest($request);
 		}
 
 		if (class_exists("App\Models\Setting")) {

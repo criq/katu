@@ -2,6 +2,7 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Types\TClass;
 use Katu\Types\TSeconds;
 use Sexy\Sexy as SX;
 
@@ -9,11 +10,24 @@ class AccessToken extends \Katu\Models\Model
 {
 	const EXPIRES = 86400;
 	const LENGTH = 128;
-	const TABLE = 'access_tokens';
+	const SAFE_TIMEOUT = 3600;
+	const TABLE = "access_tokens";
+
+	public static function getUserClass(): TClass
+	{
+		return new TClass("\\Katu\\Models\\Presets\\User");
+	}
+
+	public function getUser(): \Katu\Models\Presets\User
+	{
+		$className = static::getUserClass()->getName();
+
+		return $className::get($this->userId);
+	}
 
 	public static function generateTimeExpires(): \Katu\Tools\DateTime\DateTime
 	{
-		return new \Katu\Tools\DateTime\DateTime('+ ' . static::EXPIRES . ' seconds');
+		return new \Katu\Tools\DateTime\DateTime("+ " . static::EXPIRES . " seconds");
 	}
 
 	public static function generateToken(): string
@@ -24,19 +38,22 @@ class AccessToken extends \Katu\Models\Model
 	public static function create(\Katu\Models\Presets\User $user): AccessToken
 	{
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
-			'timeExpires' => static::generateTimeExpires(),
-			'userId' => $user->getId(),
-			'token' => static::generateToken(),
+			"timeCreated" => new \Katu\Tools\DateTime\DateTime,
+			"timeExpires" => static::generateTimeExpires(),
+			"userId" => $user->getId(),
+			"token" => static::generateToken(),
 		]);
 	}
 
-	public static function makeValidForUser(\Katu\Models\Presets\User $user): AccessToken
+	public static function getOrCreateSafe(\Katu\Models\Presets\User $user): AccessToken
 	{
 		$sql = SX::select()
+			->setGetFoundRows(false)
 			->from(static::getTable())
-			->where(SX::eq(static::getColumn('userId'), (int)$user->getId()))
-			->where(SX::cmpGreaterThanOrEqual(static::getColumn('timeExpires'), (new \Katu\Tools\DateTime\DateTime())->getDbDateTimeFormat()))
+			->where(SX::eq(static::getColumn("userId"), (int)$user->getId()))
+			->where(SX::cmpGreaterThanOrEqual(static::getColumn("timeExpires"), new \Katu\Tools\DateTime\DateTime("+ " . static::SAFE_TIMEOUT . " seconds")))
+			->orderBy(SX::orderBy(static::getColumn("timeExpires"), SX::kw("desc")))
+			->setPage(SX::page(1, 1))
 			;
 
 		$object = static::getOneBySql($sql);
@@ -57,17 +74,9 @@ class AccessToken extends \Katu\Models\Model
 		return $this->token;
 	}
 
-	public function setCookie()
+	public function setCookie(): bool
 	{
-		\Katu\Tools\Cookies\Cookie::set('accessToken', $this->getToken(), $this->getTTL()->getValue());
-	}
-
-	public function extend(): AccessToken
-	{
-		$this->timeExpires = static::generateTimeExpires();
-		$this->save();
-
-		return $this;
+		return \Katu\Tools\Cookies\Cookie::set("accessToken", $this->getToken(), $this->getTTL()->getValue());
 	}
 
 	public function getTTL(): TSeconds

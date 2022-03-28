@@ -85,9 +85,24 @@ class User extends \Katu\Models\Model
 		return $user;
 	}
 
-	public static function getCurrent(): ?User
+	public static function getFromRequest(\Slim\Http\Request $request): ?User
 	{
-		return static::getByAccessToken(\Katu\Tools\Cookies\Cookie::get("accessToken"));
+		if ($request) {
+			// Cookie.
+			$user = static::getByAccessToken($request->getCookieParam("accessToken"));
+			if ($user) {
+				return $user;
+			}
+
+			// Access token.
+			$header = $request->getHeaderLine("Authorization") ?: $request->getHeaderLine("X-Auth");
+			$user = static::getByAccessToken($header);
+			if ($user) {
+				return $user;
+			}
+		}
+
+		return null;
 	}
 
 	public static function getByAccessToken(?string $token): ?User
@@ -95,15 +110,9 @@ class User extends \Katu\Models\Model
 		$accessTokenClass = static::getAccessTokenClass()->getName();
 		$accessToken = $accessTokenClass::getOneBy([
 			"token" => preg_replace("/^(Bearer)\s+/", "", $token),
-			SX::cmpGreaterThanOrEqual($accessTokenClass::getColumn("timeExpires"), new \Katu\Tools\DateTime\DateTime),
 		]);
-
 		if ($accessToken && $accessToken->getIsValid()) {
-			$user = static::get($accessToken->userId);
-			$accessToken->extend();
-			$accessToken->setCookie();
-
-			return $user;
+			return $accessToken->getUser();
 		}
 
 		return null;
@@ -157,18 +166,24 @@ class User extends \Katu\Models\Model
 
 	public function setPlainPassword(string $password)
 	{
-		$this->update("password", (new \Katu\Tools\Security\Password($password))->getEncoded());
+		$this->update("password", (new \Katu\Tools\Security\PasswordEncoder($password))->getEncoded());
 
 		return $this;
 	}
 
-	public function getPassword()
+	public function getEncodedPassword(): ?string
 	{
-		try {
-			return \Katu\Tools\Security\Password::createFromEncoded($this->password);
-		} catch (\Throwable $e) {
-			return false;
-		}
+		return $this->password;
+	}
+
+	public function hasEncodedPassword()
+	{
+		return (bool)$this->password;
+	}
+
+	public function getPasswordEncoder(): \Katu\Tools\Security\PasswordEncoder
+	{
+		return \Katu\Tools\Security\PasswordEncoder::createFromEncoded($this->getEncodedPassword());
 	}
 
 	public function createAccessToken(): AccessToken
@@ -176,9 +191,9 @@ class User extends \Katu\Models\Model
 		return static::getAccessTokenClass()->getName()::create($this);
 	}
 
-	public function getValidAccessToken(): AccessToken
+	public function getSafeAccessToken(): AccessToken
 	{
-		return static::getAccessTokenClass()->getName()::makeValidForUser($this);
+		return static::getAccessTokenClass()->getName()::getOrCreateSafe($this);
 	}
 
 	public function addUserService($serviceName, $serviceUserId)
@@ -203,11 +218,6 @@ class User extends \Katu\Models\Model
 			"userId" => $this->getId(),
 			"serviceName" => (string)$serviceName,
 		]);
-	}
-
-	public function hasPassword()
-	{
-		return (bool) $this->password;
 	}
 
 	public function hasEmailAddress()
