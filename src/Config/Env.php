@@ -10,8 +10,8 @@ class Env
 	public static function getPlatform() : string
 	{
 		$files = [
-			new \Katu\Files\File(\Katu\App::getBaseDir(), '.platform'),
-			new \Katu\Files\File(\Katu\App::getBaseDir(), 'app', '.platform'),
+			new \Katu\Files\File(\Katu\App::getBaseDir(), ".platform"),
+			new \Katu\Files\File(\Katu\App::getBaseDir(), "app", ".platform"),
 		];
 
 		foreach ($files as $file) {
@@ -38,17 +38,17 @@ class Env
 	public static function getEnvProperties() : array
 	{
 		return [
-			'host' => $_SERVER['SERVER_NAME'],
-			'dir' => \Katu\App::getBaseDir(),
+			"host" => $_SERVER["SERVER_NAME"],
+			"dir" => \Katu\App::getBaseDir(),
 		];
 	}
 
 	public static function getCommit() : ?string
 	{
 		try {
-			$file = new \Katu\Files\File(\Katu\App::getBaseDir(), '.git', 'HEAD');
-			preg_match('/ref: (.+)/', $file->get(), $match);
-			$file = new \Katu\Files\File('.git', $match[1]);
+			$file = new \Katu\Files\File(\Katu\App::getBaseDir(), ".git", "HEAD");
+			preg_match("/ref: (.+)/", $file->get(), $match);
+			$file = new \Katu\Files\File(".git", $match[1]);
 			return trim($file->get());
 		} catch (\Throwable $e) {
 			return null;
@@ -57,7 +57,7 @@ class Env
 
 	public static function getVersion() : string
 	{
-		return hash('adler32', implode('', [
+		return hash("adler32", implode("", [
 			static::getCommit(),
 			static::getHash(),
 		]));
