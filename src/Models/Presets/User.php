@@ -87,17 +87,19 @@ class User extends \Katu\Models\Model
 
 	public static function getFromRequest(\Slim\Http\Request $request): ?User
 	{
-		// Cookie.
-		$user = static::getByAccessToken($request->getCookieParam("accessToken"));
-		if ($user) {
-			return $user;
-		}
+		if ($request) {
+			// Cookie.
+			$user = static::getByAccessToken($request->getCookieParam("accessToken"));
+			if ($user) {
+				return $user;
+			}
 
-		// Access token.
-		$header = $request->getHeaderLine("Authorization") ?: $request->getHeaderLine("X-Auth");
-		$user = static::getByAccessToken($header);
-		if ($user) {
-			return $user;
+			// Access token.
+			$header = $request->getHeaderLine("Authorization") ?: $request->getHeaderLine("X-Auth");
+			$user = static::getByAccessToken($header);
+			if ($user) {
+				return $user;
+			}
 		}
 
 		return null;
