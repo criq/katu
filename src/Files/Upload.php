@@ -45,37 +45,37 @@ class Upload
 
 			// 1
 			case UPLOAD_ERR_INI_SIZE:
-				return 'The uploaded file exceeds the upload_max_filesize directive in php.ini.';
+				return "The uploaded file exceeds the upload_max_filesize directive in php.ini.";
 				break;
 
 			// 2
 			case UPLOAD_ERR_FORM_SIZE:
-				return 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.';
+				return "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.";
 				break;
 
 			// 3
 			case UPLOAD_ERR_PARTIAL:
-				return 'The uploaded file was only partially uploaded.';
+				return "The uploaded file was only partially uploaded.";
 				break;
 
 			// 4
 			case UPLOAD_ERR_NO_FILE:
-				return 'No file was uploaded.';
+				return "No file was uploaded.";
 				break;
 
 			// 6
 			case UPLOAD_ERR_NO_TMP_DIR:
-				return 'Missing a temporary folder.';
+				return "Missing a temporary folder.";
 				break;
 
 			// 7
 			case UPLOAD_ERR_CANT_WRITE:
-				return 'Failed to write file to disk.';
+				return "Failed to write file to disk.";
 				break;
 
 			// 8
 			case UPLOAD_ERR_EXTENSION:
-				return 'A PHP extension stopped the file upload.';
+				return "A PHP extension stopped the file upload.";
 				break;
 		}
 	}
@@ -177,8 +177,8 @@ class Upload
 	public static function getMaxSize(): \Katu\Types\TFileSize
 	{
 		return min(
-			\Katu\Types\TFileSize::createFromINI(ini_get('upload_max_filesize')),
-			\Katu\Types\TFileSize::createFromINI(ini_get('post_max_size')),
+			\Katu\Types\TFileSize::createFromShorthand(ini_get("upload_max_filesize")),
+			\Katu\Types\TFileSize::createFromShorthand(ini_get("post_max_size")),
 		);
 	}
 }

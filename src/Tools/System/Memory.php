@@ -2,41 +2,39 @@
 
 namespace Katu\Tools\System;
 
+use Katu\Types\TFileSize;
+
 class Memory
 {
 	const TRESHOLD_CRITICAL = .9;
 
-	public static function setLimit($limit)
+	public static function setLimit(TFileSize $limit): bool
 	{
-		return ini_set('memory_limit', $limit);
+		return (bool)ini_set("memory_limit", $limit->getInB());
 	}
 
-	public static function getLimit()
+	public static function getLimit(): TFileSize
 	{
-		if (preg_match('/^([0-9]+)M$/', ini_get('memory_limit'), $match)) {
-			return 1024 * 1024 * (int)$match[1];
-		}
-
-		return 0;
+		return \Katu\Types\TFileSize::createFromShorthand(ini_get("memory_limit"));
 	}
 
-	public static function getUsage()
+	public static function getUsage(): TFileSize
 	{
-		return (int) memory_get_usage();
+		return new TFileSize((int)memory_get_usage());
 	}
 
-	public static function getUsedRatio()
+	public static function getUsedRatio(): float
 	{
-		return 1 - (self::getFree() / self::getLimit());
+		return 1 - (static::getFree()->getInB()->getAmount() / static::getLimit()->getInB()->getAmount());
 	}
 
-	public static function getFree()
+	public static function getFree(): TFileSize
 	{
-		return self::getLimit() - self::getUsage();
+		return new TFileSize(static::getLimit()->getInB()->getAmount() - static::getUsage()->getInB()->getAmount());
 	}
 
-	public static function isCritical()
+	public static function isCritical(): bool
 	{
-		return self::getUsedRatio() >= self::TRESHOLD_CRITICAL;
+		return static::getUsedRatio() >= static::TRESHOLD_CRITICAL;
 	}
 }

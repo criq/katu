@@ -104,7 +104,7 @@ class Image
 	public function getColors()
 	{
 		set_time_limit(600);
-		\Katu\Tools\System\Memory::setLimit('2G');
+		\Katu\Tools\System\Memory::setLimit(\Katu\Types\TFileSize::createFromShorthand("2G"));
 
 		$interventionImage = $this->getInterventionImage();
 

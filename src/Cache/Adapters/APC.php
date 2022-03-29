@@ -10,7 +10,7 @@ class APC implements \Katu\Cache\Adapter
 	public static function isSupported(): bool
 	{
 		try {
-			return function_exists('apcu_exists');
+			return function_exists("apcu_exists");
 		} catch (\Throwable $e) {
 			return false;
 		}
@@ -104,12 +104,12 @@ class APC implements \Katu\Cache\Adapter
 	public static function getMaxFileSize(): ?\Katu\Types\TFileSize
 	{
 		try {
-			$ini = ini_get('apc.max_file_size');
+			$ini = ini_get("apc.max_file_size");
 			if (!$ini) {
 				return null;
 			}
 
-			return new \Katu\Types\TFileSize(round(\Katu\Types\TFileSize::createFromINI($ini) * .8));
+			return new \Katu\Types\TFileSize(round(\Katu\Types\TFileSize::createFromShorthand($ini) * .8));
 		} catch (\Throwable $e) {
 			return null;
 		}
