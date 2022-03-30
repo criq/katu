@@ -7,7 +7,7 @@ use Katu\Types\TIdentifier;
 
 class Lock
 {
-	const DIR_NAME = 'locks';
+	const DIR_NAME = "locks";
 
 	private $args = [];
 	private $callback;
@@ -92,7 +92,7 @@ class Lock
 
 	public function getFile() : \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('lock'));
+		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath("lock"));
 	}
 
 	public function isLocked() : bool
