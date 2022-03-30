@@ -125,6 +125,8 @@ class Model extends Base
 
 	public function delete(): bool
 	{
+		$this->beforeDeleteCallback();
+
 		$sql = " DELETE FROM " . static::getTable() . "
 			WHERE " . static::getPrimaryKeyColumnName() . " = :" . static::getPrimaryKeyColumnName();
 
@@ -158,6 +160,11 @@ class Model extends Base
 	}
 
 	public function afterUpdateCallback(): bool
+	{
+		return true;
+	}
+
+	public function beforeDeleteCallback(): bool
 	{
 		return true;
 	}
