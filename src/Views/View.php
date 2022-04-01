@@ -4,12 +4,12 @@ namespace Katu\Views;
 
 class View
 {
-	public static function getTwig()
+	public static function getTwig(): \Twig\Environment
 	{
 		return new \Twig\Environment(static::getTwigLoader(), static::getTwigConfig());
 	}
 
-	public static function getTwigConfig()
+	public static function getTwigConfig(): array
 	{
 		return [
 			"auto_reload" => false,
