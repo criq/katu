@@ -25,7 +25,7 @@ class View
 		return new \Twig\Loader\FilesystemLoader(static::getTwigDirs());
 	}
 
-	public static function getTwigDirs()
+	public static function getTwigDirs(): array
 	{
 		$dirs = [];
 		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
@@ -219,7 +219,7 @@ class View
 		return true;
 	}
 
-	public static function getCommonData(\Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [])
+	public static function getCommonData(\Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = []): array
 	{
 		$data["_site"]["baseDir"] = \Katu\App::getBaseDir();
 		$data["_site"]["baseUrl"] = \Katu\Config\Config::get("app", "baseUrl");
