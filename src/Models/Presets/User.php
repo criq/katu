@@ -316,14 +316,14 @@ class User extends \Katu\Models\Model
 		return true;
 	}
 
-	public static function currentHasPermission()
+	public static function currentHasPermission(\Slim\Http\Request $request, string $permission): bool
 	{
-		$user = static::getCurrent();
+		$user = static::getFromRequest($request);
 		if (!$user) {
 			return false;
 		}
 
-		return call_user_func_array([$user, "hasPermission"], func_get_args());
+		return $user->hasPermission($permission);
 	}
 
 	public function getRolePermissions()
