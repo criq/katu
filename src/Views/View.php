@@ -45,7 +45,6 @@ class View
 
 	public static function extendTwig(&$twig)
 	{
-
 		/***************************************************************************
 		 * Image.
 		 */
