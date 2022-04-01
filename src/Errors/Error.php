@@ -80,7 +80,7 @@ class Error implements Packaged
 		return $this;
 	}
 
-	public function addVersions(string $locale, string $message): Error
+	public function addVersion(string $locale, string $message): Error
 	{
 		$this->versions[$locale] = $message;
 

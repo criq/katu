@@ -23,7 +23,13 @@ class EmailAddress extends \Katu\Models\Model
 				$result->setResponse($object);
 				$result[] = $param->setOutput($object)->setDisplay($object->getEmailAddress());
 			} catch (\Throwable $e) {
-				$result->addError((new \Katu\Errors\Error($e->getMessage()))->addParam($param));
+				$error = (new \Katu\Errors\Error($e->getMessage()))
+					->addParam($param)
+					->addVersion("en", "Invalid e-mail address.")
+					->addVersion("cs", "Neplatná e-mailová adresa.")
+					;
+
+				$result->addError($error);
 			}
 		}
 
