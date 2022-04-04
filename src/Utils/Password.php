@@ -2,30 +2,34 @@
 
 namespace Katu\Utils;
 
-class Password {
+class Password
+{
+	const DELIMITER = "$";
 
-	const DELIMITER = '$';
-
-	static function getHashable($password, $salt) {
+	static function getHashable($password, $salt): string
+	{
 		return $password . $salt;
 	}
 
-	static function encode($hash, $password) {
+	static function encode($hashFunction, $password): string
+	{
 		$salt = Random::getString();
 
-		return static::DELIMITER . implode(static::DELIMITER, array($hash, $salt, hash($hash, static::getHashable($password, $salt))));
+		return static::DELIMITER . implode(static::DELIMITER, array($hashFunction, $salt, hash($hashFunction, static::getHashable($password, $salt))));
 	}
 
-	static function verify($attempt, $token) {
+	static function verify($attempt, $token): bool
+	{
 		$analyzed = static::analyzeHashed($token);
 		if (!$analyzed) {
 			return false;
 		}
 
-		return hash($analyzed['hash'], static::getHashable($attempt, $analyzed['salt'])) == $analyzed['hashed'];
+		return hash($analyzed["hash"], static::getHashable($attempt, $analyzed["salt"])) == $analyzed["hashed"];
 	}
 
-	static function analyzeHashed($token) {
+	static function analyzeHashed($token): array
+	{
 		if (!$token) {
 			return false;
 		}
@@ -37,12 +41,11 @@ class Password {
 
 		list($hash, $salt, $hashed) = explode($delimiter, substr($token, 1));
 
-		return array(
-			'delimiter' => $delimiter,
-			'hash'      => $hash,
-			'salt'      => $salt,
-			'hashed'    => $hashed,
-		);
+		return [
+			"delimiter" => $delimiter,
+			"hash"      => $hash,
+			"salt"      => $salt,
+			"hashed"    => $hashed,
+		];
 	}
-
 }

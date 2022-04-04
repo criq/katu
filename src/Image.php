@@ -11,7 +11,7 @@ class Image
 		$this->source = Image\Source::createFromInput($source);
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return (string)$this->getSource()->getUrl();
 	}
@@ -21,7 +21,7 @@ class Image
 		return $this->source;
 	}
 
-	public function getImageVersion()
+	public function getImageVersion(): \Katu\Image\ImageVersion
 	{
 		$args = func_get_args();
 		if (isset($args[0]) && $args[0] instanceof \Katu\Image\Version) {
@@ -56,60 +56,63 @@ class Image
 
 	public function getColors($n = 1)
 	{
-		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($uri, $n) {
-			$palette = \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($uri) {
-				try {
-					return \League\ColorExtractor\Palette::fromFilename($uri);
-				} catch (\Exception $e) {
-					return false;
-				}
-			}, $uri);
-
-			if (!$palette) {
-				return false;
-			}
-
-			$mostUsedColors = array_keys($palette->getMostUsedColors($n));
-
-			return array_map(function ($color) {
-				return new \Katu\Types\TColor(\League\ColorExtractor\Color::fromIntToHex($color));
-			}, $mostUsedColors);
-		}, $this->getSource()->getUri(), $n);
-	}
-
-	public function getImageSize()
-	{
-		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($image) {
-			try {
-				$size = getimagesize($image->getSource()->getUri());
-				return new \Katu\Types\TImageSize($size[0], $size[1]);
-			} catch (\Exception $e) {
-				throw new \Katu\Exceptions\DoNotCacheException;
-			}
-		}, $this);
-	}
-
-	public function getMime()
-	{
-		return \Katu\Cache::get([__CLASS__, __FUNCTION__, __LINE__], 86400 * 365, function ($image) {
-			try {
-				$size = getimagesize($image->getSource()->getUri());
-				return $size['mime'];
-			} catch (\Exception $e) {
-				throw new \Katu\Exceptions\DoNotCacheException;
-			}
-		}, $this);
-	}
-
-	public function getEmbedSrc()
-	{
-		$mime = $this->getMime();
-		$base64 = @base64_encode(@file_get_contents($this->getSource()->getUri()));
-
-		if ($mime && $base64) {
-			return 'data:' . $mime . ';base64,' . $base64;
+		try {
+			$palette = \League\ColorExtractor\Palette::fromFilename($this->getSource()->getUri());
+		} catch (\Throwable $e) {
+			$palette = null;
 		}
 
-		return false;
+		if (!$palette) {
+			return false;
+		}
+
+		$mostUsedColors = array_keys($palette->getMostUsedColors($n));
+
+		return array_map(function ($color) {
+			return new \Katu\Types\TColor(\League\ColorExtractor\Color::fromIntToHex($color));
+		}, $mostUsedColors);
+	}
+
+	public function getImageSize(): ?\Katu\Types\TImageSize
+	{
+		try {
+			$size = getimagesize($this->getSource()->getUri());
+			return new \Katu\Types\TImageSize($size[0], $size[1]);
+		} catch (\Throwable $e) {
+			\App\Extensions\ErrorHandler::log($e);
+
+			return null;
+		}
+	}
+
+	public function getMime(): ?string
+	{
+		try {
+			$size = getimagesize($this->getSource()->getUri());
+
+			return $size['mime'];
+		} catch (\Throwable $e) {
+			\App\Extensions\ErrorHandler::log($e);
+
+			return null;
+		}
+	}
+
+	public function getEmbedSrc(): ?string
+	{
+		try {
+			$mime = $this->getMime();
+			$base64 = base64_encode(file_get_contents($this->getSource()->getUri()));
+
+			if ($mime && $base64) {
+				return "data:{$mime};base64,{$base64}";
+			}
+
+			return null;
+		} catch (\Throwable $e) {
+			\App\Extensions\ErrorHandler::log($e);
+
+			return null;
+		}
 	}
 }
