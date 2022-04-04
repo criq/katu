@@ -16,21 +16,21 @@ class ImageVersion
 	public function __toString()
 	{
 		if ($this->image->getSource() instanceof \Katu\Image\Sources\File) {
-			return (string)\Katu\Utils\Url::getFor('images.getVersionSrc.file', [
-				'fileId' => $this->image->getSource()->getInput()->getId(),
-				'fileSecret' => $this->image->getSource()->getInput()->getSecret(),
-				'version' => $this->version->getName(),
-				'name' => $this->image->getSource()->getInput()->name,
+			return (string)\Katu\Utils\Url::getFor("images.getVersionSrc.file", [
+				"fileId" => $this->image->getSource()->getInput()->getId(),
+				"fileSecret" => $this->image->getSource()->getInput()->getSecret(),
+				"version" => $this->version->getName(),
+				"name" => $this->image->getSource()->getInput()->name,
 			]);
 		} elseif ($this->image->getSource() instanceof \Katu\Image\Sources\Url) {
-			return (string)\Katu\Utils\Url::getFor('images.getVersionSrc.url', [
-				'version' => $this->version->getName(),
+			return (string)\Katu\Utils\Url::getFor("images.getVersionSrc.url", [
+				"version" => $this->version->getName(),
 			], [
-				'url' => $this->image->getSource()->getUrl(),
+				"url" => $this->image->getSource()->getUrl(),
 			]);
 		}
 
-		return '';
+		return "";
 	}
 
 	public function getExtension()
@@ -46,9 +46,9 @@ class ImageVersion
 		$pathSegments[] = substr($hash, 0, 2);
 		$pathSegments[] = substr($hash, 2, 2);
 		$pathSegments[] = substr($hash, 4, 2);
-		$pathSegments[] = $hash . '.' . $this->getExtension();
+		$pathSegments[] = $hash . "." . $this->getExtension();
 
-		return new \Katu\Utils\File($this->version->getDir(), implode('/', $pathSegments));
+		return new \Katu\Utils\File($this->version->getDir(), implode("/", $pathSegments));
 	}
 
 	public function getImage()
