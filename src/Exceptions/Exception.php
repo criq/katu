@@ -2,9 +2,6 @@
 
 namespace Katu\Exceptions;
 
-use Katu\Types\TClass;
-use Katu\Types\TPackage;
-
 class Exception extends \Exception
 {
 	const HTTP_CODE = 400;
@@ -21,29 +18,29 @@ class Exception extends \Exception
 		$this->translations = new \Katu\Types\TLocaleStrings;
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return (string) $this->getTranslatedMessage();
 	}
 
-	public function getHttpCode() : int
+	public function getHttpCode(): int
 	{
 		return (int)static::HTTP_CODE;
 	}
 
-	public function setAbbr(string $abbr) : Exception
+	public function setAbbr(string $abbr): Exception
 	{
 		$this->abbr = trim($abbr);
 
 		return $this;
 	}
 
-	public function getAbbr() : ?string
+	public function getAbbr(): ?string
 	{
 		return $this->abbr;
 	}
 
-	public function addErrorName(string $errorName) : Exception
+	public function addErrorName(string $errorName): Exception
 	{
 		foreach (func_get_args() as $arg) {
 			$this->errorNames[] = static::getErrorName($arg);
@@ -54,7 +51,7 @@ class Exception extends \Exception
 		return $this;
 	}
 
-	public static function getErrorName(string $errorName) : string
+	public static function getErrorName(string $errorName): string
 	{
 		return implode('.', array_filter((array)$errorName));
 	}
@@ -64,7 +61,7 @@ class Exception extends \Exception
 		return array_search(static::getErrorName($errorName), $this->errorNames);
 	}
 
-	public function replaceErrorName(string $errorName, string $replacement) : Exception
+	public function replaceErrorName(string $errorName, string $replacement): Exception
 	{
 		$index = $this->getErrorNameIndex($errorName);
 		if ($index !== false && isset($this->errorNames[$index])) {
@@ -76,19 +73,19 @@ class Exception extends \Exception
 		return $this;
 	}
 
-	private function maintainErrorNames() : Exception
+	private function maintainErrorNames(): Exception
 	{
 		$this->errorNames = array_values(array_unique(array_filter($this->errorNames)));
 
 		return $this;
 	}
 
-	public function getErrorNames() : array
+	public function getErrorNames(): array
 	{
 		return $this->errorNames;
 	}
 
-	public function addTranslation($locale, string $message) : Exception
+	public function addTranslation($locale, string $message): Exception
 	{
 		if (is_string($locale)) {
 			$locale = new \Katu\Types\TLocale($locale);
@@ -118,14 +115,14 @@ class Exception extends \Exception
 		];
 	}
 
-	public function setContext(?array $context) : Exception
+	public function setContext(?array $context): Exception
 	{
 		$this->context = $context;
 
 		return $this;
 	}
 
-	public function getContext() : ?array
+	public function getContext(): ?array
 	{
 		return $this->context;
 	}
