@@ -95,7 +95,7 @@ class Procedure
 				$lock->excludePlatform($platform);
 			}
 
-			$lock->run();
+			return $lock->run();
 		} catch (\Katu\Exceptions\LockException $e) {
 			// Nevermind.
 		} catch (\Katu\Exceptions\LoadAverageExceededException $e) {
