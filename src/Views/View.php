@@ -218,7 +218,7 @@ class View
 		return true;
 	}
 
-	public static function getCommonData(\Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = []): array
+	public static function getCommonData(?\Slim\Http\Request $request = null, ?\Slim\Http\Response $response = null, ?array $args = []): array
 	{
 		$data["_site"]["baseDir"] = \Katu\App::getBaseDir();
 		$data["_site"]["baseUrl"] = \Katu\Config\Config::get("app", "baseUrl");
@@ -293,7 +293,7 @@ class View
 		return $data;
 	}
 
-	public static function render(string $template, array $data = [], \Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [])
+	public static function render(string $template, array $data = [], ?\Slim\Http\Request $request = null, ?\Slim\Http\Response $response = null, ?array $args = [])
 	{
 		$twig = static::getTwig();
 		static::extendTwig($twig);

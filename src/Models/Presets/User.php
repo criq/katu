@@ -85,7 +85,7 @@ class User extends \Katu\Models\Model
 		return $user;
 	}
 
-	public static function getFromRequest(\Slim\Http\Request $request): ?User
+	public static function getFromRequest(?\Slim\Http\Request $request): ?User
 	{
 		if ($request) {
 			// Cookie.
