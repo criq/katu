@@ -21,7 +21,7 @@ class App
 
 	public static function getViewClass() : TClass
 	{
-		return static::getExtendedClass(new TClass("App\Extensions\Views\View"), new TClass("Katu\Views\View"));
+		return static::getExtendedClass(new TClass("App\Extensions\Views\Engine"), new TClass("Katu\Tools\Views\Engine"));
 	}
 
 	public static function getErrorHandlerClass() : TClass

@@ -15,20 +15,30 @@ class Controller
 	/****************************************************************************
 	 * Render.
 	 */
-	public function render(string $template, \Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [])
+	public function getViewEngine(?\Slim\Http\Request $request = null): \Katu\Tools\Views\Engine
+	{
+		$class = \Katu\App::getViewClass();
+		$className = $class->getName();
+
+		$engine = new $className;
+		$engine->setRequest($request);
+
+		return $engine;
+	}
+
+	public function render(string $template)
 	{
 		try {
-			$request = $request ?: $this->container->get('request');
-			$response = $response ?: $this->container->get('response');
-			$args = $args ?: [];
+			$request = $this->container->get("request");
+			$response =  $this->container->get("response");
 
-			$viewClass = \Katu\App::getViewClass()->getName();
-			$template = $viewClass::render($template, $this->data, $request, $response, $args);
+			$engine = $this->getViewEngine($request);
+			$template = $engine->render($template, $this->data);
 
-			$headers = $request->getHeader('Accept-Encoding');
-			if (($headers[0] ?? null) && in_array('gzip', array_map('trim', (array)explode(',', $headers[0])))) {
+			$headers = $request->getHeader("Accept-Encoding");
+			if (($headers[0] ?? null) && in_array("gzip", array_map("trim", (array)explode(",", $headers[0])))) {
 				$template = gzencode($template);
-				$response = $response->withHeader('Content-Encoding', 'gzip');
+				$response = $response->withHeader("Content-Encoding", "gzip");
 			}
 
 			$response->write($template);
@@ -44,7 +54,7 @@ class Controller
 
 	public function renderError(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 500)
 	{
-		return $this->render("Errors/" . $status . ".twig", $request, $response, $args)
+		return $this->render("Errors/{$status}.twig", $request, $response, $args)
 			->withStatus($status)
 			;
 	}
@@ -70,7 +80,7 @@ class Controller
 		foreach ($urls as $url) {
 			$url = (string) $url;
 			if (\Katu\Types\TURL::isValid($url)) {
-				return $this->container->get('response')->withRedirect($url, $status);
+				return $this->container->get("response")->withRedirect($url, $status);
 			}
 		}
 
@@ -82,12 +92,12 @@ class Controller
 	 */
 	public function isSubmitted(\Slim\Http\Request $request, ?string $name = null)
 	{
-		return $request->getParam('formSubmitted') && $request->getParam('formName') == $name;
+		return $request->getParam("formSubmitted") && $request->getParam("formName") == $name;
 	}
 
 	public function isSubmittedWithToken(\Slim\Http\Request $request, ?string $name = null)
 	{
-		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getParam('formToken'));
+		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getParam("formToken"));
 	}
 
 	public function isSubmittedByHuman(\Slim\Http\Request $request, ?string $name = null)
@@ -98,7 +108,7 @@ class Controller
 		}
 
 		// // Check captcha. Should be empty.
-		// if ($request->getParam('yourName_' . $request->getParam('')->secret) !== '') {
+		// if ($request->getParam("yourName_" . $request->getParam("")->secret) !== "") {
 		// 	return false;
 		// }
 
@@ -110,11 +120,11 @@ class Controller
 	 */
 	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
-		if (!($this->data['_errors'] ?? null)) {
-			$this->data['_errors'] = new \Katu\Errors\ErrorCollection;
+		if (!($this->data["_errors"] ?? null)) {
+			$this->data["_errors"] = new \Katu\Errors\ErrorCollection;
 		}
 
-		return $this->data['_errors'];
+		return $this->data["_errors"];
 	}
 
 	public function addError(\Katu\Errors\Error $error): Controller
@@ -138,11 +148,11 @@ class Controller
 
 	public function getExceptions(): \Katu\Exceptions\ExceptionCollection
 	{
-		if (!($this->data['_exceptions'] ?? null)) {
-			$this->data['_exceptions'] = new \Katu\Exceptions\ExceptionCollection;
+		if (!($this->data["_exceptions"] ?? null)) {
+			$this->data["_exceptions"] = new \Katu\Exceptions\ExceptionCollection;
 		}
 
-		return $this->data['_exceptions'];
+		return $this->data["_exceptions"];
 	}
 
 	public function addExceptions(\Katu\Exceptions\Exception $e): Controller

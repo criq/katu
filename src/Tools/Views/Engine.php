@@ -1,50 +1,33 @@
 <?php
 
-namespace Katu\Views;
+namespace Katu\Tools\Views;
 
-class View
+class Engine
 {
-	public static function getTwig(): \Twig\Environment
+	protected $request;
+	protected $twig;
+
+	public function __construct(?\Slim\Http\Request $request = null)
 	{
-		return new \Twig\Environment(static::getTwigLoader(), static::getTwigConfig());
+		$this->setRequest($request);
 	}
 
-	public static function getTwigConfig(): array
+	public function setRequest(?\Slim\Http\Request $request): Engine
 	{
-		return [
-			"auto_reload" => false,
-			"cache" => (string)\Katu\Files\File::joinPaths(\Katu\App::getTemporaryDir(), "twig", \Katu\Config\Env::getVersion()),
-			"debug" => false,
-			"optimizations" => -1,
-			"strict_variables" => false,
-		];
+		$this->request = $request;
+
+		return $this;
 	}
 
-	public static function getTwigLoader()
+	public function getRequest(): ?\Slim\Http\Request
 	{
-		return new \Twig\Loader\FilesystemLoader(static::getTwigDirs());
+		return $this->request;
 	}
 
-	public static function getTwigDirs(): array
+	protected function getTwig(): \Twig\Environment
 	{
-		$dirs = [];
-		if (!isset($dirs) || (isset($dirs) && !$dirs)) {
-			$dirs = [
-				new \Katu\Files\File(\Katu\App::getBaseDir(), "app", "Views"),
-				new \Katu\Files\File(\Katu\Tools\Services\Composer\Composer::getDir(), substr(__DIR__, strcmp(\Katu\Tools\Services\Composer\Composer::getDir(), __DIR__))),
-				new \Katu\Files\File(\Katu\App::getBaseDir(), "vendor"),
-			];
+		$twig = new \Twig\Environment($this->getTwigLoader(), $this->getTwigConfig());
 
-			$dirs = array_unique(array_filter(array_map(function ($dir) {
-				return $dir->exists() ? $dir->getPath() : null;
-			}, $dirs)));
-		}
-
-		return $dirs;
-	}
-
-	public static function extendTwig(&$twig)
-	{
 		/***************************************************************************
 		 * Image.
 		 */
@@ -215,10 +198,41 @@ class View
 			return false;
 		}));
 
-		return true;
+		return $twig;
 	}
 
-	public static function getCommonData(?\Slim\Http\Request $request = null, ?\Slim\Http\Response $response = null, ?array $args = []): array
+	protected function getTwigConfig(): array
+	{
+		return [
+			"auto_reload" => false,
+			"cache" => (string)\Katu\Files\File::joinPaths(\Katu\App::getTemporaryDir(), "twig", \Katu\Config\Env::getVersion()),
+			"debug" => false,
+			"optimizations" => -1,
+			"strict_variables" => false,
+		];
+	}
+
+	protected function getTwigLoader()
+	{
+		return new \Twig\Loader\FilesystemLoader(static::getTwigDirs());
+	}
+
+	protected function getTwigDirs(): array
+	{
+		$dirs = [
+			new \Katu\Files\File(realpath(new \Katu\Files\File(__DIR__, "..", "..", "Views"))),
+			new \Katu\Files\File(\Katu\App::getBaseDir(), "vendor"),
+			new \Katu\Files\File(\Katu\App::getBaseDir(), "app", "Views"),
+		];
+
+		$dirs = array_unique(array_filter(array_map(function ($dir) {
+			return $dir->exists() ? $dir->getPath() : null;
+		}, $dirs)));
+
+		return $dirs;
+	}
+
+	protected function getCommonData(): array
 	{
 		$data["_site"]["baseDir"] = \Katu\App::getBaseDir();
 		$data["_site"]["baseUrl"] = \Katu\Config\Config::get("app", "baseUrl");
@@ -236,7 +250,7 @@ class View
 		}
 
 		try {
-			$data["_request"]["uri"] = (string)$request->getUri();
+			$data["_request"]["uri"] = (string)$this->getRequest()->getUri();
 		} catch (\Throwable $e) {
 			// Doesn"t exist.
 		}
@@ -248,23 +262,23 @@ class View
 		}
 
 		try {
-			$data["_request"]["ip"] = (string)$request->getServerParam("REMOTE_ADDR");
+			$data["_request"]["ip"] = (string)$this->getRequest()->getServerParam("REMOTE_ADDR");
 		} catch (\Throwable $e) {
 			// Doesn"t exist.
 		}
 
 		try {
-			$data["_request"]["params"] = (array)$request->getParams();
+			$data["_request"]["params"] = (array)$this->getRequest()->getParams();
 		} catch (\Throwable $e) {
 			// Doesn"t exist.
 		}
 
 		try {
-			if ($request->getAttribute("route")) {
+			if ($this->getRequest()->getAttribute("route")) {
 				$data["_request"]["route"] = (array)[
-					"pattern" => $request->getAttribute("route")->getPattern(),
-					"name" => $request->getAttribute("route")->getName(),
-					"params" => $request->getAttribute("route")->getArguments(),
+					"pattern" => $this->getRequest()->getAttribute("route")->getPattern(),
+					"name" => $this->getRequest()->getAttribute("route")->getName(),
+					"params" => $this->getRequest()->getAttribute("route")->getArguments(),
 				];
 			}
 		} catch (\Throwable $e) {
@@ -274,7 +288,7 @@ class View
 		$data["_agent"] = new \Jenssegers\Agent\Agent();
 
 		if (class_exists("App\Models\User")) {
-			$data["_user"] = \App\Models\User::getFromRequest($request);
+			$data["_user"] = \App\Models\User::getFromRequest($this->getRequest());
 		}
 
 		if (class_exists("App\Models\Setting")) {
@@ -293,20 +307,11 @@ class View
 		return $data;
 	}
 
-	public static function render(string $template, array $data = [], ?\Slim\Http\Request $request = null, ?\Slim\Http\Response $response = null, ?array $args = [])
+	public function render(string $template, array $data = [])
 	{
-		$twig = static::getTwig();
-		static::extendTwig($twig);
-
-		$data = array_merge_recursive(static::getCommonData($request, $response, $args), $data);
+		$twig = $this->getTwig();
+		$data = array_merge_recursive($this->getCommonData($this->getRequest()), $data);
 
 		return trim($twig->render($template, $data));
-	}
-
-	public static function renderCondensed(string $template, array $data = [], \Slim\Http\Request $request = null, \Slim\Http\Response $response = null, array $args = [])
-	{
-		$template = static::render($template, $data, $request, $response, $args);
-
-		return preg_replace("/[\v\t]/", "", $template);
 	}
 }
