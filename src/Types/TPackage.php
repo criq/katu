@@ -5,7 +5,7 @@ namespace Katu\Types;
 use Katu\Types\Encryption\TEncryptedString;
 use Katu\Types\Encryption\TEncryptedStringJSONPortableString;
 
-class TPackage
+class TPackage implements \JsonSerializable
 {
 	protected $payload;
 
@@ -49,5 +49,10 @@ class TPackage
 	public function getPortableString(): TEncryptedStringJSONPortableString
 	{
 		return TEncryptedString::encrypt($this->getJSON())->getJSON()->getPortableString();
+	}
+
+	public function jsonSerialize()
+	{
+		return $this->getPayload();
 	}
 }
