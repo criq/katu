@@ -4,15 +4,15 @@ namespace Katu\Tools\Cron;
 
 class Cron
 {
-	public static function getCurrent()
+	public static function getCurrent(): array
 	{
 		$crons = [];
 
 		$time = new \Katu\Tools\DateTime\DateTime;
-		$time->setTime($time->format('H'), $time->format('i'), 0);
+		$time->setTime($time->format("H"), $time->format("i"), 0);
 
 		try {
-			$paths = array_filter((array)\Katu\Config\Config::get('cron', 'paths'));
+			$paths = array_filter((array)\Katu\Config\Config::get("cron", "paths"));
 			foreach ($paths as $path => $spec) {
 				if (is_array($spec)) {
 					list($path, $spec) = [key($spec), current($spec)];
@@ -28,7 +28,7 @@ class Cron
 		}
 
 		try {
-			$routes = array_filter((array)\Katu\Config\Config::get('cron', 'routes'));
+			$routes = array_filter((array)\Katu\Config\Config::get("cron", "routes"));
 			foreach ($routes as $route => $spec) {
 				if (is_array($spec)) {
 					list($route, $spec) = [key($spec), current($spec)];
@@ -51,8 +51,8 @@ class Cron
 		$crons = static::getCurrent();
 		foreach ($crons as $cron) {
 			$cron->run();
-			if ($options['sleep'] ?? null) {
-				sleep($options['sleep']);
+			if ($options["sleep"] ?? null) {
+				sleep($options["sleep"]);
 			}
 		}
 
