@@ -10,6 +10,7 @@ class Engine
 	public function __construct(?\Slim\Http\Request $request = null)
 	{
 		$this->setRequest($request);
+		$this->setTwig($this->createTwig());
 	}
 
 	public function setRequest(?\Slim\Http\Request $request): Engine
@@ -24,7 +25,7 @@ class Engine
 		return $this->request;
 	}
 
-	protected function getTwig(): \Twig\Environment
+	protected function createTwig(): \Twig\Environment
 	{
 		$twig = new \Twig\Environment($this->getTwigLoader(), $this->getTwigConfig());
 
@@ -201,6 +202,18 @@ class Engine
 		return $twig;
 	}
 
+	protected function setTwig(\Twig\Environment $twig): Engine
+	{
+		$this->twig = $twig;
+
+		return $this;
+	}
+
+	protected function getTwig(): \Twig\Environment
+	{
+		return $this->twig;
+	}
+
 	protected function getTwigConfig(): array
 	{
 		return [
@@ -212,7 +225,7 @@ class Engine
 		];
 	}
 
-	protected function getTwigLoader()
+	protected function getTwigLoader(): \Twig\Loader\LoaderInterface
 	{
 		return new \Twig\Loader\FilesystemLoader(static::getTwigDirs());
 	}
