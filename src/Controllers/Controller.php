@@ -17,13 +17,7 @@ class Controller
 	 */
 	public function getViewEngine(?\Slim\Http\Request $request = null): \Katu\Interfaces\ViewEngine
 	{
-		$class = \Katu\App::getViewClass();
-		$className = $class->getName();
-
-		$engine = new $className;
-		$engine->setRequest($request);
-
-		return $engine;
+		return new \Katu\Tools\Views\FilesystemLoaderTwigEngine($request);
 	}
 
 	public function render(string $template)
