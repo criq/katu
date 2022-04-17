@@ -19,11 +19,6 @@ class App
 		return static::getExtendedClass(new TClass("App\Extensions\Controllers\Controller"), new TClass("Katu\Controllers\Controller"));
 	}
 
-	public static function getViewClass() : TClass
-	{
-		return static::getExtendedClass(new TClass("App\Extensions\Views\HTMLEngine"), new TClass("Katu\Tools\Views\FilesystemLoaderTwigEngine"));
-	}
-
 	public static function getErrorHandlerClass() : TClass
 	{
 		return static::getExtendedClass(new TClass("App\Extensions\Exceptions\Handler"), new TClass("Katu\Exceptions\Handler"));

@@ -15,15 +15,9 @@ class Controller
 	/****************************************************************************
 	 * Render.
 	 */
-	public function getViewEngine(?\Slim\Http\Request $request = null): \Katu\Tools\Views\Engine
+	public function getViewEngine(?\Slim\Http\Request $request = null): \Katu\Tools\Views\TwigEngine
 	{
-		$class = \Katu\App::getViewClass();
-		$className = $class->getName();
-
-		$engine = new $className;
-		$engine->setRequest($request);
-
-		return $engine;
+		return new \Katu\Tools\Views\FilesystemLoaderTwigEngine($request);
 	}
 
 	public function render(string $template)
