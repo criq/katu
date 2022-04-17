@@ -4,7 +4,7 @@ namespace Katu\Controllers\Presets;
 
 use Katu\Types\TClass;
 
-class Images extends \Katu\Controllers\Controller
+class Images extends \App\Extensions\Controller
 {
 	public static function getVersionSrcUrl(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
 	{
