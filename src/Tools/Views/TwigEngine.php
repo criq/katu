@@ -2,10 +2,12 @@
 
 namespace Katu\Tools\Views;
 
-class Engine
+abstract class TwigEngine
 {
 	protected $request;
 	protected $twig;
+
+	abstract protected static function getTwigLoader(): \Twig\Loader\LoaderInterface;
 
 	public function __construct(?\Slim\Http\Request $request = null)
 	{
@@ -13,7 +15,7 @@ class Engine
 		$this->setTwig($this->createTwig());
 	}
 
-	public function setRequest(?\Slim\Http\Request $request): Engine
+	public function setRequest(?\Slim\Http\Request $request): TwigEngine
 	{
 		$this->request = $request;
 
@@ -25,9 +27,9 @@ class Engine
 		return $this->request;
 	}
 
-	protected function createTwig(): \Twig\Environment
+	protected static function createTwig(): \Twig\Environment
 	{
-		$twig = new \Twig\Environment($this->getTwigLoader(), $this->getTwigConfig());
+		$twig = new \Twig\Environment(static::getTwigLoader(), static::getTwigConfig());
 
 		/***************************************************************************
 		 * Image.
@@ -202,7 +204,7 @@ class Engine
 		return $twig;
 	}
 
-	protected function setTwig(\Twig\Environment $twig): Engine
+	protected function setTwig(\Twig\Environment $twig): TwigEngine
 	{
 		$this->twig = $twig;
 
@@ -214,7 +216,7 @@ class Engine
 		return $this->twig;
 	}
 
-	protected function getTwigConfig(): array
+	protected static function getTwigConfig(): array
 	{
 		return [
 			"auto_reload" => false,
@@ -223,26 +225,6 @@ class Engine
 			"optimizations" => -1,
 			"strict_variables" => false,
 		];
-	}
-
-	protected function getTwigLoader(): \Twig\Loader\LoaderInterface
-	{
-		return new \Twig\Loader\FilesystemLoader(static::getTwigDirs());
-	}
-
-	protected function getTwigDirs(): array
-	{
-		$dirs = [
-			new \Katu\Files\File(realpath(new \Katu\Files\File(__DIR__, "..", "..", "Views"))),
-			new \Katu\Files\File(\Katu\App::getBaseDir(), "vendor"),
-			new \Katu\Files\File(\Katu\App::getBaseDir(), "app", "Views"),
-		];
-
-		$dirs = array_unique(array_filter(array_map(function ($dir) {
-			return $dir->exists() ? $dir->getPath() : null;
-		}, $dirs)));
-
-		return $dirs;
 	}
 
 	protected function getCommonData(): array
