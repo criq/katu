@@ -15,7 +15,7 @@ class Controller
 	/****************************************************************************
 	 * Render.
 	 */
-	public function getViewEngine(?\Slim\Http\Request $request = null): \Katu\Tools\Views\TwigEngine
+	public function getViewEngine(?\Slim\Http\Request $request = null): \Katu\Interfaces\ViewEngine
 	{
 		$class = \Katu\App::getViewClass();
 		$className = $class->getName();

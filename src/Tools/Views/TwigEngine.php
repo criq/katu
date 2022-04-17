@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Views;
 
-abstract class TwigEngine
+abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 {
 	protected $request;
 	protected $twig;
@@ -302,7 +302,7 @@ abstract class TwigEngine
 		return $data;
 	}
 
-	public function render(string $template, array $data = [])
+	public function render(string $template, array $data = []): string
 	{
 		$twig = $this->getTwig();
 		$data = array_merge_recursive($this->getCommonData($this->getRequest()), $data);
