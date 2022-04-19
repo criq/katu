@@ -10,8 +10,8 @@ class TColor
 	{
 		if ($color instanceof \MischiefCollective\ColorJizz\ColorJizz) {
 			$this->color = $color;
-		} elseif (preg_match('/^#?(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})$/i', $color, $match)) {
-			$this->color = new \MischiefCollective\ColorJizz\Formats\RGB(hexdec($match['r']), hexdec($match['g']), hexdec($match['b']));
+		} elseif (preg_match("/^#?(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})$/i", $color, $match)) {
+			$this->color = new \MischiefCollective\ColorJizz\Formats\RGB(hexdec($match["r"]), hexdec($match["g"]), hexdec($match["b"]));
 		} else {
 			throw new \Katu\Exceptions\InputErrorException("Invalid color input.");
 		}
