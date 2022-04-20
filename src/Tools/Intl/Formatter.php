@@ -7,7 +7,7 @@ class Formatter
 	public static function getPreferredLocales()
 	{
 		$app = \Katu\App::get();
-		$headers = $app->getContainer()->get('request')->getHeader('Accept-Language');
+		$headers = $app->getContainer()->get("request")->getHeader("Accept-Language");
 
 		return ($headers[0] ?? null) ? \Katu\Types\TLocale::getPreferredFromRequest($headers[0]) : [];
 	}
@@ -35,7 +35,7 @@ class Formatter
 
 	public static function getLocalFormNumber($locale, $number)
 	{
-		return preg_replace('/\s/u', '', static::getLocalNumber($locale, $number));
+		return preg_replace("/\s/u", "", static::getLocalNumber($locale, $number));
 	}
 
 	public static function getLocalReadableNumber($locale, $number)
