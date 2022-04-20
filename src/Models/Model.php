@@ -40,7 +40,7 @@ class Model extends Base
 			$object = static::get($primaryKey);
 		} else {
 			throw (new \Katu\Exceptions\NoPrimaryKeyReturnedException)->setContext([
-				'sql' => $query->getStatementDump()->getSentSQL(),
+				"sql" => $query->getStatementDump()->getSentSQL(),
 			]);
 		}
 
@@ -216,7 +216,7 @@ class Model extends Base
 	public function setUniqueColumnValue($column, $chars = null, $length = null)
 	{
 		if (is_null($chars)) {
-			$chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+			$chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 		}
 
 		if (is_string($column)) {
@@ -243,8 +243,8 @@ class Model extends Base
 	public function setUniqueColumnSlug($column, $source, $force = false, $constraints = [])
 	{
 		// Generate slug.
-		$slug = (new \Katu\Types\TString(trim(implode(' ', (array) $source))))->getForUrl([
-			'maxLength' => 245,
+		$slug = (new \Katu\Types\TString(trim(implode(" ", (array) $source))))->getForUrl([
+			"maxLength" => 245,
 		]);
 
 		// If there already is a slug, keep it.
@@ -252,12 +252,12 @@ class Model extends Base
 			return true;
 		}
 
-		// If it's the same, keep it.
+		// If it"s the same, keep it.
 		if (!$force && $slug == $this->$column) {
 			return true;
 		}
 
-		$preg = '^' . $slug . '(\-([0-9]+))?$';
+		$preg = "^" . $slug . "(\-([0-9]+))?$";
 
 		// Select all already used slugs.
 		$sql = SX::select(static::getColumn($column))
@@ -275,7 +275,7 @@ class Model extends Base
 		} else {
 			$suffixes = [];
 			foreach ($res->getItems() as $item) {
-				preg_match('/' . $preg . '/', $item[$column], $match);
+				preg_match("/" . $preg . "/", $item[$column], $match);
 				if (!isset($match[2])) {
 					$suffixes[] = 0;
 				} else {
@@ -292,7 +292,7 @@ class Model extends Base
 				$proposedSuffix++;
 			}
 
-			$this->update($column, implode('-', array_filter([
+			$this->update($column, implode("-", array_filter([
 				$slug,
 				$proposedSuffix,
 			])));
@@ -308,7 +308,7 @@ class Model extends Base
 		$sql = SX::select(static::getTable())
 			->from(static::getTable())
 			->addExpressions([
-				'where' => $whereExpressions,
+				"where" => $whereExpressions,
 			])
 			;
 
@@ -327,8 +327,8 @@ class Model extends Base
 		$sql = SX::select()
 			->select(\App\Models\FileAttachment::getTable())
 			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()->getName()))
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectId"), $this->getId()))
 			;
 
 		return \App\Models\FileAttachment::getBySql($sql);
@@ -339,10 +339,10 @@ class Model extends Base
 		$sql = SX::select()
 			->select(\App\Models\FileAttachment::getTable())
 			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()->getName()))
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
-			->joinColumns(\App\Models\FileAttachment::getColumn('fileId'), \App\Models\File::getIdColumn())
-			->where(SX::cmpLike(\App\Models\File::getColumn('type'), 'image/%'))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectId"), $this->getId()))
+			->joinColumns(\App\Models\FileAttachment::getColumn("fileId"), \App\Models\File::getIdColumn())
+			->where(SX::cmpLike(\App\Models\File::getColumn("type"), "image/%"))
 			;
 
 		return \App\Models\FileAttachment::getBySql($sql);
@@ -353,10 +353,10 @@ class Model extends Base
 		$sql = SX::select()
 			->select(\App\Models\File::getTable())
 			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectModel'), static::getClass()->getName()))
-			->where(SX::eq(\App\Models\FileAttachment::getColumn('objectId'), $this->getId()))
-			->orderBy(SX::orderBy(\App\Models\FileAttachment::getColumn('position')))
-			->joinColumns(\App\Models\FileAttachment::getColumn('fileId'), \App\Models\File::getIdColumn())
+			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectId"), $this->getId()))
+			->orderBy(SX::orderBy(\App\Models\FileAttachment::getColumn("position")))
+			->joinColumns(\App\Models\FileAttachment::getColumn("fileId"), \App\Models\File::getIdColumn())
 			;
 
 		return \App\Models\File::getBySql($sql)->getOne();
@@ -373,14 +373,14 @@ class Model extends Base
 			$file = \App\Models\File::get($fileId);
 			if ($file) {
 				\App\Models\FileAttachment::upsert([
-					'objectModel' => static::getClass()->getName(),
-					'objectId' => $this->getId(),
-					'fileId' => $file->getId(),
+					"objectModel" => static::getClass()->getName(),
+					"objectId" => $this->getId(),
+					"fileId" => $file->getId(),
 				], [
-					'timeCreated' => new \App\Classes\DateTime,
-					'creatorId' => $user->getId(),
+					"timeCreated" => new \Katu\Tools\DateTime\DateTime,
+					"creatorId" => $user->getId(),
 				], [
-					'position' => $position++,
+					"position" => $position++,
 				]);
 			}
 		}
