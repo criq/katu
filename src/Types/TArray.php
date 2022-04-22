@@ -4,17 +4,17 @@ namespace Katu\Types;
 
 class TArray extends \ArrayObject
 {
-	public function getArray()
+	public function getArray(): array
 	{
 		return $this->getArrayCopy();
 	}
 
-	public function getTotal()
+	public function getTotal(): int
 	{
 		return $this->count();
 	}
 
-	public function getCount()
+	public function getCount(): int
 	{
 		return $this->count();
 	}
