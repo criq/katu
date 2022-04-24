@@ -100,7 +100,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function rename(string $name)
 	{
-		$sql = " RENAME TABLE {$this->getName()->getPlain()} TO {$name}";
+		$sql = " RENAME TABLE {$this->getName()} TO {$name}";
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		\Katu\Cache\Runtime::clear();

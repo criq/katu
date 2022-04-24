@@ -83,8 +83,8 @@ class Model extends Base
 
 	public function saveWithoutCallback()
 	{
-		$columnsNames = array_map(function ($columnName) {
-			return $columnName->getName();
+		$columnsNames = array_map(function (\Katu\PDO\Name $columnName) {
+			return $columnName->getPlain();
 		}, static::getTable()->getColumnNames());
 
 		$values = [];

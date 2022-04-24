@@ -4,7 +4,7 @@ namespace Katu\PDO;
 
 class Table extends TableBase
 {
-	public function getCreateSyntax()
+	public function getCreateSyntax(): string
 	{
 		$sql = " SHOW CREATE TABLE " . $this->name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
@@ -16,7 +16,7 @@ class Table extends TableBase
 		return $res[0]["Create Table"];
 	}
 
-	public function touch()
+	public function touch(): bool
 	{
 		$file = $this->getLastUpdatedTemporaryFile();
 		$file->touch();
