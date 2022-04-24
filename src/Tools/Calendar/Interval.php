@@ -28,15 +28,15 @@ class Interval
 		return $this->getStart()->diff($this->getEnd())->days + 1;
 	}
 
-	public function getDates(): TimeCollection
+	public function getDays(): TimeCollection
 	{
 		$res = new TimeCollection;
 
-		$date = clone $this->getStart();
-		while ($date <= $this->getEnd()) {
-			$res[] = $date;
+		$day = clone $this->getStart();
+		while ($day <= $this->getEnd()) {
+			$res[] = $day;
 
-			$date = (clone $date)->modify("+ 1 day");
+			$day = (clone $day)->modify("+ 1 day");
 		}
 
 		return $res;

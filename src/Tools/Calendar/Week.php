@@ -33,7 +33,7 @@ class Week
 		return (clone $this->getStart())->getThisWeekday("Sunday");
 	}
 
-	public function getDates(): TimeCollection
+	public function getDays(): TimeCollection
 	{
 		$res = new TimeCollection;
 
