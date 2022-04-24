@@ -377,7 +377,7 @@ class Model extends Base
 					"objectId" => $this->getId(),
 					"fileId" => $file->getId(),
 				], [
-					"timeCreated" => new \Katu\Tools\DateTime\DateTime,
+					"timeCreated" => new \Katu\Tools\Calendar\Time,
 					"creatorId" => $user->getId(),
 				], [
 					"position" => $position++,

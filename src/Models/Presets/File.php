@@ -12,7 +12,7 @@ class File extends \Katu\Models\Model
 	public static function create(\Katu\Models\Presets\User $creator = null, string $path, string $fileName, string $fileType, int $fileSize) : File
 	{
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'creatorId' => $creator ? $creator->getId() : null,
 			'path' => $path,
 			'name' => $fileName,

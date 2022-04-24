@@ -22,7 +22,7 @@ class RolePermission extends \Katu\Models\Model
 		}
 
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'roleId' => $role->getId(),
 			'permission' => trim($permission),
 		]);
@@ -40,7 +40,7 @@ class RolePermission extends \Katu\Models\Model
 			'roleId' => $role->getId(),
 			'permission' => trim($permission),
 		], [
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 		]);
 	}
 

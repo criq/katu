@@ -16,7 +16,7 @@ class FileAttachment extends \Katu\Models\Model
 	public static function create(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment
 	{
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'creatorId' => $creator ? $creator->getId() : null,
 			'objectModel' => $object->getClass()->getName(),
 			'objectId' => $object->getId(),
@@ -31,7 +31,7 @@ class FileAttachment extends \Katu\Models\Model
 			'objectId' => $object->getId(),
 			'fileId' => $file->getId(),
 		], [
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'creatorId' => $creator ? $creator->getId() : null,
 		]);
 	}

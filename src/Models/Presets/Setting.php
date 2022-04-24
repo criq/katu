@@ -27,10 +27,10 @@ class Setting extends \Katu\Models\Model
 		return static::upsert([
 			'name' => trim($name),
 		], [
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'creatorId' => $creator ? $creator->getId() : null,
 		], [
-			'timeEdited' => new \Katu\Tools\DateTime\DateTime,
+			'timeEdited' => new \Katu\Tools\Calendar\Time,
 			'value' => \Katu\Files\Formats\JSON::encodeStandard($value),
 			'isSystem' => $isSystem ? '1' : '0',
 			'description' => trim($description) ?: null,

@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Services\Google;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 
 class UrlShortener

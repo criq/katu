@@ -2,7 +2,7 @@
 
 namespace Katu\PDO;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 
 abstract class TableBase extends \Sexy\Expression

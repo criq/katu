@@ -2,7 +2,7 @@
 
 namespace Katu\Cache;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 
 class Ledger
@@ -79,7 +79,7 @@ class Ledger
 	public function setKeyLoaded($key): Ledger
 	{
 		$this->setKey($key, array_merge((array)$this->getKey($key), [
-			"timeLoaded" => (new \Katu\Tools\DateTime\DateTime)->format("r"),
+			"timeLoaded" => (new \Katu\Tools\Calendar\Time)->format("r"),
 		]));
 
 		return $this;
@@ -88,7 +88,7 @@ class Ledger
 	public function getKeyLoaded($key, Timeout $timeout, string $timeoutKey = "timeLoaded"): bool
 	{
 		try {
-			return (new \Katu\Tools\DateTime\DateTime($this->getKey($key)[$timeoutKey]))->fitsInTimeout($timeout);
+			return (new \Katu\Tools\Calendar\Time($this->getKey($key)[$timeoutKey]))->fitsInTimeout($timeout);
 		} catch (\Throwable $e) {
 			// Nevermind.
 		}
@@ -105,10 +105,10 @@ class Ledger
 	{
 		$expired = [];
 		foreach ($this->get() as $key => $value) {
-			if (isset($value[$timeoutKey]) && (new \Katu\Tools\DateTime\DateTime($value[$timeoutKey]))->fitsInTimeout($timeout)) {
+			if (isset($value[$timeoutKey]) && (new \Katu\Tools\Calendar\Time($value[$timeoutKey]))->fitsInTimeout($timeout)) {
 				// Not expired.
 			} elseif (isset($value[$timeoutKey])) {
-				$expired[$key] = "B" . (new \Katu\Tools\DateTime\DateTime($value[$timeoutKey]))->getTimestamp();
+				$expired[$key] = "B" . (new \Katu\Tools\Calendar\Time($value[$timeoutKey]))->getTimestamp();
 			} else {
 				$expired[$key] = "A" . $key;
 			}

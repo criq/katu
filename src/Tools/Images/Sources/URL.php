@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Images\Sources;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 use Katu\Types\TURL;
 

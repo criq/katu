@@ -2,7 +2,7 @@
 
 namespace Katu\Cache\Adapters;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 
 class APC implements \Katu\Cache\Adapter

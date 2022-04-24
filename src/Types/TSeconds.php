@@ -21,8 +21,8 @@ class TSeconds
 		return (float)$this->value;
 	}
 
-	public function getDateTime(): \Katu\Tools\DateTime\DateTime
+	public function getDateTime(): \Katu\Tools\Calendar\Time
 	{
-		return new \Katu\Tools\DateTime\DateTime($this->getValue() . ' seconds');
+		return new \Katu\Tools\Calendar\Time($this->getValue() . ' seconds');
 	}
 }

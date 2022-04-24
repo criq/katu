@@ -2,7 +2,7 @@
 
 namespace Katu\Cache\Adapters;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 
 class File implements \Katu\Cache\Adapter
@@ -23,7 +23,7 @@ class File implements \Katu\Cache\Adapter
 	{
 		if (static::isSupported()) {
 			$file = $this->getFile($identifier);
-			if ($file->exists() && $timeout->fits(\Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file)))) {
+			if ($file->exists() && $timeout->fits(\Katu\Tools\Calendar\Time::createFromTimestamp(filemtime($file)))) {
 				return true;
 			}
 		}
@@ -35,7 +35,7 @@ class File implements \Katu\Cache\Adapter
 	{
 		if (static::isSupported()) {
 			$file = $this->getFile($identifier);
-			if ($file->exists() && $timeout->fits(\Katu\Tools\DateTime\DateTime::createFromTimestamp(filemtime($file)))) {
+			if ($file->exists() && $timeout->fits(\Katu\Tools\Calendar\Time::createFromTimestamp(filemtime($file)))) {
 				return unserialize($file->get());
 			}
 		}

@@ -25,9 +25,9 @@ class AccessToken extends \Katu\Models\Model
 		return $className::get($this->userId);
 	}
 
-	public static function generateTimeExpires(): \Katu\Tools\DateTime\DateTime
+	public static function generateTimeExpires(): \Katu\Tools\Calendar\Time
 	{
-		return new \Katu\Tools\DateTime\DateTime("+ " . static::EXPIRES . " seconds");
+		return new \Katu\Tools\Calendar\Time("+ " . static::EXPIRES . " seconds");
 	}
 
 	public static function generateToken(): string
@@ -38,7 +38,7 @@ class AccessToken extends \Katu\Models\Model
 	public static function create(\Katu\Models\Presets\User $user): AccessToken
 	{
 		return static::insert([
-			"timeCreated" => new \Katu\Tools\DateTime\DateTime,
+			"timeCreated" => new \Katu\Tools\Calendar\Time,
 			"timeExpires" => static::generateTimeExpires(),
 			"userId" => $user->getId(),
 			"token" => static::generateToken(),
@@ -51,7 +51,7 @@ class AccessToken extends \Katu\Models\Model
 			->setGetFoundRows(false)
 			->from(static::getTable())
 			->where(SX::eq(static::getColumn("userId"), (int)$user->getId()))
-			->where(SX::cmpGreaterThanOrEqual(static::getColumn("timeExpires"), new \Katu\Tools\DateTime\DateTime("+ " . static::SAFE_TIMEOUT . " seconds")))
+			->where(SX::cmpGreaterThanOrEqual(static::getColumn("timeExpires"), new \Katu\Tools\Calendar\Time("+ " . static::SAFE_TIMEOUT . " seconds")))
 			->orderBy(SX::orderBy(static::getColumn("timeExpires"), SX::kw("desc")))
 			->setPage(SX::page(1, 1))
 			;
@@ -66,7 +66,7 @@ class AccessToken extends \Katu\Models\Model
 
 	public function getIsValid(): bool
 	{
-		return !(new \Katu\Tools\DateTime\DateTime($this->timeExpires))->isInPast();
+		return !(new \Katu\Tools\Calendar\Time($this->timeExpires))->isInPast();
 	}
 
 	public function getToken(): string
@@ -81,6 +81,6 @@ class AccessToken extends \Katu\Models\Model
 
 	public function getTTL(): TSeconds
 	{
-		return (new \Katu\Tools\DateTime\DateTime($this->timeExpires))->getAge();
+		return (new \Katu\Tools\Calendar\Time($this->timeExpires))->getAge();
 	}
 }

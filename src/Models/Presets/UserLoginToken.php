@@ -16,8 +16,8 @@ class UserLoginToken extends \Katu\Models\Model
 	public static function create(User $user, int $timeout = 86400)
 	{
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
-			'timeExpires' => new \Katu\Tools\DateTime\DateTime('+ ' . $timeout . ' seconds'),
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
+			'timeExpires' => new \Katu\Tools\Calendar\Time('+ ' . $timeout . ' seconds'),
 			'userId' => $user->getId(),
 			'token' => \Katu\Tools\Random\Generator::getString(static::getColumn('token')->getProperties()->length),
 		]);
@@ -30,12 +30,12 @@ class UserLoginToken extends \Katu\Models\Model
 
 	public function isValid()
 	{
-		return \Katu\Tools\DateTime\DateTime::get($this->timeExpires)->isInFuture() && !\Katu\Tools\DateTime\DateTime::get($this->timeUsed)->isValid();
+		return \Katu\Tools\Calendar\Time::get($this->timeExpires)->isInFuture() && !\Katu\Tools\Calendar\Time::get($this->timeUsed)->isValid();
 	}
 
 	public function expire()
 	{
-		$this->update('timeUsed', new \Katu\Tools\DateTime\DateTime);
+		$this->update('timeUsed', new \Katu\Tools\Calendar\Time);
 		$this->save();
 
 		return true;

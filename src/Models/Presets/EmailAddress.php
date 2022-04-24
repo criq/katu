@@ -43,7 +43,7 @@ class EmailAddress extends \Katu\Models\Model
 		}
 
 		return static::insert([
-			static::$columnNames["timeCreated"] => new \Katu\Tools\DateTime\DateTime,
+			static::$columnNames["timeCreated"] => new \Katu\Tools\Calendar\Time,
 			static::$columnNames["emailAddress"] => trim($emailAddress),
 		]);
 	}
@@ -59,7 +59,7 @@ class EmailAddress extends \Katu\Models\Model
 		return static::upsert([
 			static::$columnNames["emailAddress"] => $emailAddress,
 		], [
-			static::$columnNames["timeCreated"] => new \Katu\Tools\DateTime\DateTime,
+			static::$columnNames["timeCreated"] => new \Katu\Tools\Calendar\Time,
 		]);
 	}
 

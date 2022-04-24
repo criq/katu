@@ -25,7 +25,7 @@ class Role extends \Katu\Models\Model
 		}
 
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'name' => trim($name),
 		]);
 	}

@@ -2,7 +2,7 @@
 
 namespace Katu\PDO;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 
 class Connection
 {
@@ -244,7 +244,7 @@ class Connection
 		return $this->setSqlModes($sqlModes);
 	}
 
-	public function getFoundRowsPickledResult($sql, \Katu\Interfaces\Factory $factory, \Katu\Cache\Pickle $pickle, \Katu\Tools\DateTime\Timeout $timeout)
+	public function getFoundRowsPickledResult($sql, \Katu\Interfaces\Factory $factory, \Katu\Cache\Pickle $pickle, \Katu\Tools\Calendar\Timeout $timeout)
 	{
 		if ($pickle->isValid($timeout)) {
 			$sql->setGetFoundRows(false);

@@ -40,7 +40,7 @@ class Cookie
 	public static function getDefaultConfig()
 	{
 		return [
-			'lifetime' => abs((new \Katu\Tools\DateTime\DateTime('+ ' . static::DEFAULT_LIFETIME))->getAge()->getValue()),
+			'lifetime' => abs((new \Katu\Tools\Calendar\Time('+ ' . static::DEFAULT_LIFETIME))->getAge()->getValue()),
 			'path' => static::DEFAULT_PATH,
 			'domain' => static::getDefautDomain(),
 			'secure' => static::DEFAULT_SECURE,

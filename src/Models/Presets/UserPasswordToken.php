@@ -17,8 +17,8 @@ class UserPasswordToken extends \Katu\Models\Model
 	public static function create(User $user)
 	{
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
-			'timeExpires' => new \Katu\Tools\DateTime\DateTime(static::EXPIRES),
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
+			'timeExpires' => new \Katu\Tools\Calendar\Time(static::EXPIRES),
 			'userId' => $user->getId(),
 			'token' => \Katu\Tools\Random\Generator::getString(static::getColumn('token')->getProperties()->length),
 		]);
@@ -31,12 +31,12 @@ class UserPasswordToken extends \Katu\Models\Model
 
 	public function isValid()
 	{
-		return \Katu\Tools\DateTime\DateTime::get($this->timeExpires)->isInFuture() && !$this->timeUsed;
+		return \Katu\Tools\Calendar\Time::get($this->timeExpires)->isInFuture() && !$this->timeUsed;
 	}
 
 	public function expire()
 	{
-		$this->update('timeUsed', \Katu\Tools\DateTime\DateTime::get()->getDbDateTimeFormat());
+		$this->update('timeUsed', \Katu\Tools\Calendar\Time::get()->getDbDateTimeFormat());
 		$this->save();
 
 		return true;

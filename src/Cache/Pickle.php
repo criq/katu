@@ -2,7 +2,7 @@
 
 namespace Katu\Cache;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 use Katu\Types\TSeconds;
 
@@ -51,7 +51,7 @@ class Pickle
 		return $this->getFile()->delete();
 	}
 
-	public function getDateTimeModified(): ?\Katu\Tools\DateTime\DateTime
+	public function getDateTimeModified(): ?\Katu\Tools\Calendar\Time
 	{
 		return $this->getFile()->getDateTimeModified() ?: null;
 	}

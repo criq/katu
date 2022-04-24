@@ -16,7 +16,7 @@ class UserService extends \Katu\Models\Model
 	public static function create(User $user, string $serviceName, string $serviceUserId)
 	{
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'userId' => $user->getId(),
 			'serviceName' => (string)$serviceName,
 			'serviceUserId' => (string)$serviceUserId,

@@ -1,10 +1,10 @@
 <?php
 
-namespace Katu\Tools\DateTime;
+namespace Katu\Tools\Calendar;
 
 use Katu\Types\TSeconds;
 
-class DateTime extends \DateTime
+class Time extends \DateTime
 {
 	public function __construct($time = null, \DateTimeZone $timezone = null)
 	{
@@ -24,17 +24,17 @@ class DateTime extends \DateTime
 		return $this->getDbDateTimeFormat();
 	}
 
-	public static function createFromTimestamp(int $timestamp): DateTime
+	public static function createFromTimestamp(int $timestamp): Time
 	{
-		return new static("@" . $timestamp);
+		return new static("@{$timestamp}");
 	}
 
-	public static function createFromDateTime(\DateTime $dateTime): DateTime
+	public static function createFromDateTime(\DateTime $dateTime): Time
 	{
 		return new static($dateTime->format("Y-m-d H:i:s"), $dateTime->getTimezone());
 	}
 
-	public static function createFromString(?string $string): ?DateTime
+	public static function createFromString(?string $string): ?Time
 	{
 		if (!trim($string)) {
 			return null;
@@ -63,16 +63,7 @@ class DateTime extends \DateTime
 		return new \DateTimeZone(\Katu\Config\Config::get("app", "timezone"));
 	}
 
-	public static function get($time = null, \DateTimeZone $timezone = null): DateTime
-	{
-		if (is_int($time)) {
-			return new static("@" . $time, $timezone);
-		}
-
-		return new static($time, $timezone);
-	}
-
-	public function toLocalTimezone(): DateTime
+	public function toLocalTimezone(): Time
 	{
 		return $this->setTimezone($this->getLocalTimeZone());
 	}
@@ -151,7 +142,7 @@ class DateTime extends \DateTime
 		return (float)($timestamp + $micro);
 	}
 
-	public function getThisWeekday(string $weekday): DateTime
+	public function getThisWeekday(string $weekday): Time
 	{
 		$date = clone $this;
 
@@ -176,7 +167,7 @@ class DateTime extends \DateTime
 		return null;
 	}
 
-	public function getNextWeekday($weekday): DateTime
+	public function getNextWeekday($weekday): Time
 	{
 		$date = clone $this;
 
@@ -218,7 +209,7 @@ class DateTime extends \DateTime
 		return $this->diff($dateTime ?: new static);
 	}
 
-	public function change($value): DateTime
+	public function change($value): Time
 	{
 		return (clone $this)->modify($value);
 	}

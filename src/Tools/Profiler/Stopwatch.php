@@ -24,7 +24,7 @@ class Stopwatch
 
 	public static function getCurrentMictorime(): float
 	{
-		return (float)(\Katu\Tools\DateTime\DateTime::getMicrotime() * static::FACTOR_NANO);
+		return (float)(\Katu\Tools\Calendar\Time::getMicrotime() * static::FACTOR_NANO);
 	}
 
 	public function start(): Stopwatch

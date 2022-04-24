@@ -64,7 +64,7 @@ class User extends \Katu\Models\Model
 	public static function create(): User
 	{
 		return static::insert([
-			static::$columnNames["timeCreated"] => new \Katu\Tools\DateTime\DateTime,
+			static::$columnNames["timeCreated"] => new \Katu\Tools\Calendar\Time,
 		]);
 	}
 
@@ -208,7 +208,7 @@ class User extends \Katu\Models\Model
 			"serviceName" => (string)$serviceName,
 			"serviceUserId" => (string)$serviceUserId,
 		], [
-			"timeCreated" => new \Katu\Tools\DateTime\DateTime,
+			"timeCreated" => new \Katu\Tools\Calendar\Time,
 		]);
 	}
 

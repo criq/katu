@@ -15,7 +15,7 @@ class UserPermission extends \Katu\Models\Model
 		}
 
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'userId' => $user->getId(),
 			'permission' => trim($permission),
 		]);
@@ -33,7 +33,7 @@ class UserPermission extends \Katu\Models\Model
 			'userId' => $user->getId(),
 			'permission' => trim($permission),
 		], [
-			'timeCreated' => new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => new \Katu\Tools\Calendar\Time,
 		]);
 	}
 

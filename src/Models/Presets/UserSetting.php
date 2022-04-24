@@ -12,7 +12,7 @@ class UserSetting extends \Katu\Models\Model
 			'userId' => $user->getId(),
 			'name' => trim($name),
 		], [
-			'timeCreated' => (string)new \Katu\Tools\DateTime\DateTime,
+			'timeCreated' => (string)new \Katu\Tools\Calendar\Time,
 		], [
 			'value' => \Katu\Files\Formats\JSON::encodeStandard($value),
 		]);

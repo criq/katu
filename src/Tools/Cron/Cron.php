@@ -8,7 +8,7 @@ class Cron
 	{
 		$crons = [];
 
-		$time = new \Katu\Tools\DateTime\DateTime;
+		$time = new \Katu\Tools\Calendar\Time;
 		$time->setTime($time->format("H"), $time->format("i"), 0);
 
 		try {

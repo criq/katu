@@ -2,7 +2,7 @@
 
 namespace Katu\Models;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 
@@ -100,7 +100,7 @@ abstract class View extends Base
 			static::PREFIX_CACHE,
 			static::SEPARATOR,
 			static::SEPARATOR,
-			(new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT),
+			(new \Katu\Tools\Calendar\Time)->format(static::CACHE_DATETIME_FORMAT),
 			static::SEPARATOR,
 			\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
 		]);
@@ -159,7 +159,7 @@ abstract class View extends Base
 	{
 		return implode(static::SEPARATOR, [
 			"(" . implode("|", [static::getCachedTableNameBase(), static::getCachedTableShortNameBase()]) . ")",
-			"(?<datetime>[0-9]{" . strlen((new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT)) . "})",
+			"(?<datetime>[0-9]{" . strlen((new \Katu\Tools\Calendar\Time)->format(static::CACHE_DATETIME_FORMAT)) . "})",
 			"([" . \Katu\Tools\Random\Generator::IDSTRING . "]{" . static::TMP_LENGTH . "})",
 		]);
 	}
@@ -210,13 +210,13 @@ abstract class View extends Base
 	public static function generateCachedTableName()
 	{
 		$name = implode(static::SEPARATOR, array_merge([static::getCachedTableNameBase()], [
-			(new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT),
+			(new \Katu\Tools\Calendar\Time)->format(static::CACHE_DATETIME_FORMAT),
 			\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
 		]));
 
 		if (strlen($name) > static::MAX_NAME_LENGTH) {
 			$name = implode(static::SEPARATOR, array_merge([static::getCachedTableShortNameBase()], [
-				(new \Katu\Tools\DateTime\DateTime)->format(static::CACHE_DATETIME_FORMAT),
+				(new \Katu\Tools\Calendar\Time)->format(static::CACHE_DATETIME_FORMAT),
 				\Katu\Tools\Random\Generator::getIdString(static::TMP_LENGTH),
 			]));
 		}
@@ -343,7 +343,7 @@ abstract class View extends Base
 			return true;
 		}
 
-		return in_array((int)(new \Katu\Tools\DateTime\DateTime)->format("h"), explode(",", static::MATERIALIZE_HOURS));
+		return in_array((int)(new \Katu\Tools\Calendar\Time)->format("h"), explode(",", static::MATERIALIZE_HOURS));
 	}
 
 	public static function getMaterializedTable()
@@ -478,7 +478,7 @@ abstract class View extends Base
 		$regexp = static::getCachedTableNameRegexp();
 
 		if (($array[0]["TABLE_NAME"] ?? null) && preg_match("/$regexp/", $array[0]["TABLE_NAME"], $match)) {
-			return \Katu\Tools\DateTime\DateTime::createFromFormat(static::CACHE_DATETIME_FORMAT, $match["datetime"]);
+			return \Katu\Tools\Calendar\Time::createFromFormat(static::CACHE_DATETIME_FORMAT, $match["datetime"]);
 		}
 
 		return false;

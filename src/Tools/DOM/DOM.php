@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\DOM;
 
-use Katu\Tools\DateTime\Timeout;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TURL;
 use Symfony\Component\DomCrawler\Crawler;
 

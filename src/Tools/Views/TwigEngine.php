@@ -79,7 +79,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 
 		$twig->addFilter(new \Twig\TwigFilter("isValidDateTime", function ($date) {
 			try {
-				return (new \Katu\Tools\DateTime\DateTime($date))->isValid();
+				return (new \Katu\Tools\Calendar\Time($date))->isValid();
 			} catch (\Throwable $e) {
 				return false;
 			}
@@ -110,7 +110,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction("getTimeout", function ($timeout) {
-			return new \Katu\Tools\DateTime\Timeout($timeout);
+			return new \Katu\Tools\Calendar\Timeout($timeout);
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction("getVersion", function () {
