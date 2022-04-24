@@ -13,7 +13,7 @@ class StatementDump
 
 	public function setSource(?string $source = null)
 	{
-		$this->source = preg_replace('/\v+\t+/', ' ', $source);
+		$this->source = preg_replace("/\v+\t+/", " ", $source);
 
 		return $this;
 	}
@@ -27,6 +27,6 @@ class StatementDump
 	{
 		preg_match("/Sent SQL: \[[0-9]+\](?<sql>.+)$/m", $this->source, $match);
 
-		return trim($match['sql'] ?? null) ?: null;
+		return trim($match["sql"] ?? null) ?: null;
 	}
 }

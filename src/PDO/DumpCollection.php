@@ -2,16 +2,8 @@
 
 namespace Katu\PDO;
 
-class DumpCollection implements \Iterator, \ArrayAccess
+class DumpCollection extends \ArrayObject
 {
-	public $dumps = [];
-	protected $iteratorPosition = 0;
-
-	public function __construct($dumps = [])
-	{
-		$this->dumps = $dumps;
-	}
-
 	public static function getAll()
 	{
 		$dumps = new static;
@@ -99,32 +91,5 @@ class DumpCollection implements \Iterator, \ArrayAccess
 	public function valid()
 	{
 		return isset($this->dumps[$this->iteratorPosition]);
-	}
-
-	/****************************************************************************
-	 * ArrayAccess.
-	 */
-	public function offsetSet($offset, $value)
-	{
-		if (is_null($offset)) {
-			$this->dumps[] = $value;
-		} else {
-			$this->dumps[$offset] = $value;
-		}
-	}
-
-	public function offsetExists($offset)
-	{
-		return isset($this->dumps[$offset]);
-	}
-
-	public function offsetUnset($offset)
-	{
-		unset($this->dumps[$offset]);
-	}
-
-	public function offsetGet($offset)
-	{
-		return isset($this->dumps[$offset]) ? $this->dumps[$offset] : null;
 	}
 }

@@ -12,10 +12,10 @@ abstract class TableBase extends \Sexy\Expression
 
 	abstract public function getCreateSyntax();
 
-	public function __construct(Connection $connection, $name)
+	public function __construct(Connection $connection, Name $name)
 	{
-		$this->connection = $connection;
-		$this->name = new Name($name);
+		$this->setConnection($connection);
+		$this->setName($name);
 	}
 
 	public function __toString(): string
@@ -23,9 +23,23 @@ abstract class TableBase extends \Sexy\Expression
 		return $this->getSql();
 	}
 
+	public function setConnection(Connection $value): TableBase
+	{
+		$this->connection = $value;
+
+		return $this;
+	}
+
 	public function getConnection(): Connection
 	{
 		return $this->connection;
+	}
+
+	public function setName(Name $value): TableBase
+	{
+		$this->name = $value;
+
+		return $this;
 	}
 
 	public function getName(): Name
@@ -35,7 +49,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getSQL(&$context = []): string
 	{
-		return implode(".", [new Name($this->getConnection()->getConfig()->database), $this->name]);
+		return implode(".", [new Name($this->getConnection()->getConfig()->getDatabase()), $this->getName()]);
 	}
 
 	public function getColumns(): array
@@ -57,7 +71,7 @@ abstract class TableBase extends \Sexy\Expression
 	{
 		return \Katu\Cache\Runtime::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "descriptions", $this->getName()), function () {
 			$columns = [];
-			foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this->getName())->getResult() as $properties) {
+			foreach ($this->getConnection()->createQuery(" DESCRIBE {$this->getName()} ")->getResult() as $properties) {
 				$columns[$properties["Field"]] = $properties;
 			}
 
@@ -84,9 +98,9 @@ abstract class TableBase extends \Sexy\Expression
 		return $this->getConnection()->tableExists($this->name);
 	}
 
-	public function rename($name)
+	public function rename(string $name)
 	{
-		$sql = " RENAME TABLE " . $this->name . " TO " . $name;
+		$sql = " RENAME TABLE {$this->getName()->getPlain()} TO {$name}";
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		\Katu\Cache\Runtime::clear();
@@ -242,7 +256,7 @@ abstract class TableBase extends \Sexy\Expression
 
 	public function getPrimaryKeyColumnName(): ?string
 	{
-		$cacheIdentifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getName());
+		$cacheIdentifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getPlain());
 
 		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
 			return \Katu\Cache\General::get($cacheIdentifier, new Timeout("10 minutes"), function () {

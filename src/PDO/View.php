@@ -9,7 +9,7 @@ class View extends Table
 {
 	public function getCreateSyntax(): string
 	{
-		$sql = " SHOW CREATE TABLE " . $this->getName();
+		$sql = " SHOW CREATE TABLE {$this->getName()}";
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		return $res[0]["Create View"];
@@ -20,7 +20,7 @@ class View extends Table
 		$tableNames = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout("1 day"), function ($table) {
 			$tableNames = [];
 
-			$sql = " EXPLAIN SELECT * FROM " . $table . " ";
+			$sql = " EXPLAIN SELECT * FROM {$table} ";
 			$res = $table->getConnection()->createQuery($sql)->getResult()->getItems();
 			foreach ($res as $row) {
 				if (!preg_match("/^<.+>$/", $row["table"])) {
@@ -62,7 +62,7 @@ class View extends Table
 	{
 		$models = [];
 		foreach (\Katu\Models\View::getAllViewClasses() as $class) {
-			if ($class->getName()::TABLE == $this->getName()->getName()) {
+			if ($class->getName()::TABLE == $this->getName()->getPlain()) {
 				$models[] = $class;
 			}
 		}

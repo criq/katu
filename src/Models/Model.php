@@ -257,7 +257,7 @@ class Model extends Base
 			return true;
 		}
 
-		$preg = "^" . $slug . "(\-([0-9]+))?$";
+		$preg = "^$slug(\-([0-9]+))?$";
 
 		// Select all already used slugs.
 		$sql = SX::select(static::getColumn($column))
@@ -269,7 +269,7 @@ class Model extends Base
 		$res = static::getConnection()->select($sql)->getResult();
 
 		// Nothing, keep the slug.
-		if (!$res->getCount()) {
+		if (!$res->getTotal()) {
 			$this->update($column, $slug);
 		// There are some, get a new slug.
 		} else {

@@ -14,7 +14,7 @@ class DumpDateCollection extends DumpCollection
 	public function getMondayDateTime()
 	{
 		$datetime = clone $this->datetime;
-		$datetime->modify('this week Monday');
+		$datetime->modify("this week Monday");
 		$datetime->setTime(0, 0, 0);
 
 		return $datetime;

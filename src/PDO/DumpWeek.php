@@ -10,8 +10,8 @@ class DumpWeek extends DumpDateCollection
 	public function __construct($datetime)
 	{
 		$this->datetime = $datetime;
-		$this->year = (int) $datetime->format('Y');
-		$this->week = (int) $datetime->format('W');
+		$this->year = (int) $datetime->format("Y");
+		$this->week = (int) $datetime->format("W");
 	}
 
 	public function getObsoleteDumps()
@@ -42,10 +42,10 @@ class DumpWeek extends DumpDateCollection
 		$days = [];
 
 		foreach ($this as $dump) {
-			if (!isset($days[$dump->datetime->format('Ymd')])) {
-				$days[$dump->datetime->format('Ymd')] = new DumpDay($dump->datetime);
+			if (!isset($days[$dump->datetime->format("Ymd")])) {
+				$days[$dump->datetime->format("Ymd")] = new DumpDay($dump->datetime);
 			}
-			$days[$dump->datetime->format('Ymd')][] = $dump;
+			$days[$dump->datetime->format("Ymd")][] = $dump;
 		}
 
 		return array_values($days);

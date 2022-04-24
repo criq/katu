@@ -7,8 +7,8 @@ use Sexy\Sexy as SX;
 
 abstract class Base
 {
-	const DATABASE = 'app';
-	const TABLE = null;
+	const DATABASE = "app";
+	const TABLE = "";
 
 	public static function createFromArray(array $array): Base
 	{
@@ -42,7 +42,7 @@ abstract class Base
 
 	public static function getConnection(): \Katu\PDO\Connection
 	{
-		if (!defined('static::DATABASE')) {
+		if (!defined("static::DATABASE")) {
 			throw new \Katu\Exceptions\Exception("Undefined database.");
 		}
 
@@ -51,7 +51,7 @@ abstract class Base
 
 	public static function getTableName(): \Katu\PDO\Name
 	{
-		if (!defined('static::TABLE')) {
+		if (!defined("static::TABLE")) {
 			throw new \Katu\Exceptions\Exception("Undefined table.");
 		}
 

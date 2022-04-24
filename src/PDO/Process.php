@@ -17,14 +17,14 @@ class Process
 	public function __construct(Connection $connection, array $item)
 	{
 		$this->connection = $connection;
-		$this->id = (int)$item['Id'];
-		$this->user = $item['User'];
-		$this->host = $item['Host'];
-		$this->database = $item['db'];
-		$this->command = $item['Command'];
-		$this->time = (int)$item['Time'];
-		$this->state = $item['State'];
-		$this->info = $item['Info'];
+		$this->id = (int)$item["Id"];
+		$this->user = $item["User"];
+		$this->host = $item["Host"];
+		$this->database = $item["db"];
+		$this->command = $item["Command"];
+		$this->time = (int)$item["Time"];
+		$this->state = $item["State"];
+		$this->info = $item["Info"];
 	}
 
 	public function kill(): Result

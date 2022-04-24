@@ -23,7 +23,6 @@ abstract class View extends Base
 	const MAX_NAME_LENGTH = 64;
 	const PREFIX_CACHE = "_cache";
 	const SEPARATOR = "_";
-	const TABLE = null;
 	const TIMEOUT = 3600;
 	const TMP_LENGTH = 8;
 
@@ -90,7 +89,7 @@ abstract class View extends Base
 	{
 		return implode(static::SEPARATOR, [
 			static::PREFIX_CACHE,
-			static::getViewName()->getName(),
+			static::getViewName()->getPlain(),
 		]);
 	}
 
@@ -110,11 +109,11 @@ abstract class View extends Base
 
 	public static function getCachedTableShortNameBase()
 	{
-		$hash = substr(hash("sha1", static::getViewName()->getName()), 0, 8);
+		$hash = substr(hash("sha1", static::getViewName()->getPlain()), 0, 8);
 
 		$str = implode(static::SEPARATOR, array_merge([static::PREFIX_CACHE], array_map(function ($i) {
 			return substr($i, 0, 3);
-		}, explode("_", static::getViewName()->getName()))));
+		}, explode("_", static::getViewName()->getPlain()))));
 
 		$maxLength = static::MAX_NAME_LENGTH - static::getMetaStringLength() - strlen($hash) + strlen(static::PREFIX_CACHE);
 		$str = substr($str, 0, $maxLength);
@@ -357,7 +356,7 @@ abstract class View extends Base
 	{
 		$name = implode(static::SEPARATOR, [
 			"mv",
-			preg_replace("/^view_/", "", static::getViewName()->getName()),
+			preg_replace("/^view_/", "", static::getViewName()->getPlain()),
 		]);
 
 		return new \Katu\PDO\Name($name);

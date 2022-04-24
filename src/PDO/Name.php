@@ -4,11 +4,11 @@ namespace Katu\PDO;
 
 class Name extends \Sexy\Expression
 {
-	public $name;
+	public $plain;
 
-	public function __construct($name)
+	public function __construct(string $plain)
 	{
-		$this->name = $name instanceof static ? $name->getName() : (string)$name;
+		$this->setPlain($plain);
 	}
 
 	public function __toString()
@@ -16,13 +16,20 @@ class Name extends \Sexy\Expression
 		return $this->getSql();
 	}
 
-	public function getName()
+	public function setPlain(string $value): Name
 	{
-		return $this->name;
+		$this->plain = $value;
+
+		return $this;
+	}
+
+	public function getPlain(): string
+	{
+		return $this->plain;
 	}
 
 	public function getSql(&$context = [])
 	{
-		return "`" . $this->name . "`";
+		return "`{$this->getPlain()}`";
 	}
 }
