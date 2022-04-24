@@ -175,7 +175,7 @@ class Query
 			} catch (\Throwable $e) {
 				// Nevermind.
 			} finally {
-				$error = Error::createFromErrorInfo($statement->errorInfo());
+				$error = Exception::createFromErrorInfo($statement->errorInfo());
 			}
 
 			if ($error->getCode() == 1146 && preg_match("/Table '(.+)\.(?<tableName>.+)' doesn't exist/", $error->getMessage(), $match)) {
@@ -193,7 +193,7 @@ class Query
 					} catch (\Throwable $e) {
 						// Nevermind.
 					} finally {
-						$error = Error::createFromErrorInfo($statement->errorInfo());
+						$error = Exception::createFromErrorInfo($statement->errorInfo());
 					}
 				}
 			}

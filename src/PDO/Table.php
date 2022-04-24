@@ -9,11 +9,11 @@ class Table extends TableBase
 		$sql = " SHOW CREATE TABLE " . $this->name;
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-		if (isset($res[0]['View'])) {
-			return $res[0]['Create View'];
+		if (isset($res[0]["View"])) {
+			return $res[0]["Create View"];
 		}
 
-		return $res[0]['Create Table'];
+		return $res[0]["Create Table"];
 	}
 
 	public function touch()
@@ -33,30 +33,30 @@ class Table extends TableBase
 
 	public function getType()
 	{
-		$sql = " SHOW CREATE TABLE " . $this->name;
+		$sql = " SHOW CREATE TABLE {$this->name}";
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-		if (isset($res[0]['View'])) {
-			return 'view';
+		if (isset($res[0]["View"])) {
+			return "view";
 		}
 
-		return 'table';
+		return "table";
 	}
 
 	public function isTable()
 	{
-		return $this->getType() == 'table';
+		return $this->getType() == "table";
 	}
 
 	public function isView()
 	{
-		return $this->getType() == 'view';
+		return $this->getType() == "view";
 	}
 
 	public function getChecksum()
 	{
 		$sql = " CHECKSUM TABLE " . $this->getName();
-		$res = $this->getConnection()->createQuery($sql)->getResult()[0]['Checksum'];
+		$res = $this->getConnection()->createQuery($sql)->getResult()[0]["Checksum"];
 
 		return (int)$res;
 	}

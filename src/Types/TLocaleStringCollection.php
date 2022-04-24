@@ -2,11 +2,8 @@
 
 namespace Katu\Types;
 
-class TLocaleStrings implements \Iterator, \ArrayAccess
+class TLocaleStringCollection extends \ArrayObject
 {
-	public $strings = [];
-	protected $iteratorPosition = 0;
-
 	public function add(TPreferredLocale $acceptedLocale)
 	{
 		$this->strings[] = $acceptedLocale;
@@ -55,60 +52,5 @@ class TLocaleStrings implements \Iterator, \ArrayAccess
 		}
 
 		return false;
-	}
-
-	/****************************************************************************
-	 * Iterator.
-	 */
-	public function rewind()
-	{
-		$this->iteratorPosition = 0;
-	}
-
-	public function current()
-	{
-		return $this->strings[$this->iteratorPosition];
-	}
-
-	public function key()
-	{
-		return $this->iteratorPosition;
-	}
-
-	public function next()
-	{
-		++$this->iteratorPosition;
-	}
-
-	public function valid()
-	{
-		return isset($this->strings[$this->iteratorPosition]);
-	}
-
-	/****************************************************************************
-	 * ArrayAccess.
-	 */
-	public function offsetSet($offset, $value)
-	{
-		if (is_null($offset)) {
-			$this->strings[] = $value;
-		} else {
-			$this->strings[$offset] = $value;
-		}
-	}
-
-	public function offsetExists($offset)
-	{
-		return isset($this->strings[$offset]);
-	}
-
-	public function offsetUnset($offset)
-	{
-		unset($this->strings[$offset]);
-	}
-
-	public function offsetGet($offset)
-	{
-		return isset($this->strings[$offset]) ? $this->strings[$offset] : null;
 	}
 }

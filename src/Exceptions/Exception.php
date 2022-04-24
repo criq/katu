@@ -2,6 +2,8 @@
 
 namespace Katu\Exceptions;
 
+use Katu\Types\TLocaleStringCollection;
+
 class Exception extends \Exception
 {
 	const HTTP_CODE = 400;
@@ -11,11 +13,11 @@ class Exception extends \Exception
 	protected $errorNames = [];
 	protected $translations;
 
-	public function __construct(?string $message = null, ?int $code = 0, ?\Throwable $previous = null)
+	public function __construct(string $message = "", int $code = 0, ?\Throwable $previous = null)
 	{
 		parent::__construct($message, $code, $previous);
 
-		$this->translations = new \Katu\Types\TLocaleStrings;
+		$this->translations = new TLocaleStringCollection;
 	}
 
 	public function __toString(): string
