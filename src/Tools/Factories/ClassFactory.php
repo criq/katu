@@ -15,12 +15,12 @@ class ClassFactory extends Factory
 		$this->method = $method;
 	}
 
-	public function getClass() : TClass
+	public function getClass(): TClass
 	{
 		return $this->class;
 	}
 
-	public function getMethod() : ?string
+	public function getMethod(): ?string
 	{
 		return $this->method;
 	}

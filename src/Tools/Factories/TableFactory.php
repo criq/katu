@@ -6,7 +6,7 @@ use Sexy\Sexy as SX;
 
 abstract class TableFactory extends Factory
 {
-	abstract public static function getTable() : \Katu\PDO\Table;
+	abstract public static function getTable(): \Katu\PDO\Table;
 
 	public static function get($primaryKey)
 	{
@@ -25,7 +25,7 @@ abstract class TableFactory extends Factory
 			;
 	}
 
-	public static function getBySql($sql)
+	public static function getBySql($sql): \Katu\PDO\Result
 	{
 		return static::getTable()->getConnection()->createQuery($sql)
 			->setFactory(new static)
