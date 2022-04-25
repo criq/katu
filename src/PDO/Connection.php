@@ -23,13 +23,13 @@ class Connection
 		try {
 			$this->config = Config::createFromConfig(\Katu\Config\Config::get("db", $name));
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance " . $name . ".");
+			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance {$name}.");
 		}
 
 		// Try to connect.
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->setPdo(new \PDO($this->config->getPDODSN(), $this->config->user, $this->config->password));
+				$this->setPdo(new \PDO($this->getConfig()->getPDODSN(), $this->getConfig()->getUser(), $this->getConfig()->getPassword()));
 				break;
 			} catch (\Throwable $e) {
 				if (strpos($e->getMessage(), "driver does not support setting attributes.")) {

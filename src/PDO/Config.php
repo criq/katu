@@ -2,6 +2,7 @@
 
 namespace Katu\PDO;
 
+use Katu\Types\Encryption\TEncryptedString;
 use Katu\Types\TClass;
 
 class Config
@@ -12,8 +13,8 @@ class Config
 
 	public $charset;
 	public $database;
+	public $encryptedPassword;
 	public $host;
-	public $password;
 	public $type;
 	public $user;
 
@@ -22,7 +23,7 @@ class Config
 		$this->charset = $charset;
 		$this->database = $database;
 		$this->host = $host;
-		$this->password = $password;
+		$this->encryptedPassword = \Katu\Types\Encryption\TEncryptedString::encrypt($password);
 		$this->type = static::TYPE;
 		$this->user = $user;
 	}
@@ -45,8 +46,8 @@ class Config
 			"charset" => $this->getCharset(),
 			"dbname" => $this->getDatabase(),
 			"driver" => $this->getDriver(),
+			"encryptedPassword" => $this->getEncryptedPassword(),
 			"host" => $this->getHost(),
-			"password" => $this->getPassword(),
 			"user" => $this->getUser(),
 		];
 	}
@@ -81,9 +82,14 @@ class Config
 		return (string)$this->user;
 	}
 
+	public function getEncryptedPassword(): TEncryptedString
+	{
+		return $this->encryptedPassword;
+	}
+
 	public function getPassword(): string
 	{
-		return (string)$this->password;
+		return (string)$this->getEncryptedPassword()->getOriginal();
 	}
 
 	public function getPDODSN(): string
