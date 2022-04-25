@@ -156,15 +156,15 @@ abstract class TableBase extends \Sexy\Expression
 		}
 
 		// Disable NULL.
-		if (isset($options["disableNull"]) && $options["disableNull"]) {
+		if ($options["disableNull"] ?? null) {
 		}
 
 		// Create automatic indices.
-		if (isset($options["autoIndices"]) && $options["autoIndices"]) {
+		if ($options["autoIndices"] ?? null) {
 			$indexableColumns = [];
 
 			foreach ($destinationTable->getColumns() as $column) {
-				if (in_array($column->getProperties()->type, [
+				if (in_array($column->getDescription()->type, [
 					"date", "datetime", "timestamp", "year",
 					"tinyint", "smallint", "mediumint", "int", "bigint",
 					"float", "double", "real", "decimal",
