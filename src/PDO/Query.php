@@ -178,11 +178,11 @@ class Query
 				$error = Exception::createFromErrorInfo($statement->errorInfo());
 			}
 
-			if ($error->getCode() == 1146 && preg_match("/Table '(.+)\.(?<tableName>.+)' doesn't exist/", $error->getMessage(), $match)) {
+			if ($error->getCode() == 1146 && preg_match("/Table \"(.+)\.(?<tableName>.+)\" doesn't exist/", $error->getMessage(), $match)) {
 				// Create the table.
-				$sqlFile = new \Katu\Files\File(__DIR__, '..', '..', 'Tools', 'SQL', $match['tableName'] . '.create.sql');
+				$sqlFile = new \Katu\Files\File(__DIR__, "..", "..", "Tools", "SQL", $match["tableName"] . ".create.sql");
 				if ($sqlFile->exists()) {
-					// There is a file, let's create the table.
+					// There is a file, let"s create the table.
 					$this->getConnection()->createQuery($sqlFile->get())->getResult();
 
 					// Re-run the query.
@@ -205,11 +205,11 @@ class Query
 			ob_end_clean();
 
 			try {
-				if (\Katu\Config\Config::get('app', 'profiler', 'pdo')) {
-					$file = (\Katu\Files\File::createTemporaryWithFileName($this->getConnection()->getSessionId() . '.csv'));
+				if (\Katu\Config\Config::get("app", "profiler", "pdo")) {
+					$file = (\Katu\Files\File::createTemporaryWithFileName($this->getConnection()->getSessionId() . ".csv"));
 					$csv = new \Katu\Files\Formats\CSV($file);
 					$csv->append([
-						preg_replace('/\./', ',', $this->getDuration()),
+						preg_replace("/\./", ",", $this->getDuration()),
 						$this->getStatementDump()->getSentSQL() ?: $this->statement->queryString,
 					]);
 				}
@@ -219,13 +219,13 @@ class Query
 
 			// Found rows.
 			try {
-				if (mb_strpos($statement->queryString, 'SQL_CALC_FOUND_ROWS') !== false) {
+				if (mb_strpos($statement->queryString, "SQL_CALC_FOUND_ROWS") !== false) {
 					$sql = " SELECT FOUND_ROWS() AS total ";
 					$foundRowsQuery = $this->getConnection()->createQuery($sql);
 					$foundRowsStatement = $foundRowsQuery->getStatement();
 					$foundRowsStatement->execute();
 					$fetched = $foundRowsStatement->fetchAll(\PDO::FETCH_ASSOC);
-					$this->setFoundRows((int)$fetched[0]['total']);
+					$this->setFoundRows((int)$fetched[0]["total"]);
 				}
 			} catch (\Throwable $e) {
 				// Nevermind.
