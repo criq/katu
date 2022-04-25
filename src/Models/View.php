@@ -134,7 +134,8 @@ abstract class View extends Base
 			// Try cached table name.
 			$tableName = static::getCachedTableName();
 		} catch (\Throwable $e) {
-			// Some error happened, probably locked, return normal view.
+			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+
 			$tableName = static::getViewName();
 		}
 
@@ -278,17 +279,17 @@ abstract class View extends Base
 		return time() - static::getLastMaterializedTime();
 	}
 
-	public static function getCacheExpiryRatio()
+	public static function getCacheExpiryRatio(): float
 	{
 		return static::getCacheAge() / static::CACHE_TIMEOUT;
 	}
 
-	public static function getMaterializeExpiryRatio()
+	public static function getMaterializeExpiryRatio(): float
 	{
 		return static::getMaterializeAge() / static::MATERIALIZE_TIMEOUT;
 	}
 
-	public static function isCacheExpired($expiryRatio = 1)
+	public static function isCacheExpired($expiryRatio = 1): bool
 	{
 		if (!static::isCached()) {
 			return false;
@@ -309,12 +310,12 @@ abstract class View extends Base
 		return false;
 	}
 
-	public static function isCacheExpiredAdvance()
+	public static function isCacheExpiredAdvance(): bool
 	{
 		return static::isCacheExpired(static::CACHE_ADVANCE);
 	}
 
-	public static function isMaterializeExpired($expiryRatio = 1)
+	public static function isMaterializeExpired($expiryRatio = 1): bool
 	{
 		if (!static::isMaterialized()) {
 			return false;
@@ -331,7 +332,7 @@ abstract class View extends Base
 		return false;
 	}
 
-	public static function isMaterializeExpiredAdvance($expiryRatio = 1)
+	public static function isMaterializeExpiredAdvance()
 	{
 		return static::isMaterializeExpired(static::MATERIALIZE_ADVANCE);
 	}
@@ -384,7 +385,7 @@ abstract class View extends Base
 		try {
 			$destinationTable->delete();
 		} catch (\Throwable $e) {
-			// Nevermind.
+			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
 		}
 
 		// Rename the temporary table.
@@ -444,7 +445,7 @@ abstract class View extends Base
 			try {
 				return static::materialize();
 			} catch (\Throwable $e) {
-				\Katu\Exceptions\Handler::log($e);
+				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
 			}
 		}
 	}
@@ -521,8 +522,7 @@ abstract class View extends Base
 					$class->getName()::materializeIfExpired();
 				}
 			} catch (\Throwable $e) {
-				// TODO - throw into a different log.
-				\Katu\Exceptions\Handler::log($e);
+				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
 			}
 		}
 	}

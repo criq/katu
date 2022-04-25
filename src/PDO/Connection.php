@@ -15,13 +15,13 @@ class Connection
 	public function __construct(string $name)
 	{
 		$this->setName($name);
-		$this->setSessionId(implode('.', [
+		$this->setSessionId(implode(".", [
 			$this->getName(),
 			\Katu\Tools\Random\Generator::getString(16),
 		]));
 
 		try {
-			$this->config = Config::createFromConfig(\Katu\Config\Config::get('db', $name));
+			$this->config = Config::createFromConfig(\Katu\Config\Config::get("db", $name));
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance " . $name . ".");
 		}
@@ -32,7 +32,7 @@ class Connection
 				$this->setPdo(new \PDO($this->config->getPDODSN(), $this->config->user, $this->config->password));
 				break;
 			} catch (\Throwable $e) {
-				if (strpos($e->getMessage(), 'driver does not support setting attributes.')) {
+				if (strpos($e->getMessage(), "driver does not support setting attributes.")) {
 					$attributes = null;
 				}
 			}
@@ -41,12 +41,12 @@ class Connection
 
 	public function __sleep()
 	{
-		return ['name', 'config'];
+		return ["name", "config"];
 	}
 
-	public function setPdo(\PDO $pdo): Connection
+	public function setPdo(\PDO $value): Connection
 	{
-		$this->pdo = $pdo;
+		$this->pdo = $value;
 
 		return $this;
 	}
@@ -61,9 +61,9 @@ class Connection
 		return $this->config;
 	}
 
-	public function setName(string $name): Connection
+	public function setName(string $value): Connection
 	{
-		$this->name = $name;
+		$this->name = $value;
 
 		return $this;
 	}
@@ -73,9 +73,9 @@ class Connection
 		return (string)$this->name;
 	}
 
-	public function setSessionId(string $sessionId): Connection
+	public function setSessionId(string $value): Connection
 	{
-		$this->sessionId = $sessionId;
+		$this->sessionId = $value;
 
 		return $this;
 	}
@@ -90,7 +90,7 @@ class Connection
 		return (string)$this->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
-	public static function getInstance($name): Connection
+	public static function getInstance(string $name): Connection
 	{
 		if (!(static::$connections[$name] ?? null)) {
 			static::$connections[$name] = new static($name);
@@ -99,28 +99,9 @@ class Connection
 		return static::$connections[$name];
 	}
 
-	public function getLastInsertId()
-	{
-		return $this->getPdo()->lastInsertId();
-	}
-
 	public function tableExists(Name $tableName): bool
 	{
 		return in_array($tableName, $this->getTableNames());
-	}
-
-	public function getTables(): array
-	{
-		$connection = $this;
-
-		return array_map(function ($tableName) use ($connection) {
-			return new Table($connection, $tableName);
-		}, $this->getTableNames());
-	}
-
-	public function getTable($tableName): Table
-	{
-		return new Table($this, $tableName);
 	}
 
 	public function getTableNames(): array
@@ -128,38 +109,52 @@ class Connection
 		$sql = " SHOW TABLES ";
 		$res = $this->createQuery($sql)->getResult()->getItems();
 
-		return array_map(function ($i) {
-			$names = array_values($i);
-			return new \Katu\PDO\Name($names[0]);
+		return array_map(function (array $row) {
+			return new Name(array_values($row)[0]);
 		}, $res);
 	}
 
-	public function getViews(): array
+	public function getTables(): TableCollection
 	{
-		$connection = $this;
+		$res = new TableCollection;
+		foreach ($this->getTableNames() as $tableName) {
+			$res[] = new Table($this, $tableName);
+		}
 
-		return array_map(function ($i) use ($connection) {
-			return new View($connection, $i);
-		}, $this->getViewNames());
+		return $res;
+	}
+
+	public function getTable(Name $name): Table
+	{
+		return new Table($this, $name);
 	}
 
 	public function getViewNames(): array
 	{
-		$sql = " SHOW FULL TABLES IN " . $this->config->database . " WHERE TABLE_TYPE LIKE 'VIEW' ";
+		$sql = " SHOW FULL TABLES IN {$this->getConfig()->getDatabase()} WHERE TABLE_TYPE LIKE 'VIEW' ";
 		$res = $this->createQuery($sql)->getResult()->getItems();
 
 		return array_map(function ($i) {
-			$names = array_values($i);
-			return $names[0];
+			return new Name(array_values($i)[0]);
 		}, $res);
+	}
+
+	public function getViews(): TableCollection
+	{
+		$res = new TableCollection;
+		foreach ($this->getViewNames() as $viewName) {
+			$res[] = new View($this, $viewName);
+		}
+
+		return $res;
 	}
 
 	public function getViewReport(): array
 	{
 		$views = [];
 		foreach ($this->getViews() as $view) {
-			$views[$view->name->name]['usedIn'] = $view->getUsedInViews();
-			$views[$view->name->name]['usage'] = $view->getTotalUsage(new Timeout('1 day'));
+			$views[$view->name->name]["usedIn"] = $view->getUsedInViews();
+			$views[$view->name->name]["usage"] = $view->getTotalUsage(new Timeout("1 day"));
 		}
 
 		return $views;
@@ -212,7 +207,7 @@ class Connection
 	public function getSqlModes(): array
 	{
 		$sql = " SELECT @@SESSION.sql_mode AS sql_mode ";
-		$array = explode(',', $this->createQuery($sql)->getResult()->getItems()[0]['sql_mode'] ?? null);
+		$array = explode(",", $this->createQuery($sql)->getResult()->getItems()[0]["sql_mode"] ?? null);
 
 		return array_combine($array, $array);
 	}
@@ -221,7 +216,7 @@ class Connection
 	{
 		$sql = " SET @@SESSION.sql_mode = :sqlMode ";
 		$res = $this->createQuery($sql, [
-			'sqlMode' => implode(',', $sqlModes),
+			"sqlMode" => implode(",", $sqlModes),
 		])->getResult();
 
 		return $res;
@@ -265,5 +260,10 @@ class Connection
 		return new Processlist(array_map(function (array $item) {
 			return new Process($this, $item);
 		}, $this->createQuery($sql)->getResult()->getItems()));
+	}
+
+	public function getLastInsertId()
+	{
+		return $this->getPdo()->lastInsertId();
 	}
 }

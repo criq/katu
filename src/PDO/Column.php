@@ -9,8 +9,8 @@ class Column extends \Sexy\Expression
 
 	public function __construct(TableBase $table, Name $name)
 	{
-		$this->table = $table;
-		$this->name = $name;
+		$this->setTable($table);
+		$this->setName($name);
 	}
 
 	public function __toString(): string
@@ -18,9 +18,11 @@ class Column extends \Sexy\Expression
 		return $this->getSql();
 	}
 
-	public function getName(): Name
+	public function setTable(TableBase $value): Column
 	{
-		return $this->name;
+		$this->table = $value;
+
+		return $this;
 	}
 
 	public function getTable(): TableBase
@@ -28,9 +30,21 @@ class Column extends \Sexy\Expression
 		return $this->table;
 	}
 
-	public function getProperties(): ColumnProperties
+	public function setName(Name $value): Column
 	{
-		return new ColumnProperties($this->getTable()->getColumnDescription($this->getName()));
+		$this->name = $value;
+
+		return $this;
+	}
+
+	public function getName(): Name
+	{
+		return $this->name;
+	}
+
+	public function getDescription(): ColumnDescription
+	{
+		return $this->getTable()->getColumnDescriptions()->filterByName($this->getName()->getPlain())[0];
 	}
 
 	public function getSql(&$context = [])

@@ -47,50 +47,55 @@ abstract class TableBase extends \Sexy\Expression
 		return $this->name;
 	}
 
-	public function getSQL(&$context = []): string
+	public function getColumnDescriptions(): ColumnDescriptionCollection
 	{
-		return implode(".", [new Name($this->getConnection()->getConfig()->getDatabase()), $this->getName()]);
-	}
-
-	public function getColumns(): array
-	{
-		$columns = [];
-		foreach ($this->getColumnNames() as $columnName) {
-			$columns[] = new Column($this, new Name($columnName));
-		}
-
-		return $columns;
-	}
-
-	public function getColumn(string $column): Column
-	{
-		return new Column($this, new Name($column));
-	}
-
-	public function getColumnDescriptions(): array
-	{
-		return \Katu\Cache\Runtime::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "descriptions", $this->getName()), function () {
-			$columns = [];
-			foreach ($this->getConnection()->createQuery(" DESCRIBE {$this->getName()} ")->getResult() as $properties) {
-				$columns[$properties["Field"]] = $properties;
+		return \Katu\Cache\Runtime::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "descriptions", $this->getName()->getPlain()), function () {
+			$res = new ColumnDescriptionCollection;
+			$sql = " DESCRIBE {$this->getName()} ";
+			foreach ($this->getConnection()->createQuery($sql)->getResult() as $description) {
+				$res[] = ColumnDescription::createFromResponse($description);
 			}
 
-			return $columns;
+			return $res;
 		});
 	}
 
-	public function getColumnDescription($columnName)
+	public function getColumnNames(): NameCollection
 	{
-		$descriptions = $this->getColumnDescriptions();
+		$res = new NameCollection;
+		foreach ($this->getColumnDescriptions() as $columnDescription) {
+			$res[] = new Name($columnDescription->getName());
+		}
 
-		return $descriptions[$columnName instanceof Name ? $columnName->name : $columnName];
+		return $res;
+ 	}
+
+	public function getColumns(): ColumnCollection
+	{
+		$res = new ColumnCollection;
+		foreach ($this->getColumnNames() as $columnName) {
+			$res[] = new Column($this, $columnName);
+		}
+
+		return $res;
 	}
 
-	public function getColumnNames()
+	public function getColumn(Name $name): Column
 	{
-		return array_values(array_map(function ($i) {
-			return new Name($i["Field"]);
-		}, $this->getColumnDescriptions()));
+		return new Column($this, $name);
+	}
+
+	public function getPrimaryKeyColumn(): ?Column
+	{
+		return \Katu\Cache\Runtime::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getPlain()), function () {
+			foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
+				if (($row["Key"] ?? null) == "PRI") {
+					return new Column($this, new Name($row["Field"]));
+				}
+			}
+
+			return null;
+		});
 	}
 
 	public function exists(): bool
@@ -249,34 +254,13 @@ abstract class TableBase extends \Sexy\Expression
 		return new TIdentifier("databases", $this->getConnection()->getName(), "tables", "totalRows", $this->name);
 	}
 
-	public function getLastUpdatedTemporaryFile()
+	public function getLastUpdatedTemporaryFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\Temporary("databases", $this->getConnection()->getName(), "tables", "updated", $this->name);
+		return new \Katu\Files\Temporary("databases", $this->getConnection()->getName(), "tables", "updated", $this->getName()->getPlain());
 	}
 
-	public function getPrimaryKeyColumnName(): ?string
+	public function getSQL(&$context = []): string
 	{
-		$cacheIdentifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getPlain());
-
-		return \Katu\Cache\Runtime::get($cacheIdentifier, function () use ($cacheIdentifier) {
-			return \Katu\Cache\General::get($cacheIdentifier, new Timeout("10 minutes"), function () {
-				foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
-					if (isset($row["Key"]) && $row["Key"] == "PRI") {
-						return $row["Field"];
-					}
-				}
-
-				return null;
-			});
-		});
-	}
-
-	public function getPrimaryKeyColumn(): ?Column
-	{
-		try {
-			return $this->getColumn($this->getPrimaryKeyColumnName());
-		} catch (\Throwable $e) {
-			return null;
-		}
+		return implode(".", [new Name($this->getConnection()->getConfig()->getDatabase()), $this->getName()]);
 	}
 }

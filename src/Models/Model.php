@@ -2,6 +2,7 @@
 
 namespace Katu\Models;
 
+use Katu\PDO\Column;
 use Sexy\Sexy as SX;
 
 class Model extends Base
@@ -33,8 +34,6 @@ class Model extends Base
 		$query = $connection->createQuery($sql, $values);
 		$query->getResult();
 
-		static::change();
-
 		$primaryKey = $connection->getLastInsertId();
 		if ($primaryKey) {
 			$object = static::get($primaryKey);
@@ -65,17 +64,6 @@ class Model extends Base
 		return $object;
 	}
 
-	public function update(string $property, $value = null)
-	{
-		if ($this->$property !== $value) {
-			$this->$property = $value;
-
-			static::change();
-		}
-
-		return $this;
-	}
-
 	public function save()
 	{
 		return $this->saveWithCallback();
@@ -83,13 +71,11 @@ class Model extends Base
 
 	public function saveWithoutCallback()
 	{
-		$columnsNames = array_map(function (\Katu\PDO\Name $columnName) {
-			return $columnName->getPlain();
-		}, static::getTable()->getColumnNames());
+		$plainColumnsNames = static::getTable()->getColumnNames()->getPlain();
 
 		$values = [];
 		foreach (get_object_vars($this) as $name => $value) {
-			if (in_array($name, $columnsNames) && $name != static::getPrimaryKeyColumnName()) {
+			if (in_array($name, $plainColumnsNames) && $name != $this->getPrimaryKeyColumn()->getName()->getPlain()) {
 				$values[$name] = $value;
 			}
 		}
@@ -102,14 +88,12 @@ class Model extends Base
 		if ($set) {
 			$sql = " UPDATE " . static::getTable() . "
 				SET " . implode(", ", $set) . "
-				WHERE ( " . $this->getPrimaryKeyColumnName() . " = :" . $this->getPrimaryKeyColumnName() . " ) ";
+				WHERE ( {$this->getPrimaryKeyColumn()} = :{$this->getPrimaryKeyColumn()->getName()->getPlain()} ) ";
 
 			$query = static::getConnection()->createQuery($sql, $values);
-			$query->setParam(static::getPrimaryKeyColumnName(), $this->getId());
+			$query->setParam($this->getPrimaryKeyColumn()->getName()->getPlain(), $this->getId());
 			$query->getResult();
 		}
-
-		static::change();
 
 		return $this;
 	}
@@ -128,27 +112,19 @@ class Model extends Base
 		$this->beforeDeleteCallback();
 
 		$sql = " DELETE FROM " . static::getTable() . "
-			WHERE " . static::getPrimaryKeyColumnName() . " = :" . static::getPrimaryKeyColumnName();
+			WHERE {$this->getPrimaryKeyColumn()} = :{$this->getPrimaryKeyColumn()->getName()->getPlain()}";
 
 		$query = static::getConnection()->createQuery($sql, [
-			static::getPrimaryKeyColumnName() => $this->getId(),
+			$this->getPrimaryKeyColumn()->getName()->getPlain() => $this->getId(),
 		]);
 
 		$res = $query->getResult();
 
 		$this->afterDeleteCallback();
 
-		static::change();
 		static::afterAnyCallback();
 
 		return !$res->hasError();
-	}
-
-	public static function change(): bool
-	{
-		static::getTable()->touch();
-
-		return true;
 	}
 
 	/****************************************************************************
@@ -182,20 +158,20 @@ class Model extends Base
 	/****************************************************************************
 	 * Properties.
 	 */
-	public static function getIdColumn(): \Katu\PDO\Column
+	public static function getPrimaryKeyColumn(): ?Column
 	{
-		return static::getColumn(static::getPrimaryKeyColumnName());
+		return static::getTable()->getPrimaryKeyColumn();
 	}
 
-	public static function getPrimaryKeyColumnName(): ?string
+	public static function getIdColumn(): ?\Katu\PDO\Column
 	{
-		return static::getTable()->getPrimaryKeyColumnName();
+		return static::getPrimaryKeyColumn();
 	}
 
 	public function getId(): ?string
 	{
 		try {
-			return $this->{static::getPrimaryKeyColumnName()};
+			return $this->{static::getIdColumn()->getName()->getPlain()};
 		} catch (\Throwable $e) {
 			return null;
 		}
@@ -204,16 +180,16 @@ class Model extends Base
 	public static function get(?string $primaryKey)
 	{
 		return static::getOneBy([
-			static::getPrimaryKeyColumnName() => $primaryKey,
+			static::getPrimaryKeyColumn()->getName()->getPlain() => $primaryKey,
 		]);
 	}
 
-	public function exists()
+	public function exists(): bool
 	{
 		return (bool)static::get($this->getId());
 	}
 
-	public function setUniqueColumnValue($column, $chars = null, $length = null)
+	public function setUniqueColumnValue(Column $column, ?string $chars = null, ?int $length = null)
 	{
 		if (is_null($chars)) {
 			$chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -224,15 +200,15 @@ class Model extends Base
 		}
 
 		if (is_null($length)) {
-			$length = $column->getProperties()->length;
+			$length = $column->getDescription()->length;
 		}
 
 		while (true) {
 			$string = \Katu\Tools\Random\Generator::getFromChars($chars, $length);
 			if (!static::getBy([
-				$column->name->name => $string,
+				$column->getName()->getPlain() => $string,
 			])->getTotal()) {
-				$this->update($column->name->name, $string);
+				$this->{$column->getName()->getPlain()} = $string;
 				$this->save();
 
 				return $string;
@@ -240,10 +216,10 @@ class Model extends Base
 		}
 	}
 
-	public function setUniqueColumnSlug($column, $source, $force = false, $constraints = [])
+	public function setUniqueColumnSlug(Column $column, array $source, bool $force = false, array $constraints = [])
 	{
 		// Generate slug.
-		$slug = (new \Katu\Types\TString(trim(implode(" ", (array) $source))))->getForUrl([
+		$slug = (new \Katu\Types\TString(trim(implode(" ", (array)$source))))->getForUrl([
 			"maxLength" => 245,
 		]);
 
@@ -270,7 +246,7 @@ class Model extends Base
 
 		// Nothing, keep the slug.
 		if (!$res->getTotal()) {
-			$this->update($column, $slug);
+			$this->{$column->getName()->getPlain()} = $slug;
 		// There are some, get a new slug.
 		} else {
 			$suffixes = [];
@@ -292,10 +268,10 @@ class Model extends Base
 				$proposedSuffix++;
 			}
 
-			$this->update($column, implode("-", array_filter([
+			$this->{$column->getName()->getPlain()} = implode("-", array_filter([
 				$slug,
 				$proposedSuffix,
-			])));
+			]));
 		}
 
 		$this->save();
