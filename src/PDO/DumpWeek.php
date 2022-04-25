@@ -10,8 +10,8 @@ class DumpWeek extends DumpDateCollection
 	public function __construct($datetime)
 	{
 		$this->datetime = $datetime;
-		$this->year = (int) $datetime->format("Y");
-		$this->week = (int) $datetime->format("W");
+		$this->year = (int)$datetime->format("Y");
+		$this->week = (int)$datetime->format("W");
 	}
 
 	public function getObsoleteDumps()

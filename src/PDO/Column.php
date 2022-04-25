@@ -7,7 +7,7 @@ class Column extends \Sexy\Expression
 	public $name;
 	public $table;
 
-	public function __construct(TableBase $table, Name $name)
+	public function __construct(Table $table, Name $name)
 	{
 		$this->setTable($table);
 		$this->setName($name);
@@ -18,14 +18,14 @@ class Column extends \Sexy\Expression
 		return $this->getSql();
 	}
 
-	public function setTable(TableBase $value): Column
+	public function setTable(Table $value): Column
 	{
 		$this->table = $value;
 
 		return $this;
 	}
 
-	public function getTable(): TableBase
+	public function getTable(): Table
 	{
 		return $this->table;
 	}
