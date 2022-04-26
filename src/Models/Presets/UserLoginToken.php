@@ -19,7 +19,7 @@ class UserLoginToken extends \Katu\Models\Model
 			'timeCreated' => new \Katu\Tools\Calendar\Time,
 			'timeExpires' => new \Katu\Tools\Calendar\Time('+ ' . $timeout . ' seconds'),
 			'userId' => $user->getId(),
-			'token' => \Katu\Tools\Random\Generator::getString(static::getColumn('token')->getProperties()->length),
+			'token' => \Katu\Tools\Random\Generator::getString(static::getColumn('token')->getDescription()->length),
 		]);
 	}
 

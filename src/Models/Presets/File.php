@@ -202,7 +202,7 @@ class File extends \Katu\Models\Model
 	public function getSecret()
 	{
 		if (!$this->secret) {
-			$this->update('secret', Generator::generateString($this->getTable()->getColumn('secret')->getProperties()->length, Generator::ALNUM));
+			$this->update('secret', Generator::generateString($this->getTable()->getColumn('secret')->getDescription()->length, Generator::ALNUM));
 			$this->save();
 		}
 
