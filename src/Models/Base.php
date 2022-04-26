@@ -60,16 +60,16 @@ abstract class Base
 
 	public static function getTable(): \Katu\PDO\Table
 	{
-		$tableClass = (string)static::getTableClass()->getName();
+		$tableClassName = (string)static::getTableClass()->getName();
 
-		return new $tableClass(static::getConnection(), static::getTableName());
+		return new $tableClassName(static::getConnection(), static::getTableName());
 	}
 
 	public static function getColumn(string $name): \Katu\PDO\Column
 	{
-		$columnClass = static::getColumnClass()->getName();
+		$columnClassName = static::getColumnClass()->getName();
 
-		return new $columnClass(static::getTable(), new \Katu\PDO\Name($name));
+		return new $columnClassName(static::getTable(), new \Katu\PDO\Name($name));
 	}
 
 	public static function select(): \Katu\PDO\Query
