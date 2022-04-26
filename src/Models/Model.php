@@ -160,7 +160,9 @@ class Model extends Base
 	 */
 	public static function getPrimaryKeyColumn(): ?Column
 	{
-		return static::getTable()->getPrimaryKeyColumn();
+		$columnClassName = static::getColumnClass()->getName();
+
+		return new $columnClassName(static::getTable(), static::getTable()->getPrimaryKeyColumn()->getName());
 	}
 
 	public static function getIdColumn(): ?\Katu\PDO\Column
