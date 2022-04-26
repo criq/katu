@@ -54,7 +54,7 @@ class Model extends Base
 		$object = static::getOneBy($getByParams);
 		if ($object) {
 			foreach ($updateParams as $name => $value) {
-				$object->update($name, $value);
+				$object->$name = $value;
 			}
 			$object->save();
 		} else {
