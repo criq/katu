@@ -74,6 +74,13 @@ class App
 				return new $errorHandlerClass;
 			};
 
+			// Autoload.
+			if (class_exists("\\App\\Classes\\Autoload")) {
+				foreach ((array)\App\Classes\Autoload::getRegisterFunctions() as $registerFunction) {
+					spl_autoload_register($registerFunction);
+				}
+			}
+
 			static::$app = new \Slim\App($config);
 		}
 
@@ -109,13 +116,6 @@ class App
 				throw $e;
 			} catch (\Throwable $e) {
 				// Nothing to do, no custom routes defined.
-			}
-
-			// Autoload.
-			if (class_exists("\\App\\Extensions\\Autoload")) {
-				foreach ((array)\App\Extensions\Autoload::getRegisterFunctions() as $registerFunction) {
-					spl_autoload_register($registerFunction);
-				}
 			}
 
 			// Run the app.
