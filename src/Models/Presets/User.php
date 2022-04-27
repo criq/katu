@@ -2,61 +2,18 @@
 
 namespace Katu\Models\Presets;
 
-use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
 
 class User extends \Katu\Models\Model
 {
+	const DATABASE = "app";
 	const TABLE = "users";
 
 	public static $columnNames = [
 		"emailAddressId" => "emailAddressId",
 		"timeCreated" => "timeCreated",
 	];
-
-	/****************************************************************************
-	 * Classes.
-	 */
-	public static function getAccessTokenClass(): TClass
-	{
-		return new TClass("App\Models\AccessToken");
-	}
-
-	public static function getEmailAddressClass(): TClass
-	{
-		return new TClass("App\Models\EmailAddress");
-	}
-
-	public static function getRoleClass(): TClass
-	{
-		return new TClass("App\Models\Role");
-	}
-
-	public static function getRolePermissionClass(): TClass
-	{
-		return new TClass("App\Models\RolePermission");
-	}
-
-	public static function getUserRoleClass(): TClass
-	{
-		return new TClass("App\Models\UserRole");
-	}
-
-	public static function getUserPermissionClass(): TClass
-	{
-		return new TClass("App\Models\UserPermission");
-	}
-
-	public static function getUserServiceClass(): TClass
-	{
-		return new TClass("App\Models\UserService");
-	}
-
-	public static function getUserSettingClass(): TClass
-	{
-		return new TClass("App\Models\UserSetting");
-	}
 
 	/****************************************************************************
 	 * Create & Delete.
@@ -107,7 +64,7 @@ class User extends \Katu\Models\Model
 
 	public static function getByAccessToken(?string $token): ?User
 	{
-		$accessTokenClass = static::getAccessTokenClass()->getName();
+		$accessTokenClass = \App\App::getAccessTokenModelClass()->getName();
 		$accessToken = $accessTokenClass::getOneBy([
 			"token" => preg_replace("/^(Bearer)\s+/", "", $token),
 		]);
@@ -123,7 +80,7 @@ class User extends \Katu\Models\Model
 	 */
 	public function setName($name)
 	{
-		$this->update("name", trim($name) ?: null);
+		$this->name = trim($name) ?: null;
 
 		return $this;
 	}
@@ -135,8 +92,8 @@ class User extends \Katu\Models\Model
 
 	public function setEmailAddress($emailAddress)
 	{
-		$emailAddressClass = static::getEmailAddressClass()->getName();
-		if (!$emailAddress || !($emailAddress instanceof $emailAddressClass)) {
+		$emailAddressClassName = \App\App::getEmailAddressModelClass()->getName();
+		if (!$emailAddress || !($emailAddress instanceof $emailAddressClassName)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
 				->setAbbr("invalidEmailAddress")
 				->addErrorName("emailAddress")
@@ -154,19 +111,19 @@ class User extends \Katu\Models\Model
 				;
 		}
 
-		$this->update(static::$columnNames["emailAddressId"], $emailAddress->getId());
+		$this->static::$columnNames["emailAddressId"] = $emailAddress->getId();
 
 		return true;
 	}
 
 	public function getEmailAddress()
 	{
-		return static::getEmailAddressClass()->getName()::get($this->{static::$columnNames["emailAddressId"]});
+		return \App\App::getEmailAddressModelClass()->getName()::get($this->{static::$columnNames["emailAddressId"]});
 	}
 
 	public function setPlainPassword(string $password)
 	{
-		$this->update("password", (new \Katu\Tools\Security\PasswordEncoder($password))->getEncoded());
+		$this->password = (new \Katu\Tools\Security\PasswordEncoder($password))->getEncoded();
 
 		return $this;
 	}
@@ -188,22 +145,22 @@ class User extends \Katu\Models\Model
 
 	public function createAccessToken(): AccessToken
 	{
-		return static::getAccessTokenClass()->getName()::create($this);
+		return \App\App::getAccessTokenModelClass()->getName()::create($this);
 	}
 
 	public function getSafeAccessToken(): AccessToken
 	{
-		return static::getAccessTokenClass()->getName()::getOrCreateSafe($this);
+		return \App\App::getAccessTokenModelClass()->getName()::getOrCreateSafe($this);
 	}
 
 	public function addUserService($serviceName, $serviceUserId)
 	{
-		return static::getUserServiceClass()->getName()::create($this, $serviceName, $serviceUserId);
+		return \App\App::getUserServiceModelClass()->getName()::create($this, $serviceName, $serviceUserId);
 	}
 
 	public function makeUserService($serviceName, $serviceUserId)
 	{
-		return static::getUserServiceClass()->getName()::upsert([
+		return \App\App::getUserServiceModelClass()->getName()::upsert([
 			"userId" => $this->getId(),
 			"serviceName" => (string)$serviceName,
 			"serviceUserId" => (string)$serviceUserId,
@@ -214,7 +171,7 @@ class User extends \Katu\Models\Model
 
 	public function getDefaultUserServiceByName($serviceName)
 	{
-		return static::getUserServiceClass()->getName()::getOneBy([
+		return \App\App::getUserServiceModelClass()->getName()::getOneBy([
 			"userId" => $this->getId(),
 			"serviceName" => (string)$serviceName,
 		]);
@@ -241,14 +198,14 @@ class User extends \Katu\Models\Model
 
 	public function addRole($role)
 	{
-		return static::getUserRoleClass()->getName()::make($this, $role);
+		return \App\App::getUserRoleModelClass()->getName()::make($this, $role);
 	}
 
 	public function addRolesByIds($roleIds)
 	{
 		$roles = [];
 		foreach ((array) $roleIds as $roleId) {
-			$role = static::getRoleClass()->getName()::get($roleId);
+			$role = \App\App::getRoleModelClass()->getName()::get($roleId);
 			if (!$role) {
 				throw (new \Katu\Exceptions\InputErrorException("Invalid role ID."))
 					->setAbbr("invalidRoleId")
@@ -267,7 +224,7 @@ class User extends \Katu\Models\Model
 
 	public function hasRole($role)
 	{
-		return (bool)static::getUserRoleClass()->getName()::getOneBy([
+		return (bool)\App\App::getUserRoleModelClass()->getName()::getOneBy([
 			"userId" => $this->getId(),
 			"roleId" => $role->getId(),
 		]);
@@ -275,14 +232,14 @@ class User extends \Katu\Models\Model
 
 	public function getUserRoles()
 	{
-		return static::getUserRoleClass()->getName()::getBy([
+		return \App\App::getUserRoleModelClass()->getName()::getBy([
 			"userId" => $this->getId(),
 		]);
 	}
 
 	public function deleteAllRoles()
 	{
-		foreach (static::getUserRoleClass()->getName()::getBy([
+		foreach (\App\App::getUserRoleModelClass()->getName()::getBy([
 			"userId" => $this->getId(),
 		]) as $userRole) {
 			$userRole->delete();
@@ -293,7 +250,7 @@ class User extends \Katu\Models\Model
 
 	public function addUserPermission($permission)
 	{
-		return static::getUserPermissionClass()->getName()::make($this, $permission);
+		return \App\App::getUserPermissionModelClass()->getName()::make($this, $permission);
 	}
 
 	public function addUserPermissions($permissions)
@@ -307,7 +264,7 @@ class User extends \Katu\Models\Model
 
 	public function deleteAllUserPermissions()
 	{
-		foreach (static::getUserPermissionClass()->getName()::getBy([
+		foreach (\App\App::getUserPermissionModelClass()->getName()::getBy([
 			"userId" => $this->getId(),
 		]) as $userPermission) {
 			$userPermission->delete();
@@ -328,8 +285,8 @@ class User extends \Katu\Models\Model
 
 	public function getRolePermissions()
 	{
-		$userRoleClass = static::getUserRoleClass()->getName();
-		$rolePermissionClass = static::getRolePermissionClass()->getName();
+		$userRoleClass = \App\App::getUserRoleModelClass()->getName();
+		$rolePermissionClass = \App\App::getRolePermissionModelClass()->getName();
 
 		$sql = (SX::select($rolePermissionClass::getColumn("permission")))
 			->from($rolePermissionClass::getTable())
@@ -343,7 +300,7 @@ class User extends \Katu\Models\Model
 
 	public function getUserPermissions()
 	{
-		return static::getUserPermissionClass()->getName()::getBy([
+		return \App\App::getUserPermissionModelClass()->getName()::getBy([
 			"userId" => $this->getId(),
 		])->getColumnValues("permission");
 	}
@@ -385,12 +342,12 @@ class User extends \Katu\Models\Model
 
 	public function setUserSetting($name, $value)
 	{
-		return static::getUserSettingClass()->getName()::getOrCreate($this, $name, $value);
+		return \App\App::getUserSettingModelClass()->getName()::getOrCreate($this, $name, $value);
 	}
 
 	public function getUserSetting($name)
 	{
-		return static::getUserSettingClass()->getName()::getOneBy([
+		return \App\App::getUserSettingModelClass()->getName()::getOneBy([
 			"userId" => $this->getId(),
 			"name" => $name,
 		]);

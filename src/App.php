@@ -8,16 +8,9 @@ class App
 {
 	public static $app = null;
 
-	public static function getExceptionHandlerClass(): TClass
-	{
-		return new TClass("Katu\Exceptions\Handler");
-	}
-
-	public static function getControllerClass(): TClass
-	{
-		return new TClass("Katu\Controllers\Controller");
-	}
-
+	/****************************************************************************
+	 * Paths.
+	 */
 	public static function getBaseDir(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(realpath(__DIR__ . "/../../../../"));
@@ -42,6 +35,32 @@ class App
 		}
 	}
 
+	/****************************************************************************
+	 * Classes.
+	 */
+	public static function getExceptionHandlerClass(): TClass
+	{
+		return new TClass("Katu\Exceptions\Handler");
+	}
+
+	public static function getControllerClass(): TClass
+	{
+		return new TClass("Katu\Controllers\Controller");
+	}
+
+	/****************************************************************************
+	 * Models.
+	 */
+	public static function getAccessTokenModelClass(): TClass
+	{
+		return new TClass("\Katu\Models\Presets\AccessToken");
+	}
+
+	public static function getEmailAddressModelClass(): TClass
+	{
+		return new TClass("Katu\Models\Presets\EmailAddress");
+	}
+
 	public static function getFileModelClass(): TClass
 	{
 		return new TClass("Katu\Models\Presets\File");
@@ -52,16 +71,52 @@ class App
 		return new TClass("\Katu\Models\Presets\Setting");
 	}
 
+	public static function getRoleModelClass(): TClass
+	{
+		return new TClass("\Katu\Models\Presets\Role");
+	}
+
+	public static function getRolePermissionModelClass(): TClass
+	{
+		return new TClass("\Katu\Models\Presets\RolePermission");
+	}
+
 	public static function getUserModelClass(): TClass
 	{
 		return new TClass("Katu\Models\Presets\User");
 	}
 
+	public static function getUserPermissionModelClass(): TClass
+	{
+		return new TClass("Katu\Models\Presets\UserPermission");
+	}
+
+	public static function getUserRoleModelClass(): TClass
+	{
+		return new TClass("Katu\Models\Presets\UserRole");
+	}
+
+	public static function getUserServiceModelClass(): TClass
+	{
+		return new TClass("Katu\Models\Presets\UserService");
+	}
+
+	public static function getUserSettingModelClass(): TClass
+	{
+		return new TClass("Katu\Models\Presets\UserSetting");
+	}
+
+	/****************************************************************************
+	 * Autoload.
+	 */
 	public static function getAutoloadRegisterFunctions(): array
 	{
 		return [];
 	}
 
+	/****************************************************************************
+	 * Run.
+	 */
 	public static function get(): \Slim\App
 	{
 		if (!static::$app) {

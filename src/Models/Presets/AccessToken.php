@@ -2,27 +2,20 @@
 
 namespace Katu\Models\Presets;
 
-use Katu\Types\TClass;
 use Katu\Types\TSeconds;
 use Sexy\Sexy as SX;
 
 class AccessToken extends \Katu\Models\Model
 {
+	const DATABASE = "app";
 	const EXPIRES = 86400;
 	const LENGTH = 128;
 	const SAFE_TIMEOUT = 3600;
 	const TABLE = "access_tokens";
 
-	public static function getUserClass(): TClass
+	public function getUser(): User
 	{
-		return new TClass("\\Katu\\Models\\Presets\\User");
-	}
-
-	public function getUser(): \Katu\Models\Presets\User
-	{
-		$className = static::getUserClass()->getName();
-
-		return $className::get($this->userId);
+		return \App\App::getUserModelClass()->getName()::get($this->userId);
 	}
 
 	public static function generateTimeExpires(): \Katu\Tools\Calendar\Time
@@ -35,7 +28,7 @@ class AccessToken extends \Katu\Models\Model
 		return \Katu\Tools\Random\Generator::getIdString(static::LENGTH);
 	}
 
-	public static function create(\Katu\Models\Presets\User $user): AccessToken
+	public static function create(User $user): AccessToken
 	{
 		return static::insert([
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
@@ -45,7 +38,7 @@ class AccessToken extends \Katu\Models\Model
 		]);
 	}
 
-	public static function getOrCreateSafe(\Katu\Models\Presets\User $user): AccessToken
+	public static function getOrCreateSafe(User $user): AccessToken
 	{
 		$sql = SX::select()
 			->setGetFoundRows(false)

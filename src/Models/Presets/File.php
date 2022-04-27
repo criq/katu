@@ -6,18 +6,19 @@ use Katu\Tools\Random\Generator;
 
 class File extends \Katu\Models\Model
 {
-	const DEFAULT_DIR = 'files';
-	const TABLE = 'files';
+	const DATABASE = "app";
+	const DEFAULT_DIR = "files";
+	const TABLE = "files";
 
 	public static function create(\Katu\Models\Presets\User $creator = null, string $path, string $fileName, string $fileType, int $fileSize) : File
 	{
 		return static::insert([
-			'timeCreated' => new \Katu\Tools\Calendar\Time,
-			'creatorId' => $creator ? $creator->getId() : null,
-			'path' => $path,
-			'name' => $fileName,
-			'type' => $fileType,
-			'size' => $fileSize,
+			"timeCreated" => new \Katu\Tools\Calendar\Time,
+			"creatorId" => $creator ? $creator->getId() : null,
+			"path" => $path,
+			"name" => $fileName,
+			"type" => $fileType,
+			"size" => $fileSize,
 		]);
 	}
 
@@ -74,13 +75,13 @@ class File extends \Katu\Models\Model
 
 		$temporaryFile = \Katu\Files\File::createTemporaryFromURL($url);
 		if (!$temporaryFile) {
-			throw new \Katu\Exceptions\InputErrorException("Can't create file from URL $url.");
+			throw new \Katu\Exceptions\InputErrorException("Can't create file from URL {$url}.");
 		}
 
 		$file = static::createFromFile($creator, $temporaryFile);
 		$temporaryFile->delete();
 
-		$file->update('name', pathinfo($url->getParts()['path'])['basename']);
+		$file->name = pathinfo($url->getParts()["path"])["basename"];
 		$file->save();
 
 		return $file;
@@ -89,7 +90,7 @@ class File extends \Katu\Models\Model
 	public function delete(): bool
 	{
 		foreach (\Katu\Models\Presets\FileAttachment::getBy([
-			'fileId' => $this->getId(),
+			"fileId" => $this->getId(),
 		]) as $fileAttachment) {
 			$fileAttachment->delete();
 		}
@@ -111,7 +112,7 @@ class File extends \Katu\Models\Model
 	public static function getDirName() : string
 	{
 		try {
-			return \Katu\Config\Config::get('app', 'files', 'dir');
+			return \Katu\Config\Config::get("app", "files", "dir");
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return static::DEFAULT_DIR;
 		}
@@ -131,21 +132,21 @@ class File extends \Katu\Models\Model
 	{
 		while (true) {
 			try {
-				$subDirs = \Katu\Config\Config::get('app', 'files', 'subDirs');
+				$subDirs = \Katu\Config\Config::get("app", "files", "subDirs");
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				$subDirs = 3;
 			}
 
 			try {
-				$fileNameLength = \Katu\Config\Config::get('app', 'files', 'fileNameLength');
+				$fileNameLength = \Katu\Config\Config::get("app", "files", "fileNameLength");
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				$fileNameLength = 32;
 			}
 
 			try {
-				$fileNameChars = \Katu\Config\Config::get('app', 'files', 'fileNameChars');
+				$fileNameChars = \Katu\Config\Config::get("app", "files", "fileNameChars");
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$fileNameChars = 'abcdefghjkmnpqrstuvwxyz123456789';
+				$fileNameChars = "abcdefghjkmnpqrstuvwxyz123456789";
 			}
 
 			$subDirNames = [];
@@ -153,15 +154,15 @@ class File extends \Katu\Models\Model
 				$subDirNames[] = Generator::getFromChars($fileNameChars, 1);
 			}
 
-			$path = trim(implode('/', [
-				implode('/', $subDirNames),
+			$path = trim(implode("/", [
+				implode("/", $subDirNames),
 				Generator::getFromChars($fileNameChars, $fileNameLength),
-			]), '/');
+			]), "/");
 
 			if ($srcName) {
 				$srcPathinfo = pathinfo($srcName);
-				if (isset($srcPathinfo['extension'])) {
-					$path .= '.' . mb_strtolower($srcPathinfo['extension']);
+				if (isset($srcPathinfo["extension"])) {
+					$path .= "." . mb_strtolower($srcPathinfo["extension"]);
 				}
 			}
 
@@ -185,10 +186,10 @@ class File extends \Katu\Models\Model
 	{
 		$this->getFile()->move($destination);
 
-		$path = preg_replace('/^' . preg_quote(\Katu\App::getFileDir(), '/') . '/', null, $destination);
-		$path = ltrim($path, '/');
+		$path = preg_replace("/^" . preg_quote(\Katu\App::getFileDir(), "/") . "/", "", $destination);
+		$path = ltrim($path, "/");
 
-		$this->update('path', $path);
+		$this->path = $path;
 		$this->save();
 
 		return true;
@@ -202,7 +203,7 @@ class File extends \Katu\Models\Model
 	public function getSecret()
 	{
 		if (!$this->secret) {
-			$this->update('secret', Generator::generateString($this->getTable()->getColumn('secret')->getDescription()->length, Generator::ALNUM));
+			$this->secret = Generator::generateString($this->getTable()->getColumn(new \Katu\PDO\Name("secret"))->getDescription()->length, Generator::ALNUM);
 			$this->save();
 		}
 
@@ -217,10 +218,10 @@ class File extends \Katu\Models\Model
 	public static function getSupportedImageTypes()
 	{
 		return [
-			'image/gif',
-			'image/jpeg',
-			'image/png',
-			'image/webp',
+			"image/gif",
+			"image/jpeg",
+			"image/png",
+			"image/webp",
 		];
 	}
 
