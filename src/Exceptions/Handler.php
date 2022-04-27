@@ -15,7 +15,7 @@ class Handler
 
 	public static function getLogger(): \Katu\Tools\Logs\Logger
 	{
-		return new \Katu\Tools\Logs\Logger(new TIdentifier("error"));
+		return \App\App::getLogger(new TIdentifier("error"));
 	}
 
 	public static function init(): void

@@ -3,6 +3,7 @@
 namespace Katu;
 
 use Katu\Types\TClass;
+use Katu\Types\TIdentifier;
 
 class App
 {
@@ -51,6 +52,13 @@ class App
 	public static function getLoggerClass(): TClass
 	{
 		return new TClass("Katu\Tools\Logs\Logger");
+	}
+
+	public static function getLogger(TIdentifier $identifier): \Katu\Tools\Logs\Logger
+	{
+		$loggerClassName = static::getLoggerClass()->getName();
+
+		return new $loggerClassName($identifier);
 	}
 
 	/****************************************************************************
