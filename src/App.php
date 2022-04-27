@@ -66,7 +66,7 @@ class App
 	 */
 	public static function getAccessTokenModelClass(): TClass
 	{
-		return new TClass("\Katu\Models\Presets\AccessToken");
+		return new TClass("Katu\Models\Presets\AccessToken");
 	}
 
 	public static function getEmailAddressModelClass(): TClass
@@ -86,17 +86,17 @@ class App
 
 	public static function getSettingModelClass(): TClass
 	{
-		return new TClass("\Katu\Models\Presets\Setting");
+		return new TClass("Katu\Models\Presets\Setting");
 	}
 
 	public static function getRoleModelClass(): TClass
 	{
-		return new TClass("\Katu\Models\Presets\Role");
+		return new TClass("Katu\Models\Presets\Role");
 	}
 
 	public static function getRolePermissionModelClass(): TClass
 	{
-		return new TClass("\Katu\Models\Presets\RolePermission");
+		return new TClass("Katu\Models\Presets\RolePermission");
 	}
 
 	public static function getUserModelClass(): TClass
