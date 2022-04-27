@@ -9,24 +9,24 @@ class App
 {
 	public static $app = null;
 
-	public static function getExtendedClass(TClass $appClass, TClass $fallbackClass) : TClass
+	public static function getExtendedClass(TClass $appClass, TClass $fallbackClass): TClass
 	{
 		return $appClass->exists() ? $appClass : $fallbackClass;
 	}
 
-	public static function getControllerClass() : TClass
+	public static function getControllerClass(): TClass
 	{
 		return static::getExtendedClass(new TClass("App\Extensions\Controllers\Controller"), new TClass("Katu\Controllers\Controller"));
 	}
 
-	public static function getErrorHandlerClass() : TClass
+	public static function getErrorHandlerClass(): TClass
 	{
 		return static::getExtendedClass(new TClass("App\Extensions\Exceptions\Handler"), new TClass("Katu\Exceptions\Handler"));
 	}
 
 	public static function getBaseDir()
 	{
-		return new \Katu\Files\File(realpath(__DIR__ . '/../../../../'));
+		return new \Katu\Files\File(realpath(__DIR__ . "/../../../../"));
 	}
 
 	public static function getFileDir()
@@ -42,7 +42,7 @@ class App
 	public static function getPublicTemporaryDir()
 	{
 		try {
-			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get('app', 'tmp', 'publicDir'));
+			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get("app", "tmp", "publicDir"));
 		} catch (\Throwable $e) {
 			return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_PUBLIC_DIR_NAME);
 		}
@@ -52,7 +52,7 @@ class App
 	{
 		// Timezone.
 		try {
-			date_default_timezone_set(\Katu\Config\Config::get('app', 'timezone'));
+			date_default_timezone_set(\Katu\Config\Config::get("app", "timezone"));
 		} catch (\Throwable $e) {
 			// Just use default timezone.
 		}
@@ -63,18 +63,18 @@ class App
 		return true;
 	}
 
-	public static function get()
+	public static function get(): \Slim\App
 	{
 		if (!static::$app) {
 			static::init();
 
 			try {
-				$config = \Katu\Config\Config::get('app', 'slim');
+				$config = \Katu\Config\Config::get("app", "slim");
 			} catch (\Throwable $e) {
 				$config = [];
 			}
 
-			$config['errorHandler'] = function ($c) {
+			$config["errorHandler"] = function () {
 				$errorHandlerClass = static::getErrorHandlerClass()->getName();
 
 				return new $errorHandlerClass;
@@ -93,7 +93,7 @@ class App
 		try {
 			try {
 				// Set up routes.
-				foreach ((array)\Katu\Config\Config::get('routes') as $name => $route) {
+				foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
 					$pattern  = $route->getPattern();
 					if (!$pattern) {
 						throw new \Katu\Exceptions\RouteException("Invalid pattern for route " . $name . ".");
@@ -118,7 +118,7 @@ class App
 			}
 
 			// Autoload.
-			if (class_exists('\\App\\Extensions\\Autoload')) {
+			if (class_exists("\\App\\Extensions\\Autoload")) {
 				foreach ((array)\App\Extensions\Autoload::getRegisterFunctions() as $registerFunction) {
 					spl_autoload_register($registerFunction);
 				}
@@ -131,11 +131,11 @@ class App
 		}
 	}
 
-	public static function isProfilerOn() : bool
+	public static function isProfilerOn(): bool
 	{
-		return \Katu\Cache\Runtime::get(new TIdentifier('profiler', 'on'), function () {
+		return \Katu\Cache\Runtime::get(new TIdentifier("profiler", "on"), function () {
 			try {
-				return \Katu\Config\Config::get('app', 'profiler');
+				return \Katu\Config\Config::get("app", "profiler");
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				return false;
 			}
