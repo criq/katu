@@ -6,18 +6,18 @@ use Sexy\Sexy as SX;
 
 class Setting extends \Katu\Models\Model
 {
-	const TABLE = 'settings';
+	const TABLE = "settings";
 
 	public static function getOrCreate(?User $creator = null, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting
 	{
 		try {
 			if (!static::checkName($name)) {
-				throw (new \Katu\Exceptions\InputErrorException("Invalid setting name '$name'."))
-					->addErrorName('name')
+				throw (new \Katu\Exceptions\InputErrorException("Invalid setting name '{$name}'."))
+					->addErrorName("name")
 					;
 			}
 		} catch (\Katu\Exceptions\Exception $e) {
-			if ($e->getAbbr() == 'nameInUse') {
+			if ($e->getAbbr() == "nameInUse") {
 				// Nevermind.
 			} else {
 				throw $e;
@@ -25,15 +25,15 @@ class Setting extends \Katu\Models\Model
 		}
 
 		return static::upsert([
-			'name' => trim($name),
+			"name" => trim($name),
 		], [
-			'timeCreated' => new \Katu\Tools\Calendar\Time,
-			'creatorId' => $creator ? $creator->getId() : null,
+			"timeCreated" => new \Katu\Tools\Calendar\Time,
+			"creatorId" => $creator ? $creator->getId() : null,
 		], [
-			'timeEdited' => new \Katu\Tools\Calendar\Time,
-			'value' => \Katu\Files\Formats\JSON::encodeStandard($value),
-			'isSystem' => $isSystem ? '1' : '0',
-			'description' => trim($description) ?: null,
+			"timeEdited" => new \Katu\Tools\Calendar\Time,
+			"value" => \Katu\Files\Formats\JSON::encodeStandard($value),
+			"isSystem" => $isSystem ? "1" : "0",
+			"description" => trim($description) ?: null,
 		]);
 	}
 
@@ -43,13 +43,13 @@ class Setting extends \Katu\Models\Model
 
 		if (!$name) {
 			throw (new \Katu\Exceptions\InputErrorException("Missing setting name."))
-				->addErrorName('name')
+				->addErrorName("name")
 				;
 		}
 
 		$sql = SX::select()
 			->from(static::getTable())
-			->where(SX::eq(static::getColumn('name'), $name))
+			->where(SX::eq(static::getColumn("name"), $name))
 			;
 
 		if ($object) {
@@ -57,9 +57,9 @@ class Setting extends \Katu\Models\Model
 		}
 
 		if (static::select($sql)->getResult()->getTotal()) {
-			throw (new \Katu\Exceptions\InputErrorException("Setting name '$name' already used."))
-				->setAbbr('nameInUse')
-				->addErrorName('name')
+			throw (new \Katu\Exceptions\InputErrorException("Setting name '{$name}' already used."))
+				->setAbbr("nameInUse")
+				->addErrorName("name")
 				;
 		}
 
@@ -70,11 +70,11 @@ class Setting extends \Katu\Models\Model
 	{
 		if (!static::checkName($name, $this)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid setting name."))
-				->addErrorName('name')
+				->addErrorName("name")
 				;
 		}
 
-		$this->update('name', trim($name));
+		$this->update("name", trim($name));
 
 		return true;
 	}
@@ -97,7 +97,7 @@ class Setting extends \Katu\Models\Model
 	public static function getOneByName(string $name)
 	{
 		return static::getOneBy([
-			'name' => $name,
+			"name" => $name,
 		]);
 	}
 
@@ -110,7 +110,7 @@ class Setting extends \Katu\Models\Model
 			return false;
 		}
 
-		return $user->hasPermission('settings.edit');
+		return $user->hasPermission("settings.edit");
 	}
 
 	public function userCanDelete($user)
@@ -123,6 +123,6 @@ class Setting extends \Katu\Models\Model
 			return false;
 		}
 
-		return $user->hasPermission('settings.delete');
+		return $user->hasPermission("settings.delete");
 	}
 }

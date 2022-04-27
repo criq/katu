@@ -47,6 +47,16 @@ class App
 		return new TClass("Katu\Models\Presets\File");
 	}
 
+	public static function getSettingModelClass(): TClass
+	{
+		return new TClass("\Katu\Models\Presets\Setting");
+	}
+
+	public static function getUserModelClass(): TClass
+	{
+		return new TClass("Katu\Models\Presets\User");
+	}
+
 	public static function getAutoloadRegisterFunctions(): array
 	{
 		return [];
