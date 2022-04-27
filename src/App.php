@@ -155,9 +155,7 @@ class App
 			// Error handler.
 			$config["errorHandler"] = function (\Slim\Container $container) {
 				return function () {
-					$errorHandlerClass = static::getExceptionHandlerClass()->getName();
-
-					return $errorHandlerClass::resolveException(func_get_arg(2), func_get_arg(0), func_get_arg(1));
+					return static::getExceptionHandlerClass()->getName()::resolveException(func_get_arg(2), func_get_arg(0), func_get_arg(1));
 				};
 			};
 

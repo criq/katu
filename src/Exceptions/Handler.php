@@ -67,14 +67,17 @@ class Handler
 		$controllerClassName = \App\App::getControllerClass()->getName();
 		$controller = new $controllerClassName(\App\App::get()->getContainer());
 
+		$request = $request ?: $app->getContainer()->get("request");
+		$response = $response ?: $app->getContainer()->get("response");
+
 		try {
 			throw $exception;
 		} catch (\Katu\Exceptions\NotFoundException $exception) {
-			return $controller->renderNotFound($app->getContainer()->request, $app->getContainer()->response);
+			return $controller->renderNotFound($request, $response);
 		} catch (\Katu\Exceptions\UnauthorizedException $exception) {
-			return $controller->renderUnauthorized($app->getContainer()->request, $app->getContainer()->response);
+			return $controller->renderUnauthorized($request, $response);
 		} catch (\Katu\Exceptions\UserErrorException $exception) {
-			return $controller->renderError($app->getContainer()->request, $app->getContainer()->response);
+			return $controller->renderError($request, $response);
 		}
 	}
 }

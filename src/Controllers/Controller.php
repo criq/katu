@@ -4,20 +4,32 @@ namespace Katu\Controllers;
 
 class Controller
 {
-	public $container;
-	public $data = [];
+	protected $data = [];
+	protected $container;
 
 	public function __construct(\Psr\Container\ContainerInterface $container)
 	{
-		$this->container = $container;
+		$this->setContainer($container);
+	}
+
+	public function setContainer(\Psr\Container\ContainerInterface $value): Controller
+	{
+		$this->request = $value;
+
+		return $this;
+	}
+
+	public function getContainer(): \Psr\Container\ContainerInterface
+	{
+		return $this->request;
 	}
 
 	/****************************************************************************
 	 * Render.
 	 */
-	public function getViewEngine(?\Slim\Http\Request $request = null): \Katu\Interfaces\ViewEngine
+	public function getViewEngine(): \Katu\Interfaces\ViewEngine
 	{
-		return new \Katu\Tools\Views\FilesystemLoaderTwigEngine($request);
+		return new \Katu\Tools\Views\FilesystemLoaderTwigEngine($this->getContainer()->get("request"));
 	}
 
 	public function render(string $template)
