@@ -2,9 +2,8 @@
 
 namespace Katu\Models\Presets;
 
-class UserPasswordToken extends \Katu\Models\Model
+abstract class UserPasswordToken extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const EXPIRES = "1 hour";
 	const TABLE = "user_password_tokens";
 

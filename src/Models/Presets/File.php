@@ -4,9 +4,8 @@ namespace Katu\Models\Presets;
 
 use Katu\Tools\Random\Generator;
 
-class File extends \Katu\Models\Model
+abstract class File extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const DEFAULT_DIR = "files";
 	const TABLE = "files";
 

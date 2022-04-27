@@ -5,9 +5,8 @@ namespace Katu\Models\Presets;
 use Katu\Types\TSeconds;
 use Sexy\Sexy as SX;
 
-class AccessToken extends \Katu\Models\Model
+abstract class AccessToken extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const EXPIRES = 86400;
 	const LENGTH = 128;
 	const SAFE_TIMEOUT = 3600;

@@ -2,9 +2,8 @@
 
 namespace Katu\Models\Presets;
 
-class Role extends \Katu\Models\Model
+abstract class Role extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "roles";
 
 	public static function create($name)

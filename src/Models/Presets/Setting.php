@@ -4,9 +4,8 @@ namespace Katu\Models\Presets;
 
 use Sexy\Sexy as SX;
 
-class Setting extends \Katu\Models\Model
+abstract class Setting extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "settings";
 
 	public static function getOrCreate(?User $creator = null, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting

@@ -2,9 +2,8 @@
 
 namespace Katu\Models\Presets;
 
-class UserService extends \Katu\Models\Model
+abstract class UserService extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "user_services";
 
 	public static function create(User $user, string $serviceName, string $serviceUserId): UserService
@@ -17,7 +16,7 @@ class UserService extends \Katu\Models\Model
 		]);
 	}
 
-	public static function getByServiceAndId(string $serviceName, string $serviceUserId): ?UserService
+	public static function getByServiceAndId(string $serviceName, string $serviceUserId): ?\Katu\PDO\Result
 	{
 		return static::getBy([
 			"serviceName" => (string)$serviceName,

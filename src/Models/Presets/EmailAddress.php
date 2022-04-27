@@ -2,9 +2,8 @@
 
 namespace Katu\Models\Presets;
 
-class EmailAddress extends \Katu\Models\Model
+abstract class EmailAddress extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "email_addresses";
 
 	public static $columnNames = [

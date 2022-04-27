@@ -4,9 +4,8 @@ namespace Katu\Models\Presets;
 
 use Sexy\Sexy as SX;
 
-class Geocode extends \Katu\Models\Model
+abstract class Geocode extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "geocodes";
 
 	public static function make(string $language, string $address, array $components = [], array $extra = []) : Geocode

@@ -2,9 +2,8 @@
 
 namespace Katu\Models\Presets;
 
-class UserPermission extends \Katu\Models\Model
+abstract class UserPermission extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "user_permissions";
 
 	public static function create(User $user, string $permission): UserPermission

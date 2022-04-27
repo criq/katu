@@ -5,9 +5,8 @@ namespace Katu\Models\Presets;
 use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
 
-class User extends \Katu\Models\Model
+abstract class User extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "users";
 
 	public static $columnNames = [

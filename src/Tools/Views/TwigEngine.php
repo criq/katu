@@ -289,8 +289,9 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 			$data["_user"] = $userClassName::getFromRequest($this->getRequest());
 		}
 
-		if (class_exists("App\Models\Setting")) {
-			$data["_settings"] = \App\Models\Setting::getAllAsAssoc();
+		$settingClass = \App\App::getSettingModelClass();
+		if ($settingClass->exists()) {
+			$data["_settings"] = $settingClass->getName()::getAllAsAssoc();
 		}
 
 		$data["_platform"] = \Katu\Config\Env::getPlatform();

@@ -4,9 +4,8 @@ namespace Katu\Models\Presets;
 
 use Katu\Types\TClass;
 
-class FileAttachment extends \Katu\Models\Model
+abstract class FileAttachment extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "file_attachments";
 
 	public static function getFileClass() : TClass

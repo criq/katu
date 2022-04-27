@@ -2,9 +2,8 @@
 
 namespace Katu\Models\Presets;
 
-class UserLoginToken extends \Katu\Models\Model
+abstract class UserLoginToken extends \Katu\Models\Model
 {
-	const DATABASE = "app";
 	const TABLE = "user_login_tokens";
 
 	public static function create(User $user, int $timeout = 86400)
