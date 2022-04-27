@@ -283,24 +283,16 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 		$data["_agent"] = new \Jenssegers\Agent\Agent();
 
 		// User.
-		try {
-			$userClass = \App\App::getUserModelClass();
-			if ($userClass->exists()) {
-				$userClassName = $userClass->getName();
-				$data["_user"] = $userClassName::getFromRequest($this->getRequest());
-			}
-		} catch (\Throwable $e) {
-			// Nevermind.
+		$userClass = \App\App::getUserModelClass();
+		if ($userClass->exists() && $userClass->getName()::hasConnection()) {
+			$userClassName = $userClass->getName();
+			$data["_user"] = $userClassName::getFromRequest($this->getRequest());
 		}
 
 		// Settings.
-		try {
-			$settingClass = \App\App::getSettingModelClass();
-			if ($settingClass->exists()) {
-				$data["_settings"] = $settingClass->getName()::getAllAsAssoc();
-			}
-		} catch (\Throwable $e) {
-			// Nevermind.
+		$settingClass = \App\App::getSettingModelClass();
+		if ($settingClass->exists() && $settingClass->getName()::hasConnection()) {
+			$data["_settings"] = $settingClass->getName()::getAllAsAssoc();
 		}
 
 		$data["_platform"] = \Katu\Config\Env::getPlatform();

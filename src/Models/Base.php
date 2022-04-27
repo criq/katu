@@ -49,6 +49,17 @@ abstract class Base
 		return \Katu\PDO\Connection::getInstance(static::DATABASE);
 	}
 
+	public static function hasConnection(): bool
+	{
+		try {
+			return (bool)static::getConnection();
+		} catch (\Throwable $e) {
+			return false;
+		}
+
+		return false;
+	}
+
 	public static function getTableName(): \Katu\PDO\Name
 	{
 		if (!defined("static::TABLE")) {
