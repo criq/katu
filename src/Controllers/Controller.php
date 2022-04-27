@@ -35,8 +35,8 @@ class Controller
 	public function render(string $template)
 	{
 		try {
-			$request = $this->container->get("request");
-			$response =  $this->container->get("response");
+			$request = $this->getContainer() ? $this->getContainer()->get("request") : null;
+			$response = $this->getContainer() ? $this->getContainer()->get("response") : null;
 
 			$engine = $this->getViewEngine($request);
 			$template = $engine->render($template, $this->data);
