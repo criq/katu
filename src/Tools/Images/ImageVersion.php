@@ -79,7 +79,7 @@ class ImageVersion
 
 			return new Image($this->getFile());
 		} catch (\Throwable $e) {
-			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __METHOD__)))->error($e);
+			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e);
 
 			return null;
 		}

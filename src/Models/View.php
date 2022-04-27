@@ -134,7 +134,7 @@ abstract class View extends Base
 			// Try cached table name.
 			$tableName = static::getCachedTableName();
 		} catch (\Throwable $e) {
-			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 
 			$tableName = static::getViewName();
 		}
@@ -385,7 +385,7 @@ abstract class View extends Base
 		try {
 			$destinationTable->delete();
 		} catch (\Throwable $e) {
-			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 		}
 
 		// Rename the temporary table.
@@ -445,7 +445,7 @@ abstract class View extends Base
 			try {
 				return static::materialize();
 			} catch (\Throwable $e) {
-				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 			}
 		}
 	}
@@ -522,7 +522,7 @@ abstract class View extends Base
 					$class->getName()::materializeIfExpired();
 				}
 			} catch (\Throwable $e) {
-				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 			}
 		}
 	}

@@ -48,7 +48,7 @@ class Image
 
 			return new ImageVersion($this, $version);
 		} catch (\Throwable $e) {
-			(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __METHOD__)))->error($e);
+			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e);
 
 			return null;
 		}
@@ -69,7 +69,7 @@ class Image
 
 				return \Intervention\Image\ImageManagerStatic::make($res);
 			} else {
-				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __METHOD__)))->error($e);
+				\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e);
 
 				return null;
 			}

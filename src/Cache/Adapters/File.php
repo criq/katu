@@ -51,7 +51,7 @@ class File implements \Katu\Cache\Adapter
 
 				return true;
 			} catch (\Throwable $e) {
-				(new \Katu\Tools\Logs\Logger(new TIdentifier(__CLASS__, __FUNCTION__)))->error($e);
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 			}
 		}
 

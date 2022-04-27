@@ -101,7 +101,7 @@ class Procedure
 		} catch (\Katu\Exceptions\LoadAverageExceededException $e) {
 			// Nevermind.
 		} catch (\Throwable $e) {
-			(new \Katu\Tools\Logs\Logger($this->getIdentifier()))->error($e);
+			\App\App::getLogger($this->getIdentifier())->error($e);
 			if ($lock ?? null) {
 				$lock->unlock();
 			}
