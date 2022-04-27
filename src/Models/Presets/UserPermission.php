@@ -39,7 +39,7 @@ abstract class UserPermission extends \Katu\Models\Model
 
 	public static function getAvailable(): array
 	{
-		$file = new \Katu\Files\File(\Katu\App::getBaseDir(), "app", "Config", ["userPermissions", "yaml"]);
+		$file = new \Katu\Files\File(\App\App::getBaseDir(), "app", "Config", ["userPermissions", "yaml"]);
 		if (!$file->exists()) {
 			throw new \Katu\Exceptions\ErrorException("Permission file doesn't exist.");
 		}

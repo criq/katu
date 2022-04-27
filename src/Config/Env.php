@@ -10,8 +10,8 @@ class Env
 	public static function getPlatform() : string
 	{
 		$files = [
-			new \Katu\Files\File(\Katu\App::getBaseDir(), ".platform"),
-			new \Katu\Files\File(\Katu\App::getBaseDir(), "app", ".platform"),
+			new \Katu\Files\File(\App\App::getBaseDir(), ".platform"),
+			new \Katu\Files\File(\App\App::getBaseDir(), "app", ".platform"),
 		];
 
 		foreach ($files as $file) {
@@ -39,14 +39,14 @@ class Env
 	{
 		return [
 			"host" => $_SERVER["SERVER_NAME"],
-			"dir" => \Katu\App::getBaseDir(),
+			"dir" => \App\App::getBaseDir(),
 		];
 	}
 
 	public static function getCommit() : ?string
 	{
 		try {
-			$file = new \Katu\Files\File(\Katu\App::getBaseDir(), ".git", "HEAD");
+			$file = new \Katu\Files\File(\App\App::getBaseDir(), ".git", "HEAD");
 			preg_match("/ref: (.+)/", $file->get(), $match);
 			$file = new \Katu\Files\File(".git", $match[1]);
 			return trim($file->get());

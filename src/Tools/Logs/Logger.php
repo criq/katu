@@ -33,7 +33,7 @@ class Logger extends \Monolog\Logger
 
 	public function getFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::DIR_NAME, $this->getIdentifier()->getPath('log'));
+		return new \Katu\Files\File(\App\App::getBaseDir(), static::DIR_NAME, $this->getIdentifier()->getPath('log'));
 	}
 
 	public function log($level, $message, array $context = []): void

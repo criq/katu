@@ -6,7 +6,7 @@ class Composer
 {
 	public static function getJSON()
 	{
-		$path = \Katu\Files\File::joinPaths(\Katu\App::getBaseDir(), 'composer.json');
+		$path = \Katu\Files\File::joinPaths(\App\App::getBaseDir(), "composer.json");
 		if (!file_exists($path)) {
 			throw new \Exception("Missing composer.json file.");
 		}
@@ -21,10 +21,10 @@ class Composer
 	public static function getDir()
 	{
 		$json = self::getJSON();
-		if (isset($json['config']['vendor-dir'])) {
-			return new \Katu\Files\File(\Katu\Files\File::joinPaths(\Katu\App::getBaseDir(), $json['config']['vendor-dir']));
+		if (isset($json["config"]["vendor-dir"])) {
+			return new \Katu\Files\File(\Katu\Files\File::joinPaths(\App\App::getBaseDir(), $json["config"]["vendor-dir"]));
 		}
 
-		return new \Katu\Files\File(\Katu\Files\File::joinPaths(\Katu\App::getBaseDir(), 'vendor'));
+		return new \Katu\Files\File(\Katu\Files\File::joinPaths(\App\App::getBaseDir(), "vendor"));
 	}
 }

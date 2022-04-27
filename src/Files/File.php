@@ -39,12 +39,12 @@ class File
 
 	public static function createTemporaryWithFileName(string $fileName): File
 	{
-		return new static(\Katu\App::getTemporaryDir(), "files", static::prepareFileName($fileName));
+		return new static(\App\App::getTemporaryDir(), "files", static::prepareFileName($fileName));
 	}
 
 	public static function createTemporaryWithExtension(string $extension): File
 	{
-		return new static(\Katu\App::getTemporaryDir(), "files", [\Katu\Tools\Random\Generator::getFileName(), $extension]);
+		return new static(\App\App::getTemporaryDir(), "files", [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 	}
 
 	public static function createTemporaryFromSrc($src, string $extension): File
@@ -88,7 +88,7 @@ class File
 			return realpath($this->path);
 		}
 
-		$path = static::joinPaths(\Katu\App::getBaseDir(), $this->path);
+		$path = static::joinPaths(\App\App::getBaseDir(), $this->path);
 		if (file_exists($path)) {
 			return realpath($path);
 		}
@@ -98,7 +98,7 @@ class File
 
 	public function getRelativePath(): string
 	{
-		return ltrim(preg_replace("/^" . preg_quote(\Katu\App::getBaseDir(), "/") . "/", "", $this->getPath()), "/");
+		return ltrim(preg_replace("/^" . preg_quote(\App\App::getBaseDir(), "/") . "/", "", $this->getPath()), "/");
 	}
 
 	public function getURL(): ?TURL
@@ -110,7 +110,7 @@ class File
 		}
 
 		try {
-			$publicPath = realpath(new static(\Katu\App::getBaseDir(), $publicRoot));
+			$publicPath = realpath(new static(\App\App::getBaseDir(), $publicRoot));
 			if (preg_match("/^" . preg_quote($publicPath, "/") . "(.*)$/", (string)$this->getPath(), $match)) {
 				return new TURL(implode("/", array_map(function ($i) {
 					return trim($i, "/");

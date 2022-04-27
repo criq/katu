@@ -48,6 +48,11 @@ class App
 		return new TClass("Katu\Controllers\Controller");
 	}
 
+	public static function getLoggerClass(): TClass
+	{
+		return new TClass("Katu\Tools\Logs\Logger");
+	}
+
 	/****************************************************************************
 	 * Models.
 	 */

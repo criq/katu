@@ -31,7 +31,7 @@ class Pickle
 
 	public function getFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('txt'));
+		return new \Katu\Files\File(\App\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('txt'));
 	}
 
 	public function get()

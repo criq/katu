@@ -118,7 +118,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction("getBaseDir", function () {
-			return \Katu\App::getBaseDir();
+			return \App\App::getBaseDir();
 		}));
 
 		// Deprecated.
@@ -163,7 +163,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction("getFile", function () {
-			$args = array_merge([\Katu\App::getBaseDir()], func_get_args());
+			$args = array_merge([\App\App::getBaseDir()], func_get_args());
 			$path = \Katu\Files\File::joinPaths(...$args);
 
 			return new \Katu\Files\File($path);
@@ -171,7 +171,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 
 		$twig->addFunction(new \Twig\TwigFunction("getHashedFile", function ($path) {
 			try {
-				$hashedFiles = \Katu\Files\File::getHashedFiles(\Katu\App::getBaseDir(), ...func_get_args());
+				$hashedFiles = \Katu\Files\File::getHashedFiles(\App\App::getBaseDir(), ...func_get_args());
 
 				return $hashedFiles[0] ?? null;
 			} catch (\Throwable $e) {
@@ -220,7 +220,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 	{
 		return [
 			"auto_reload" => false,
-			"cache" => (string)\Katu\Files\File::joinPaths(\Katu\App::getTemporaryDir(), "twig", \Katu\Config\Env::getVersion()),
+			"cache" => (string)\Katu\Files\File::joinPaths(\App\App::getTemporaryDir(), "twig", \Katu\Config\Env::getVersion()),
 			"debug" => false,
 			"optimizations" => -1,
 			"strict_variables" => false,
@@ -229,7 +229,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 
 	protected function getCommonData(): array
 	{
-		$data["_site"]["baseDir"] = \Katu\App::getBaseDir();
+		$data["_site"]["baseDir"] = \App\App::getBaseDir();
 		$data["_site"]["baseUrl"] = \Katu\Config\Config::get("app", "baseUrl");
 
 		try {

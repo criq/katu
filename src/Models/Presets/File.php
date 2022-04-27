@@ -40,7 +40,7 @@ abstract class File extends \Katu\Models\Model
 
 		// Get a new file name.
 		$path = new \Katu\Files\File(static::generatePath($file));
-		$file->copy(new \Katu\Files\File(\Katu\App::getFileDir(), $path));
+		$file->copy(new \Katu\Files\File(\App\App::getFileDir(), $path));
 
 		return static::create($creator, $path, $file->getBasename(), $fileType, $fileSize);
 	}
@@ -63,7 +63,7 @@ abstract class File extends \Katu\Models\Model
 
 		// Get a new file name.
 		$path = new \Katu\Files\File(static::generatePath($upload->fileName));
-		(new \Katu\Files\File($upload->path))->copy(new \Katu\Files\File(\Katu\App::getFileDir(), $path));
+		(new \Katu\Files\File($upload->path))->copy(new \Katu\Files\File(\App\App::getFileDir(), $path));
 
 		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
 	}
@@ -119,7 +119,7 @@ abstract class File extends \Katu\Models\Model
 
 	public static function getDir() : \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getBaseDir(), static::getDirName());
+		return new \Katu\Files\File(\App\App::getBaseDir(), static::getDirName());
 	}
 
 	public function getName() : string
@@ -185,7 +185,7 @@ abstract class File extends \Katu\Models\Model
 	{
 		$this->getFile()->move($destination);
 
-		$path = preg_replace("/^" . preg_quote(\Katu\App::getFileDir(), "/") . "/", "", $destination);
+		$path = preg_replace("/^" . preg_quote(\App\App::getFileDir(), "/") . "/", "", $destination);
 		$path = ltrim($path, "/");
 
 		$this->path = $path;

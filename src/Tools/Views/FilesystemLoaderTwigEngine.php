@@ -13,8 +13,8 @@ class FilesystemLoaderTwigEngine extends TwigEngine
 	{
 		$dirs = [
 			new \Katu\Files\File(realpath(new \Katu\Files\File(__DIR__, "..", "..", "Views"))),
-			new \Katu\Files\File(\Katu\App::getBaseDir(), "vendor"),
-			new \Katu\Files\File(\Katu\App::getBaseDir(), "app", "Views"),
+			new \Katu\Files\File(\App\App::getBaseDir(), "vendor"),
+			new \Katu\Files\File(\App\App::getBaseDir(), "app", "Views"),
 		];
 
 		$dirs = array_unique(array_filter(array_map(function ($dir) {

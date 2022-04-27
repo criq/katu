@@ -21,13 +21,13 @@ class CSV
 				// Nevermind.
 			}
 
-			if ((!isset($options['readOnly']) || (isset($options['readOnly']) && !$options['readOnly'])) && !$file->isWritable()) {
+			if ((!isset($options["readOnly"]) || (isset($options["readOnly"]) && !$options["readOnly"])) && !$file->isWritable()) {
 				throw new \Exception("Unable to write into specified file.");
 			}
 
 			$this->file = $file;
 		} else {
-			$file = new \Katu\Files\File(\Katu\App::getTemporaryDir(), 'csv', [\Katu\Tools\Random\Generator::getFileName(), 'csv']);
+			$file = new \Katu\Files\File(\App\App::getTemporaryDir(), "csv", [\Katu\Tools\Random\Generator::getFileName(), "csv"]);
 			$file->touch();
 
 			if (!$file->isWritable()) {
@@ -37,17 +37,17 @@ class CSV
 			$this->file = $file;
 		}
 
-		$this->writer = new \EasyCSV\Writer($this->file, 'a+');
-		$this->reader = new \EasyCSV\Reader($this->file, 'r', isset($options['headersInFirstRow']) ? (bool)$options['headersInFirstRow'] : true);
+		$this->writer = new \EasyCSV\Writer($this->file, "a+");
+		$this->reader = new \EasyCSV\Reader($this->file, "r", isset($options["headersInFirstRow"]) ? (bool)$options["headersInFirstRow"] : true);
 
-		if (isset($options['delimiter'])) {
-			$this->writer->setDelimiter($options['delimiter']);
-			$this->reader->setDelimiter($options['delimiter']);
+		if (isset($options["delimiter"])) {
+			$this->writer->setDelimiter($options["delimiter"]);
+			$this->reader->setDelimiter($options["delimiter"]);
 		}
 
-		if (isset($options['enclosure'])) {
-			$this->writer->setEnclosure($options['enclosure']);
-			$this->reader->setEnclosure($options['enclosure']);
+		if (isset($options["enclosure"])) {
+			$this->writer->setEnclosure($options["enclosure"]);
+			$this->reader->setEnclosure($options["enclosure"]);
 		}
 	}
 
@@ -58,7 +58,7 @@ class CSV
 
 	public static function readToArray($file, $options = []) : array
 	{
-		$options['readOnly'] = true;
+		$options["readOnly"] = true;
 		$csv = new static($file, $options);
 		$rows = [];
 

@@ -19,7 +19,7 @@ class Dump
 	{
 		$dumps = [];
 
-		$dirs = (new \Katu\Files\File(\Katu\App::getBaseDir(), "databases"))->getDirs();
+		$dirs = (new \Katu\Files\File(\App\App::getBaseDir(), "databases"))->getDirs();
 		foreach ($dirs as $dir) {
 			$files = $dir->getFiles([
 				"regexp" => "/[0-9]{12}\.sql\.gz$/",

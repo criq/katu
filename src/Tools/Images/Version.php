@@ -11,7 +11,7 @@ class Version
 	protected $name;
 	protected $quality;
 
-	public function __construct(?string $name = null, ?array $filters = [], ?string $extension = 'jpg', ?int $quality = 100)
+	public function __construct(?string $name = null, ?array $filters = [], ?string $extension = "jpg", ?int $quality = 100)
 	{
 		$this->setName($name);
 		$this->setFilters($filters);
@@ -21,25 +21,25 @@ class Version
 
 	public static function createFromConfig(string $name): Version
 	{
-		$config = \Katu\Config\Config::get('image', 'versions', $name);
+		$config = \Katu\Config\Config::get("image", "versions", $name);
 
 		$version = new static($name);
 
-		if (isset($config['filters'])) {
-			foreach ((array)$config['filters'] as $filterConfig) {
-				$filter = \Katu\Tools\Images\Filter::createByCode($filterConfig['filter']);
-				unset($filterConfig['filter']);
+		if (isset($config["filters"])) {
+			foreach ((array)$config["filters"] as $filterConfig) {
+				$filter = \Katu\Tools\Images\Filter::createByCode($filterConfig["filter"]);
+				unset($filterConfig["filter"]);
 				$filter->setParams($filterConfig);
 				$version->addFilter($filter);
 			}
 		}
 
-		if (isset($config['quality'])) {
-			$version->setQuality($config['quality']);
+		if (isset($config["quality"])) {
+			$version->setQuality($config["quality"]);
 		}
 
-		if (isset($config['extension'])) {
-			$version->setExtension($config['extension']);
+		if (isset($config["extension"])) {
+			$version->setExtension($config["extension"]);
 		}
 
 		return $version;
@@ -88,12 +88,12 @@ class Version
 
 	public function getDir(): \Katu\Files\File
 	{
-		$dir = new \Katu\Files\File(\Katu\App::getPublicTemporaryDir(), 'image', 'versions', $this->getName(), $this->getHash());
+		$dir = new \Katu\Files\File(\App\App::getPublicTemporaryDir(), "image", "versions", $this->getName(), $this->getHash());
 		if (!$dir->isWritable()) {
 			try {
 				$dir->makeDir();
 			} catch (\Throwable $e) {
-				throw new \Katu\Exceptions\ErrorException("Can't create image version folder at $dir.");
+				throw new \Katu\Exceptions\ErrorException("Can't create image version folder at {$dir}.");
 			}
 		}
 
@@ -130,8 +130,8 @@ class Version
 			$array[] = $filter->getArray();
 		}
 
-		$array['quality'] = $this->quality;
-		$array['extension'] = $this->extension;
+		$array["quality"] = $this->quality;
+		$array["extension"] = $this->extension;
 
 		return $array;
 	}

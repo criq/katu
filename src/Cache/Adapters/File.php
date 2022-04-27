@@ -80,6 +80,6 @@ class File implements \Katu\Cache\Adapter
 
 	public function getFile(TIdentifier $identifier): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\Katu\App::getTemporaryDir(), static::DIR_NAME, $identifier->getPath('txt'));
+		return new \Katu\Files\File(\App\App::getTemporaryDir(), static::DIR_NAME, $identifier->getPath('txt'));
 	}
 }
