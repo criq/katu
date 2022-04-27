@@ -86,7 +86,7 @@ class Controller
 		foreach ($urls as $url) {
 			$url = (string) $url;
 			if (\Katu\Types\TURL::isValid($url)) {
-				return $this->container->get("response")->withRedirect($url, $status);
+				return $this->getContainer()->get("response")->withRedirect($url, $status);
 			}
 		}
 
