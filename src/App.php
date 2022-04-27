@@ -47,6 +47,11 @@ class App
 		return new TClass("Katu\Models\Presets\File");
 	}
 
+	public static function getAutoloadRegisterFunctions(): array
+	{
+		return [];
+	}
+
 	public static function get(): \Slim\App
 	{
 		if (!static::$app) {
@@ -55,6 +60,11 @@ class App
 				date_default_timezone_set(\Katu\Config\Config::get("app", "timezone"));
 			} catch (\Throwable $e) {
 				// Just use default timezone.
+			}
+
+			// Autoload.
+			foreach (static::getAutoloadRegisterFunctions() as $registerFunction) {
+				spl_autoload_register($registerFunction);
 			}
 
 			// Session.
@@ -73,13 +83,6 @@ class App
 
 				return new $errorHandlerClass;
 			};
-
-			// Autoload.
-			if (class_exists("\\App\\Classes\\Autoload")) {
-				foreach ((array)\App\Classes\Autoload::getRegisterFunctions() as $registerFunction) {
-					spl_autoload_register($registerFunction);
-				}
-			}
 
 			static::$app = new \Slim\App($config);
 		}
