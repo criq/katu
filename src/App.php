@@ -66,6 +66,11 @@ class App
 		return new TClass("Katu\Models\Presets\File");
 	}
 
+	public static function getFileAttachmentModelClass(): TClass
+	{
+		return new TClass("Katu\Models\Presets\FileAttachment");
+	}
+
 	public static function getSettingModelClass(): TClass
 	{
 		return new TClass("\Katu\Models\Presets\Setting");

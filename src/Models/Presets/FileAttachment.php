@@ -8,11 +8,6 @@ abstract class FileAttachment extends \Katu\Models\Model
 {
 	const TABLE = "file_attachments";
 
-	public static function getFileClass() : TClass
-	{
-		return new TClass("Katu\Models\Presets\File");
-	}
-
 	public static function create(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment
 	{
 		return static::insert([
@@ -43,6 +38,6 @@ abstract class FileAttachment extends \Katu\Models\Model
 
 	public function getFile()
 	{
-		return static::getFileClass()->getName()::get($this->fileId);
+		return \App\App::getFileModelClass()->getName()::get($this->fileId);
 	}
 }

@@ -88,7 +88,7 @@ abstract class File extends \Katu\Models\Model
 
 	public function delete(): bool
 	{
-		foreach (\Katu\Models\Presets\FileAttachment::getBy([
+		foreach (\App\App::getFileAttachmentModelClass()->getName()::getBy([
 			"fileId" => $this->getId(),
 		]) as $fileAttachment) {
 			$fileAttachment->delete();
@@ -196,7 +196,7 @@ abstract class File extends \Katu\Models\Model
 
 	public function attachTo(\Katu\Models\Presets\User $creator = null, \Katu\Models\Model $object)
 	{
-		return \Katu\Models\Presets\FileAttachment::make($creator, $object, $this);
+		return \App\App::getFileAttachmentModelClass()->getName()::make($creator, $object, $this);
 	}
 
 	public function getSecret()
