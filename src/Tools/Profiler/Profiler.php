@@ -13,8 +13,9 @@ class Profiler {
 		$this->stopwatch = new Stopwatch;
 	}
 
-	static function isOn() {
-		return \Katu\App::isProfilerOn();
+	static function isOn(): bool
+	{
+		return false;
 	}
 
 	static function add() {

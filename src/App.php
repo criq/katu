@@ -3,43 +3,37 @@
 namespace Katu;
 
 use Katu\Types\TClass;
-use Katu\Types\TIdentifier;
 
 class App
 {
 	public static $app = null;
 
-	public static function getExtendedClass(TClass $appClass, TClass $fallbackClass): TClass
+	public static function getExceptionHandlerClass(): TClass
 	{
-		return $appClass->exists() ? $appClass : $fallbackClass;
+		return new TClass("Katu\Exceptions\Handler");
 	}
 
 	public static function getControllerClass(): TClass
 	{
-		return static::getExtendedClass(new TClass("App\Extensions\Controllers\Controller"), new TClass("Katu\Controllers\Controller"));
+		return new TClass("Katu\Controllers\Controller");
 	}
 
-	public static function getErrorHandlerClass(): TClass
-	{
-		return static::getExtendedClass(new TClass("App\Extensions\Exceptions\Handler"), new TClass("Katu\Exceptions\Handler"));
-	}
-
-	public static function getBaseDir()
+	public static function getBaseDir(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(realpath(__DIR__ . "/../../../../"));
 	}
 
-	public static function getFileDir()
+	public static function getFileDir(): \Katu\Files\File
 	{
 		return \Katu\Models\Presets\File::getDir();
 	}
 
-	public static function getTemporaryDir()
+	public static function getTemporaryDir(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_DIR);
 	}
 
-	public static function getPublicTemporaryDir()
+	public static function getPublicTemporaryDir(): \Katu\Files\File
 	{
 		try {
 			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get("app", "tmp", "publicDir"));
@@ -48,34 +42,34 @@ class App
 		}
 	}
 
-	public static function init()
+	public static function getFileModelClass(): TClass
 	{
-		// Timezone.
-		try {
-			date_default_timezone_set(\Katu\Config\Config::get("app", "timezone"));
-		} catch (\Throwable $e) {
-			// Just use default timezone.
-		}
-
-		// Session.
-		\Katu\Tools\Session\Session::setCookieParams();
-
-		return true;
+		return new TClass("Katu\Models\Presets\File");
 	}
 
 	public static function get(): \Slim\App
 	{
 		if (!static::$app) {
-			static::init();
+			// Timezone.
+			try {
+				date_default_timezone_set(\Katu\Config\Config::get("app", "timezone"));
+			} catch (\Throwable $e) {
+				// Just use default timezone.
+			}
 
+			// Session.
+			\Katu\Tools\Session\Session::setCookieParams();
+
+			// Slim config.
 			try {
 				$config = \Katu\Config\Config::get("app", "slim");
 			} catch (\Throwable $e) {
 				$config = [];
 			}
 
+			// Error handler.
 			$config["errorHandler"] = function () {
-				$errorHandlerClass = static::getErrorHandlerClass()->getName();
+				$errorHandlerClass = static::getExceptionHandlerClass()->getName();
 
 				return new $errorHandlerClass;
 			};
@@ -129,16 +123,5 @@ class App
 		} catch (\Throwable $e) {
 			throw $e;
 		}
-	}
-
-	public static function isProfilerOn(): bool
-	{
-		return \Katu\Cache\Runtime::get(new TIdentifier("profiler", "on"), function () {
-			try {
-				return \Katu\Config\Config::get("app", "profiler");
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				return false;
-			}
-		});
 	}
 }
