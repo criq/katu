@@ -143,10 +143,12 @@ class App
 			}
 
 			// Error handler.
-			$config["errorHandler"] = function () {
-				$errorHandlerClass = static::getExceptionHandlerClass()->getName();
+			$config["errorHandler"] = function (\Slim\Container $container) {
+				return function () {
+					$errorHandlerClass = static::getExceptionHandlerClass()->getName();
 
-				return new $errorHandlerClass;
+					return $errorHandlerClass::resolveException(func_get_arg(2), func_get_arg(0), func_get_arg(1));
+				};
 			};
 
 			static::$app = new \Slim\App($config);
@@ -165,12 +167,12 @@ class App
 				foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
 					$pattern  = $route->getPattern();
 					if (!$pattern) {
-						throw new \Katu\Exceptions\RouteException("Invalid pattern for route " . $name . ".");
+						throw new \Katu\Exceptions\RouteException("Invalid pattern for route '{$name}'.");
 					}
 
 					$callable = $route->getCallable();
 					if (!$callable) {
-						throw new \Katu\Exceptions\RouteException("Invalid callable for route " . $name . ".");
+						throw new \Katu\Exceptions\RouteException("Invalid callable for route '{$name}'.");
 					}
 
 					$slimRoute = $app->map($route->getMethods(), $pattern, $callable);
