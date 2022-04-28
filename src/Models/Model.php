@@ -2,6 +2,7 @@
 
 namespace Katu\Models;
 
+use App\Models\Users\User;
 use Katu\PDO\Column;
 use Sexy\Sexy as SX;
 
@@ -226,22 +227,22 @@ class Model extends Base
 		]);
 
 		// If there already is a slug, keep it.
-		if (!$force && $this->$column) {
+		if (!$force && $this->{$column->getName()->getPlain()}) {
 			return true;
 		}
 
 		// If it"s the same, keep it.
-		if (!$force && $slug == $this->$column) {
+		if (!$force && $slug == $this->{$column->getName()->getPlain()}) {
 			return true;
 		}
 
-		$preg = "^$slug(\-([0-9]+))?$";
+		$preg = "^{$slug}(\-([0-9]+))?$";
 
 		// Select all already used slugs.
-		$sql = SX::select(static::getColumn($column))
+		$sql = SX::select($column)
 			->from(static::getTable())
 			->where(SX::cmpNotEq(static::getIdColumn(), $this->getId()))
-			->where(SX::cmpRegexp(static::getColumn($column), $preg))
+			->where(SX::cmpRegexp($column, $preg))
 			->addExpressions($constraints)
 			;
 		$res = static::getConnection()->select($sql)->getResult();
@@ -253,7 +254,7 @@ class Model extends Base
 		} else {
 			$suffixes = [];
 			foreach ($res->getItems() as $item) {
-				preg_match("/" . $preg . "/", $item[$column], $match);
+				preg_match("/" . $preg . "/", $item[$column->getName()->getPlain()], $match);
 				if (!isset($match[2])) {
 					$suffixes[] = 0;
 				} else {
@@ -340,7 +341,7 @@ class Model extends Base
 		return \App\Models\File::getBySql($sql)->getOne();
 	}
 
-	public function refreshFileAttachmentsFromFileIds(\App\Models\User $user, ?array $fileIds)
+	public function refreshFileAttachmentsFromFileIds(User $user, ?array $fileIds)
 	{
 		foreach ($this->getFileAttachments() as $fileAttachment) {
 			$fileAttachment->delete();
