@@ -51,7 +51,7 @@ class App
 
 	public static function getLoggerClass(): TClass
 	{
-		return new TClass("App\Classes\Logs\Logger");
+		return new TClass("\Katu\Tools\Logs\Logger");
 	}
 
 	public static function getLogger(TIdentifier $identifier): \Katu\Tools\Logs\Logger
