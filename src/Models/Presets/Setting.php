@@ -94,7 +94,7 @@ abstract class Setting extends \Katu\Models\Model
 		return $settings;
 	}
 
-	public static function getOneByName(string $name)
+	public static function getOneByName(string $name): Setting
 	{
 		return static::getOneBy([
 			"name" => $name,
