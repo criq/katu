@@ -207,7 +207,7 @@ class Query
 			ob_end_clean();
 
 			try {
-				if (true || \Katu\Config\Config::get("app", "profiler", "pdo")) {
+				if (\Katu\Config\Config::get("app", "profiler", "pdo")) {
 					$file = (\Katu\Files\File::createTemporaryWithFileName($this->getConnection()->getSessionId() . ".csv"));
 					$csv = new \Katu\Files\Formats\CSV($file);
 					$sql = trim($this->getStatementDump()->getSentSQL() ?: $this->statement->queryString);

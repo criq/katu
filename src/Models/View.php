@@ -45,14 +45,14 @@ abstract class View extends Base
 
 	public static function getTable(): \Katu\PDO\Table
 	{
-		return \Katu\Cache\Runtime::get(new TIdentifier(__CLASS__, __FUNCTION__), function () {
+		return \Katu\Cache\Runtime::get(new TIdentifier(__CLASS__, __FUNCTION__, static::class), function () {
 			return static::isCached() ? static::getCachedTable() : static::getView();
 		});
 	}
 
 	public static function getTableName(): \Katu\PDO\Name
 	{
-		return \Katu\Cache\Runtime::get(new TIdentifier(__CLASS__, __FUNCTION__), function () {
+		return \Katu\Cache\Runtime::get(new TIdentifier(__CLASS__, __FUNCTION__, static::class), function () {
 			return static::isCached() ? static::getCachedTableName() : static::getViewName();
 		});
 	}
