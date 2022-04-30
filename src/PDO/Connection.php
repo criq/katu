@@ -21,9 +21,9 @@ class Connection
 		]));
 
 		try {
-			$this->config = Config::createFromConfig(\Katu\Config\Config::get("db", $name));
+			$this->setConfig(Config::createFromConfig(\Katu\Config\Config::get("db", $name)));
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance {$name}.");
+			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance '{$name}'.");
 		}
 
 		// Try to connect.
@@ -54,6 +54,13 @@ class Connection
 	public function getPdo(): \PDO
 	{
 		return $this->pdo;
+	}
+
+	public function setConfig(Config $value): Connection
+	{
+		$this->config = $value;
+
+		return $this;
 	}
 
 	public function getConfig(): Config
