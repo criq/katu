@@ -411,6 +411,8 @@ abstract class View extends Base
 		$class::copy($class::getView(), $class::generateCachedTable());
 		$class::updateLastCachedTime();
 
+		\Katu\Cache\Runtime::clear();
+
 		return true;
 	}
 
@@ -430,6 +432,8 @@ abstract class View extends Base
 				$class::materializeSourceViews();
 				$class::copy($class::getView(), $class::getMaterializedTable());
 				$class::updateLastMaterializedTime();
+
+				\Katu\Cache\Runtime::clear();
 
 				return true;
 			};
