@@ -6,7 +6,7 @@ abstract class UserSetting extends \Katu\Models\Model
 {
 	const TABLE = "user_settings";
 
-	public static function getOrCreate(User $user, string $name, $value = null)
+	public static function getOrCreate(User $user, string $name, $value = null): UserSetting
 	{
 		return static::upsert([
 			"userId" => $user->getId(),
