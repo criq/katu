@@ -2,6 +2,8 @@
 
 namespace Katu\PDO;
 
+use Katu\Types\TFileSize;
+use Katu\Types\TIdentifier;
 use Katu\Types\TSeconds;
 
 class Query
@@ -205,12 +207,13 @@ class Query
 			ob_end_clean();
 
 			try {
-				if (\Katu\Config\Config::get("app", "profiler", "pdo")) {
+				if (true || \Katu\Config\Config::get("app", "profiler", "pdo")) {
 					$file = (\Katu\Files\File::createTemporaryWithFileName($this->getConnection()->getSessionId() . ".csv"));
 					$csv = new \Katu\Files\Formats\CSV($file);
+					$sql = trim($this->getStatementDump()->getSentSQL() ?: $this->statement->queryString);
 					$csv->append([
 						preg_replace("/\./", ",", $this->getDuration()),
-						$this->getStatementDump()->getSentSQL() ?: $this->statement->queryString,
+						$sql,
 					]);
 				}
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
