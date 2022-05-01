@@ -172,34 +172,39 @@ class Time extends \DateTime
 		return $date->modify($weekday);
 	}
 
-	public function setYear($n)
+	public function setYear(int $n)
 	{
 		return $this->setDate($n, $this->format("n"), $this->format("j"));
 	}
 
-	public function setMonth($n)
+	public function setMonth(int $n)
 	{
 		return $this->setDate($this->format("Y"), $n, $this->format("j"));
 	}
 
-	public function setDay($n)
+	public function setDay(int $n)
 	{
 		return $this->setDate($this->format("Y"), $this->format("n"), $n);
 	}
 
-	public function setHour($n)
+	public function setHour(int $n)
 	{
-		return $this->setTime($n, $this->format("i"), $this->format("s"));
+		return $this->setTime($n, $this->format("i"), $this->format("s"), $this->format("u"));
 	}
 
-	public function setMinute($n)
+	public function setMinute(int $n)
 	{
-		return $this->setTime($this->format("H"), $n, $this->format("s"));
+		return $this->setTime($this->format("H"), $n, $this->format("s"), $this->format("u"));
 	}
 
-	public function setSecond($n)
+	public function setSecond(float $n)
 	{
-		return $this->setTime($this->format("H"), $this->format("i"), $n);
+		return $this->setTime($this->format("H"), $this->format("i"), floor($n), ($n - floor($n)) * 1000000);
+	}
+
+	public function setMicrosecond(int $n)
+	{
+		return $this->setTime($this->format("H"), $this->format("i"), $this->format("s"), $n);
 	}
 
 	public function getDiff($dateTime = null)
