@@ -2,9 +2,7 @@
 
 namespace Katu\PDO;
 
-use Katu\Types\TFileSize;
-use Katu\Types\TIdentifier;
-use Katu\Types\TSeconds;
+use Katu\Tools\Calendar\Seconds;
 
 class Query
 {
@@ -133,14 +131,14 @@ class Query
 		return $this->statementDump;
 	}
 
-	public function setDuration(TSeconds $duration): Query
+	public function setDuration(Seconds $duration): Query
 	{
 		$this->duration = $duration;
 
 		return $this;
 	}
 
-	public function getDuration(): ?TSeconds
+	public function getDuration(): ?Seconds
 	{
 		return $this->duration;
 	}
@@ -173,7 +171,7 @@ class Query
 			try {
 				$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 				$statement->execute();
-				$this->setDuration(new TSeconds($stopwatch->getDuration()));
+				$this->setDuration(new Seconds($stopwatch->getDuration()));
 			} catch (\Throwable $e) {
 				// Nevermind.
 			} finally {
@@ -191,7 +189,7 @@ class Query
 					try {
 						$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 						$statement->execute();
-						$this->setDuration(new TSeconds($stopwatch->getDuration()));
+						$this->setDuration(new Seconds($stopwatch->getDuration()));
 					} catch (\Throwable $e) {
 						// Nevermind.
 					} finally {

@@ -2,7 +2,8 @@
 
 namespace Katu\Tools\Forms;
 
-use Katu\Types\TSeconds;
+use Katu\Tools\Calendar\Seconds;
+use Katu\Tools\Calendar\Time;
 
 class Token
 {
@@ -17,8 +18,8 @@ class Token
 	public function __construct()
 	{
 		$this->setCode(static::generateCode());
-		$this->setDateTimeSpoils(new \Katu\Tools\Calendar\Time("+ " . static::SPOIL_TIMEOUT . " seconds"));
-		$this->setDateTimeRots(new \Katu\Tools\Calendar\Time("+ " . static::ROT_TIMEOUT . " seconds"));
+		$this->setDateTimeSpoils(new Time("+ " . static::SPOIL_TIMEOUT . " seconds"));
+		$this->setDateTimeRots(new Time("+ " . static::ROT_TIMEOUT . " seconds"));
 	}
 
 	public function __toString(): string
@@ -38,33 +39,33 @@ class Token
 		return $this->code;
 	}
 
-	public function setDateTimeSpoils(\Katu\Tools\Calendar\Time $value): Token
+	public function setDateTimeSpoils(Time $value): Token
 	{
 		$this->timeSpoils = $value->format('r');
 
 		return $this;
 	}
 
-	public function getDateTimeSpoils(): \Katu\Tools\Calendar\Time
+	public function getDateTimeSpoils(): Time
 	{
-		return new \Katu\Tools\Calendar\Time($this->timeSpoils);
+		return new Time($this->timeSpoils);
 	}
 
-	public function setDateTimeRots(\Katu\Tools\Calendar\Time $value): Token
+	public function setDateTimeRots(Time $value): Token
 	{
 		$this->timeRots = $value->format('r');
 
 		return $this;
 	}
 
-	public function getDateTimeRots(): \Katu\Tools\Calendar\Time
+	public function getDateTimeRots(): Time
 	{
-		return new \Katu\Tools\Calendar\Time($this->timeRots);
+		return new Time($this->timeRots);
 	}
 
-	public function getTTL(): TSeconds
+	public function getTTL(): Seconds
 	{
-		return new TSeconds($this->getDateTimeRots()->getTimestamp() - (new \Katu\Tools\Calendar\Time)->getTimestamp());
+		return new Seconds($this->getDateTimeRots()->getTimestamp() - (new Time)->getTimestamp());
 	}
 
 	public function isAcceptable(): bool

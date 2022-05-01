@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Calendar;
 
-use Katu\Types\TSeconds;
-
 class Time extends \DateTime
 {
 	public function __construct($time = null, \DateTimeZone $timezone = null)
@@ -123,9 +121,9 @@ class Time extends \DateTime
 		return $this->getTimestamp() == time();
 	}
 
-	public function getAge(): TSeconds
+	public function getAge(): Seconds
 	{
-		return new \Katu\Types\TSeconds($this->getTimestamp() - time());
+		return new Seconds($this->getTimestamp() - time());
 	}
 
 	public static function getMicroseconds(): float

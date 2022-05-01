@@ -2,7 +2,8 @@
 
 namespace Katu\Models\Presets;
 
-use Katu\Types\TSeconds;
+use Katu\Tools\Calendar\Seconds;
+use Katu\Tools\Calendar\Time;
 use Sexy\Sexy as SX;
 
 abstract class AccessToken extends \Katu\Models\Model
@@ -17,9 +18,9 @@ abstract class AccessToken extends \Katu\Models\Model
 		return \App\App::getUserModelClass()->getName()::get($this->userId);
 	}
 
-	public static function generateTimeExpires(): \Katu\Tools\Calendar\Time
+	public static function generateTimeExpires(): Time
 	{
-		return new \Katu\Tools\Calendar\Time("+ " . static::EXPIRES . " seconds");
+		return new Time("+ " . static::EXPIRES . " seconds");
 	}
 
 	public static function generateToken(): string
@@ -30,7 +31,7 @@ abstract class AccessToken extends \Katu\Models\Model
 	public static function create(User $user): AccessToken
 	{
 		return static::insert([
-			"timeCreated" => new \Katu\Tools\Calendar\Time,
+			"timeCreated" => new Time,
 			"timeExpires" => static::generateTimeExpires(),
 			"userId" => $user->getId(),
 			"token" => static::generateToken(),
@@ -43,7 +44,7 @@ abstract class AccessToken extends \Katu\Models\Model
 			->setGetFoundRows(false)
 			->from(static::getTable())
 			->where(SX::eq(static::getColumn("userId"), (int)$user->getId()))
-			->where(SX::cmpGreaterThanOrEqual(static::getColumn("timeExpires"), new \Katu\Tools\Calendar\Time("+ " . static::SAFE_TIMEOUT . " seconds")))
+			->where(SX::cmpGreaterThanOrEqual(static::getColumn("timeExpires"), new Time("+ " . static::SAFE_TIMEOUT . " seconds")))
 			->orderBy(SX::orderBy(static::getColumn("timeExpires"), SX::kw("desc")))
 			->setPage(SX::page(1, 1))
 			;
@@ -58,7 +59,7 @@ abstract class AccessToken extends \Katu\Models\Model
 
 	public function getIsValid(): bool
 	{
-		return !(new \Katu\Tools\Calendar\Time($this->timeExpires))->isInPast();
+		return !(new Time($this->timeExpires))->isInPast();
 	}
 
 	public function getToken(): string
@@ -71,8 +72,8 @@ abstract class AccessToken extends \Katu\Models\Model
 		return \Katu\Tools\Cookies\Cookie::set("accessToken", $this->getToken(), $this->getTTL()->getValue());
 	}
 
-	public function getTTL(): TSeconds
+	public function getTTL(): Seconds
 	{
-		return (new \Katu\Tools\Calendar\Time($this->timeExpires))->getAge();
+		return (new Time($this->timeExpires))->getAge();
 	}
 }

@@ -9,8 +9,19 @@ class Interval
 
 	public function __construct(Time $start, Time $end)
 	{
-		$this->start = $start;
-		$this->end = $end;
+		if ($end < $start) {
+			throw new \Katu\Exceptions\InputErrorException("End of interval is before its start.");
+		}
+
+		$this->setStart($start);
+		$this->setEnd($end);
+	}
+
+	public function setStart(Time $value): Interval
+	{
+		$this->start = $value;
+
+		return $this;
 	}
 
 	public function getStart(): Time
@@ -18,14 +29,16 @@ class Interval
 		return $this->start;
 	}
 
+	public function setEnd(Time $value): Interval
+	{
+		$this->end = $value;
+
+		return $this;
+	}
+
 	public function getEnd(): Time
 	{
 		return $this->end;
-	}
-
-	public function getCountDays(): int
-	{
-		return $this->getStart()->diff($this->getEnd())->days + 1;
 	}
 
 	public function getDays(): TimeCollection
@@ -40,5 +53,22 @@ class Interval
 		}
 
 		return $res;
+	}
+
+	public function getIntersection(Interval $interval): ?Interval
+	{
+		$start = max($this->getStart(), $interval->getStart());
+		$end = min($this->getEnd(), $interval->getEnd());
+
+		try {
+			return new static($start, $end);
+		} catch (\Throwable $e) {
+			return null;
+		}
+	}
+
+	public function getSeconds(): Seconds
+	{
+		return new Seconds($this->getEnd()->getTimestamp() - $this->getStart()->getTimestamp());
 	}
 }

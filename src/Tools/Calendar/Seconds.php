@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Types;
+namespace Katu\Tools\Calendar;
 
-class TSeconds
+class Seconds
 {
 	public $value;
 
@@ -21,8 +21,13 @@ class TSeconds
 		return (float)$this->value;
 	}
 
-	public function getDateTime(): \Katu\Tools\Calendar\Time
+	public function getDateTime(): Time
 	{
-		return new \Katu\Tools\Calendar\Time($this->getValue() . ' seconds');
+		return new Time("{$this->getValue()} seconds");
+	}
+
+	public function getMinutes(): float
+	{
+		return $this->getValue() / 60;
 	}
 }

@@ -2,13 +2,13 @@
 
 namespace Katu\Cache;
 
+use Katu\Tools\Calendar\Seconds;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
-use Katu\Types\TSeconds;
 
 class Pickle
 {
-	const DIR_NAME = 'pickles';
+	const DIR_NAME = "pickles";
 
 	protected $identifier;
 
@@ -31,7 +31,7 @@ class Pickle
 
 	public function getFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\App\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath('txt'));
+		return new \Katu\Files\File(\App\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath("txt"));
 	}
 
 	public function get()
@@ -61,7 +61,7 @@ class Pickle
 		return !is_null($this->get());
 	}
 
-	public function getAge(): ?TSeconds
+	public function getAge(): ?Seconds
 	{
 		try {
 			return $this->getFile()->getDateTimeModified()->getAge();

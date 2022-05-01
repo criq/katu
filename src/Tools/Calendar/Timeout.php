@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Calendar;
 
-use Katu\Types\TSeconds;
-
 class Timeout
 {
 	protected $timeout;
@@ -25,10 +23,10 @@ class Timeout
 		return $this->timeout;
 	}
 
-	public function getSeconds(): TSeconds
+	public function getSeconds(): Seconds
 	{
 		if (is_numeric($this->getTimeout())) {
-			return new TSeconds(abs($this->getTimeout()) * -1);
+			return new Seconds(abs($this->getTimeout()) * -1);
 		} elseif (is_string($this->getTimeout())) {
 			return (new Time("- {$this->getTimeout()}"))->getAge();
 		}
