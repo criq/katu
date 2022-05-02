@@ -71,4 +71,11 @@ class Interval
 	{
 		return new Seconds($this->getEnd()->getTimestamp() - $this->getStart()->getTimestamp());
 	}
+
+	public static function validate(\Katu\Tools\Validation\Param $startParam, \Katu\Tools\Validation\Param $endParam)
+	{
+		$result = new \Katu\Tools\Validation\Result;
+
+		return $result;
+	}
 }
