@@ -78,9 +78,9 @@ class Table extends \Sexy\Expression
 		return $res;
 	}
 
-	public function getColumn(Name $name): Column
+	public function getColumn($name): Column
 	{
-		return new Column($this, $name);
+		return new Column($this, Name::createFromInput($name));
 	}
 
 	public function getPrimaryKeyColumn(): ?Column
