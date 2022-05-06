@@ -4,11 +4,11 @@ namespace Katu\Tools\Validation;
 
 class ResultCollection extends \ArrayObject
 {
-	public function getErrorCollection(): \Katu\Errors\ErrorCollection
+	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
 		$errorCollection = new \Katu\Errors\ErrorCollection;
 		foreach ($this as $result) {
-			$errorCollection->addErrorCollection($result->getErrorCollection());
+			$errorCollection->addErrorCollection($result->getErrors());
 		}
 
 		return $errorCollection;
@@ -16,7 +16,7 @@ class ResultCollection extends \ArrayObject
 
 	public function hasErrors(): bool
 	{
-		return $this->getErrorCollection()->hasErrors();
+		return $this->getErrors()->hasErrors();
 	}
 
 	public function getResult(): Result
@@ -24,7 +24,7 @@ class ResultCollection extends \ArrayObject
 		$merged = new Result;
 		foreach ($this as $result) {
 			$merged->getParamCollection()->addParamCollection($result->getParamCollection());
-			$merged->getErrorCollection()->addErrorCollection($result->getErrorCollection());
+			$merged->getErrors()->addErrorCollection($result->getErrors());
 		}
 
 		return $merged;

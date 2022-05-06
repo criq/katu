@@ -50,7 +50,7 @@ class Result implements \ArrayAccess
 		return $this;
 	}
 
-	public function getErrorCollection(): \Katu\Errors\ErrorCollection
+	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
 		if (!$this->errorCollection) {
 			$this->errorCollection = new \Katu\Errors\ErrorCollection;
@@ -61,14 +61,14 @@ class Result implements \ArrayAccess
 
 	public function addError(\Katu\Errors\Error $error): Result
 	{
-		$this->getErrorCollection()->addError($error);
+		$this->getErrors()->addError($error);
 
 		return $this;
 	}
 
 	public function addErrorCollection(\Katu\Errors\ErrorCollection $errorCollection): Result
 	{
-		$this->getErrorCollection()->addErrorCollection($errorCollection);
+		$this->getErrors()->addErrorCollection($errorCollection);
 
 		return $this;
 	}
@@ -76,14 +76,14 @@ class Result implements \ArrayAccess
 	public function addResult(Result $result): Result
 	{
 		$this->addParamCollection($result->getParamCollection());
-		$this->addErrorCollection($result->getErrorCollection());
+		$this->addErrorCollection($result->getErrors());
 
 		return $this;
 	}
 
 	public function hasErrors(): bool
 	{
-		return $this->getErrorCollection()->hasErrors();
+		return $this->getErrors()->hasErrors();
 	}
 
 	/****************************************************************************

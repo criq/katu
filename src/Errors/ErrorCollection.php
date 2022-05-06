@@ -55,7 +55,7 @@ class ErrorCollection extends \ArrayObject implements Packaged
 	public function addValidationResults(array $validationResults): ErrorCollection
 	{
 		foreach ($validationResults as $validationResult) {
-			$this->addErrorCollection($validationResult->getErrorCollection());
+			$this->addErrorCollection($validationResult->getErrors());
 		}
 
 		return $this;
