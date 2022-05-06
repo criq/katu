@@ -16,6 +16,18 @@ class Name extends \Sexy\Expression
 		return $this->getSql();
 	}
 
+	public static function createFromInput($input): Name
+	{
+		if ($input instanceof static) {
+			return $input;
+		} elseif (is_string($input)) {
+			return new static($input);
+		}
+
+		throw new \Katu\Exceptions\InputErrorException("Invalid table name input.");
+	}
+
+
 	public function setPlain(string $value): Name
 	{
 		$this->plain = $value;
