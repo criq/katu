@@ -42,24 +42,20 @@ class TURL
 		return $result;
 	}
 
-	public static function make($url, $params = []): TURL
+	public static function make($url, array $params = []): TURL
 	{
-		$params = array_filter((array)$params, function ($i) {
-			return mb_strlen($i);
-		});
-
-		return new static($url . ($params ? ("?" . http_build_query($params)): null));
+		return new static($url . ($params ? ("?" . http_build_query($params)) : null));
 	}
 
-	public static function build($parts): TURL
+	public static function build(array $parts): TURL
 	{
 		$url = "";
 
-		if (!isset($parts["host"])) {
+		if (!($parts["host"] ?? null)) {
 			throw new \Exception("Missing host.");
 		}
 
-		if (!isset($parts["scheme"])) {
+		if (!($parts["scheme"] ?? null)) {
 			$url .= static::DEFAULT_SCHEME;
 		} else {
 			$url .= $parts["scheme"];
@@ -67,11 +63,11 @@ class TURL
 
 		$url .= "://" . $parts["host"];
 
-		if (isset($parts["path"])) {
+		if ($parts["path"] ?? null) {
 			$url .= $parts["path"];
 		}
 
-		if (isset($parts["query"]) && $parts["query"]) {
+		if ($parts["query"] ?? null) {
 			$url .= "?" . http_build_query($parts["query"]);
 		}
 
@@ -121,7 +117,7 @@ class TURL
 	public function get2ndLevelDomain(): string
 	{
 		$parsed = parse_url($this->value);
-		if (!isset($parsed["host"])) {
+		if (!($parsed["host"] ?? null)) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid URL host.");
 		}
 
@@ -132,11 +128,11 @@ class TURL
 	{
 		$parts = parse_url($this->value);
 
-		if (!isset($parts["path"])) {
+		if (!($parts["path"] ?? null)) {
 			$parts["path"] = null;
 		}
 
-		if (isset($parts["query"])) {
+		if ($parts["query"] ?? null) {
 			parse_str($parts["query"], $query_params);
 			$parts["query"] = (array)$query_params;
 		} else {
@@ -146,11 +142,11 @@ class TURL
 		return $parts;
 	}
 
-	public function addQueryParam($name, $value, $overwrite = true): TURL
+	public function addQueryParam(string $name, $value, $overwrite = true): TURL
 	{
 		$parts = $this->getParts();
 
-		if (!$overwrite && isset($parts["query"][$name])) {
+		if (!$overwrite && ($parts["query"][$name] ?? null)) {
 			throw new \Exception("Query param already exists.");
 		}
 
@@ -161,7 +157,7 @@ class TURL
 		return $this;
 	}
 
-	public function removeQueryParam($name): TURL
+	public function removeQueryParam(string $name): TURL
 	{
 		$parts = $this->getParts();
 
@@ -176,18 +172,18 @@ class TURL
 	{
 		$parts = $this->getParts();
 
-		if (isset($parts["query"])) {
+		if ($parts["query"] ?? null) {
 			return $parts["query"];
 		}
 
 		return null;
 	}
 
-	public function getQueryParam($name)
+	public function getQueryParam(string $name)
 	{
 		$params = $this->getQueryParams();
 
-		if (isset($params[$name])) {
+		if ($params[$name] ?? null) {
 			return $params[$name];
 		}
 
@@ -206,7 +202,7 @@ class TURL
 	{
 		$parts = $this->getParts();
 
-		if (isset($parts["path"])) {
+		if ($parts["path"] ?? null) {
 			$pathinfo = pathinfo($parts["path"]);
 			if (preg_match("/^index\.(php|htm|html)$/", $pathinfo["basename"])) {
 				$parts["path"] = $pathinfo["dirname"];
@@ -235,7 +231,7 @@ class TURL
 		// Bypass disabled CURLOPT_FOLLOWLOCATION.
 		while ($url) {
 			$response = $curl->get($url);
-			if (in_array($curl->httpStatusCode, [301, 302]) && isset($curl->responseHeaders["Location"])) {
+			if (in_array($curl->httpStatusCode, [301, 302]) && ($curl->responseHeaders["Location"] ?? null)) {
 				$url = new static($curl->responseHeaders["Location"]);
 			} else {
 				return $response;
