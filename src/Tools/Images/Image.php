@@ -83,12 +83,12 @@ class Image
 
 	public function getPixel(): Image
 	{
-		$version = new Version('pixel', [
+		$version = new Version("pixel", [
 			new Filters\Fit([
-				'width' => 1,
-				'height' => 1,
+				"width" => 1,
+				"height" => 1,
 			]),
-		], 'png', 100);
+		], "png", 100);
 
 		$imageVersion = new ImageVersion($this, $version);
 
@@ -97,7 +97,7 @@ class Image
 
 	public function getTemporaryFile(): \Katu\Files\File
 	{
-		$file = \Katu\Files\File::createTemporaryWithExtension('png');
+		$file = \Katu\Files\File::createTemporaryWithExtension("png");
 		$file->touch();
 
 		$interventionImage = $this->getInterventionImage();
@@ -116,7 +116,7 @@ class Image
 		$array = [];
 		for ($x = 0; $x < $interventionImage->width(); $x++) {
 			for ($y = 0; $y < $interventionImage->height(); $y++) {
-				$array[] = $interventionImage->pickColor($x, $y, 'hex');
+				$array[] = $interventionImage->pickColor($x, $y, "hex");
 			}
 		}
 
