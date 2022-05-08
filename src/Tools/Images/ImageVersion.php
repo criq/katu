@@ -55,17 +55,21 @@ class ImageVersion
 		return $this->getVersion()->getExtension() ?: $this->getImage()->getSource()->getExtension();
 	}
 
-	public function getFile(): \Katu\Files\File
+	public function getFile(): ?\Katu\Files\File
 	{
-		$pathSegments = [];
+		try {
+			$pathSegments = [];
 
-		$hash = $this->getImage()->getSource()->getHash();
-		$pathSegments[] = substr($hash, 0, 2);
-		$pathSegments[] = substr($hash, 2, 2);
-		$pathSegments[] = substr($hash, 4, 2);
-		$pathSegments[] = $hash . "." . $this->getExtension();
+			$hash = $this->getImage()->getSource()->getHash();
+			$pathSegments[] = substr($hash, 0, 2);
+			$pathSegments[] = substr($hash, 2, 2);
+			$pathSegments[] = substr($hash, 4, 2);
+			$pathSegments[] = "{$hash}.{$this->getExtension()}";
 
-		return new \Katu\Files\File($this->getVersion()->getDir(), implode("/", $pathSegments));
+			return new \Katu\Files\File($this->getVersion()->getDir(), implode("/", $pathSegments));
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public function getVersionImage(): ?Image
@@ -99,7 +103,7 @@ class ImageVersion
 		$base64 = @base64_encode($file->get());
 
 		if ($mime && $base64) {
-			return "data:" . $mime . ";base64," . $base64;
+			return "data:{$mime};base64,{$base64}";
 		}
 
 		return null;
