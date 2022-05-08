@@ -35,14 +35,19 @@ class ImageVersion
 	{
 		$url = $this->getImage()->getURL();
 		if ($url) {
-			return \Katu\Tools\Routing\URL::getFor('images.getVersionSrc.url', [
-				'version' => $this->getVersion()->getName(),
+			return \Katu\Tools\Routing\URL::getFor("images.getVersionSrc.url", [
+				"version" => $this->getVersion()->getName(),
 			], [
-				'url' => (string)$url,
+				"url" => (string)$url,
 			]);
 		}
 
-		return $this->getVersionImage()->getURL();
+		$versionImage = $this->getVersionImage();
+		if ($versionImage) {
+			return $versionImage->getURL();
+		}
+
+		return null;
 	}
 
 	public function getExtension(): string
@@ -58,9 +63,9 @@ class ImageVersion
 		$pathSegments[] = substr($hash, 0, 2);
 		$pathSegments[] = substr($hash, 2, 2);
 		$pathSegments[] = substr($hash, 4, 2);
-		$pathSegments[] = $hash . '.' . $this->getExtension();
+		$pathSegments[] = $hash . "." . $this->getExtension();
 
-		return new \Katu\Files\File($this->getVersion()->getDir(), implode('/', $pathSegments));
+		return new \Katu\Files\File($this->getVersion()->getDir(), implode("/", $pathSegments));
 	}
 
 	public function getVersionImage(): ?Image
@@ -94,7 +99,7 @@ class ImageVersion
 		$base64 = @base64_encode($file->get());
 
 		if ($mime && $base64) {
-			return 'data:' . $mime . ';base64,' . $base64;
+			return "data:" . $mime . ";base64," . $base64;
 		}
 
 		return null;

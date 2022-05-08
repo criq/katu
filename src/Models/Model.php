@@ -304,41 +304,43 @@ class Model extends Base
 	public function getFileAttachments()
 	{
 		$sql = SX::select()
-			->select(\App\Models\FileAttachment::getTable())
-			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectModel"), static::getClass()->getName()))
-			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectId"), $this->getId()))
+			->select(\App\App::getFileAttachmentModelClass()->getName()::getTable())
+			->from(\App\App::getFileAttachmentModelClass()->getName()::getTable())
+			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectId"), $this->getId()))
 			;
 
-		return \App\Models\FileAttachment::getBySql($sql);
+		return \App\App::getFileAttachmentModelClass()->getName()::getBySql($sql);
 	}
 
 	public function getImageFileAttachments()
 	{
 		$sql = SX::select()
-			->select(\App\Models\FileAttachment::getTable())
-			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectModel"), static::getClass()->getName()))
-			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectId"), $this->getId()))
-			->joinColumns(\App\Models\FileAttachment::getColumn("fileId"), \App\Models\File::getIdColumn())
-			->where(SX::cmpLike(\App\Models\File::getColumn("type"), "image/%"))
+			->select(\App\App::getFileAttachmentModelClass()->getName()::getTable())
+			->from(\App\App::getFileAttachmentModelClass()->getName()::getTable())
+			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectId"), $this->getId()))
+			->joinColumns(\App\App::getFileAttachmentModelClass()->getName()::getColumn("fileId"), \App\App::getFileModelClass()->getName()::getIdColumn())
+			->where(SX::cmpLike(\App\App::getFileModelClass()->getName()::getColumn("type"), "image/%"))
 			;
 
-		return \App\Models\FileAttachment::getBySql($sql);
+		return \App\App::getFileAttachmentModelClass()->getName()::getBySql($sql);
 	}
 
-	public function getImageFile()
+	public function getImageFile(): ?\Katu\Models\Presets\File
 	{
 		$sql = SX::select()
-			->select(\App\Models\File::getTable())
-			->from(\App\Models\FileAttachment::getTable())
-			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectModel"), static::getClass()->getName()))
-			->where(SX::eq(\App\Models\FileAttachment::getColumn("objectId"), $this->getId()))
-			->orderBy(SX::orderBy(\App\Models\FileAttachment::getColumn("position")))
-			->joinColumns(\App\Models\FileAttachment::getColumn("fileId"), \App\Models\File::getIdColumn())
+			->setGetFoundRows(false)
+			->select(\App\App::getFileModelClass()->getName()::getTable())
+			->from(\App\App::getFileAttachmentModelClass()->getName()::getTable())
+			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectId"), $this->getId()))
+			->orderBy(SX::orderBy(\App\App::getFileAttachmentModelClass()->getName()::getColumn("position")))
+			->joinColumns(\App\App::getFileAttachmentModelClass()->getName()::getColumn("fileId"), \App\App::getFileModelClass()->getName()::getIdColumn())
 			;
+		// echo $sql;die;
 
-		return \App\Models\File::getBySql($sql)->getOne();
+		return \App\App::getFileModelClass()->getName()::getBySql($sql)->getOne();
 	}
 
 	public function refreshFileAttachmentsFromFileIds(User $user, ?array $fileIds)
@@ -349,9 +351,9 @@ class Model extends Base
 
 		$position = 1;
 		foreach ($fileIds as $fileId) {
-			$file = \App\Models\File::get($fileId);
+			$file = \App\App::getFileModelClass()->getName()::get($fileId);
 			if ($file) {
-				\App\Models\FileAttachment::upsert([
+				\App\App::getFileAttachmentModelClass()->getName()::upsert([
 					"objectModel" => static::getClass()->getName(),
 					"objectId" => $this->getId(),
 					"fileId" => $file->getId(),

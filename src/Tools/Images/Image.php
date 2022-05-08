@@ -28,10 +28,15 @@ class Image
 
 	public function getURL(): ?TURL
 	{
-		return $this->getSource()->getURL();
+		$source = $this->getSource();
+		if ($source) {
+			return $source->getURL();
+		}
+
+		return null;
 	}
 
-	public function getSource(): Source
+	public function getSource(): ?Source
 	{
 		return $this->source;
 	}
