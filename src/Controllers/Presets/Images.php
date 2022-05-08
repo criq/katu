@@ -2,9 +2,9 @@
 
 namespace Katu\Controllers\Presets;
 
-class Images extends \App\Classes\Controller
+class Images extends \Katu\Controllers\Controller
 {
-	public static function getVersionSrcUrl(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
+	public static function getVersionSrcURL(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
 	{
 		try {
 			try {
