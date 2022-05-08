@@ -229,6 +229,11 @@ abstract class File extends \Katu\Models\Model
 		return in_array($this->type, static::getSupportedImageTypes());
 	}
 
+	public function getImage(): \Katu\Tools\Images\Image
+	{
+		return new \Katu\Tools\Images\Image($this);
+	}
+
 	public function getSize()
 	{
 		return new \Katu\Types\TFileSize($this->size);
