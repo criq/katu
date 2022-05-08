@@ -59,7 +59,10 @@ class Model extends Base
 			}
 			$object->save();
 		} else {
-			$object = static::insert(array_merge((array)$getByParams, (array)$insertParams, (array)$updateParams));
+			$params = array_merge((array)$getByParams, (array)$insertParams, (array)$updateParams);
+			// var_dump($params);die;
+
+			$object = static::insert($params);
 		}
 
 		return $object;
