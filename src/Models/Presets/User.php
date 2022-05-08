@@ -2,6 +2,7 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Tools\Calendar\Time;
 use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
 
@@ -17,11 +18,20 @@ abstract class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Create & Delete.
 	 */
-	public static function create(): User
+	public static function getOrCreateWithEmailAddress(\Katu\Models\Presets\EmailAddress $emailAddress): User
 	{
-		return static::insert([
-			static::$columnNames["timeCreated"] => new \Katu\Tools\Calendar\Time,
+		$user = static::getOneBy([
+			static::$columnNames["emailAddressId"] => $emailAddress->getId(),
 		]);
+		if (!$user) {
+			static::createWithEmailAddress($emailAddress);
+
+			$user = static::getOneBy([
+				static::$columnNames["emailAddressId"] => $emailAddress->getId(),
+			]);
+		}
+
+		return $user;
 	}
 
 	public static function createWithEmailAddress(\Katu\Models\Presets\EmailAddress $emailAddress): User
@@ -34,11 +44,10 @@ abstract class User extends \Katu\Models\Model
 				;
 		}
 
-		$user = static::create();
-		$user->setEmailAddress(new \Katu\Tools\Validation\Params\ObjectSelf("emailAddress", $emailAddress));
-		$user->save();
-
-		return $user;
+		return static::insert([
+			static::$columnNames["timeCreated"] => new Time,
+			static::$columnNames["emailAddressId"] => $emailAddress->getId(),
+		]);
 	}
 
 	public static function getFromRequest(?\Slim\Http\Request $request): ?User
@@ -164,7 +173,7 @@ abstract class User extends \Katu\Models\Model
 			"serviceName" => (string)$serviceName,
 			"serviceUserId" => (string)$serviceUserId,
 		], [
-			"timeCreated" => new \Katu\Tools\Calendar\Time,
+			"timeCreated" => new Time,
 		]);
 	}
 
