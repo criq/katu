@@ -11,7 +11,7 @@ class Error implements Packaged
 	protected $code;
 	protected $help;
 	protected $message;
-	protected $paramCollection;
+	protected $params;
 	protected $options;
 	protected $versions;
 
@@ -116,20 +116,20 @@ class Error implements Packaged
 		return $this->options;
 	}
 
-	public function setParamCollection(\Katu\Tools\Validation\ParamCollection $paramCollection): Error
+	public function setParamCollection(\Katu\Tools\Validation\ParamCollection $params): Error
 	{
-		$this->paramCollection = $paramCollection;
+		$this->params = $params;
 
 		return $this;
 	}
 
 	public function getParamCollection(): \Katu\Tools\Validation\ParamCollection
 	{
-		if (!$this->paramCollection) {
-			$this->paramCollection = new \Katu\Tools\Validation\ParamCollection;
+		if (!$this->params) {
+			$this->params = new \Katu\Tools\Validation\ParamCollection;
 		}
 
-		return $this->paramCollection;
+		return $this->params;
 	}
 
 	public function addParam(\Katu\Tools\Validation\Param $param): Error

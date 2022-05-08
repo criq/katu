@@ -140,9 +140,9 @@ class Controller
 		return $this;
 	}
 
-	public function addErrors(\Katu\Errors\ErrorCollection $errorCollection): Controller
+	public function addErrors(\Katu\Errors\ErrorCollection $errors): Controller
 	{
-		$this->getErrors()->addErrorCollection($errorCollection);
+		$this->getErrors()->addErrorCollection($errors);
 
 		return $this;
 	}

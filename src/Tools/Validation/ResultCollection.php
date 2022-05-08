@@ -6,12 +6,12 @@ class ResultCollection extends \ArrayObject
 {
 	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
-		$errorCollection = new \Katu\Errors\ErrorCollection;
+		$errors = new \Katu\Errors\ErrorCollection;
 		foreach ($this as $result) {
-			$errorCollection->addErrorCollection($result->getErrors());
+			$errors->addErrorCollection($result->getErrors());
 		}
 
-		return $errorCollection;
+		return $errors;
 	}
 
 	public function hasErrors(): bool

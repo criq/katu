@@ -16,9 +16,9 @@ class ParamCollection extends \ArrayObject
 		parent::offsetSet($key ?: $value->getKey(), $value);
 	}
 
-	public function addParamCollection(ParamCollection $paramCollection): ParamCollection
+	public function addParamCollection(ParamCollection $params): ParamCollection
 	{
-		foreach ($paramCollection as $param) {
+		foreach ($params as $param) {
 			$this->append($param);
 		}
 

@@ -13,14 +13,14 @@ class ErrorCollection extends \ArrayObject implements Packaged
 		$class = TClass::createFromPortableName($package->getPayload()['classPortableName']);
 		$className = $class->getName();
 
-		$errorCollection = new $className;
+		$errors = new $className;
 
 		foreach ($package->getPayload()['errorPackagePayloads'] as $errorPackagePayload) {
 			$error = Error::createFromPackage(new TPackage($errorPackagePayload));
-			$errorCollection->addError($error);
+			$errors->addError($error);
 		}
 
-		return $errorCollection;
+		return $errors;
 	}
 
 	public function getPackage(): TPackage
@@ -43,9 +43,9 @@ class ErrorCollection extends \ArrayObject implements Packaged
 		return $this;
 	}
 
-	public function addErrorCollection(ErrorCollection $errorCollection): ErrorCollection
+	public function addErrorCollection(ErrorCollection $errors): ErrorCollection
 	{
-		foreach ($errorCollection as $error) {
+		foreach ($errors as $error) {
 			$this->append($error);
 		}
 

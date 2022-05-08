@@ -2,9 +2,9 @@
 
 namespace Katu\Files;
 
-class Uploads extends \ArrayObject
+class UploadCollection extends \ArrayObject
 {
-	public static function createFromRequest(\Slim\Http\Request $request, string $key) : ?Uploads
+	public static function createFromRequest(\Slim\Http\Request $request, string $key) : ?UploadCollection
 	{
 		$uploads = new static;
 

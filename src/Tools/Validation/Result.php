@@ -5,13 +5,13 @@ namespace Katu\Tools\Validation;
 class Result implements \ArrayAccess
 {
 	protected $response;
-	protected $paramCollection;
-	protected $errorCollection;
+	protected $params;
+	protected $errors;
 
-	public function __construct(?ParamCollection $paramCollection = null)
+	public function __construct(?ParamCollection $params = null)
 	{
-		$this->paramCollection = $paramCollection ?: new ParamCollection;
-		$this->errorCollection = new \Katu\Errors\ErrorCollection;
+		$this->params = $params ?: new ParamCollection;
+		$this->errors = new \Katu\Errors\ErrorCollection;
 	}
 
 	public function setResponse($value): Result
@@ -35,7 +35,7 @@ class Result implements \ArrayAccess
 
 	public function getParamCollection(): ParamCollection
 	{
-		return $this->paramCollection;
+		return $this->params;
 	}
 
 	public function getParam(string $key): ?Param
@@ -43,20 +43,20 @@ class Result implements \ArrayAccess
 		return $this[$key] ?? null;
 	}
 
-	public function addParamCollection(ParamCollection $paramCollection): Result
+	public function addParamCollection(ParamCollection $params): Result
 	{
-		$this->getParamCollection()->addParamCollection($paramCollection);
+		$this->getParamCollection()->addParamCollection($params);
 
 		return $this;
 	}
 
 	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
-		if (!$this->errorCollection) {
-			$this->errorCollection = new \Katu\Errors\ErrorCollection;
+		if (!$this->errors) {
+			$this->errors = new \Katu\Errors\ErrorCollection;
 		}
 
-		return $this->errorCollection;
+		return $this->errors;
 	}
 
 	public function addError(\Katu\Errors\Error $error): Result
@@ -66,9 +66,9 @@ class Result implements \ArrayAccess
 		return $this;
 	}
 
-	public function addErrorCollection(\Katu\Errors\ErrorCollection $errorCollection): Result
+	public function addErrorCollection(\Katu\Errors\ErrorCollection $errors): Result
 	{
-		$this->getErrors()->addErrorCollection($errorCollection);
+		$this->getErrors()->addErrorCollection($errors);
 
 		return $this;
 	}
