@@ -178,9 +178,9 @@ class Query
 				$error = Exception::createFromErrorInfo($statement->errorInfo());
 			}
 
-			if ($error->getCode() == 1146 && preg_match("/Table \"(.+)\.(?<tableName>.+)\" doesn't exist/", $error->getMessage(), $match)) {
+			if ($error->getCode() == 1146 && preg_match("/Table \'(.+)\.(?<tableName>.+)\' doesn\'t exist/", $error->getMessage(), $match)) {
 				// Create the table.
-				$sqlFile = new \Katu\Files\File(__DIR__, "..", "..", "Tools", "SQL", $match["tableName"] . ".create.sql");
+				$sqlFile = new \Katu\Files\File(__DIR__, "..", "Tools", "SQL", "{$match["tableName"]}.create.sql");
 				if ($sqlFile->exists()) {
 					// There is a file, let"s create the table.
 					$this->getConnection()->createQuery($sqlFile->get())->getResult();
