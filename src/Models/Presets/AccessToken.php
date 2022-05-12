@@ -23,6 +23,18 @@ abstract class AccessToken extends \Katu\Models\Model
 		return new Time("+ " . static::EXPIRES . " seconds");
 	}
 
+	public function setTimeExpires(Time $time): AccessToken
+	{
+		$this->timeExpires = $time;
+
+		return $this;
+	}
+
+	public function getTimeExpires(): Time
+	{
+		return new Time($this->timeExpires);
+	}
+
 	public static function generateToken(): string
 	{
 		return \Katu\Tools\Random\Generator::getIdString(static::LENGTH);
@@ -60,6 +72,13 @@ abstract class AccessToken extends \Katu\Models\Model
 	public function getIsValid(): bool
 	{
 		return !(new Time($this->timeExpires))->isInPast();
+	}
+
+	public function setToken(string $token): AccessToken
+	{
+		$this->token = $token;
+
+		return $this;
 	}
 
 	public function getToken(): string
