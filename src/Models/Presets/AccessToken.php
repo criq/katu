@@ -13,6 +13,13 @@ abstract class AccessToken extends \Katu\Models\Model
 	const SAFE_TIMEOUT = 3600;
 	const TABLE = "access_tokens";
 
+	public function setUser(User $user): AccessToken
+	{
+		$this->userId = $user->getId();
+
+		return $this;
+	}
+
 	public function getUser(): User
 	{
 		return \App\App::getUserModelClass()->getName()::get($this->userId);
