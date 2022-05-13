@@ -11,6 +11,7 @@ class Generator
 	const ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	const ALPHA_LOWER = "abcdefghijklmnopqrstuvwxyz";
 	const ALPHA_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const HEXDEC = "0123456789abcdef";
 	const IDSTRING = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
 	const NUM = "0123456789";
 
