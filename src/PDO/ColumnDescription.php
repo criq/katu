@@ -85,11 +85,6 @@ class ColumnDescription
 		return $object;
 	}
 
-	public function getName(): string
-	{
-		return $this->name;
-	}
-
 	public static function getNumericTypes(): array
 	{
 		return [
@@ -103,5 +98,22 @@ class ColumnDescription
 			"smallint",
 			"tinyint",
 		];
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
+	}
+
+	public function getType(): string
+	{
+		return $this->type;
+	}
+
+	public function getOptions(): array
+	{
+		return array_map(function(string $option) {
+			return trim($option, "'");
+		}, (array)$this->options);
 	}
 }
