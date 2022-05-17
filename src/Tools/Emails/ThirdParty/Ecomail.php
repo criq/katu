@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Emails\ThirdParty;
 
+use Katu\Types\TIdentifier;
+
 class Ecomail extends \Katu\Tools\Emails\ThirdParty
 {
 	public $attachments = [];
@@ -59,7 +61,9 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		$info = $curl->getInfo();
 
 		if ($info["http_code"] != 200) {
-			throw new \Exception((string)$res);
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($res);
+
+			throw new \Exception("Došlo k chybě při odesílání e-mailu.");
 		}
 
 		return $res;
