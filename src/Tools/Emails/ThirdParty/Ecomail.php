@@ -18,7 +18,7 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 
 		$email["message"]["subject"] = $this->subject;
 		$email["message"]["html"] = $this->html;
-		$email["message"]["text"] = $this->plain;
+		$email["message"]["text"] = $this->plain ?: strip_tags($this->html);
 		$email["message"]["from_email"] = $this->fromEmailAddress;
 		$email["message"]["from_name"] = $this->fromName;
 
