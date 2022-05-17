@@ -61,7 +61,7 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		$info = $curl->getInfo();
 
 		if ($info["http_code"] != 200) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($res);
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error(serialize($res));
 
 			throw new \Exception("Došlo k chybě při odesílání e-mailu.");
 		}
