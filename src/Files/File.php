@@ -15,12 +15,29 @@ class File
 
 	public function __construct()
 	{
-		$this->path = static::joinPaths(...func_get_args());
+		$this->setPath(...func_get_args());
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->getPath();
+	}
+
+	public function setPath(): File
+	{
+		$this->path = static::joinPaths(...func_get_args());
+
+		return $this;
+	}
+
+	public function getPath(): string
+	{
+		return $this->path;
+	}
+
+	public function getRelativePath(): string
+	{
+		return ltrim(preg_replace("/^" . preg_quote(\App\App::getBaseDir(), "/") . "/", "", $this->getPath()), "/");
 	}
 
 	public static function joinPaths(): string
@@ -80,25 +97,6 @@ class File
 		}
 
 		return static::createTemporaryFromSrc($src, $extension);
-	}
-
-	public function getPath(): string
-	{
-		if (file_exists($this->path)) {
-			return realpath($this->path);
-		}
-
-		$path = static::joinPaths(\App\App::getBaseDir(), $this->path);
-		if (file_exists($path)) {
-			return realpath($path);
-		}
-
-		return $this->path;
-	}
-
-	public function getRelativePath(): string
-	{
-		return ltrim(preg_replace("/^" . preg_quote(\App\App::getBaseDir(), "/") . "/", "", $this->getPath()), "/");
 	}
 
 	public function getURL(): ?TURL
