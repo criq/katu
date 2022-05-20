@@ -4,6 +4,7 @@ namespace Katu\Models\Presets;
 
 use Katu\Tools\Calendar\Time;
 use Katu\Types\TIdentifier;
+use Psr\Http\Message\ServerRequestInterface;
 use Sexy\Sexy as SX;
 
 abstract class User extends \Katu\Models\Model
@@ -50,11 +51,11 @@ abstract class User extends \Katu\Models\Model
 		]);
 	}
 
-	public static function getFromRequest(?\Slim\Http\Request $request): ?User
+	public static function getFromRequest(?ServerRequestInterface $request): ?User
 	{
 		if ($request) {
 			// Cookie.
-			$user = static::getByAccessToken($request->getCookieParam("accessToken"));
+			$user = static::getByAccessToken($request->getCookieParams()["accessToken"] ?? null);
 			if ($user) {
 				return $user;
 			}
