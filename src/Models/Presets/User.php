@@ -282,7 +282,7 @@ abstract class User extends \Katu\Models\Model
 		return true;
 	}
 
-	public static function currentHasPermission(\Slim\Http\Request $request, string $permission): bool
+	public static function currentHasPermission(ServerRequestInterface $request, string $permission): bool
 	{
 		$user = static::getFromRequest($request);
 		if (!$user) {

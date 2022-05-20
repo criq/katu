@@ -3,12 +3,14 @@
 namespace Katu\Exceptions;
 
 use Katu\Types\TIdentifier;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Handler
 {
 	const ERROR_LOG = "error.log";
 
-	public function __invoke(\Slim\Http\Request $request, \Slim\Http\Response $response, \Throwable $exception)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Throwable $exception)
 	{
 		return static::resolveException($exception, $request, $response);
 	}
@@ -26,8 +28,8 @@ class Handler
 		set_error_handler(function ($code, $message, $file = null, $line = null, $context = null) {
 			throw new \Exception(implode("; ", [
 				$message,
-				"file: " . $file,
-				"line: " . $line,
+				"file: {$file}",
+				"line: {$line}",
 				"context: " . print_r($context, true),
 			]), $code);
 		});
@@ -37,8 +39,8 @@ class Handler
 			if ($error) {
 				throw new \Exception(implode("; ", [
 					$error["message"],
-					"file: " . $error["file"],
-					"line: " . $error["line"],
+					"file: {$error["file"]}",
+					"line: {$error["line"]}",
 				]), $error["type"]);
 			}
 		});
