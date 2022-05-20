@@ -21,7 +21,7 @@ class Query
 	{
 		$this->setConnection($connection);
 		$this->setParams($params);
-		$this->setSql($sql);
+		$this->setSQL($sql);
 	}
 
 	public function setConnection(Connection $connection): Query
@@ -36,7 +36,7 @@ class Query
 		return $this->connection;
 	}
 
-	public function setSql($sql): Query
+	public function setSQL($sql): Query
 	{
 		$this->sql = $sql;
 		if ($sql instanceof \Sexy\Select && $sql->getPage()) {
@@ -46,7 +46,7 @@ class Query
 		return $this;
 	}
 
-	public function getSql()
+	public function getSQL()
 	{
 		return $this->sql;
 	}
@@ -101,7 +101,7 @@ class Query
 	public function getStatement(): \PDOStatement
 	{
 		if (!$this->statement) {
-			$this->statement = $this->getConnection()->getPdo()->prepare($this->getSql());
+			$this->statement = $this->getConnection()->getPdo()->prepare($this->getSQL());
 
 			foreach ($this->getParams() as $name => $value) {
 				if (is_string($value)) {
