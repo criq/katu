@@ -19,6 +19,53 @@ class Interval
 		$this->setEnd($end);
 	}
 
+	public static function validate(\Katu\Tools\Validation\Param $startParam, \Katu\Tools\Validation\Param $endParam)
+	{
+		$result = new \Katu\Tools\Validation\Result;
+
+		if (!trim($startParam)) {
+			$result->addError(
+				(new \Katu\Errors\Error("Chybějící začátek intervalu."))
+					->addParam($startParam)
+			);
+		} else {
+			$start = static::getTimeClass()->getName()::createFromString($startParam);
+			if (!$start) {
+				$result->addError(
+					(new \Katu\Errors\Error("Neplatný začátek intervalu."))
+						->addParam($startParam)
+				);
+			}
+		}
+
+		if (!trim($endParam)) {
+			$result->addError(
+				(new \Katu\Errors\Error("Chybějící konec intervalu."))
+					->addParam($endParam)
+			);
+		} else {
+			$end = static::getTimeClass()->getName()::createFromString($endParam);
+			if (!$end) {
+				$result->addError(
+					(new \Katu\Errors\Error("Neplatný konec intervalu."))
+						->addParam($endParam)
+				);
+			}
+		}
+
+		if ($start && $end && $start > $end) {
+			$result->addError(
+				(new \Katu\Errors\Error("Začátek intervalu je později než konec."))
+					->addParam($startParam)
+					->addParam($endParam)
+			);
+		} elseif ($start && $end) {
+			$result->setResponse(new static($start, $end));
+		}
+
+		return $result;
+	}
+
 	public static function getTimeClass(): TClass
 	{
 		return new TClass("Katu\Tools\Calendar\Time");
@@ -79,50 +126,16 @@ class Interval
 		return new Seconds($this->getEnd()->getTimestamp() - $this->getStart()->getTimestamp());
 	}
 
-	public static function validate(\Katu\Tools\Validation\Param $startParam, \Katu\Tools\Validation\Param $endParam)
+	public function getMonths(): MonthCollection
 	{
-		$result = new \Katu\Tools\Validation\Result;
+		$res = new MonthCollection;
 
-		if (!trim($startParam)) {
-			$result->addError(
-				(new \Katu\Errors\Error("Chybějící začátek intervalu."))
-					->addParam($startParam)
-			);
-		} else {
-			$start = static::getTimeClass()->getName()::createFromString($startParam);
-			if (!$start) {
-				$result->addError(
-					(new \Katu\Errors\Error("Neplatný začátek intervalu."))
-						->addParam($startParam)
-				);
-			}
+		$time = (clone $this->getStart())->setDay(1);
+		while ($time <= $this->getEnd()) {
+			$res[] = new Month($time);
+			$time = $time->modify("+ 1 month");
 		}
 
-		if (!trim($endParam)) {
-			$result->addError(
-				(new \Katu\Errors\Error("Chybějící konec intervalu."))
-					->addParam($endParam)
-			);
-		} else {
-			$end = static::getTimeClass()->getName()::createFromString($endParam);
-			if (!$end) {
-				$result->addError(
-					(new \Katu\Errors\Error("Neplatný konec intervalu."))
-						->addParam($endParam)
-				);
-			}
-		}
-
-		if ($start && $end && $start > $end) {
-			$result->addError(
-				(new \Katu\Errors\Error("Začátek intervalu je později než konec."))
-					->addParam($startParam)
-					->addParam($endParam)
-			);
-		} elseif ($start && $end) {
-			$result->setResponse(new static($start, $end));
-		}
-
-		return $result;
+		return $res;
 	}
 }

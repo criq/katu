@@ -29,7 +29,7 @@ class Error implements Packaged
 
 	public static function createFromPackage(TPackage $package): Error
 	{
-		$class = TClass::createFromPortableName($package->getPayload()['classPortableName']);
+		$class = TClass::createFromPortableName($package->getPayload()['class']);
 		$className = $class->getName();
 
 		return new $className($package->getPayload()['message'], $package->getPayload()['code']);
@@ -38,7 +38,7 @@ class Error implements Packaged
 	public function getPackage(): TPackage
 	{
 		return new TPackage([
-			'classPortableName' => (new TClass($this))->getPortableName(),
+			'class' => (new TClass($this))->getPortableName(),
 			'message' => $this->getMessage(),
 			'code' => $this->getCode(),
 		]);

@@ -6,7 +6,8 @@ use Katu\Interfaces\Packaged;
 
 class TClass implements Packaged
 {
-	const PORTABLE_NAME_DELIMITER = "-";
+	const PORTABLE_NAME_DELIMITER = ".";
+	const ACCEPTABLE_PORTABLE_NAME_DELIMITER_REGEX = "/[\.\-]/";
 
 	public $name;
 
@@ -26,9 +27,9 @@ class TClass implements Packaged
 		return $this->getName();
 	}
 
-	public static function createFromPortableName(string $storableName): TClass
+	public static function createFromPortableName(string $portableName): TClass
 	{
-		return new static(strtr($storableName, static::PORTABLE_NAME_DELIMITER, "\\"));
+		return new static(preg_replace(static::ACCEPTABLE_PORTABLE_NAME_DELIMITER_REGEX, "\\", $portableName));
 	}
 
 	public static function createFromArray(array $array): TClass
