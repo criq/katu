@@ -195,6 +195,13 @@ abstract class User extends \Katu\Models\Model
 	{
 		$this->createAccessToken()->setCookie();
 
+		// $jwt = (new \Katu\Tools\Security\JWT);
+		// $token = $jwt->createToken(new \DateTimeImmutable("+ 1 day", new \DateTimeZone(\Katu\Config\Config::get("app", "timezone"))), [
+		// 	"uid" => 111,
+		// ]);
+
+		// \Katu\Tools\Cookies\Cookie::set("jwt", $token->toString());
+
 		return true;
 	}
 
