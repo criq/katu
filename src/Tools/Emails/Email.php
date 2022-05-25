@@ -99,12 +99,7 @@ class Email
 	public function setBody($html, $plain = null): Email
 	{
 		$this->setHtml($html);
-
-		if ($plain) {
-			$this->setPlain($plain);
-		} else {
-			$this->setPlain(strip_tags($html));
-		}
+		$this->setPlain($plain ?: strip_tags($html));
 
 		return $this;
 	}
