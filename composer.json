@@ -3,7 +3,6 @@
 	"description": "katu",
 	"type": "library",
 	"require" : {
-		"firebase/php-jwt": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
 		"gregwar/cache": "@stable",
 		"guzzlehttp/guzzle": "@stable",
@@ -13,6 +12,7 @@
 		"jbroadway/urlify": "@stable",
 		"jenssegers/agent": "@stable",
 		"jwage/easy-csv": "@stable",
+		"lcobucci/jwt": "@stable",
 		"league/color-extractor": "@stable",
 		"mandrill/mandrill": "@stable",
 		"michelf/php-markdown": "@stable",
