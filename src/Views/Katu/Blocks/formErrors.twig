@@ -1,16 +1,12 @@
-{% if _errors %}
+{% if errors.hasErrors %}
 	<div class="errors">
 		<h3>
 			{% block errorsTitle %}Došlo k chybě!{% endblock errorsTitle %}
 		</h3>
-		{% for error in _errors %}
-			{% if error is iterable %}
-				{% for _error in error %}
-					<p>{{ _error|raw }}</p>
-				{% endfor %}
-			{% else %}
-				<p>{{ error|raw }}</p>
-			{% endif %}
+		{% for error in errors %}
+			<p>
+				{{ error|raw }}
+			</p>
 		{% endfor %}
 	</div>
 {% endif %}
