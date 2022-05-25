@@ -3,7 +3,6 @@
 	"description": "katu",
 	"type": "library",
 	"require" : {
-		"facebook/graph-sdk": "@stable",
 		"firebase/php-jwt": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
 		"gregwar/cache": "@stable",
