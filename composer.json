@@ -1,9 +1,10 @@
 {
 	"name": "criq/katu",
-	"description": "katu framework",
+	"description": "katu",
 	"type": "library",
 	"require" : {
 		"facebook/graph-sdk": "@stable",
+		"firebase/php-jwt": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
 		"gregwar/cache": "@stable",
 		"guzzlehttp/guzzle": "@stable",
