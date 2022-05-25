@@ -21,7 +21,16 @@ class TEncryptedString
 
 	public static function generateIv(string $original): string
 	{
-		return hex2bin(substr(sha1(sha1($original)), 0, 32));
+		try {
+			$salt = \Katu\Config\Config::get("encryption", "salt");
+		} catch (\Katu\Exceptions\MissingConfigException $e) {
+			$salt = null;
+		}
+
+		return hex2bin(substr(sha1(sha1(implode([
+			$salt,
+			$original,
+		]))), 0, 32));
 	}
 
 	public static function encrypt(string $original): TEncryptedString
