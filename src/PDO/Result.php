@@ -121,13 +121,13 @@ class Result extends \ArrayObject
 	/****************************************************************************
 	 * REST.
 	 */
-	public function getResponseArray()
+	public function getResponseArray(): array
 	{
 		$res = [];
-		$res['pagination'] = $this->getPagination()->getResponseArray();
+		$res["pagination"] = $this->getPagination()->getResponseArray();
 
 		foreach ($this as $object) {
-			$res['items'][] = $object->getResponseArray(...func_get_args());
+			$res["items"][] = $object->getResponseArray(...func_get_args());
 		}
 
 		return $res;
