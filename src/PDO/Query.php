@@ -24,6 +24,21 @@ class Query
 		$this->setSQL($sql);
 	}
 
+	public function __sleep()
+	{
+		return [
+			"connection",
+			"duration",
+			"factory",
+			"foundRows",
+			"page",
+			"params",
+			"result",
+			"sql",
+			"statementDump",
+		];
+	}
+
 	public function setConnection(Connection $connection): Query
 	{
 		$this->connection = $connection;
