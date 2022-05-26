@@ -16,7 +16,7 @@ class Model extends Base
 	/****************************************************************************
 	 * CRUD.
 	 */
-	public static function insert(?array $values = [])
+	public static function insert(?array $values = [], $saveWithCallback = true)
 	{
 		$connection = static::getConnection();
 
@@ -44,25 +44,30 @@ class Model extends Base
 			]);
 		}
 
-		$object->afterInsertCallback();
-		static::afterAnyCallback();
+		if ($saveWithCallback) {
+			$object->afterInsertCallback();
+			static::afterAnyCallback();
+		}
 
 		return $object;
 	}
 
-	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [])
+	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [], $saveWithCallback = true)
 	{
 		$object = static::getOneBy($getByParams);
 		if ($object) {
 			foreach ($updateParams as $name => $value) {
 				$object->$name = $value;
 			}
-			$object->save();
+			if ($saveWithCallback) {
+				$object->saveWithCallback();
+			} else {
+				$object->saveWithoutCallback();
+			}
 		} else {
 			$params = array_merge((array)$getByParams, (array)$insertParams, (array)$updateParams);
-			// var_dump($params);die;
 
-			$object = static::insert($params);
+			$object = static::insert($params, $saveWithCallback);
 		}
 
 		return $object;
