@@ -39,7 +39,7 @@ class Generator
 
 	public static function getFileName(int $length = 32): string
 	{
-		return static::getFromChars(static::ALPHA_LOWER, $length);
+		return static::getFromChars(static::ALNUM_LOWER, $length);
 	}
 
 	public static function getString(int $length = 32): string

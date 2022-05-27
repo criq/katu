@@ -124,7 +124,7 @@ class File
 		return null;
 	}
 
-	public function exists()
+	public function exists(): bool
 	{
 		clearstatcache();
 
