@@ -57,9 +57,11 @@ class Formatter
 		return $numberFormatter->format($number);
 	}
 
-	public static function getLocalPercent($locale, float $number)
+	public static function getLocalPercent($locale, float $number, int $decimals = 0)
 	{
 		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::PERCENT);
+		$numberFormatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, $decimals);
+		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
 
 		return $numberFormatter->format($number);
 	}
