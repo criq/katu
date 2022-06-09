@@ -15,7 +15,7 @@ class INI
 		foreach ($src as $section => $values) {
 			$pointer =& $ini;
 			$level = 0;
-			$section_names = explode('.', $section);
+			$section_names = explode(".", $section);
 			foreach ($section_names as $section_name) {
 				if (++$level == count($section_names)) {
 					$pointer[$section_name] = $values;

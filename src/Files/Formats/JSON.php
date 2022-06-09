@@ -9,17 +9,17 @@ class JSON
 	public static function getEncodeBitmask()
 	{
 		return
-			  (defined('JSON_PRETTY_PRINT')      ? JSON_PRETTY_PRINT      : null)
-			| (defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : null)
-			| (defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : null)
+			  (defined("JSON_PRETTY_PRINT")      ? JSON_PRETTY_PRINT      : null)
+			| (defined("JSON_UNESCAPED_SLASHES") ? JSON_UNESCAPED_SLASHES : null)
+			| (defined("JSON_UNESCAPED_UNICODE") ? JSON_UNESCAPED_UNICODE : null)
 		;
 	}
 
 	public static function getInlineEncodeBitmask()
 	{
 		return
-			  (defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : null)
-			| (defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : null)
+			  (defined("JSON_UNESCAPED_SLASHES") ? JSON_UNESCAPED_SLASHES : null)
+			| (defined("JSON_UNESCAPED_UNICODE") ? JSON_UNESCAPED_UNICODE : null)
 		;
 	}
 
