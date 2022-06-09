@@ -13,8 +13,8 @@ class AcceptMime
 
 		if (is_null($q)) {
 			$this->q = (float)1;
-		} elseif (preg_match('/^q=(?<q>[0-9\.]+)$/', $q, $match)) {
-			$this->q = (float)$match['q'];
+		} elseif (preg_match("/^q=(?<q>[0-9\.]+)$/", $q, $match)) {
+			$this->q = (float)$match["q"];
 		}
 	}
 

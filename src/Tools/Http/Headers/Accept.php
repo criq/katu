@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Http\Headers;
 
-class Accept extends \Katu\Tools\Http\Headers
+class Accept extends \Katu\Tools\Http\HeaderCollection
 {
 	public static function createFromRequest(\Slim\Http\Request $request)
 	{
