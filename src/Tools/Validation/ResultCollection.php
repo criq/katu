@@ -23,7 +23,7 @@ class ResultCollection extends \ArrayObject
 	{
 		$merged = new Result;
 		foreach ($this as $result) {
-			$merged->getParamCollection()->addParamCollection($result->getParamCollection());
+			$merged->getParams()->addParamCollection($result->getParams());
 			$merged->getErrors()->addErrorCollection($result->getErrors());
 		}
 

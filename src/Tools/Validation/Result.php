@@ -33,7 +33,7 @@ class Result implements \ArrayAccess
 		return $this;
 	}
 
-	public function getParamCollection(): ParamCollection
+	public function getParams(): ParamCollection
 	{
 		return $this->params;
 	}
@@ -45,7 +45,7 @@ class Result implements \ArrayAccess
 
 	public function addParamCollection(ParamCollection $params): Result
 	{
-		$this->getParamCollection()->addParamCollection($params);
+		$this->getParams()->addParamCollection($params);
 
 		return $this;
 	}
@@ -75,7 +75,7 @@ class Result implements \ArrayAccess
 
 	public function addResult(Result $result): Result
 	{
-		$this->addParamCollection($result->getParamCollection());
+		$this->addParamCollection($result->getParams());
 		$this->addErrorCollection($result->getErrors());
 
 		return $this;
@@ -91,21 +91,21 @@ class Result implements \ArrayAccess
 	 */
 	public function offsetExists($offset)
 	{
-		return isset($this->getParamCollection()[$offset]);
+		return isset($this->getParams()[$offset]);
 	}
 
 	public function offsetGet($offset)
 	{
-		return $this->getParamCollection()[$offset];
+		return $this->getParams()[$offset];
 	}
 
 	public function offsetSet($offset, $value)
 	{
-		$this->getParamCollection()[$offset] = $value;
+		$this->getParams()[$offset] = $value;
 	}
 
 	public function offsetUnset($offset)
 	{
-		unset($this->getParamCollection()[$offset]);
+		unset($this->getParams()[$offset]);
 	}
 }
