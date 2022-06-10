@@ -55,7 +55,7 @@ class Interval
 
 		if ($start && $end && $start > $end) {
 			$result->addError(
-				(new \Katu\Errors\Error("Začátek intervalu je později než konec."))
+				(new \Katu\Errors\Error("Začátek intervalu je později než jeho konec."))
 					->addParam($startParam)
 					->addParam($endParam)
 			);
