@@ -2,11 +2,13 @@
 
 namespace Katu\Tools\Validation;
 
-class ResultCollection extends \ArrayObject
+use Katu\Errors\ErrorCollection;
+
+class ValidationCollection extends \ArrayObject
 {
 	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
-		$errors = new \Katu\Errors\ErrorCollection;
+		$errors = new ErrorCollection;
 		foreach ($this as $result) {
 			$errors->addErrorCollection($result->getErrors());
 		}
@@ -19,9 +21,9 @@ class ResultCollection extends \ArrayObject
 		return $this->getErrors()->hasErrors();
 	}
 
-	public function getResult(): Result
+	public function getMerged(): Validation
 	{
-		$merged = new Result;
+		$merged = new Validation;
 		foreach ($this as $result) {
 			$merged->getParams()->addParamCollection($result->getParams());
 			$merged->getErrors()->addErrorCollection($result->getErrors());

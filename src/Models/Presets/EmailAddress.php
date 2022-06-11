@@ -11,9 +11,9 @@ abstract class EmailAddress extends \Katu\Models\Model
 		"emailAddress" => "emailAddress",
 	];
 
-	public static function validate(\Katu\Tools\Validation\Param $param): \Katu\Tools\Validation\Result
+	public static function validate(\Katu\Tools\Validation\Param $param): \Katu\Tools\Validation\Validation
 	{
-		$result = new \Katu\Tools\Validation\Result(new \Katu\Tools\Validation\ParamCollection([
+		$result = new \Katu\Tools\Validation\Validation(new \Katu\Tools\Validation\ParamCollection([
 			$param,
 		]));
 

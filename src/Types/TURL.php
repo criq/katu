@@ -28,9 +28,9 @@ class TURL
 		return (string)$this->value;
 	}
 
-	public static function validate(\Katu\Tools\Validation\Param $param): \Katu\Tools\Validation\Result
+	public static function validate(\Katu\Tools\Validation\Param $param): \Katu\Tools\Validation\Validation
 	{
-		$result = new \Katu\Tools\Validation\Result;
+		$result = new \Katu\Tools\Validation\Validation;
 
 		if (static::isValid($param->getInput())) {
 			$result[] = $param->setOutput($param->getInput());
