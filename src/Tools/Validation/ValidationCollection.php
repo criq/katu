@@ -9,8 +9,8 @@ class ValidationCollection extends \ArrayObject
 	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
 		$errors = new ErrorCollection;
-		foreach ($this as $result) {
-			$errors->addErrorCollection($result->getErrors());
+		foreach ($this as $validation) {
+			$errors->addErrorCollection($validation->getErrors());
 		}
 
 		return $errors;
@@ -24,9 +24,9 @@ class ValidationCollection extends \ArrayObject
 	public function getMerged(): Validation
 	{
 		$merged = new Validation;
-		foreach ($this as $result) {
-			$merged->getParams()->addParamCollection($result->getParams());
-			$merged->getErrors()->addErrorCollection($result->getErrors());
+		foreach ($this as $validation) {
+			$merged->getParams()->addParamCollection($validation->getParams());
+			$merged->getErrors()->addErrorCollection($validation->getErrors());
 		}
 
 		return $merged;
