@@ -1,114 +1,141 @@
 <?php
 
+// $agent = new \Jenssegers\Agent\Agent;
+// var_dump($agent->platform());
+
 namespace Katu\Files\Formats;
 
-class CSV
+use App\Classes\Option;
+use App\Classes\OptionCollection;
+
+class CSV extends \ArrayObject
 {
-	public $file;
-	public $reader;
-	public $writer;
+	protected $file;
+	protected $reader;
+	protected $writer;
 
-	public function __construct($file = null, $options = [])
+	public function __construct(?\Katu\Files\File $file = null, ?OptionCollection $options = null)
 	{
-		if ($file) {
-			if (is_string($file)) {
-				$file = new \Katu\Files\File($file);
-			}
-
-			try {
-				$file->touch();
-			} catch (\Throwable $e) {
-				// Nevermind.
-			}
-
-			if ((!isset($options["readOnly"]) || (isset($options["readOnly"]) && !$options["readOnly"])) && !$file->isWritable()) {
-				throw new \Exception("Unable to write into specified file.");
-			}
-
-			$this->file = $file;
-		} else {
-			$file = new \Katu\Files\File(\App\App::getTemporaryDir(), "csv", [\Katu\Tools\Random\Generator::getFileName(), "csv"]);
-			$file->touch();
-
-			if (!$file->isWritable()) {
-				throw new \Exception("Unable to write into a temporary file.");
-			}
-
-			$this->file = $file;
-		}
-
-		$this->writer = new \EasyCSV\Writer($this->file, "a+");
-		$this->reader = new \EasyCSV\Reader($this->file, "r", isset($options["headersInFirstRow"]) ? (bool)$options["headersInFirstRow"] : true);
-
-		if (isset($options["delimiter"])) {
-			$this->writer->setDelimiter($options["delimiter"]);
-			$this->reader->setDelimiter($options["delimiter"]);
-		}
-
-		if (isset($options["enclosure"])) {
-			$this->writer->setEnclosure($options["enclosure"]);
-			$this->reader->setEnclosure($options["enclosure"]);
-		}
+		$this->setFile($file);
+		$this->setOptions((new OptionCollection([
+			new Option("delimiter", ","),
+			new Option("enclosure", "\""),
+			new Option("readOnly", false),
+		]))->mergeWith($options));
 	}
 
-	public function __toString() : string
-	{
-		return $this->getAsString();
-	}
-
-	public static function readToArray($file, $options = []) : array
-	{
-		$options["readOnly"] = true;
-		$csv = new static($file, $options);
-		$rows = [];
-
-		while ($row = $csv->reader->getRow()) {
-			$rows[] = $row;
-		}
-
-		return $rows;
-	}
-
-	public static function setFromAssoc(array $array, $options = []) : CSV
-	{
-		$csv = new static(null, $options);
-		$line = 0;
-
-		foreach ($array as $row) {
-			if (++$line == 1) {
-				$csv->append(array_keys($row));
-			}
-			$csv->append(array_values($row));
-		}
-
-		return $csv;
-	}
-
-	public function append()
-	{
-		return $this->writer->writeRow(is_array(@func_get_arg(0)) ? func_get_arg(0) : func_get_args());
-	}
-
-	public function save($file)
-	{
-		$file = new \Katu\Files\File($file);
-		$file->touch();
-
-		return file_put_contents($file, file_get_contents($this->file));
-	}
-
-	public function getFile() : \Katu\Files\File
-	{
-		return $this->file;
-	}
-
-	public function getAsString() : string
+	public function __toString(): string
 	{
 		return $this->getFile()->get();
 	}
 
-	public function delete()
+	public static function createFromArray(array $array, ?OptionCollection $options = null): CSV
 	{
-		return @unlink($this->file);
+		return (new static(null, $options))->setRecords($array);
+	}
+
+	public static function createFromFile(\Katu\Files\File $file, ?OptionCollection $options = null): CSV
+	{
+		return (new static($file, $options))->loadRecords();
+	}
+
+	public function setFile(?\Katu\Files\File $file): CSV
+	{
+		$this->file = $file;
+
+		return $this;
+	}
+
+	public function getFile(): \Katu\Files\File
+	{
+		if (!$this->file) {
+			$this->file = new \Katu\Files\File(\App\App::getTemporaryDir(), "csv", [\Katu\Tools\Random\Generator::getFileName(), "csv"]);
+			$this->file->touch();
+		}
+
+		return $this->file;
+	}
+
+	public function setOptions(OptionCollection $options): CSV
+	{
+		$this->options = $options;
+
+		return $this;
+	}
+
+	public function getOptions(): OptionCollection
+	{
+		return $this->options;
+	}
+
+	public function setDelimiter(string $delimiter): CSV
+	{
+		$this->getOptions()->mergeWith(new OptionCollection([
+			new Option("delimiter", $delimiter),
+		]));
+
+		return $this;
+	}
+
+	public function getDelimiter(): string
+	{
+		return $this->getOptions()->getValue("delimiter");
+	}
+
+	public function setEnclosure(string $enclosure): CSV
+	{
+		$this->getOptions()->mergeWith(new OptionCollection([
+			new Option("enclosure", $enclosure),
+		]));
+
+		return $this;
+	}
+
+	public function getEnclosure(): string
+	{
+		return $this->getOptions()->getValue("enclosure");
+	}
+
+	public function getReader(): \League\Csv\Reader
+	{
+		return \League\Csv\Reader::createFromPath($this->getFile())
+			->setHeaderOffset(0)
+			->setDelimiter($this->getDelimiter())
+			->setEnclosure($this->getEnclosure())
+			;
+	}
+
+	public function getWriter(): \League\Csv\Writer
+	{
+		return \League\Csv\Writer::createFromPath($this->getFile(), "a+")
+			->setDelimiter($this->getDelimiter())
+			->setEnclosure($this->getEnclosure())
+			;
+	}
+
+	public function setRecords(array $records): CSV
+	{
+		foreach ($records as $record) {
+			$this[] = $record;
+		}
+
+		return $this;
+	}
+
+	public function loadRecords(): CSV
+	{
+		$this->setRecords(iterator_to_array($this->getReader()->getRecords()));
+
+		return $this;
+	}
+
+	public function getRecords(): array
+	{
+		return $this->getArrayCopy();
+	}
+
+	public function delete(): bool
+	{
+		return $this->getFile()->delete();
 	}
 }
