@@ -8,7 +8,7 @@ use Sexy\Sexy as SX;
 
 abstract class AccessToken extends \Katu\Models\Model
 {
-	const EXPIRES = 86400;
+	const EXPIRES = 86400 * 7;
 	const LENGTH = 128;
 	const SAFE_TIMEOUT = 3600;
 	const TABLE = "access_tokens";
@@ -27,7 +27,9 @@ abstract class AccessToken extends \Katu\Models\Model
 
 	public static function generateTimeExpires(): Time
 	{
-		return new Time("+ " . static::EXPIRES . " seconds");
+		$expires = static::EXPIRES;
+
+		return new Time("+ {$expires} seconds");
 	}
 
 	public function setTimeExpires(Time $time): AccessToken

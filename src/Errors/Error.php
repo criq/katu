@@ -123,7 +123,7 @@ class Error implements Packaged
 		return $this;
 	}
 
-	public function getParamCollection(): \Katu\Tools\Validation\ParamCollection
+	public function getParams(): \Katu\Tools\Validation\ParamCollection
 	{
 		if (!$this->params) {
 			$this->params = new \Katu\Tools\Validation\ParamCollection;
@@ -134,7 +134,7 @@ class Error implements Packaged
 
 	public function addParam(\Katu\Tools\Validation\Param $param): Error
 	{
-		$this->getParamCollection()->append($param);
+		$this->getParams()->append($param);
 
 		return $this;
 	}
@@ -157,8 +157,8 @@ class Error implements Packaged
 		if ($this->getOptions()) {
 			$array["options"] = $this->getOptions();
 		}
-		if (count($this->getParamCollection())) {
-			$array["params"] = $this->getParamCollection()->getResponseArray();
+		if (count($this->getParams())) {
+			$array["params"] = $this->getParams()->getResponseArray();
 		}
 
 		return $array;

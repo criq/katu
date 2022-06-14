@@ -20,7 +20,7 @@ class TString
 		return (string)$this->string;
 	}
 
-	public static function isValid($string)
+	public static function isValid($string): bool
 	{
 		return is_string($string) || is_int($string) || is_float($string);
 	}
@@ -30,7 +30,7 @@ class TString
 		return count(array_filter(explode(' ', $this->string)));
 	}
 
-	public function hasAtLeastWords($n)
+	public function hasAtLeastWords($n): bool
 	{
 		return $this->getNumberOfWords() >= $n;
 	}

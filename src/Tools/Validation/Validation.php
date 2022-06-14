@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Validation;
 
-class Result implements \ArrayAccess
+class Validation implements \ArrayAccess
 {
 	protected $response;
 	protected $params;
@@ -14,7 +14,7 @@ class Result implements \ArrayAccess
 		$this->errors = new \Katu\Errors\ErrorCollection;
 	}
 
-	public function setResponse($value): Result
+	public function setResponse($value): Validation
 	{
 		$this->response = $value;
 
@@ -26,14 +26,14 @@ class Result implements \ArrayAccess
 		return $this->response;
 	}
 
-	public function addParam(Param $param): Result
+	public function addParam(Param $param): Validation
 	{
 		$this[] = $param;
 
 		return $this;
 	}
 
-	public function getParamCollection(): ParamCollection
+	public function getParams(): ParamCollection
 	{
 		return $this->params;
 	}
@@ -43,9 +43,9 @@ class Result implements \ArrayAccess
 		return $this[$key] ?? null;
 	}
 
-	public function addParamCollection(ParamCollection $params): Result
+	public function addParamCollection(ParamCollection $params): Validation
 	{
-		$this->getParamCollection()->addParamCollection($params);
+		$this->getParams()->addParamCollection($params);
 
 		return $this;
 	}
@@ -59,23 +59,23 @@ class Result implements \ArrayAccess
 		return $this->errors;
 	}
 
-	public function addError(\Katu\Errors\Error $error): Result
+	public function addError(\Katu\Errors\Error $error): Validation
 	{
 		$this->getErrors()->addError($error);
 
 		return $this;
 	}
 
-	public function addErrorCollection(\Katu\Errors\ErrorCollection $errors): Result
+	public function addErrorCollection(\Katu\Errors\ErrorCollection $errors): Validation
 	{
 		$this->getErrors()->addErrorCollection($errors);
 
 		return $this;
 	}
 
-	public function addResult(Result $result): Result
+	public function addResult(Validation $result): Validation
 	{
-		$this->addParamCollection($result->getParamCollection());
+		$this->addParamCollection($result->getParams());
 		$this->addErrorCollection($result->getErrors());
 
 		return $this;
@@ -91,21 +91,21 @@ class Result implements \ArrayAccess
 	 */
 	public function offsetExists($offset)
 	{
-		return isset($this->getParamCollection()[$offset]);
+		return isset($this->getParams()[$offset]);
 	}
 
 	public function offsetGet($offset)
 	{
-		return $this->getParamCollection()[$offset];
+		return $this->getParams()[$offset];
 	}
 
 	public function offsetSet($offset, $value)
 	{
-		$this->getParamCollection()[$offset] = $value;
+		$this->getParams()[$offset] = $value;
 	}
 
 	public function offsetUnset($offset)
 	{
-		unset($this->getParamCollection()[$offset]);
+		unset($this->getParams()[$offset]);
 	}
 }
