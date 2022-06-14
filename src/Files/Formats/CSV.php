@@ -1,8 +1,5 @@
 <?php
 
-// $agent = new \Jenssegers\Agent\Agent;
-// var_dump($agent->platform());
-
 namespace Katu\Files\Formats;
 
 use App\Classes\Option;
@@ -36,7 +33,7 @@ class CSV extends \ArrayObject
 
 	public static function createFromFile(\Katu\Files\File $file, ?OptionCollection $options = null): CSV
 	{
-		return (new static($file, $options))->loadRecords();
+		return (new static($file, $options))->readRecords();
 	}
 
 	public function setFile(?\Katu\Files\File $file): CSV
@@ -98,19 +95,34 @@ class CSV extends \ArrayObject
 
 	public function getReader(): \League\Csv\Reader
 	{
-		return \League\Csv\Reader::createFromPath($this->getFile())
-			->setHeaderOffset(0)
-			->setDelimiter($this->getDelimiter())
-			->setEnclosure($this->getEnclosure())
-			;
+		if (!$this->reader) {
+			$this->reader = \League\Csv\Reader::createFromPath($this->getFile())
+				->setHeaderOffset(0)
+				->setDelimiter($this->getDelimiter())
+				->setEnclosure($this->getEnclosure())
+				;
+		}
+
+		return $this->reader;
 	}
 
 	public function getWriter(): \League\Csv\Writer
 	{
-		return \League\Csv\Writer::createFromPath($this->getFile(), "a+")
-			->setDelimiter($this->getDelimiter())
-			->setEnclosure($this->getEnclosure())
-			;
+		if (!$this->writer) {
+			$this->writer = \League\Csv\Writer::createFromPath($this->getFile(), "w+")
+				->setDelimiter($this->getDelimiter())
+				->setEnclosure($this->getEnclosure())
+				;
+		}
+
+		$agent = new \Jenssegers\Agent\Agent;
+		if ($agent->platform() == "Windows") {
+			$this->writer->setOutputBOM(\League\Csv\Writer::BOM_UTF8);
+		} elseif ($agent->platform() == "OS X") {
+			$this->writer->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE);
+		}
+
+		return $this->writer;
 	}
 
 	public function setRecords(array $records): CSV
@@ -119,12 +131,22 @@ class CSV extends \ArrayObject
 			$this[] = $record;
 		}
 
+		$this->writeRecords();
+
 		return $this;
 	}
 
-	public function loadRecords(): CSV
+	public function readRecords(): CSV
 	{
 		$this->setRecords(iterator_to_array($this->getReader()->getRecords()));
+
+		return $this;
+	}
+
+	public function writeRecords(): CSV
+	{
+		$this->getWriter()->insertOne(array_keys($this->getRecords()[0] ?? []));
+		$this->getWriter()->insertAll($this->getRecords());
 
 		return $this;
 	}
