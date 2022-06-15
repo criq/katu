@@ -117,9 +117,14 @@ class CSV extends \ArrayObject
 
 		$agent = new \Jenssegers\Agent\Agent;
 		if ($agent->platform() == "Windows") {
-			$this->writer->setOutputBOM(\League\Csv\Writer::BOM_UTF8);
+			$this->writer
+				->setDelimiter(";")
+				->setOutputBOM(\League\Csv\Writer::BOM_UTF8)
+				;
 		} elseif ($agent->platform() == "OS X") {
-			$this->writer->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE);
+			$this->writer
+				->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE)
+				;
 		}
 
 		return $this->writer;
