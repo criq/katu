@@ -116,13 +116,12 @@ class CSV extends \ArrayObject
 		}
 
 		$agent = new \Jenssegers\Agent\Agent;
-		var_dump($agent->platform());die;
-		if (in_array($agent->platform(), ["Windows", "Win"])) {
+		if (in_array($agent->platform(), ["Windows"])) {
 			$this->writer
 				->setDelimiter(",")
 				->setOutputBOM(\League\Csv\Writer::BOM_UTF8)
 				;
-		} elseif ($agent->platform() == "OS X") {
+		} elseif (in_array($agent->platform(), ["OS X"])) {
 			$this->writer
 				->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE)
 				;
@@ -153,6 +152,11 @@ class CSV extends \ArrayObject
 	{
 		$this->getWriter()->insertOne(array_keys($this->getRecords()[0] ?? []));
 		$this->getWriter()->insertAll($this->getRecords());
+
+		$agent = new \Jenssegers\Agent\Agent;
+		if (in_array($agent->platform(), ["Windows"])) {
+			$this->getFile()->set("\xEF\xBB\xBF{$this->getFile()->get()}");
+		}
 
 		return $this;
 	}
