@@ -125,7 +125,7 @@ class CSV extends \ArrayObject
 			$this->writer
 			->setDelimiter(";")
 			->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE)
-			// ->addStreamFilter("convert.iconv.ISO-8859-8/UTF-16")
+			->addStreamFilter("convert.iconv.UTF-8/UTF-16")
 			;
 		}
 
