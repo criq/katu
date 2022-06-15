@@ -117,16 +117,10 @@ class CSV extends \ArrayObject
 
 		$agent = new \Jenssegers\Agent\Agent;
 		if (in_array($agent->platform(), ["Windows"])) {
-			$this->writer
-				->setDelimiter(";")
-				->setOutputBOM(\League\Csv\Writer::BOM_UTF8)
-				;
-		} elseif (in_array($agent->platform(), ["OS X"])) {
-			$this->writer
-			->setDelimiter(";")
-			->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE)
-			->addStreamFilter("convert.iconv.UTF-8/UTF-16")
-			;
+			$this->writer->setOutputBOM(\League\Csv\Writer::BOM_UTF8);
+		}
+		if (count(array_intersect(["cs", "cs-cz", "sk", "sk-sk"], $agent->languages()))) {
+			$this->writer->setDelimiter(";");
 		}
 
 		return $this->writer;
