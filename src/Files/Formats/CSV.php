@@ -119,8 +119,8 @@ class CSV extends \ArrayObject
 		if (in_array($agent->platform(), ["Windows", "Win"])) {
 			$this->writer
 				->setDelimiter(";")
+				->addStreamFilter("convert.iconv.ISO-8859-15/UTF-8")
 				->setOutputBOM(\League\Csv\Writer::BOM_UTF8)
-				// ->addStreamFilter("convert.iconv.ISO-8859-2/UTF-8")
 				;
 		} elseif ($agent->platform() == "OS X") {
 			$this->writer
