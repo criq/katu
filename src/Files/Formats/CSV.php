@@ -123,8 +123,10 @@ class CSV extends \ArrayObject
 				;
 		} elseif (in_array($agent->platform(), ["OS X"])) {
 			$this->writer
-				->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE)
-				;
+			->setDelimiter("\t")
+			->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE)
+			->addStreamFilter("convert.iconv.ISO-8859-8/UTF-16")
+			;
 		}
 
 		return $this->writer;
