@@ -28,6 +28,9 @@ class RestResponse
 		$array = $this->getPayload();
 
 		array_walk_recursive($array, function (&$value, $key) {
+			if ($value instanceof static) {
+				$value = $value->getResponse();
+			}
 			if ($value instanceof \DateTime) {
 				$value = $value->format("r");
 			}
