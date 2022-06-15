@@ -4,7 +4,7 @@ namespace Katu\Tools\Forms;
 
 class TokenCollection extends \ArrayObject
 {
-	const SESSION_KEY = 'csrfTokenCollection';
+	const SESSION_KEY = "csrfTokenCollection";
 
 	public static function getSessionTokenCollection(): TokenCollection
 	{
