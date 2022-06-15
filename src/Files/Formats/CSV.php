@@ -118,12 +118,12 @@ class CSV extends \ArrayObject
 		$agent = new \Jenssegers\Agent\Agent;
 		if (in_array($agent->platform(), ["Windows"])) {
 			$this->writer
-				->setDelimiter(",")
+				->setDelimiter(";")
 				->setOutputBOM(\League\Csv\Writer::BOM_UTF8)
 				;
 		} elseif (in_array($agent->platform(), ["OS X"])) {
 			$this->writer
-			->setDelimiter("\t")
+			->setDelimiter(",")
 			->setOutputBOM(\League\Csv\Writer::BOM_UTF16_LE)
 			// ->addStreamFilter("convert.iconv.ISO-8859-8/UTF-16")
 			;
