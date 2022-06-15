@@ -120,7 +120,7 @@ class CSV extends \ArrayObject
 			$this->writer
 				->setDelimiter(";")
 				->setOutputBOM(\League\Csv\Writer::BOM_UTF8)
-				->addStreamFilter("convert.iconv.UTF-8/ISO-8859-2")
+				// ->addStreamFilter("convert.iconv.ISO-8859-2/UTF-8")
 				;
 		} elseif ($agent->platform() == "OS X") {
 			$this->writer
