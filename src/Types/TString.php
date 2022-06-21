@@ -88,4 +88,9 @@ class TString
 	{
 		return new static(trim($this));
 	}
+
+	public function ucfirst(): TString
+	{
+		return new static(ucfirst($this));
+	}
 }
