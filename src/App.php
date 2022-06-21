@@ -183,12 +183,12 @@ class App
 				foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
 					$pattern  = $route->getPattern();
 					if (!$pattern) {
-						throw new \Katu\Exceptions\RouteException("Invalid pattern for route '{$name}'.");
+						throw new \Katu\Exceptions\RouteException("Invalid pattern for route \"{$name}\".");
 					}
 
 					$callable = $route->getCallable();
 					if (!$callable) {
-						throw new \Katu\Exceptions\RouteException("Invalid callable for route '{$name}'.");
+						throw new \Katu\Exceptions\RouteException("Invalid callable for route \"{$name}\".");
 					}
 
 					$slimRoute = $app->map($route->getMethods(), $pattern, $callable);
@@ -200,8 +200,6 @@ class App
 				}
 			} catch (\Katu\Exceptions\RouteException $e) {
 				throw $e;
-			} catch (\Throwable $e) {
-				// Nothing to do, no custom routes defined.
 			}
 
 			// Run the app.
