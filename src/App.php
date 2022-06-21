@@ -195,7 +195,7 @@ class App
 					if (is_string($name) && trim($name)) {
 						$slimRoute->setName($name);
 					} elseif ($route->name) {
-						$slimRoute->setName($route->name);
+						$slimRoute->setName($route->getName());
 					}
 				}
 			} catch (\Katu\Exceptions\RouteException $e) {

@@ -3,6 +3,7 @@
 namespace Katu\Tools\Routing;
 
 use Katu\Types\TClass;
+use Katu\Types\TIdentifier;
 
 class Route
 {
@@ -30,8 +31,10 @@ class Route
 	public static function getName(\Slim\Http\Request $request): ?string
 	{
 		try {
-			return $request->getAttributes("route")["route"]->getName();
+			return $request->getAttribute("route")->getName();
 		} catch (\Throwable $e) {
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+
 			return null;
 		}
 	}
@@ -84,18 +87,16 @@ class Route
 		return $this->methods;
 	}
 
-	public function getCallable(): callable
+	public function getCallable(): string
 	{
-		$callable = [
+		return implode(":", [
 			TClass::createFromArray([
 				"App",
 				"Controllers",
 				strtr($this->getController(), "/", "\\"),
 			])->getName(),
 			$this->getFunction(),
-		];
-
-		return $callable;
+		]);
 	}
 
 	public function getArgs(): array
