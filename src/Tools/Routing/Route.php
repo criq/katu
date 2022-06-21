@@ -21,14 +21,7 @@ class Route
 		$this->setMethods($methods ?: $this->getMethods());
 	}
 
-	public function setName(string $name): Route
-	{
-		$this->name = $name;
-
-		return $this;
-	}
-
-	public static function getName(\Slim\Http\Request $request): ?string
+	public static function getNameFromRequest(\Slim\Http\Request $request): ?string
 	{
 		try {
 			return $request->getAttribute("route")->getName();
@@ -37,6 +30,18 @@ class Route
 
 			return null;
 		}
+	}
+
+	public function setName(string $name): Route
+	{
+		$this->name = $name;
+
+		return $this;
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	public function setPattern(string $pattern): Route
