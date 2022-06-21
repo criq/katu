@@ -6,10 +6,7 @@ class Formatter
 {
 	public static function getPreferredLocales()
 	{
-		$app = \App\App::get();
-		$headers = $app->getContainer()->get("request")->getHeader("Accept-Language");
-
-		return ($headers[0] ?? null) ? \Katu\Types\TLocale::getPreferredFromRequest($headers[0]) : [];
+		return \Katu\Types\TLocale::getPreferredFromRequest(\App\App::get()->getContainer()->get("request"));
 	}
 
 	public static function getPreferredLocale($locale = null)
