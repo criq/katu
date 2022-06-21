@@ -22,9 +22,9 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 		return $this;
 	}
 
-	public function getRequest(): ?\Slim\Http\Request
+	public function getRequest(): \Slim\Http\Request
 	{
-		return $this->request;
+		return $this->request ?: \App\App::get()->getContainer()->get("request");
 	}
 
 	protected static function createTwig(): \Twig\Environment
@@ -277,7 +277,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 				];
 			}
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+
 		}
 
 		$data["_agent"] = new \Jenssegers\Agent\Agent();
