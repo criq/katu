@@ -25,57 +25,6 @@ class Controller
 	}
 
 	/****************************************************************************
-	 * Render.
-	 */
-	public function getViewEngine(): \Katu\Interfaces\ViewEngine
-	{
-		return new \Katu\Tools\Views\FilesystemLoaderTwigEngine($this->getContainer()->get("request"));
-	}
-
-	public function render(string $template)
-	{
-		try {
-			$request = $this->getContainer() ? $this->getContainer()->get("request") : null;
-			$response = $this->getContainer() ? $this->getContainer()->get("response") : null;
-
-			$engine = $this->getViewEngine($request);
-			$template = $engine->render($template, $this->data);
-
-			$headers = $request->getHeader("Accept-Encoding");
-			if (($headers[0] ?? null) && in_array("gzip", array_map("trim", (array)explode(",", $headers[0])))) {
-				$template = gzencode($template);
-				$response = $response->withHeader("Content-Encoding", "gzip");
-			}
-
-			$response->write($template);
-
-			// Reset flash memory.
-			\Katu\Tools\Session\Flash::reset();
-
-			return $response;
-		} catch (\Throwable $e) {
-			throw new \Katu\Exceptions\TemplateException($e);
-		}
-	}
-
-	public function renderError(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 500)
-	{
-		return $this->render("Errors/{$status}.twig", $request, $response, $args)
-			->withStatus($status)
-			;
-	}
-
-	public function renderNotFound(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 404)
-	{
-		return $this->renderError($request, $response, $args, $status);
-	}
-
-	public function renderUnauthorized(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args = [], $status = 401)
-	{
-		return $this->renderError($request, $response, $args, $status);
-	}
-
-	/****************************************************************************
 	 * Redirect.
 	 */
 	public function redirect($urls, $status = 302)

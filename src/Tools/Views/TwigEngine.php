@@ -310,7 +310,7 @@ abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
 	public function render(string $template, array $data = []): string
 	{
 		$twig = $this->getTwig();
-		$data = array_merge_recursive($this->getCommonData($this->getRequest()), $data);
+		$data = array_merge_recursive($this->getCommonData(), $data);
 
 		return trim($twig->render($template, $data));
 	}
