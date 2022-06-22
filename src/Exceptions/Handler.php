@@ -3,21 +3,14 @@
 namespace Katu\Exceptions;
 
 use Katu\Types\TIdentifier;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class Handler
 {
 	const ERROR_LOG = "error.log";
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Throwable $exception)
+	public function __invoke(\Slim\Http\Request $request, \Slim\Http\Response $response, \Throwable $exception)
 	{
 		return static::resolveException($exception, $request, $response);
-	}
-
-	public static function getLogger(): \Katu\Tools\Logs\Logger
-	{
-		return \App\App::getLogger(new TIdentifier("error"));
 	}
 
 	public static function init(): void
@@ -50,6 +43,11 @@ class Handler
 		});
 	}
 
+	public static function getLogger(): \Katu\Tools\Logs\Logger
+	{
+		return \App\App::getLogger(new TIdentifier("error"));
+	}
+
 	public static function log($error, $code = 0, $file = null, $line = null)
 	{
 		$data = [
@@ -75,11 +73,11 @@ class Handler
 		try {
 			throw $exception;
 		} catch (\Katu\Exceptions\NotFoundException $exception) {
-			return $controller->renderNotFound($request, $response);
+			return $response->withStatus(404);
 		} catch (\Katu\Exceptions\UnauthorizedException $exception) {
-			return $controller->renderUnauthorized($request, $response);
+			return $response->withStatus(401);
 		} catch (\Katu\Exceptions\UserErrorException $exception) {
-			return $controller->renderError($request, $response);
+			return $response->withStatus(500);
 		}
 	}
 }
