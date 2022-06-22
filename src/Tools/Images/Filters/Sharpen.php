@@ -6,7 +6,7 @@ class Sharpen extends \Katu\Tools\Images\Filter
 {
 	public function apply($image)
 	{
-		$image->sharpen($this->params['level']);
+		$image->sharpen($this->params["level"]);
 
 		return true;
 	}

@@ -6,7 +6,7 @@ class Contrast extends \Katu\Tools\Images\Filter
 {
 	public function apply($image)
 	{
-		$image->contrast($this->params['level']);
+		$image->contrast($this->params["level"]);
 
 		return true;
 	}

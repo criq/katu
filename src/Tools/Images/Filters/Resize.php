@@ -6,9 +6,9 @@ class Resize extends \Katu\Tools\Images\Filter
 {
 	public function apply($image)
 	{
-		$image->resize($this->params['width'], $this->params['height'], function ($constraint) {
+		$image->resize($this->params["width"], $this->params["height"], function ($constraint) {
 			$constraint->aspectRatio();
-			if ($this->params['dontUpsize'] ?? null) {
+			if ($this->params["dontUpsize"] ?? null) {
 				$constraint->upsize();
 			}
 		});
