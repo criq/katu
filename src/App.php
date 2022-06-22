@@ -177,35 +177,27 @@ class App
 	{
 		$app = static::get();
 
-		try {
-			try {
-				// Set up routes.
-				foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
-					$pattern  = $route->getPattern();
-					if (!$pattern) {
-						throw new \Katu\Exceptions\RouteException("Invalid pattern for route \"{$name}\".");
-					}
-
-					$callable = $route->getCallable();
-					if (!$callable) {
-						throw new \Katu\Exceptions\RouteException("Invalid callable for route \"{$name}\".");
-					}
-
-					$slimRoute = $app->map($route->getMethods(), $pattern, $callable);
-					if (is_string($name) && trim($name)) {
-						$slimRoute->setName($name);
-					} elseif ($route->name) {
-						$slimRoute->setName($route->getName());
-					}
-				}
-			} catch (\Katu\Exceptions\RouteException $e) {
-				throw $e;
+		// Set up routes.
+		foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
+			$pattern  = $route->getPattern();
+			if (!$pattern) {
+				throw new \Katu\Exceptions\RouteException("Invalid pattern for route \"{$name}\".");
 			}
 
-			// Run the app.
-			$app->run();
-		} catch (\Throwable $e) {
-			throw $e;
+			$callable = $route->getCallable();
+			if (!$callable) {
+				throw new \Katu\Exceptions\RouteException("Invalid callable for route \"{$name}\".");
+			}
+
+			$slimRoute = $app->map($route->getMethods(), $pattern, $callable);
+			if (is_string($name) && trim($name)) {
+				$slimRoute->setName($name);
+			} elseif ($route->name) {
+				$slimRoute->setName($route->getName());
+			}
 		}
+
+		// Run the app.
+		$app->run();
 	}
 }
