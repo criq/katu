@@ -4,8 +4,9 @@ namespace Katu\Controllers;
 
 class Controller
 {
-	protected $data = [];
 	protected $container;
+	protected $data = [];
+	protected $errors;
 
 	public function __construct(\Psr\Container\ContainerInterface $container)
 	{
@@ -62,11 +63,6 @@ class Controller
 			return false;
 		}
 
-		// // Check captcha. Should be empty.
-		// if ($request->getParam("yourName_" . $request->getParam("")->secret) !== "") {
-		// 	return false;
-		// }
-
 		return true;
 	}
 
@@ -75,11 +71,11 @@ class Controller
 	 */
 	public function getErrors(): \Katu\Errors\ErrorCollection
 	{
-		if (!($this->data["_errors"] ?? null)) {
-			$this->data["_errors"] = new \Katu\Errors\ErrorCollection;
+		if (!($this->errors ?? null)) {
+			$this->errors = new \Katu\Errors\ErrorCollection;
 		}
 
-		return $this->data["_errors"];
+		return $this->errors;
 	}
 
 	public function addError(\Katu\Errors\Error $error): Controller
