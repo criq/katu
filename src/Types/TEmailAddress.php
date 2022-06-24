@@ -18,6 +18,23 @@ class TEmailAddress
 		return (string)$this->emailAddress;
 	}
 
+	public static function createFromEnvelope(?string $encoded = null)
+	{
+		if (preg_match("/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U", $encoded, $match)) {
+			return new static($match["emailAddress"], $match["name"]);
+		} else {
+			return new static($encoded);
+		}
+	}
+
+	public function getEnvelope(): string
+	{
+		return implode(" ", array_filter([
+			$this->getName(),
+			"<" . $this->getEmailAddress() . ">",
+		]));
+	}
+
 	public static function validateEmailAddress(string $emailAddress): bool
 	{
 		return (bool)filter_var($emailAddress, \FILTER_VALIDATE_EMAIL);
@@ -59,28 +76,5 @@ class TEmailAddress
 	public function getDomain(): string
 	{
 		return explode("@", $this->getEmailAddress())[1];
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public static function createFromEnvelope(?string $encoded = null)
-	{
-		if (preg_match("/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U", $encoded, $match)) {
-			return new static($match["emailAddress"], $match["name"]);
-		} else {
-			return new static($encoded);
-		}
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function getEnvelope()
-	{
-		return implode(" ", array_filter([
-			$this->getName(),
-			"<" . $this->getEmailAddress() . ">",
-		]));
 	}
 }
