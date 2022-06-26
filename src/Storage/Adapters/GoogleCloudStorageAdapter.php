@@ -4,7 +4,6 @@ namespace Katu\Storage\Adapters;
 
 use Katu\Storage\AdapterInterface;
 use Katu\Storage\Item;
-use Katu\Storage\Resource;
 
 class GoogleCloudStorageAdapter implements AdapterInterface
 {
@@ -43,6 +42,7 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 
 	public function read(Item $item)
 	{
+		return $this->getBucket()->object($item->getName())->downloadAsString();
 	}
 
 	public function getURI(Item $item): string

@@ -46,6 +46,7 @@ class Item
 
 	public function read()
 	{
+		return $this->getStorage()->getAdapter()->read($this);
 	}
 
 	public function getURI(): string
