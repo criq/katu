@@ -24,15 +24,13 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $this->bucket;
 	}
 
-	public function write(string $name, $content)
+	public function write(string $name, $content): Resource
 	{
 		$res = $this->getBucket()->upload($content, [
 			"name" => $name,
 		]);
 
-		return (new Resource($res->info()["selfLink"]))
-			->setAdapter($this)
-			;
+		return new Resource($res->info()["selfLink"]);
 	}
 
 	public function read(string $name)

@@ -25,7 +25,7 @@ class Storage
 
 	public function write(string $name, $content)
 	{
-		return $this->getAdapter()->write(...func_get_args());
+		return $this->getAdapter()->write(...func_get_args())->setStorage($this);
 	}
 
 	public function read(string $name)

@@ -4,8 +4,8 @@ namespace Katu\Storage;
 
 class Resource
 {
+	protected $storage;
 	protected $uri;
-	protected $adapter;
 
 	public function __construct(string $uri)
 	{
@@ -24,15 +24,15 @@ class Resource
 		return $this->uri;
 	}
 
-	public function setAdapter(AdapterInterface $adapter): Resource
+	public function setStorage(Storage $storage): Resource
 	{
-		$this->adapter = $adapter;
+		$this->storage = $storage;
 
 		return $this;
 	}
 
-	public function getAdapter(): ?AdapterInterface
+	public function getStorage(): ?Storage
 	{
-		return $this->adapter;
+		return $this->storage;
 	}
 }
