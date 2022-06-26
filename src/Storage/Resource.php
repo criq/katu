@@ -35,4 +35,13 @@ class Resource
 	{
 		return $this->storage;
 	}
+
+	public function getSize()
+	{
+		return $this->getStorage()->getAdapter()->getSize($this->getURI());
+	}
+
+	public function getMime()
+	{
+	}
 }
