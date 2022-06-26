@@ -31,7 +31,7 @@ class Generator
 	{
 		$characters = [];
 		foreach (range(1, $length) as $i) {
-			$characters[] = $chars[rand(0, mb_strlen($chars) - 1)];
+			$characters[] = $chars[random_int(0, mb_strlen($chars) - 1)];
 		}
 
 		return implode($characters);
@@ -59,7 +59,7 @@ class Generator
 
 	public static function getWord(int $length = 8, ?int $seed = null): string
 	{
-		$seed = is_null($seed) ? rand(0, 1) : $seed;
+		$seed = is_null($seed) ? random_int(0, 1) : $seed;
 		$word = "";
 
 		for ($i = $seed; $i < $length + $seed; $i++) {
