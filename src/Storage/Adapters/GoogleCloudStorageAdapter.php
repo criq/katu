@@ -3,6 +3,7 @@
 namespace Katu\Storage\Adapters;
 
 use Katu\Storage\AdapterInterface;
+use Katu\Storage\Item;
 use Katu\Storage\Resource;
 
 class GoogleCloudStorageAdapter implements AdapterInterface
@@ -24,20 +25,27 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $this->bucket;
 	}
 
-	public function write(string $name, $content): Resource
+	public static function getNameFromURI(string $uri): string
 	{
-		$res = $this->getBucket()->upload($content, [
-			"name" => $name,
+		preg_match("/https:\/\/www.googleapis.com\/storage\/v1\/b\/(?<bucketName>.+)\/o\/(?<objectName>.+)/", $uri, $match);
+
+		return urldecode($match["objectName"]);
+	}
+
+	public function write(Item $item, $content): Item
+	{
+		$this->getBucket()->upload($content, [
+			"name" => $item->getName(),
 		]);
 
-		return new Resource($res->info()["selfLink"]);
+		return $item;
 	}
 
-	public function read(string $name)
+	public function read(Item $item)
 	{
 	}
 
-	public function getSize(string $uri): int
+	public function getSize(Item $item): int
 	{
 		preg_match("/https:\/\/www.googleapis.com\/storage\/v1\/b\/(?<bucketName>.+)\/o\/(?<objectName>.+)/", func_get_arg(0), $match);
 

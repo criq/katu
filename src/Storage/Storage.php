@@ -23,12 +23,8 @@ class Storage
 		return $this->adapter;
 	}
 
-	public function write(string $name, $content)
+	public function getItem(string $name): Item
 	{
-		return $this->getAdapter()->write(...func_get_args())->setStorage($this);
-	}
-
-	public function read(string $name)
-	{
+		return new Item($this, $name);
 	}
 }
