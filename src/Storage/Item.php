@@ -48,12 +48,18 @@ class Item
 	{
 	}
 
+	public function getURI(): string
+	{
+		return $this->getStorage()->getAdapter()->getURI($this);
+	}
+
 	public function getSize(): int
 	{
 		return $this->getStorage()->getAdapter()->getSize($this);
 	}
 
-	public function getMime()
+	public function getContentType()
 	{
+		return $this->getStorage()->getAdapter()->getContentType($this);
 	}
 }

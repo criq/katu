@@ -45,12 +45,18 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 	{
 	}
 
+	public function getURI(Item $item): string
+	{
+		return $this->getBucket()->object($item->getName())->info()["selfLink"];
+	}
+
 	public function getSize(Item $item): int
 	{
-		preg_match("/https:\/\/www.googleapis.com\/storage\/v1\/b\/(?<bucketName>.+)\/o\/(?<objectName>.+)/", func_get_arg(0), $match);
+		return $this->getBucket()->object($item->getName())->info()["size"];
+	}
 
-		$info = $this->getBucket()->object(urldecode($match["objectName"]))->info();
-
-		return $info["size"];
+	public function getContentType(Item $item): string
+	{
+		return $this->getBucket()->object($item->getName())->info()["contentType"];
 	}
 }
