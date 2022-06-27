@@ -7,6 +7,8 @@ use Katu\Storage\StorageItem;
 
 class GoogleCloudStorageAdapter implements AdapterInterface
 {
+	protected $bucket;
+
 	public function __construct(\Google\Cloud\Storage\Bucket $bucket)
 	{
 		$this->setBucket($bucket);
