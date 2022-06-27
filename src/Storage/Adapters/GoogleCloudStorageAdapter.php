@@ -4,6 +4,7 @@ namespace Katu\Storage\Adapters;
 
 use Katu\Storage\AdapterInterface;
 use Katu\Storage\StorageItem;
+use Katu\Types\TFileSize;
 
 class GoogleCloudStorageAdapter implements AdapterInterface
 {
@@ -52,9 +53,9 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $this->getBucket()->object($item->getName())->info()["selfLink"];
 	}
 
-	public function getSize(StorageItem $item): int
+	public function getFileSize(StorageItem $item): TFileSize
 	{
-		return $this->getBucket()->object($item->getName())->info()["size"];
+		return new TFileSize($this->getBucket()->object($item->getName())->info()["size"]);
 	}
 
 	public function getContentType(StorageItem $item): string

@@ -2,6 +2,8 @@
 
 namespace Katu\Storage;
 
+use Katu\Types\TFileSize;
+
 class StorageItem
 {
 	protected $name;
@@ -54,9 +56,9 @@ class StorageItem
 		return $this->getStorage()->getAdapter()->getURI($this);
 	}
 
-	public function getSize(): int
+	public function getFileSize(): TFileSize
 	{
-		return $this->getStorage()->getAdapter()->getSize($this);
+		return $this->getStorage()->getAdapter()->getFileSize($this);
 	}
 
 	public function getContentType(): string
