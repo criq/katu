@@ -23,8 +23,8 @@ class Storage
 		return $this->adapter;
 	}
 
-	public function getItem(string $name): Item
+	public function getItem(string $name): StorageItem
 	{
-		return new Item($this, $name);
+		return new StorageItem($this, $name);
 	}
 }

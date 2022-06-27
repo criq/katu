@@ -3,7 +3,7 @@
 namespace Katu\Storage\Adapters;
 
 use Katu\Storage\AdapterInterface;
-use Katu\Storage\Item;
+use Katu\Storage\StorageItem;
 
 class GoogleCloudStorageAdapter implements AdapterInterface
 {
@@ -31,7 +31,7 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return urldecode($match["objectName"]);
 	}
 
-	public function write(Item $item, $content): Item
+	public function write(StorageItem $item, $content): StorageItem
 	{
 		$this->getBucket()->upload($content, [
 			"name" => $item->getName(),
@@ -40,22 +40,22 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $item;
 	}
 
-	public function read(Item $item)
+	public function read(StorageItem $item)
 	{
 		return $this->getBucket()->object($item->getName())->downloadAsString();
 	}
 
-	public function getURI(Item $item): string
+	public function getURI(StorageItem $item): string
 	{
 		return $this->getBucket()->object($item->getName())->info()["selfLink"];
 	}
 
-	public function getSize(Item $item): int
+	public function getSize(StorageItem $item): int
 	{
 		return $this->getBucket()->object($item->getName())->info()["size"];
 	}
 
-	public function getContentType(Item $item): string
+	public function getContentType(StorageItem $item): string
 	{
 		return $this->getBucket()->object($item->getName())->info()["contentType"];
 	}

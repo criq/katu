@@ -2,7 +2,7 @@
 
 namespace Katu\Storage;
 
-class Item
+class StorageItem
 {
 	protected $name;
 	protected $storage;
@@ -13,7 +13,7 @@ class Item
 		$this->setName($name);
 	}
 
-	public function setName(string $name): Item
+	public function setName(string $name): StorageItem
 	{
 		$this->name = $name;
 
@@ -25,7 +25,7 @@ class Item
 		return $this->name;
 	}
 
-	public function setStorage(Storage $storage): Item
+	public function setStorage(Storage $storage): StorageItem
 	{
 		$this->storage = $storage;
 
@@ -37,7 +37,7 @@ class Item
 		return $this->storage;
 	}
 
-	public function write($content): Item
+	public function write($content): StorageItem
 	{
 		$this->getStorage()->getAdapter()->write($this, $content);
 
@@ -59,7 +59,7 @@ class Item
 		return $this->getStorage()->getAdapter()->getSize($this);
 	}
 
-	public function getContentType()
+	public function getContentType(): string
 	{
 		return $this->getStorage()->getAdapter()->getContentType($this);
 	}
