@@ -3,6 +3,7 @@
 namespace Katu\Storage;
 
 use Katu\Types\TFileSize;
+use Phan\Language\Element\Func;
 
 class StorageItem
 {
@@ -49,6 +50,11 @@ class StorageItem
 	public function read()
 	{
 		return $this->getStorage()->getAdapter()->read($this);
+	}
+
+	public function delete(): bool
+	{
+		return $this->getStorage()->getAdapter()->delete($this);
 	}
 
 	public function getURI(): string

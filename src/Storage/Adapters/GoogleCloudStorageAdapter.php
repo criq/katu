@@ -48,6 +48,17 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $this->getBucket()->object($item->getName())->downloadAsString();
 	}
 
+	public function delete(StorageItem $item): bool
+	{
+		try {
+			$this->getBucket()->object($item->getName())->delete();
+
+			return true;
+		} catch (\Throwable $e) {
+			return false;
+		}
+	}
+
 	public function getURI(StorageItem $item): string
 	{
 		return $this->getBucket()->object($item->getName())->info()["selfLink"];
