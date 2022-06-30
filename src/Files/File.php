@@ -134,7 +134,7 @@ class File
 	public function get()
 	{
 		try {
-			return file_get_contents($this);
+			return @file_get_contents($this);
 		} catch (\Throwable $e) {
 			return false;
 		}
