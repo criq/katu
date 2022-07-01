@@ -64,7 +64,7 @@ class File
 		return new static(\App\App::getTemporaryDir(), "files", [\Katu\Tools\Random\Generator::getFileName(), $extension]);
 	}
 
-	public static function createTemporaryFromSrc($src, string $extension): File
+	public static function createTemporaryFromSrc(string $src, string $extension): File
 	{
 		if ($extension) {
 			$file = static::createTemporaryWithExtension($extension);
@@ -77,23 +77,23 @@ class File
 		return $file;
 	}
 
-	public static function createTemporaryFromURL($url, string $extension = null): File
+	public static function createTemporaryFromURL($url, string $extension = null): ?File
 	{
 		$url = new \Katu\Types\TURL($url);
 
 		$curl = new \Curl\Curl;
 		$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+		$curl->setOpt(CURLOPT_RETURNTRANSFER, true);
 
 		$src = $curl->get($url);
 
 		$info = $curl->getInfo();
-
 		if ($info["http_code"] != 200) {
-			return false;
+			return null;
 		}
 
-		if (!$extension && isset($url->getParts()["path"]["extension"])) {
-			$extension = pathinfo($url->getParts()["path"]["extension"]);
+		if (!$extension && ($url->getParts()["path"] ?? null)) {
+			$extension = pathinfo($url->getParts()["path"])["extension"];
 		}
 
 		return static::createTemporaryFromSrc($src, $extension);
