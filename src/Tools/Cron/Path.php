@@ -26,6 +26,7 @@ class Path
 	public function run()
 	{
 		$url = (new \Katu\Types\TURL(\Katu\Tools\Routing\URL::joinPaths(\Katu\Tools\Routing\URL::getBase(), $this->getPath())));
+		echo $url;die;
 
 		return $url->ping();
 	}
