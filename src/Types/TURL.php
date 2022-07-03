@@ -2,6 +2,8 @@
 
 namespace Katu\Types;
 
+use Katu\Models\Presets\User;
+
 class TURL
 {
 	const DEFAULT_SCHEME = "http";
@@ -250,7 +252,7 @@ class TURL
 		return $tmpFile;
 	}
 
-	public function getPingExec(string $method = "GET", \Katu\Models\Presets\User $user = null)
+	public function getPingExec(string $method = "GET", ?User $user = null)
 	{
 		return (new \Katu\Tools\Curl\Exec($this))
 			->setMethod($method)
@@ -258,7 +260,7 @@ class TURL
 			;
 	}
 
-	public function ping(string $method = "GET", \Katu\Models\Presets\User $user = null)
+	public function ping(string $method = "GET", ?User $user = null)
 	{
 		return $this->getPingExec($method, $user)->exec();
 	}
