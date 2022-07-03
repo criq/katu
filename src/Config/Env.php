@@ -46,13 +46,20 @@ class Env
 	public static function getCommit(): ?string
 	{
 		try {
-			$file = new \Katu\Files\File(\App\App::getBaseDir(), ".git", "HEAD");
-			preg_match("/ref: (.+)/", $file->get(), $match);
-			$file = new \Katu\Files\File(".git", $match[1]);
-			return trim($file->get());
+			exec("git log --pretty=\"%H\" -n1 HEAD", $output);
+			return $output[0];
 		} catch (\Throwable $e) {
-			return null;
+			try {
+				$file = new \Katu\Files\File(\App\App::getBaseDir(), ".git", "logs", "HEAD");
+				$lines = $file->getLines();
+				$line = trim($lines[count($lines)-1]);
+				preg_match("/^(?<commit>[0-9a-f]{40})/", $line, $match);
+				return $match["commit"];
+			} catch (\Throwable $e) {
+			}
 		}
+
+		return null;
 	}
 
 	public static function getVersion(): string
