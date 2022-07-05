@@ -11,7 +11,7 @@
 	"require" : {
 		"criq/amiko": "@stable",
 		"criq/sexy": "@stable",
-		"criq/slim": "2.x-dev",
+		"criq/slim": "v2.x-dev",
 		"egulias/email-validator": "@stable",
 		"facebook/graph-sdk" : "@stable",
 		"flynsarmy/slim-monolog": "@stable",
