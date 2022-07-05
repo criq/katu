@@ -54,6 +54,10 @@ class Controller
 			$viewClass = App::getViewClass();
 			$body = $viewClass::render($template, static::$data);
 
+			if (file_exists("../.maintenance")) {
+				echo $body;die;
+			}
+
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 			$app->response->setBody(static::prepareBody($body));
