@@ -6,7 +6,11 @@ class Tmp extends FileStorage {
 
 	static function getPath($name) {
 		$path = FileSystem::joinPaths(TMP_PATH, FileSystem::getPathForName($name));
-		@mkdir(dirname($path), 0777, true);
+		try {
+			@mkdir(dirname($path), 0777, true);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
 
 		return $path;
 	}
@@ -21,7 +25,11 @@ class Tmp extends FileStorage {
 		}
 
 		$path = FileSystem::joinPaths(TMP_PATH, 'files', $fileName);
-		@mkdir(dirname($path), 0777, true);
+		try {
+			@mkdir(dirname($path), 0777, true);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
 
 		file_put_contents($path, $data);
 

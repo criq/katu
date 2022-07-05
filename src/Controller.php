@@ -52,10 +52,11 @@ class Controller
 
 		try {
 			$viewClass = App::getViewClass();
+			$body = $viewClass::render($template, static::$data);
 
 			$app->response->setStatus($code);
 			$app->response->headers->set('Content-Type', 'text/html; charset=UTF-8');
-			$app->response->setBody(static::prepareBody($viewClass::render($template, static::$data)));
+			$app->response->setBody(static::prepareBody($body));
 
 			// Remove flash memory.
 			Flash::reset();

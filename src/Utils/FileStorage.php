@@ -14,7 +14,11 @@ class FileStorage {
 
 	static function setValue($name, $value) {
 		$path = static::getPath($name);
-		@mkdir(dirname($path), 0777, true);
+		try {
+			@mkdir(dirname($path), 0777, true);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
 		file_put_contents($path, $value);
 
 		return $path;

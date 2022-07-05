@@ -237,11 +237,16 @@ class View
 		$data['_request']['uri']    = (string) ($app->request->getResourceUri());
 		$data['_request']['url']    = (string) (Utils\Url::getCurrent());
 		$data['_request']['params'] = (array)  ($app->request->params());
-		$data['_request']['route']  = (array)  ([
-			'pattern' => $app->router()->getCurrentRoute()->getPattern(),
-			'name'    => $app->router()->getCurrentRoute()->getName(),
-			'params'  => $app->router()->getCurrentRoute()->getParams(),
-		]);
+
+		try {
+			$data['_request']['route']  = (array)  ([
+				'pattern' => $app->router()->getCurrentRoute()->getPattern(),
+				'name'    => $app->router()->getCurrentRoute()->getName(),
+				'params'  => $app->router()->getCurrentRoute()->getParams(),
+			]);
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
 
 		$data['_agent'] = new \Jenssegers\Agent\Agent();
 
