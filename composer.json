@@ -2,8 +2,15 @@
 	"name": "criq/katu",
 	"description": "katu framework",
 	"type": "library",
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/criq/slim"
+		}
+	],
 	"require" : {
 		"criq/amiko": "@stable",
+		"criq/slim": "2.*@stable",
 		"criq/sexy": "@stable",
 		"egulias/email-validator": "@stable",
 		"facebook/graph-sdk" : "@stable",
