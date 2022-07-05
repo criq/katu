@@ -22,8 +22,7 @@ class Handler
 			throw new \Exception(implode("; ", [
 				$message,
 				"file: {$file}",
-				"line: {$line}",
-				"context: " . print_r($context, true),
+				"line: {$line}"
 			]), $code);
 		});
 
