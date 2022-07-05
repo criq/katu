@@ -62,8 +62,6 @@ class Controller
 
 			return true;
 		} catch (\Exception $e) {
-			var_dump($e);die;
-
 			throw new Exceptions\TemplateException($e);
 		}
 	}

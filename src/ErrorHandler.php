@@ -28,8 +28,8 @@ class ErrorHandler {
 			return true;
 		});
 
-		set_error_handler(function ($message, $level = 0, $file = null, $line = null) {
-			throw new \ErrorException($message, 0, $level, $file, $line);
+		set_error_handler(function ($errno, $errstr, $errfile = null, $errline = null, $errcontext = null) {
+			throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 		});
 
 		register_shutdown_function(function() {
