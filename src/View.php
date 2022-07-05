@@ -99,23 +99,43 @@ class View
 
 		// Deprecated.
 		$twig->addFunction(new \Twig\TwigFunction('getUrlFor', function () {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+			try {
+				return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+			} catch (\Throwable $e) {
+				return null;
+			}
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('url', function () {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+			try {
+				return (string) call_user_func_array(['\Katu\Utils\Url', 'getFor'], func_get_args());
+			} catch (\Throwable $e) {
+				return null;
+			}
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('urlDecoded', function () {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getDecodedFor'], func_get_args());
+			try {
+				return (string) call_user_func_array(['\Katu\Utils\Url', 'getDecodedFor'], func_get_args());
+			} catch (\Throwable $e) {
+				return null;
+			}
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getCurrentUrl', function () {
-			return (string) call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
+			try {
+				return (string) call_user_func_array(['\Katu\Utils\Url', 'getCurrent'], func_get_args());
+			} catch (\Throwable $e) {
+				return null;
+			}
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('makeUrl', function () {
-			return (string) call_user_func_array(['\Katu\Types\TUrl', 'make'], func_get_args());
+			try {
+				return (string) call_user_func_array(['\Katu\Types\TUrl', 'make'], func_get_args());
+			} catch (\Throwable $e) {
+				return null;
+			}
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction('getConfig', function () {
