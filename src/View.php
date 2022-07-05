@@ -290,6 +290,6 @@ class View
 	{
 		$src = self::render($template, $templateData);
 
-		return preg_replace('#[\v\t]#', null, $src);
+		return preg_replace('#[\v\t]#', "", $src);
 	}
 }
