@@ -82,6 +82,11 @@ class Controller
 		return static::renderError($code);
 	}
 
+	public static function renderUnavailable($code = 503)
+	{
+		return static::renderError($code);
+	}
+
 	public static function isSubmitted($name = null)
 	{
 		$app = App::get();
