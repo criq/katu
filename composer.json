@@ -10,7 +10,7 @@
 	],
 	"require" : {
 		"criq/amiko": "@stable",
-		"criq/slim": "2.*@stable",
+		"criq/slim": "2.*",
 		"criq/sexy": "@stable",
 		"egulias/email-validator": "@stable",
 		"facebook/graph-sdk" : "@stable",
@@ -33,7 +33,6 @@
 		"ralouphie/mimey": "@stable",
 		"sendgrid/sendgrid": "^7",
 		"slim/extras": "@stable",
-		"slim/slim": "2.*@stable",
 		"swiftmailer/swiftmailer": "5.*",
 		"symfony/css-selector": "2.*",
 		"symfony/dom-crawler": "2.*",
