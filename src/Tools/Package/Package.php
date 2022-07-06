@@ -1,11 +1,12 @@
 <?php
 
-namespace Katu\Types;
+namespace Katu\Tools\Package;
 
 use Katu\Types\Encryption\TEncryptedString;
 use Katu\Types\Encryption\TEncryptedStringJSONPortableString;
+use Katu\Types\TJSON;
 
-class TPackage implements \JsonSerializable
+class Package implements \JsonSerializable
 {
 	protected $payload;
 
@@ -19,12 +20,12 @@ class TPackage implements \JsonSerializable
 		return $this->getPortableString();
 	}
 
-	public static function createFromJSON(TJSON $json): TPackage
+	public static function createFromJSON(TJSON $json): Package
 	{
 		return new static($json->getArray());
 	}
 
-	public static function createFromPortableString(string $string): TPackage
+	public static function createFromPortableString(string $string): Package
 	{
 		$original = (new TEncryptedStringJSONPortableString($string))->getJSON()->getEncryptedString()->getOriginal();
 

@@ -2,37 +2,37 @@
 
 namespace Katu\Errors;
 
-use Katu\Interfaces\Packaged;
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
 use Katu\Types\TClass;
-use Katu\Types\TPackage;
 
-class ErrorCollection extends \ArrayObject implements Packaged
+class ErrorCollection extends \ArrayObject implements PackagedInterface
 {
-	public static function createFromPackage(TPackage $package): ErrorCollection
+	public static function createFromPackage(Package $package): ErrorCollection
 	{
-		$class = TClass::createFromPortableName($package->getPayload()['class']);
+		$class = TClass::createFromPortableName($package->getPayload()["class"]);
 		$className = $class->getName();
 
 		$errors = new $className;
 
-		foreach ($package->getPayload()['errorPackagePayloads'] as $errorPackagePayload) {
-			$error = Error::createFromPackage(new TPackage($errorPackagePayload));
+		foreach ($package->getPayload()["errorPackagePayloads"] as $errorPackagePayload) {
+			$error = Error::createFromPackage(new Package($errorPackagePayload));
 			$errors->addError($error);
 		}
 
 		return $errors;
 	}
 
-	public function getPackage(): TPackage
+	public function getPackage(): Package
 	{
 		$errorPackagePayloads = [];
 		foreach ($this as $error) {
 			$errorPackagePayloads[] = $error->getPackage()->getPayload();
 		}
 
-		return new TPackage([
-			'class' => (new TClass($this))->getPortableName(),
-			'errorPackagePayloads' => $errorPackagePayloads,
+		return new Package([
+			"class" => (new TClass($this))->getPortableName(),
+			"errorPackagePayloads" => $errorPackagePayloads,
 		]);
 	}
 
@@ -79,7 +79,7 @@ class ErrorCollection extends \ArrayObject implements Packaged
 	public function getResponseArray(): array
 	{
 		return [
-			'errors' => array_map(function (Error $error) {
+			"errors" => array_map(function (Error $error) {
 				return $error->getResponseArray();
 			}, $this->getArrayCopy()),
 		];

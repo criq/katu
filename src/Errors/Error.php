@@ -2,11 +2,11 @@
 
 namespace Katu\Errors;
 
-use Katu\Interfaces\Packaged;
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
 use Katu\Types\TClass;
-use Katu\Types\TPackage;
 
-class Error implements Packaged
+class Error implements PackagedInterface
 {
 	protected $code;
 	protected $help;
@@ -27,20 +27,20 @@ class Error implements Packaged
 		return (string)$this->getMessage();
 	}
 
-	public static function createFromPackage(TPackage $package): Error
+	public static function createFromPackage(Package $package): Error
 	{
-		$class = TClass::createFromPortableName($package->getPayload()['class']);
+		$class = TClass::createFromPortableName($package->getPayload()["class"]);
 		$className = $class->getName();
 
-		return new $className($package->getPayload()['message'], $package->getPayload()['code']);
+		return new $className($package->getPayload()["message"], $package->getPayload()["code"]);
 	}
 
-	public function getPackage(): TPackage
+	public function getPackage(): Package
 	{
-		return new TPackage([
-			'class' => (new TClass($this))->getPortableName(),
-			'message' => $this->getMessage(),
-			'code' => $this->getCode(),
+		return new Package([
+			"class" => (new TClass($this))->getPortableName(),
+			"message" => $this->getMessage(),
+			"code" => $this->getCode(),
 		]);
 	}
 
@@ -58,7 +58,7 @@ class Error implements Packaged
 
 	public function getMessageWithoutPeriod(): ?string
 	{
-		return rtrim($this->getMessage(), '.');
+		return rtrim($this->getMessage(), ".");
 	}
 
 	public function setCode(?string $value): Error

@@ -2,11 +2,12 @@
 
 namespace Katu\Types;
 
-use Katu\Interfaces\Packaged;
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
 
-class TIdentifier implements Packaged
+class TIdentifier implements PackagedInterface
 {
-	const HASH_ALGO = 'crc32';
+	const HASH_ALGO = "crc32";
 
 	protected $parts;
 
@@ -20,15 +21,15 @@ class TIdentifier implements Packaged
 		return (string)$this->getPath();
 	}
 
-	public static function createFromPackage(TPackage $package): TIdentifier
+	public static function createFromPackage(Package $package): TIdentifier
 	{
-		return new static(...$package->getPayload()['parts']);
+		return new static(...$package->getPayload()["parts"]);
 	}
 
-	public function getPackage(): TPackage
+	public function getPackage(): Package
 	{
-		return new TPackage([
-			'parts' => $this->getParts(),
+		return new Package([
+			"parts" => $this->getParts(),
 		]);
 	}
 
@@ -79,7 +80,7 @@ class TIdentifier implements Packaged
 		 * Separate into directories.
 		 */
 		$parts = array_map(function ($i) {
-			return preg_split('/[\/\\\\&\?=]/', $i);
+			return preg_split("/[\/\\\\&\?=]/", $i);
 		}, $parts);
 		// var_dump($parts);die;
 
@@ -93,8 +94,8 @@ class TIdentifier implements Packaged
 		 * Underscore capital letters.
 		 */
 		$parts = array_map(function ($i) {
-			return preg_replace_callback('/\p{Lu}/u', function ($matches) {
-				return '_' . mb_strtolower($matches[0]);
+			return preg_replace_callback("/\p{Lu}/u", function ($matches) {
+				return "_" . mb_strtolower($matches[0]);
 			}, $i);
 		}, $parts);
 		// var_dump($parts);die;
@@ -103,8 +104,8 @@ class TIdentifier implements Packaged
 		 * Sanitize dashes and underscores.
 		 */
 		$parts = array_map(function ($i) {
-			$i = strtr($i, '-', '_');
-			$i = trim($i, '_');
+			$i = strtr($i, "-", "_");
+			$i = trim($i, "_");
 
 			return $i;
 		}, $parts);
@@ -114,9 +115,9 @@ class TIdentifier implements Packaged
 		 * Remove invalid characters.
 		 */
 		$parts = array_map(function ($i) {
-			$i = strtr($i, '\\', '/');
+			$i = strtr($i, "\\", "/");
 			$i = mb_strtolower($i);
-			$i = preg_replace('/[^a-z0-9_\/\.]/i', '', $i);
+			$i = preg_replace("/[^a-z0-9_\/\.]/i", "", $i);
 			return $i;
 		}, $parts);
 		// var_dump($parts);die;
@@ -142,10 +143,10 @@ class TIdentifier implements Packaged
 			$pathinfo = pathinfo($filename);
 			// var_dump($pathinfo);die;
 
-			$hashedFilename = implode('.', array_filter([
-				$pathinfo['filename'],
+			$hashedFilename = implode(".", array_filter([
+				$pathinfo["filename"],
 				$this->getChecksum(),
-				$extension ?: ($pathinfo['extension'] ?? null),
+				$extension ?: ($pathinfo["extension"] ?? null),
 			]));
 			// var_dump($hashedFilename);die;
 
@@ -162,7 +163,7 @@ class TIdentifier implements Packaged
 
 	public function getPath(?string $extension = null): string
 	{
-		return implode('/', $this->getPathParts($extension));
+		return implode("/", $this->getPathParts($extension));
 	}
 
 	public function getKey(): string

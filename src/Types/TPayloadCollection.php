@@ -2,6 +2,9 @@
 
 namespace Katu\Types;
 
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackageCollection;
+
 class TPayloadCollection extends \ArrayObject
 {
 	public static function createFromJSON(TJSON $json): TPayloadCollection
@@ -14,11 +17,11 @@ class TPayloadCollection extends \ArrayObject
 		return TJSON::createFromContents($this->getArrayCopy());
 	}
 
-	public function getPackages(): TPackageCollection
+	public function getPackages(): PackageCollection
 	{
-		$packages = new TPackageCollection;
+		$packages = new PackageCollection;
 		foreach ($this as $payload) {
-			$packages[] = new TPackage($payload);
+			$packages[] = new Package($payload);
 		}
 
 		return $packages;

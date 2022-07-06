@@ -2,9 +2,10 @@
 
 namespace Katu\Types;
 
-use Katu\Interfaces\Packaged;
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
 
-class TClass implements Packaged
+class TClass implements PackagedInterface
 {
 	const PORTABLE_NAME_DELIMITER = ".";
 	const ACCEPTABLE_PORTABLE_NAME_DELIMITER_REGEX = "/[\.\-]/";
@@ -42,14 +43,14 @@ class TClass implements Packaged
 		return $this->name;
 	}
 
-	public function getPackage(): \Katu\Types\TPackage
+	public function getPackage(): Package
 	{
-		return new \Katu\Types\TPackage([
+		return new Package([
 			"name" => $this->getName(),
 		]);
 	}
 
-	public static function createFromPackage(\Katu\Types\TPackage $package): TClass
+	public static function createFromPackage(Package $package): TClass
 	{
 		return new static($package->getPayload()["name"]);
 	}
