@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Views;
 
-abstract class TwigEngine implements \Katu\Interfaces\ViewEngine
+abstract class TwigEngine implements ViewEngineInterface
 {
 	protected $request;
 	protected $twig;

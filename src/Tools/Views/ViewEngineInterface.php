@@ -1,8 +1,8 @@
 <?php
 
-namespace Katu\Interfaces;
+namespace Katu\Tools\Views;
 
-interface ViewEngine
+interface ViewEngineInterface
 {
 	public function render(string $template, array $data = []): string;
 }
