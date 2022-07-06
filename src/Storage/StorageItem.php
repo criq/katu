@@ -3,7 +3,6 @@
 namespace Katu\Storage;
 
 use Katu\Types\TFileSize;
-use Phan\Language\Element\Func;
 
 class StorageItem
 {
