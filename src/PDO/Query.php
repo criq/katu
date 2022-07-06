@@ -97,14 +97,14 @@ class Query
 		return $this->page;
 	}
 
-	public function setFactory(\Katu\Interfaces\Factory $factory): Query
+	public function setFactory(\Katu\Tools\Factories\FactoryInterface $factory): Query
 	{
 		$this->factory = $factory;
 
 		return $this;
 	}
 
-	public function getFactory(): ?\Katu\Interfaces\Factory
+	public function getFactory(): ?\Katu\Tools\Factories\FactoryInterface
 	{
 		if (!$this->factory) {
 			$this->factory = new \Katu\Tools\Factories\ArrayFactory;
