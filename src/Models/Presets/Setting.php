@@ -8,6 +8,11 @@ abstract class Setting extends \Katu\Models\Model
 {
 	const TABLE = "settings";
 
+	public static function prepareValue($value)
+	{
+		return \Katu\Files\Formats\JSON::encodeStandard($value);
+	}
+
 	public static function getOrCreate(?User $creator = null, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting
 	{
 		try {
@@ -31,7 +36,7 @@ abstract class Setting extends \Katu\Models\Model
 			"creatorId" => $creator ? $creator->getId() : null,
 		], [
 			"timeEdited" => new \Katu\Tools\Calendar\Time,
-			"value" => \Katu\Files\Formats\JSON::encodeStandard($value),
+			"value" => static::prepareValue($value),
 			"isSystem" => $isSystem ? "1" : "0",
 			"description" => trim($description) ?: null,
 		]);
@@ -77,6 +82,13 @@ abstract class Setting extends \Katu\Models\Model
 		$this->name = trim($name);
 
 		return true;
+	}
+
+	public function setValue($value): Setting
+	{
+		$this->value = static::prepareValue($value);
+
+		return $this;
 	}
 
 	public function getValue()
