@@ -15,23 +15,23 @@ class URL extends \Katu\Tools\Images\Source
 
 	public function getFile(): \Katu\Files\File
 	{
-		return pathinfo($this->getInput()->getParts()['path'])['dirname'];
+		return new \Katu\Files\File(pathinfo($this->getInput()->getParts()["path"])["dirname"]);
 	}
 
 	public function getExtension(): string
 	{
 		try {
-			$pathinfo = pathinfo($this->getInput()->getParts()['path']);
-			if (isset($pathinfo['extension'])) {
-				return $pathinfo['extension'];
+			$pathinfo = pathinfo($this->getInput()->getParts()["path"]);
+			if (isset($pathinfo["extension"])) {
+				return $pathinfo["extension"];
 			}
 
-			$size = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout('1 year'), function ($source) {
+			$size = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout("1 year"), function ($source) {
 				return getimagesize($source->getUri());
 			}, $this);
 
-			if (isset($size['mime'])) {
-				$extension = (new \Mimey\MimeTypes)->getExtension($size['mime']);
+			if (isset($size["mime"])) {
+				$extension = (new \Mimey\MimeTypes)->getExtension($size["mime"]);
 				if ($extension) {
 					return $extension;
 				}
