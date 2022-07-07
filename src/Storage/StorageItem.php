@@ -3,6 +3,7 @@
 namespace Katu\Storage;
 
 use Katu\Types\TFileSize;
+use Katu\Types\TIdentifier;
 
 class StorageItem
 {
@@ -69,5 +70,15 @@ class StorageItem
 	public function getContentType(): string
 	{
 		return $this->getStorage()->getAdapter()->getContentType($this);
+	}
+
+	public function getLocalCopy(): \Katu\Files\File
+	{
+		$extension = pathinfo($this->getURI())["extension"] ?? null;
+		$identifier = new TIdentifier(__CLASS__, __FUNCTION__, sha1($this->getURI()));
+		$file = new \Katu\Files\File(\App\App::getTemporaryDir(), $identifier->getPath($extension));
+		$file->set($this->read());
+
+		return $file;
 	}
 }

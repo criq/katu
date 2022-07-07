@@ -10,6 +10,7 @@ interface FileInterface
 	public function getContentType(): ?string;
 	public function getExtension(): ?string;
 	public function getFileSize(): TFileSize;
+	public function getLocalCopy(): \Katu\Files\File;
 	public function getName(): string;
 	public function getURI(): string;
 	public function setContent(string $content): FileInterface;
