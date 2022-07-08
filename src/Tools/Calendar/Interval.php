@@ -22,6 +22,8 @@ class Interval
 	public static function validate(\Katu\Tools\Validation\Param $startParam, \Katu\Tools\Validation\Param $endParam)
 	{
 		$result = new \Katu\Tools\Validation\Validation;
+		$start = null;
+		$end = null;
 
 		if (!trim($startParam)) {
 			$result->addError(
