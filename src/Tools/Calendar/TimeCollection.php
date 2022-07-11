@@ -23,4 +23,11 @@ class TimeCollection extends \ArrayObject
 			return $time->format("Y-m-d");
 		}, $this->getArrayCopy()))));
 	}
+
+	public function getDates(): array
+	{
+		return array_map(function(Time $time) {
+			return $time->format("Y-m-d");
+		}, $this->getArrayCopy());
+	}
 }
