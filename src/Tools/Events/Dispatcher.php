@@ -31,8 +31,8 @@ class Dispatcher
 		return $this;
 	}
 
-	public function trigger(Event $event)
+	public function trigger(string $name, array $args = [])
 	{
-		var_dump($event);
+		var_dump(new Event($name, $args));
 	}
 }
