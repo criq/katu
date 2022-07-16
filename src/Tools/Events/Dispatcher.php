@@ -30,4 +30,9 @@ class Dispatcher
 
 		return $this;
 	}
+
+	public function trigger(Event $event)
+	{
+		var_dump($event);
+	}
 }
