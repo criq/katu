@@ -6,32 +6,32 @@ use Katu\Types\TIdentifier;
 
 class Listener
 {
-	protected $eventPatterns = [];
+	protected $eventNamePatterns = [];
 	protected $callable;
 
-	public function __construct(?string $eventPattern = null, ?callable $callable = null)
+	public function __construct(?string $eventNamePattern = null, ?callable $callable = null)
 	{
-		$this->setEventPattern($eventPattern);
+		$this->setEventNamePattern($eventNamePattern);
 		$this->setCallable($callable);
 	}
 
-	public function setEventPattern(?string $eventPattern): Listener
+	public function setEventNamePattern(?string $eventNamePattern): Listener
 	{
-		$this->setEventPatterns(array_values(array_filter(array_map("trim", preg_split("/[\s,]+/", $eventPattern)))));
+		$this->setEventNamePatterns(array_values(array_filter(array_map("trim", preg_split("/[\s,]+/", $eventNamePattern)))));
 
 		return $this;
 	}
 
-	public function setEventPatterns(?array $eventPatterns): Listener
+	public function setEventNamePatterns(?array $eventNamePatterns): Listener
 	{
-		$this->eventPatterns = $eventPatterns;
+		$this->eventNamePatterns = $eventNamePatterns;
 
 		return $this;
 	}
 
-	public function getEventPatterns(): ?array
+	public function getEventNamePatterns(): ?array
 	{
-		return $this->eventPatterns;
+		return $this->eventNamePatterns;
 	}
 
 	public function setCallable(?callable $callable): Listener
@@ -48,19 +48,19 @@ class Listener
 
 	public function matchesEventName(string $eventName): bool
 	{
-		foreach ($this->getEventPatterns() as $eventPattern) {
-			$eventPatternRegex = strtr($eventPattern, [
-				"." => "\.",
-				"*" => "(.*)",
-				"+" => "(.+)",
+		foreach ($this->getEventNamePatterns() as $eventNamePattern) {
+			$eventNamePatternRegex = strtr($eventNamePattern, [
+				".+" => "(\.[a-z0-9]+)",
+				".*" => "(\.[a-z0-9]+)*",
 			]);
+			$eventNamePatternRegex = "/^{$eventNamePatternRegex}$/i";
 
-			var_dump($eventPatternRegex);
+			var_dump($eventNamePatternRegex);
 			var_dump($eventName);
-			var_dump(preg_match("/{$eventPatternRegex}/", $eventName));
+			var_dump(preg_match($eventNamePatternRegex, $eventName));
 		}
 
-		return $eventName == $this->getEventPatterns();
+		return $eventName == $this->getEventNamePatterns();
 	}
 
 	public function runWithEvent(Event $event): bool
