@@ -12,15 +12,15 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 	{
 		$email = [];
 
-		if ($this->template) {
-			$email["message"]["template_id"] = $this->template;
+		if ($this->getTemplate()) {
+			$email["message"]["template_id"] = $this->getTemplate();
 		}
 
-		$email["message"]["subject"] = $this->subject;
-		$email["message"]["html"] = $this->html;
-		$email["message"]["text"] = $this->plain ?: strip_tags($this->html);
-		$email["message"]["from_email"] = $this->fromEmailAddress;
-		$email["message"]["from_name"] = $this->fromName;
+		$email["message"]["subject"] = $this->getSubject();
+		$email["message"]["html"] = $this->getHtml();
+		$email["message"]["text"] = $this->getPlain() ?: strip_tags($this->html);
+		$email["message"]["from_email"] = $this->getFromEmailAddress();
+		$email["message"]["from_name"] = $this->getFromName();
 
 		foreach ($this->to as $toEmailAddress => $toName) {
 			$email["message"]["to"][] = [
@@ -52,7 +52,7 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		$curl = new \Curl\Curl;
 		$curl->setHeader("key", \Katu\Config\Config::get("ecomail", "api", "key"));
 
-		if ($this->template) {
+		if ($this->getTemplate()) {
 			$res = $curl->post("http://api2.ecomailapp.cz/transactional/send-template", $this->getEmail());
 		} else {
 			$res = $curl->post("http://api2.ecomailapp.cz/transactional/send-message", $this->getEmail());

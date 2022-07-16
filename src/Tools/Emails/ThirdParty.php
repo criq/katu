@@ -10,11 +10,16 @@ abstract class ThirdParty extends \Katu\Tools\Emails\Email
 
 	abstract public function send();
 
-	public function setTemplate($template): ThirdParty
+	public function setTemplate(?string $template): ThirdParty
 	{
 		$this->template = $template;
 
 		return $this;
+	}
+
+	public function getTemplate(): ?string
+	{
+		return (string)$this->template;
 	}
 
 	public function addAttachment($file, $params = []): ThirdParty
