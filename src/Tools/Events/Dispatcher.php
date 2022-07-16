@@ -31,6 +31,11 @@ class Dispatcher
 		return $this;
 	}
 
+	public function getEventListeners(Event $event): ListenerCollection
+	{
+		return $this->getListeners()->filterForEventName($event->getName());
+	}
+
 	public function trigger(string $name, array $args = [])
 	{
 		$event = new Event($name, $args);
@@ -40,16 +45,8 @@ class Dispatcher
 
 	public function triggerEvent(Event $event)
 	{
-		$listeners = $this->getEventListeners($event);
-		var_dump($listeners);
-
-		foreach ($listeners as $listener) {
+		foreach ($this->getEventListeners($event) as $listener) {
 			$listener->runWithEvent($event);
 		}
-	}
-
-	public function getEventListeners(Event $event): ListenerCollection
-	{
-		return $this->getListeners()->filterForEventName($event->getName());
 	}
 }
