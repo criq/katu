@@ -6,32 +6,36 @@ use Katu\Types\TIdentifier;
 
 class Listener
 {
-	protected $eventNamePatterns = [];
+	protected $patterns;
 	protected $callable;
 
-	public function __construct(?string $eventNamePattern = null, ?callable $callable = null)
+	public function __construct(?string $pattern = null, ?callable $callable = null)
 	{
-		$this->setEventNamePattern($eventNamePattern);
+		$this->setPattern($pattern);
 		$this->setCallable($callable);
 	}
 
-	public function setEventNamePattern(?string $eventNamePattern): Listener
+	public function setPattern(?string $pattern): Listener
 	{
-		$this->setEventNamePatterns(array_values(array_filter(array_map("trim", preg_split("/[\s,]+/", $eventNamePattern)))));
+		$this->setPatterns(PatternCollection::createFromString($pattern));
 
 		return $this;
 	}
 
-	public function setEventNamePatterns(?array $eventNamePatterns): Listener
+	public function setPatterns(PatternCollection $patterns): Listener
 	{
-		$this->eventNamePatterns = $eventNamePatterns;
+		$this->patterns = $patterns;
 
 		return $this;
 	}
 
-	public function getEventNamePatterns(): ?array
+	public function getPatterns(): PatternCollection
 	{
-		return $this->eventNamePatterns;
+		if (!$this->patterns) {
+			$this->patterns = new PatternCollection;
+		}
+
+		return $this->patterns;
 	}
 
 	public function setCallable(?callable $callable): Listener
@@ -48,19 +52,13 @@ class Listener
 
 	public function matchesEventName(string $eventName): bool
 	{
-		foreach ($this->getEventNamePatterns() as $eventNamePattern) {
-			$eventNamePatternRegex = strtr($eventNamePattern, [
-				".+" => "(\.[a-z0-9]+)",
-				".*" => "(\.[a-z0-9]+)*",
-			]);
-			$eventNamePatternRegex = "/^{$eventNamePatternRegex}$/i";
-
-			var_dump($eventNamePatternRegex);
-			var_dump($eventName);
-			var_dump(preg_match($eventNamePatternRegex, $eventName));
+		foreach ($this->getPatterns() as $pattern) {
+			if ($pattern->matches($eventName)) {
+				return true;
+			}
 		}
 
-		return $eventName == $this->getEventNamePatterns();
+		return false;
 	}
 
 	public function runWithEvent(Event $event): bool
