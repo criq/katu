@@ -6,7 +6,7 @@ use Katu\Types\TIdentifier;
 
 class Listener
 {
-	protected $eventPattern;
+	protected $eventPatterns = [];
 	protected $callable;
 
 	public function __construct(?string $eventPattern = null, ?callable $callable = null)
@@ -17,14 +17,21 @@ class Listener
 
 	public function setEventPattern(?string $eventPattern): Listener
 	{
-		$this->eventPattern = $eventPattern;
+		$this->setEventPatterns(array_values(array_filter(array_map("trim", preg_split("/[\s,]+/", $eventPattern)))));
 
 		return $this;
 	}
 
-	public function getEventPattern(): ?string
+	public function setEventPatterns(?array $eventPatterns): Listener
 	{
-		return $this->eventPattern;
+		$this->eventPatterns = $eventPatterns;
+
+		return $this;
+	}
+
+	public function getEventPatterns(): ?array
+	{
+		return $this->eventPatterns;
 	}
 
 	public function setCallable(?callable $callable): Listener
@@ -41,7 +48,7 @@ class Listener
 
 	public function matchesEventName(string $eventName): bool
 	{
-		return $eventName == $this->getEventPattern();
+		return $eventName == $this->getEventPatterns();
 	}
 
 	public function runWithEvent(Event $event): bool
