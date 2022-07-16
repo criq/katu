@@ -48,6 +48,18 @@ class Listener
 
 	public function matchesEventName(string $eventName): bool
 	{
+		foreach ($this->getEventPatterns() as $eventPattern) {
+			$eventPatternRegex = strtr($eventPattern, [
+				"." => "\.",
+				"*" => "(.*)",
+				"+" => "(.+)",
+			]);
+
+			var_dump($eventPatternRegex);
+			var_dump($eventName);
+			var_dump(preg_match("/{$eventPatternRegex}/", $eventName));
+		}
+
 		return $eventName == $this->getEventPatterns();
 	}
 
