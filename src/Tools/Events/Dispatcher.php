@@ -43,8 +43,6 @@ class Dispatcher
 
 	public function triggerEvent(Event $event)
 	{
-		var_dump($this->getEventListeners($event));die;
-
 		foreach ($this->getEventListeners($event) as $listener) {
 			$listener->runWithEvent($event);
 		}
