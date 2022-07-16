@@ -10,7 +10,7 @@ class ValidationCollection extends \ArrayObject
 	{
 		$errors = new ErrorCollection;
 		foreach ($this as $validation) {
-			$errors->addErrorCollection($validation->getErrors());
+			$errors->addErrors($validation->getErrors());
 		}
 
 		return $errors;
@@ -26,7 +26,7 @@ class ValidationCollection extends \ArrayObject
 		$merged = new Validation;
 		foreach ($this as $validation) {
 			$merged->getParams()->addParamCollection($validation->getParams());
-			$merged->getErrors()->addErrorCollection($validation->getErrors());
+			$merged->getErrors()->addErrors($validation->getErrors());
 		}
 
 		return $merged;

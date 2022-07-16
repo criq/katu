@@ -87,7 +87,7 @@ class Controller
 
 	public function addErrors(\Katu\Errors\ErrorCollection $errors): Controller
 	{
-		$this->getErrors()->addErrorCollection($errors);
+		$this->getErrors()->addErrors($errors);
 
 		return $this;
 	}

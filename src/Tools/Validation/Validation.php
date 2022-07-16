@@ -66,9 +66,9 @@ class Validation implements \ArrayAccess
 		return $this;
 	}
 
-	public function addErrorCollection(\Katu\Errors\ErrorCollection $errors): Validation
+	public function addErrors(\Katu\Errors\ErrorCollection $errors): Validation
 	{
-		$this->getErrors()->addErrorCollection($errors);
+		$this->getErrors()->addErrors($errors);
 
 		return $this;
 	}
@@ -76,7 +76,7 @@ class Validation implements \ArrayAccess
 	public function addResult(Validation $result): Validation
 	{
 		$this->addParamCollection($result->getParams());
-		$this->addErrorCollection($result->getErrors());
+		$this->addErrors($result->getErrors());
 
 		return $this;
 	}

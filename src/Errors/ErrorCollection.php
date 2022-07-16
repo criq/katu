@@ -43,7 +43,7 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface
 		return $this;
 	}
 
-	public function addErrorCollection(ErrorCollection $errors): ErrorCollection
+	public function addErrors(ErrorCollection $errors): ErrorCollection
 	{
 		foreach ($errors as $error) {
 			$this->append($error);
@@ -55,7 +55,7 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface
 	public function addValidationResults(array $validationResults): ErrorCollection
 	{
 		foreach ($validationResults as $validationResult) {
-			$this->addErrorCollection($validationResult->getErrors());
+			$this->addErrors($validationResult->getErrors());
 		}
 
 		return $this;
