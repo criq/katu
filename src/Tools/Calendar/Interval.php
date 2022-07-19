@@ -40,19 +40,25 @@ class Interval
 			}
 		}
 
-		if (!trim($endParam)) {
-			$result->addError(
-				(new \Katu\Errors\Error("Chybějící konec intervalu."))
-					->addParam($endParam)
-			);
-		} else {
-			$end = static::getTimeClass()->getName()::createFromString($endParam);
-			if (!$end) {
+		if (!$start) {
+			if (!trim($endParam)) {
 				$result->addError(
-					(new \Katu\Errors\Error("Neplatný konec intervalu."))
+					(new \Katu\Errors\Error("Chybějící konec intervalu."))
 						->addParam($endParam)
 				);
+			} else {
+				$end = static::getTimeClass()->getName()::createFromString($endParam);
+				if (!$end) {
+					$result->addError(
+						(new \Katu\Errors\Error("Neplatný konec intervalu."))
+							->addParam($endParam)
+					);
+				}
 			}
+		}
+
+		if ($start && !$end) {
+			$end = clone $start;
 		}
 
 		if ($start && $end && $start > $end) {
