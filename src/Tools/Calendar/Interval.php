@@ -40,20 +40,13 @@ class Interval
 			}
 		}
 
-		if (!$start) {
-			if (!trim($endParam)) {
+		if (trim($endParam)) {
+			$end = static::getTimeClass()->getName()::createFromString($endParam);
+			if (!$end) {
 				$result->addError(
-					(new \Katu\Errors\Error("Chybějící konec intervalu."))
+					(new \Katu\Errors\Error("Neplatný konec intervalu."))
 						->addParam($endParam)
 				);
-			} else {
-				$end = static::getTimeClass()->getName()::createFromString($endParam);
-				if (!$end) {
-					$result->addError(
-						(new \Katu\Errors\Error("Neplatný konec intervalu."))
-							->addParam($endParam)
-					);
-				}
 			}
 		}
 
