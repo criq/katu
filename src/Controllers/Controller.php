@@ -67,6 +67,16 @@ class Controller
 	}
 
 	/****************************************************************************
+	 * View data.
+	 */
+	public function getViewData(): array
+	{
+		return array_merge($this->data, [
+			"errors" => $this->getErrors(),
+		]);
+	}
+
+	/****************************************************************************
 	 * Errors.
 	 */
 	public function getErrors(): \Katu\Errors\ErrorCollection
