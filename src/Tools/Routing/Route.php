@@ -25,7 +25,7 @@ class Route
 	public static function getNameFromRequest(ServerRequestInterface $request): ?string
 	{
 		try {
-			return $request->getAttribute("route")->getName();
+			return $request->getAttribute("__route__")->getName();
 		} catch (\Throwable $e) {
 			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 
