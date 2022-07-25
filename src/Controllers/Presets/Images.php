@@ -2,13 +2,16 @@
 
 namespace Katu\Controllers\Presets;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 class Images extends \Katu\Controllers\Controller
 {
-	public static function getVersionSrcURL(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
+	public static function getVersionSrcURL(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
 		try {
 			try {
-				$url = new \Katu\Types\TURL(trim($request->getParam("url")));
+				$url = new \Katu\Types\TURL(trim($request->getQueryParams()["url"] ?? null));
 			} catch (\Throwable $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
@@ -26,14 +29,14 @@ class Images extends \Katu\Controllers\Controller
 			return $response
 				->withHeader("Content-Type", $imageVersion->getFile()->getMime())
 				->withHeader("Cache-Control", "max-age=604800, public")
-				->write($imageVersion->getFile()->get())
+				->withBody(\GuzzleHttp\Psr7\Utils::streamFor($imageVersion->getFile()->get()))
 				;
 		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\NotFoundException;
 		}
 	}
 
-	public static function getVersionSrcFile(\Slim\Http\Request $request, \Slim\Http\Response $response, array $args)
+	public static function getVersionSrcFile(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
 		try {
 			$fileClassName = \App\App::getFileModelClass()->getName();
@@ -60,7 +63,7 @@ class Images extends \Katu\Controllers\Controller
 			return $response
 				->withHeader("Content-Type", $imageVersion->getFile()->getMime())
 				->withHeader("Cache-Control", "max-age=604800, public")
-				->write($imageVersion->getFile()->get())
+				->withBody(\GuzzleHttp\Psr7\Utils::streamFor($imageVersion->getFile()->get()))
 				;
 		} catch (\Throwable $e) {
 			throw new \Katu\Exceptions\NotFoundException;
