@@ -45,12 +45,12 @@ class Controller
 	 */
 	public function isSubmitted(ServerRequestInterface $request, ?string $name = null)
 	{
-		return ($request->getQueryParams()["formSubmitted"] ?? null) && ($request->getQueryParams()["formName"] ?? null) == $name;
+		return ($request->getParsedBody()["formSubmitted"] ?? null) && ($request->getParsedBody()["formName"] ?? null) == $name;
 	}
 
 	public function isSubmittedWithToken(ServerRequestInterface $request, ?string $name = null)
 	{
-		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getQueryParams()["formToken"] ?? null);
+		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getParsedBody()["formToken"] ?? null);
 	}
 
 	public function isSubmittedByHuman(ServerRequestInterface $request, ?string $name = null)

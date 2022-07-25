@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Rest;
 
+use Psr\Http\Message\StreamInterface;
+
 class RestResponse
 {
 	protected $payload = [];
@@ -37,5 +39,10 @@ class RestResponse
 		});
 
 		return $array;
+	}
+
+	public function getStream(): StreamInterface
+	{
+		return \GuzzleHttp\Psr7\Utils::streamFor(\Katu\Files\Formats\JSON::encode($this->getResponse()));
 	}
 }

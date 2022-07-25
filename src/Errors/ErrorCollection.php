@@ -4,9 +4,11 @@ namespace Katu\Errors;
 
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TClass;
 
-class ErrorCollection extends \ArrayObject implements PackagedInterface
+class ErrorCollection extends \ArrayObject implements PackagedInterface, RestResponseInterface
 {
 	public static function createFromPackage(Package $package): ErrorCollection
 	{
@@ -83,5 +85,10 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface
 				return $error->getResponseArray();
 			}, $this->getArrayCopy()),
 		];
+	}
+
+	public function getRestResponse(): RestResponse
+	{
+		return new RestResponse($this->getResponseArray());
 	}
 }

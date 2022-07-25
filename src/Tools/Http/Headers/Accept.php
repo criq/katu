@@ -2,9 +2,11 @@
 
 namespace Katu\Tools\Http\Headers;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 class Accept extends \Katu\Tools\Http\HeaderCollection
 {
-	public static function createFromRequest(\Slim\Http\Request $request)
+	public static function createFromRequest(ServerRequestInterface $request)
 	{
 		return new static($request->getHeader("accept"));
 	}
