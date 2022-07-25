@@ -4,6 +4,7 @@ namespace Katu\Tools\Routing;
 
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Route
 {
@@ -21,7 +22,7 @@ class Route
 		$this->setMethods($methods ?: $this->getMethods());
 	}
 
-	public static function getNameFromRequest(\Slim\Http\Request $request): ?string
+	public static function getNameFromRequest(ServerRequestInterface $request): ?string
 	{
 		try {
 			return $request->getAttribute("route")->getName();

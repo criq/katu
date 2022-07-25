@@ -21,16 +21,14 @@ class URL
 
 	public static function getFor($route, $args = [], $params = []): \Katu\Types\TURL
 	{
-		$app = \App\App::get();
-		$path = $app->getContainer()->get("router")->pathFor($route, array_map("urlencode", (array)$args));
+		$path = \App\App::get()->getRouteCollector()->getRouteParser()->urlFor($route, array_map("urlencode", (array)$args));
 
 		return \Katu\Types\TURL::make(static::joinPaths(static::getBase()->getHostWithScheme(), $path), $params);
 	}
 
 	public static function getDecodedFor($route, $args = [], $params = []): \Katu\Types\TURL
 	{
-		$app = \App\App::get();
-		$path = $app->getContainer()->get("router")->pathFor($route, $args);
+		$path = \App\App::get()->getRouteCollector()->getRouteParser()->urlFor($route, (array)$args);
 
 		return \Katu\Types\TURL::make(static::joinPaths(static::getBase()->getHostWithScheme(), $path), $params);
 	}

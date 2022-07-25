@@ -2,6 +2,8 @@
 
 namespace Katu\Types;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 class TPagination
 {
 	const DEFAULT_COPY_NEXT = 'Next';
@@ -109,14 +111,14 @@ class TPagination
 		}
 	}
 
-	public static function getRequestPageExpression(\Slim\Http\Request $request, int $perPage = null): \Sexy\Page
+	public static function getRequestPageExpression(ServerRequestInterface $request, int $perPage = null): \Sexy\Page
 	{
 		return new \Sexy\Page(static::getPageFromRequest($request), $perPage ?: static::getResolvedPerPage());
 	}
 
-	public static function getPageFromRequest(\Slim\Http\Request $request): int
+	public static function getPageFromRequest(ServerRequestInterface $request): int
 	{
-		$params = $request->getParams();
+		$params = $request->getQueryParams();
 		if (!($params[static::getPageQueryParam()] ?? null)) {
 			return 1;
 		}

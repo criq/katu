@@ -2,6 +2,9 @@
 
 namespace Katu\Tools\Views;
 
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
+
 abstract class TwigEngine implements ViewEngineInterface
 {
 	protected $request;
@@ -9,20 +12,20 @@ abstract class TwigEngine implements ViewEngineInterface
 
 	abstract protected static function getTwigLoader(): \Twig\Loader\LoaderInterface;
 
-	public function __construct(?\Slim\Http\Request $request = null)
+	public function __construct(?ServerRequestInterface $request = null)
 	{
 		$this->setRequest($request);
 		$this->setTwig($this->createTwig());
 	}
 
-	public function setRequest(?\Slim\Http\Request $request): TwigEngine
+	public function setRequest(?ServerRequestInterface $request): TwigEngine
 	{
 		$this->request = $request;
 
 		return $this;
 	}
 
-	public function getRequest(): \Slim\Http\Request
+	public function getRequest(): ServerRequestInterface
 	{
 		return $this->request ?: \App\App::get()->getContainer()->get("request");
 	}
@@ -257,13 +260,13 @@ abstract class TwigEngine implements ViewEngineInterface
 		}
 
 		try {
-			$data["_request"]["ip"] = (string)$this->getRequest()->getServerParam("REMOTE_ADDR");
+			$data["_request"]["ip"] = (string)$this->getRequest()->getServerParams()["REMOTE_ADDR"];
 		} catch (\Throwable $e) {
 			// Doesn"t exist.
 		}
 
 		try {
-			$data["_request"]["params"] = (array)$this->getRequest()->getParams();
+			$data["_request"]["params"] = (array)$this->getRequest()->getQueryParams();
 		} catch (\Throwable $e) {
 			// Doesn"t exist.
 		}
@@ -307,11 +310,11 @@ abstract class TwigEngine implements ViewEngineInterface
 		return $data;
 	}
 
-	public function render(string $template, array $data = []): string
+	public function render(string $template, array $data = []): StreamInterface
 	{
 		$twig = $this->getTwig();
 		$data = array_merge_recursive($this->getCommonData($this->getRequest()), $data);
 
-		return trim($twig->render($template, $data));
+		return \GuzzleHttp\Psr7\Utils::streamFor(trim($twig->render($template, $data)));
 	}
 }

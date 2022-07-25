@@ -6,7 +6,7 @@ use Katu\Types\TIdentifier;
 
 class Logger extends \Monolog\Logger
 {
-	const DIR_NAME = 'logs';
+	const DIR_NAME = "logs";
 
 	protected $identifier;
 
@@ -14,7 +14,7 @@ class Logger extends \Monolog\Logger
 	{
 		$this->setIdentifier($identifier);
 
-		parent::__construct(implode('.', $this->getIdentifier()->getSanitizedParts()));
+		parent::__construct(implode(".", $this->getIdentifier()->getSanitizedParts()));
 
 		$this->pushHandler(new \Monolog\Handler\StreamHandler((string)$this->getFile()));
 	}
@@ -33,18 +33,18 @@ class Logger extends \Monolog\Logger
 
 	public function getFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\App\App::getBaseDir(), static::DIR_NAME, $this->getIdentifier()->getPath('log'));
+		return new \Katu\Files\File(\App\App::getBaseDir(), static::DIR_NAME, $this->getIdentifier()->getPath("log"));
 	}
 
 	public function log($level, $message, array $context = []): void
 	{
 		if ($message instanceof \Throwable) {
-			$context['class'] = get_class($message);
+			$context["class"] = get_class($message);
 		}
 
 		if ($message instanceof \Katu\Exceptions\Exception) {
-			$context['abbr'] = $message->getAbbr();
-			$context['context'] = $message->getContext();
+			$context["abbr"] = $message->getAbbr();
+			$context["context"] = $message->getContext();
 		}
 
 		try {
@@ -59,6 +59,6 @@ class Logger extends \Monolog\Logger
 
 	public function error($message, array $context = []): void
 	{
-		$this->log('error', $message, $context);
+		$this->log("error", $message, $context);
 	}
 }

@@ -4,6 +4,9 @@ namespace Katu;
 
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 class App
 {
@@ -39,11 +42,6 @@ class App
 	/****************************************************************************
 	 * Classes.
 	 */
-	public static function getExceptionHandlerClass(): TClass
-	{
-		return new TClass("Katu\Exceptions\Handler");
-	}
-
 	public static function getControllerClass(): TClass
 	{
 		return new TClass("Katu\Controllers\Controller");
@@ -51,14 +49,27 @@ class App
 
 	public static function getLoggerClass(): TClass
 	{
-		return new TClass("\Katu\Tools\Logs\Logger");
+		return new TClass("Katu\Tools\Logs\Logger");
 	}
 
-	public static function getLogger(TIdentifier $identifier): \Katu\Tools\Logs\Logger
+	public static function getLogger(TIdentifier $identifier): LoggerInterface
 	{
 		$loggerClassName = static::getLoggerClass()->getName();
 
 		return new $loggerClassName($identifier);
+	}
+
+	public static function getErrorHandler(): ?callable
+	{
+		return function (ServerRequestInterface $request, \Throwable $exception, bool $displayErrorDetails, bool $logErrors, bool $logErrorDetails, ?LoggerInterface $logger = null ): ResponseInterface
+		{
+			$logger = $logger ?: static::getLogger(new TIdentifier("error"));
+			$logger->error($exception);
+
+			$response = static::$app->getResponseFactory()->createResponse();
+
+			return $response->withStatus(500);
+		};
 	}
 
 	/****************************************************************************
@@ -153,51 +164,39 @@ class App
 			// Session.
 			\Katu\Tools\Session\Session::setCookieParams();
 
-			// Slim config.
-			try {
-				$config = \Katu\Config\Config::get("app", "slim");
-			} catch (\Throwable $e) {
-				$config = [];
+			static::$app = \Slim\Factory\AppFactory::create();
+
+			// Set up routes.
+			foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
+				$pattern  = $route->getPattern();
+				if (!$pattern) {
+					throw new \Katu\Exceptions\RouteException("Invalid pattern for route \"{$name}\".");
+				}
+
+				$callable = $route->getCallable();
+				if (!$callable) {
+					throw new \Katu\Exceptions\RouteException("Invalid callable for route \"{$name}\".");
+				}
+
+				$slimRoute = static::$app->map($route->getMethods(), $pattern, $callable);
+				if (is_string($name) && trim($name)) {
+					$slimRoute->setName($name);
+				} elseif ($route->name) {
+					$slimRoute->setName($route->getName());
+				}
 			}
 
-			// Error handler.
-			$config["errorHandler"] = function (\Slim\Container $container) {
-				return function () {
-					return static::getExceptionHandlerClass()->getName()::resolveException(func_get_arg(2), func_get_arg(0), func_get_arg(1));
-				};
-			};
+			// Add Error Middleware.
+			try {
+				$displayErrorDetails = \Katu\Config\Config::get("app", "slim", "settings", "displayErrorDetails");
+			} catch (\Katu\Exceptions\MissingConfigException $e) {
+				$displayErrorDetails = false;
+			}
 
-			static::$app = new \Slim\App($config);
+			$errorMiddleware = static::$app->addErrorMiddleware((bool)$displayErrorDetails, true, true);
+			$errorMiddleware->setDefaultErrorHandler(static::getErrorHandler());
 		}
 
 		return static::$app;
-	}
-
-	public static function run()
-	{
-		$app = static::get();
-
-		// Set up routes.
-		foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
-			$pattern  = $route->getPattern();
-			if (!$pattern) {
-				throw new \Katu\Exceptions\RouteException("Invalid pattern for route \"{$name}\".");
-			}
-
-			$callable = $route->getCallable();
-			if (!$callable) {
-				throw new \Katu\Exceptions\RouteException("Invalid callable for route \"{$name}\".");
-			}
-
-			$slimRoute = $app->map($route->getMethods(), $pattern, $callable);
-			if (is_string($name) && trim($name)) {
-				$slimRoute->setName($name);
-			} elseif ($route->name) {
-				$slimRoute->setName($route->getName());
-			}
-		}
-
-		// Run the app.
-		$app->run();
 	}
 }

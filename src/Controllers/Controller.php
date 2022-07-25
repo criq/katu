@@ -8,11 +8,6 @@ class Controller
 	protected $data = [];
 	protected $errors;
 
-	public function __construct(\Psr\Container\ContainerInterface $container)
-	{
-		$this->setContainer($container);
-	}
-
 	public function setContainer(\Psr\Container\ContainerInterface $value): Controller
 	{
 		$this->request = $value;
