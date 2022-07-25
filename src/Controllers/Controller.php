@@ -2,6 +2,8 @@
 
 namespace Katu\Controllers;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 class Controller
 {
 	protected $container;
@@ -41,17 +43,17 @@ class Controller
 	/****************************************************************************
 	 * Form submission.
 	 */
-	public function isSubmitted(\Slim\Http\Request $request, ?string $name = null)
+	public function isSubmitted(ServerRequestInterface $request, ?string $name = null)
 	{
-		return $request->getParam("formSubmitted") && $request->getParam("formName") == $name;
+		return ($request->getQueryParams()["formSubmitted"] ?? null) && ($request->getQueryParams()["formName"] ?? null) == $name;
 	}
 
-	public function isSubmittedWithToken(\Slim\Http\Request $request, ?string $name = null)
+	public function isSubmittedWithToken(ServerRequestInterface $request, ?string $name = null)
 	{
-		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getParam("formToken"));
+		return $this->isSubmitted($request, $name) && \Katu\Tools\Forms\Token::validate($request->getQueryParams()["formToken"] ?? null);
 	}
 
-	public function isSubmittedByHuman(\Slim\Http\Request $request, ?string $name = null)
+	public function isSubmittedByHuman(ServerRequestInterface $request, ?string $name = null)
 	{
 		// Check basic form params.
 		if (!$this->isSubmittedWithToken($request, $name)) {
