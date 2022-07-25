@@ -2,8 +2,6 @@
 
 namespace Katu\Exceptions;
 
-use Katu\Types\TLocaleStringCollection;
-
 class Exception extends \Exception
 {
 	const HTTP_CODE = 400;
@@ -11,18 +9,15 @@ class Exception extends \Exception
 	protected $abbr;
 	protected $context;
 	protected $errorNames = [];
-	protected $translations;
 
 	public function __construct(string $message = "", int $code = 0, ?\Throwable $previous = null)
 	{
 		parent::__construct($message, $code, $previous);
-
-		$this->translations = new TLocaleStringCollection;
 	}
 
 	public function __toString(): string
 	{
-		return (string) $this->getTranslatedMessage();
+		return (string)$this->getMessage();
 	}
 
 	public function getHttpCode(): int
@@ -55,7 +50,7 @@ class Exception extends \Exception
 
 	public static function getErrorName(string $errorName): string
 	{
-		return implode('.', array_filter((array)$errorName));
+		return implode(".", array_filter((array)$errorName));
 	}
 
 	public function getErrorNameIndex(string $errorName)
@@ -87,33 +82,12 @@ class Exception extends \Exception
 		return $this->errorNames;
 	}
 
-	public function addTranslation($locale, string $message): Exception
-	{
-		if (is_string($locale)) {
-			$locale = new \Katu\Types\TLocale($locale);
-		}
-
-		$this->translations[] = new \Katu\Types\TLocaleString($locale, $message);
-
-		return $this;
-	}
-
-	public function getTranslatedMessage()
-	{
-		$translation = $this->translations->getPreferredString();
-		if ($translation) {
-			return $translation;
-		}
-
-		return $this->getMessage();
-	}
-
 	public function getResponseArray()
 	{
 		return [
-			'message' => $this->getMessage(),
-			'abbr' => $this->getAbbr() ?: null,
-			'names' => $this->getErrorNames() ?: null,
+			"message" => $this->getMessage(),
+			"abbr" => $this->getAbbr() ?: null,
+			"names" => $this->getErrorNames() ?: null,
 		];
 	}
 

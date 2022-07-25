@@ -6,21 +6,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Controller
 {
-	protected $container;
 	protected $data = [];
 	protected $errors;
-
-	public function setContainer(\Psr\Container\ContainerInterface $value): Controller
-	{
-		$this->request = $value;
-
-		return $this;
-	}
-
-	public function getContainer(): \Psr\Container\ContainerInterface
-	{
-		return $this->request;
-	}
 
 	/****************************************************************************
 	 * Redirect.

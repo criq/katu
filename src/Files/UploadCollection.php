@@ -2,9 +2,11 @@
 
 namespace Katu\Files;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 class UploadCollection extends \ArrayObject
 {
-	public static function createFromRequest(\Slim\Http\Request $request, string $key) : ?UploadCollection
+	public static function createFromRequest(ServerRequestInterface $request, string $key) : ?UploadCollection
 	{
 		$uploads = new static;
 

@@ -2,20 +2,22 @@
 
 namespace Katu\Tools\Intl;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 class Formatter
 {
-	public static function getPreferredLocales()
+	public static function getPreferredLocales(ServerRequestInterface $request)
 	{
-		return \Katu\Types\TLocale::getPreferredFromRequest(\App\App::get()->getContainer()->get("request"));
+		return \Katu\Types\TLocale::getPreferredFromRequest($request);
 	}
 
-	public static function getPreferredLocale($locale = null)
+	public static function getPreferredLocale(ServerRequestInterface $request, $locale = null)
 	{
 		if ($locale) {
 			return $locale;
 		}
 
-		$preferredLocaleCollection = static::getPreferredLocales();
+		$preferredLocaleCollection = static::getPreferredLocales($request);
 		if (isset($preferredLocaleCollection[0])) {
 			return $preferredLocaleCollection[0];
 		}
