@@ -90,7 +90,7 @@ class ImageVersion
 
 			return new Image($this->getFile());
 		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e);
+			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error(serialize($this->getFile()));
 
 			return null;
 		}

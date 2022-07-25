@@ -25,9 +25,9 @@ abstract class TwigEngine implements ViewEngineInterface
 		return $this;
 	}
 
-	public function getRequest(): ServerRequestInterface
+	public function getRequest(): ?ServerRequestInterface
 	{
-		return $this->request ?: \App\App::get()->getContainer()->get("request");
+		return $this->request;
 	}
 
 	protected static function createTwig(): \Twig\Environment
