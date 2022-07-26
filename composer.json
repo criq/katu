@@ -23,6 +23,7 @@
 		"oscarotero/psr7-middlewares": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"php-di/php-di": "^6",
+		"php-di/slim-bridge": "@stable",
 		"php": ">=7",
 		"predis/predis": "@stable",
 		"ralouphie/mimey": "@stable",
