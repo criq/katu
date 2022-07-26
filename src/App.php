@@ -165,6 +165,9 @@ class App
 			// Session.
 			\Katu\Tools\Session\Session::setCookieParams();
 
+			var_dump(\DI\Bridge\Slim\Bridge::create());die;
+
+
 			// Dependency Injection.
 			$container = \DI\ContainerBuilder::buildDevContainer();
 			AppFactory::setContainer($container);
