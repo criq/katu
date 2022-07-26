@@ -42,16 +42,9 @@ class App
 	/****************************************************************************
 	 * Classes.
 	 */
-	public static function getLoggerClass(): TClass
-	{
-		return new TClass("Katu\Tools\Logs\Logger");
-	}
-
 	public static function getLogger(TIdentifier $identifier): LoggerInterface
 	{
-		$loggerClassName = static::getLoggerClass()->getName();
-
-		return new $loggerClassName($identifier);
+		return new \Katu\Tools\Logs\Logger($identifier);
 	}
 
 	public static function getErrorHandler(): ?callable
@@ -163,7 +156,7 @@ class App
 			$builder = new \DI\ContainerBuilder();
 			$builder->addDefinitions([
 				\Psr\Log\LoggerInterface::class => \DI\factory(function () {
-					return new \Katu\Tools\Logs\Logger(new TIdentifier("error"));
+					return static::getLogger(new TIdentifier("error"));
 				}),
 			]);
 
