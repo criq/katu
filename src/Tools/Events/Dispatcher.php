@@ -36,7 +36,7 @@ class Dispatcher
 		return $this->getListeners()->filterForEventName($event->getName());
 	}
 
-	public function trigger(string $name, array $args = [])
+	public function trigger(string $name = [])
 	{
 		return $this->triggerEvent(new Event($name, $args));
 	}

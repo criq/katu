@@ -172,17 +172,17 @@ class App
 
 			// Set up routes.
 			foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
-				$pattern  = $route->getPattern();
+				$pattern = $route->getPattern();
 				if (!$pattern) {
 					throw new \Katu\Exceptions\RouteException("Invalid pattern for route \"{$name}\".");
 				}
 
-				$callable = $route->getCallable();
-				if (!$callable) {
+				$callback = $route->getCallback();
+				if (!$callback) {
 					throw new \Katu\Exceptions\RouteException("Invalid callable for route \"{$name}\".");
 				}
 
-				$slimRoute = static::$app->map($route->getMethods(), $pattern, $callable);
+				$slimRoute = static::$app->map($route->getMethods(), $pattern, $callback);
 				if (is_string($name) && trim($name)) {
 					$slimRoute->setName($name);
 				} elseif ($route->name) {
@@ -200,11 +200,6 @@ class App
 			$errorMiddleware = static::$app->addErrorMiddleware((bool)$displayErrorDetails, true, true);
 			$errorMiddleware->setDefaultErrorHandler(static::getErrorHandler());
 		}
-
-		// var_dump(static::$app->getContainer()->set("UserClass", \App\Models\Users\User::class));
-		// var_dump(static::$app->getContainer()->get("UserClass"));
-
-		// die;
 
 		return static::$app;
 	}

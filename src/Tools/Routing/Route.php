@@ -8,17 +8,15 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Route
 {
-	protected $controller;
-	protected $function;
+	protected $callback;
 	protected $methods = ["GET", "POST"];
 	protected $name;
 	protected $pattern;
 
-	public function __construct(string $pattern, string $controller, string $function, array $methods = null)
+	public function __construct(string $pattern, callable $callback, array $methods = null)
 	{
 		$this->setPattern($pattern);
-		$this->setController($controller);
-		$this->setFunction($function);
+		$this->setCallback($callback);
 		$this->setMethods($methods ?: $this->getMethods());
 	}
 
@@ -57,28 +55,16 @@ class Route
 		return $this->pattern;
 	}
 
-	public function setController(string $controller): Route
+	public function setCallback(callable $callback): Route
 	{
-		$this->controller = $controller;
+		$this->callback = $callback;
 
 		return $this;
 	}
 
-	public function getController(): string
+	public function getCallback(): callable
 	{
-		return $this->controller;
-	}
-
-	public function setFunction(string $function): Route
-	{
-		$this->function = $function;
-
-		return $this;
-	}
-
-	public function getFunction(): string
-	{
-		return $this->function;
+		return $this->callback;
 	}
 
 	public function setMethods(array $methods): Route
@@ -91,18 +77,6 @@ class Route
 	public function getMethods(): array
 	{
 		return $this->methods;
-	}
-
-	public function getCallable(): string
-	{
-		return implode(":", [
-			TClass::createFromArray([
-				"App",
-				"Controllers",
-				strtr($this->getController(), "/", "\\"),
-			])->getName(),
-			$this->getFunction(),
-		]);
 	}
 
 	public function getArgs(): array

@@ -7,7 +7,7 @@ class Event
 	protected $name;
 	protected $args = [];
 
-	public function __construct(string $name, array $args = [])
+	public function __construct(string $name = [])
 	{
 		$this->name = $name;
 		$this->args = $args;

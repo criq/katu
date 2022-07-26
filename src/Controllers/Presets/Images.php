@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Images extends \Katu\Controllers\Controller
 {
-	public static function getVersionSrcURL(ServerRequestInterface $request, ResponseInterface $response, array $args)
+	public static function getVersionSrcURL(ServerRequestInterface $request, ResponseInterface $response)
 	{
 		try {
 			try {
@@ -36,7 +36,7 @@ class Images extends \Katu\Controllers\Controller
 		}
 	}
 
-	public static function getVersionSrcFile(ServerRequestInterface $request, ResponseInterface $response, array $args)
+	public static function getVersionSrcFile(ServerRequestInterface $request, ResponseInterface $response)
 	{
 		try {
 			$fileClassName = \App\App::getFileModelClass()->getName();
