@@ -30,9 +30,9 @@ abstract class TwigEngine implements ViewEngineInterface
 		return $this->request;
 	}
 
-	protected static function createTwig(): \Twig\Environment
+	protected function createTwig(): \Twig\Environment
 	{
-		$twig = new \Twig\Environment(static::getTwigLoader(), static::getTwigConfig());
+		$twig = new \Twig\Environment(static::getTwigLoader(), $this->getTwigConfig());
 
 		/***************************************************************************
 		 * Image.
@@ -219,7 +219,7 @@ abstract class TwigEngine implements ViewEngineInterface
 		return $this->twig;
 	}
 
-	protected static function getTwigConfig(): array
+	protected function getTwigConfig(): array
 	{
 		return [
 			"auto_reload" => false,
