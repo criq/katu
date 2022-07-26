@@ -2,8 +2,11 @@
 
 namespace Katu;
 
+use DI\Factory\RequestedEntry;
+use Katu\Tools\Views\ViewEngineInterface;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -155,8 +158,8 @@ class App
 			// Create the dependency injection container.
 			$builder = new \DI\ContainerBuilder();
 			$builder->addDefinitions([
-				\Psr\Log\LoggerInterface::class => \DI\factory(function () {
-					return static::getLogger(new TIdentifier("error"));
+				\Psr\Log\LoggerInterface::class => \DI\factory(function (TIdentifier $identifier) {
+					return static::getLogger($identifier);
 				}),
 			]);
 
@@ -198,5 +201,10 @@ class App
 		}
 
 		return static::$app;
+	}
+
+	public static function getContainer(): ContainerInterface
+	{
+		return static::get()->getContainer();
 	}
 }

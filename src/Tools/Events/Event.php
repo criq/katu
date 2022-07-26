@@ -7,10 +7,10 @@ class Event
 	protected $name;
 	protected $args = [];
 
-	public function __construct(string $name = [])
+	public function __construct(string $name, array $args = [])
 	{
-		$this->name = $name;
-		$this->args = $args;
+		$this->setName($name);
+		$this->setArgs($args);
 	}
 
 	public function setName(string $name): Event
@@ -25,7 +25,7 @@ class Event
 		return $this->name;
 	}
 
-	public function setArgs(array $args): Event
+	public function setArgs(array $args = []): Event
 	{
 		$this->args = $args;
 
@@ -34,7 +34,7 @@ class Event
 
 	public function getArgs(): array
 	{
-		return $this->args;
+		return $this->args ?: [];
 	}
 
 	public function getArg(string $key)
