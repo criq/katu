@@ -7,7 +7,6 @@ use Katu\Types\TIdentifier;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Factory\AppFactory;
 
 class App
 {
@@ -165,9 +164,18 @@ class App
 			// Session.
 			\Katu\Tools\Session\Session::setCookieParams();
 
-			static::$app = \DI\Bridge\Slim\Bridge::create();
+			// Create the dependency injection container.
+			$builder = new \DI\ContainerBuilder();
+			$builder->addDefinitions([
+				\Psr\Log\LoggerInterface::class => \DI\factory(function () {
+					return new \Katu\Tools\Logs\Logger(new TIdentifier("error"));
+				}),
+			]);
 
-			// Body parsing middleware.
+			// Create the app.
+			static::$app = \DI\Bridge\Slim\Bridge::create($builder->build());
+
+			// Add body parsing middleware.
 			static::$app->addBodyParsingMiddleware();
 
 			// Set up routes.
