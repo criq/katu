@@ -165,14 +165,7 @@ class App
 			// Session.
 			\Katu\Tools\Session\Session::setCookieParams();
 
-			var_dump(\DI\Bridge\Slim\Bridge::create());die;
-
-
-			// Dependency Injection.
-			$container = \DI\ContainerBuilder::buildDevContainer();
-			AppFactory::setContainer($container);
-
-			static::$app = AppFactory::create();
+			static::$app = \DI\Bridge\Slim\Bridge::create();
 
 			// Body parsing middleware.
 			static::$app->addBodyParsingMiddleware();
@@ -208,14 +201,10 @@ class App
 			$errorMiddleware->setDefaultErrorHandler(static::getErrorHandler());
 		}
 
+		// var_dump(static::$app->getContainer()->set("UserClass", \App\Models\Users\User::class));
+		// var_dump(static::$app->getContainer()->get("UserClass"));
 
-		var_dump(static::$app->getContainer()->set("UserClass", \App\Models\Users\User::class));
-		var_dump(static::$app->getContainer()->get("UserClass"));
-
-		die;
-
-
-
+		// die;
 
 		return static::$app;
 	}
