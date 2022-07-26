@@ -7,6 +7,7 @@ use Katu\Types\TIdentifier;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Slim\Factory\AppFactory;
 
 class App
 {
@@ -164,7 +165,10 @@ class App
 			// Session.
 			\Katu\Tools\Session\Session::setCookieParams();
 
-			static::$app = \Slim\Factory\AppFactory::create();
+			$container = \DI\ContainerBuilder::buildDevContainer();
+			AppFactory::setContainer($container);
+
+			static::$app = AppFactory::create();
 
 			static::$app->addBodyParsingMiddleware();
 
