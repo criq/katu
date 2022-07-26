@@ -4,8 +4,8 @@ namespace Katu\Tools\Intl;
 
 class Locale
 {
-	public $code;
-	public $preference;
+	protected $code;
+	protected $preference;
 
 	public function __construct(string $code, $preference = null)
 	{

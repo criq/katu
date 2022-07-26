@@ -2,44 +2,42 @@
 
 namespace Katu\Tools\Intl;
 
-use Psr\Http\Message\ServerRequestInterface;
-
 class Formatter
 {
-	public static function getPreferredLocales(ServerRequestInterface $request)
+	protected $locale;
+
+	public function __construct(Locale $locale)
 	{
-		return \Katu\Types\TLocale::getPreferredFromRequest($request);
+		$this->setLocale($locale);
 	}
 
-	public static function getPreferredLocale(ServerRequestInterface $request, $locale = null)
+	public function setLocale(Locale $locale): Formatter
 	{
-		if ($locale) {
-			return $locale;
-		}
+		$this->locale = $locale;
 
-		$preferredLocaleCollection = static::getPreferredLocales($request);
-		if (isset($preferredLocaleCollection[0])) {
-			return $preferredLocaleCollection[0];
-		}
-
-		return false;
+		return $this;
 	}
 
-	public static function getLocalNumber($locale, $number)
+	public function getLocale(): Locale
 	{
-		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::DECIMAL);
+		return $this->locale;
+	}
+
+	public function getLocalNumber($number)
+	{
+		$numberFormatter = new \NumberFormatter($this->getLocale(), \NumberFormatter::DECIMAL);
 
 		return $numberFormatter->format($number);
 	}
 
-	public static function getLocalFormNumber($locale, $number)
+	public function getLocalFormNumber($number)
 	{
-		return preg_replace("/\s/u", "", static::getLocalNumber($locale, $number));
+		return preg_replace("/\s/u", "", static::getLocalNumber($this->getLocale(), $number));
 	}
 
-	public static function getLocalReadableNumber($locale, $number)
+	public function getLocalReadableNumber($number)
 	{
-		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::DECIMAL);
+		$numberFormatter = new \NumberFormatter($this->getLocale(), \NumberFormatter::DECIMAL);
 		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 3);
 		$numberFormatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, false);
 
@@ -56,19 +54,19 @@ class Formatter
 		return $numberFormatter->format($number);
 	}
 
-	public static function getLocalPercent($locale, float $number, int $decimals = 0)
+	public function getLocalPercent(float $number, int $decimals = 0)
 	{
-		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::PERCENT);
+		$numberFormatter = new \NumberFormatter($this->getLocale(), \NumberFormatter::PERCENT);
 		$numberFormatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, $decimals);
 		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
 
 		return $numberFormatter->format($number);
 	}
 
-	public static function getLocalCurrency($locale, float $number, string $currencyCode)
+	public function getLocalCurrency(float $number, string $currencyCode)
 	{
 		$number = (string)$number;
-		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
+		$numberFormatter = new \NumberFormatter($this->getLocale(), \NumberFormatter::CURRENCY);
 		if ((int)$number == (float)$number) {
 			$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currencyCode);
 			$numberFormatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 0);
@@ -78,10 +76,10 @@ class Formatter
 		return $numberFormatter->formatCurrency((float)$number, $currencyCode);
 	}
 
-	public static function getLocalWholeCurrency($locale, float $number, string $currencyCode)
+	public function getLocalWholeCurrency(float $number, string $currencyCode)
 	{
 		$number = (string)$number;
-		$numberFormatter = new \NumberFormatter(static::getPreferredLocale($locale), \NumberFormatter::CURRENCY);
+		$numberFormatter = new \NumberFormatter($this->getLocale(), \NumberFormatter::CURRENCY);
 		$numberFormatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currencyCode);
 		$numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
 
