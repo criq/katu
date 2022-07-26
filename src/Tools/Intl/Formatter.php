@@ -32,7 +32,7 @@ class Formatter
 
 	public function getLocalFormNumber($number)
 	{
-		return preg_replace("/\s/u", "", static::getLocalNumber($this->getLocale(), $number));
+		return preg_replace("/\s/u", "", $this->getLocalNumber($number));
 	}
 
 	public function getLocalReadableNumber($number)
