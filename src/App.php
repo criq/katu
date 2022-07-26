@@ -193,7 +193,7 @@ class App
 				$slimRoute = static::$app->map($route->getMethods(), $pattern, $callback);
 				if (is_string($name) && trim($name)) {
 					$slimRoute->setName($name);
-				} elseif ($route->name) {
+				} elseif ($route->getName()) {
 					$slimRoute->setName($route->getName());
 				}
 			}
