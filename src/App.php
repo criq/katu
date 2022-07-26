@@ -42,11 +42,6 @@ class App
 	/****************************************************************************
 	 * Classes.
 	 */
-	public static function getControllerClass(): TClass
-	{
-		return new TClass("Katu\Controllers\Controller");
-	}
-
 	public static function getLoggerClass(): TClass
 	{
 		return new TClass("Katu\Tools\Logs\Logger");
