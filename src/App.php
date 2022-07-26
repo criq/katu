@@ -166,6 +166,8 @@ class App
 
 			static::$app = \Slim\Factory\AppFactory::create();
 
+			static::$app->addBodyParsingMiddleware();
+
 			// Set up routes.
 			foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
 				$pattern  = $route->getPattern();
