@@ -2,8 +2,8 @@
 
 namespace Katu\Files\Formats;
 
-use App\Classes\Option;
-use App\Classes\OptionCollection;
+use Katu\Tools\Options\Option;
+use Katu\Tools\Options\OptionCollection;
 
 class CSV extends \ArrayObject
 {
