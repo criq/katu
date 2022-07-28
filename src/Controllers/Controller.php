@@ -10,24 +10,6 @@ class Controller
 	protected $errors;
 
 	/****************************************************************************
-	 * Redirect.
-	 */
-	public function redirect($urls, $status = 302)
-	{
-		$urls = is_array($urls) ? $urls : [$urls];
-		$urls = array_values(array_filter($urls));
-
-		foreach ($urls as $url) {
-			$url = (string) $url;
-			if (\Katu\Types\TURL::isValid($url)) {
-				return $this->getContainer()->get("response")->withRedirect($url, $status);
-			}
-		}
-
-		return false;
-	}
-
-	/****************************************************************************
 	 * Form submission.
 	 */
 	public function isSubmitted(ServerRequestInterface $request, ?string $name = null)
