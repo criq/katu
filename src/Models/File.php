@@ -11,12 +11,12 @@ class File extends \Katu\Model
 	public static function create($creator, $path, $fileName, $fileType, $fileSize)
 	{
 		return static::insert([
-			"timeCreated" => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			"creatorId"   =>          ($creator ? $creator->getId() : null),
-			"path"        => (string) ($path),
-			"name"        => (string) ($fileName),
-			"type"        => (string) ($fileType),
-			"size"        => (string) ($fileSize),
+			"timeCreated" => new \Katu\Utils\DateTime,
+			"creatorId" => $creator ? $creator->getId() : null,
+			"path" => $path,
+			"name" => $fileName,
+			"type" => $fileType,
+			"size" => $fileSize,
 		]);
 	}
 
@@ -60,10 +60,13 @@ class File extends \Katu\Model
 			throw new \Katu\Exceptions\InputErrorException("File folder isn\'t writable.");
 		}
 
-		var_dump(static::getDirPath());die;
-
 		// Get a new file name.
 		$path = new \Katu\Utils\File(static::generatePath($upload->fileName));
+
+		var_dump(static::getDirPath());
+		var_dump($path);
+		die;
+
 		(new \Katu\Utils\File($upload->path))->copy(new \Katu\Utils\File(FILE_PATH, $path));
 
 		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
