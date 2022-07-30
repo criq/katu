@@ -6,17 +6,17 @@ use \Sexy\Sexy as SX;
 
 class File extends \Katu\Model
 {
-	const TABLE = 'files';
+	const TABLE = "files";
 
 	public static function create($creator, $path, $fileName, $fileType, $fileSize)
 	{
 		return static::insert([
-			'timeCreated' => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
-			'creatorId'   =>          ($creator ? $creator->getId() : null),
-			'path'        => (string) ($path),
-			'name'        => (string) ($fileName),
-			'type'        => (string) ($fileType),
-			'size'        => (string) ($fileSize),
+			"timeCreated" => (string) (\Katu\Utils\DateTime::get()->getDbDateTimeFormat()),
+			"creatorId"   =>          ($creator ? $creator->getId() : null),
+			"path"        => (string) ($path),
+			"name"        => (string) ($fileName),
+			"type"        => (string) ($fileType),
+			"size"        => (string) ($fileSize),
 		]);
 	}
 
@@ -28,7 +28,7 @@ class File extends \Katu\Model
 
 		// Check the writability of files folder.
 		if (!is_writable(static::getDirPath())) {
-			throw new \Katu\Exceptions\InputErrorException("File folder isn't writable.");
+			throw new \Katu\Exceptions\InputErrorException("File folder isn\'t writable.");
 		}
 
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -52,17 +52,18 @@ class File extends \Katu\Model
 
 		// Check source file.
 		if (!file_exists($upload->path)) {
-			throw new \Katu\Exceptions\InputErrorException("Source file doesn't exist.");
+			throw new \Katu\Exceptions\InputErrorException("Source file doesn\'t exist.");
 		}
 
 		// Check the writability of files folder.
 		if (!is_writable(static::getDirPath())) {
-			throw new \Katu\Exceptions\InputErrorException("File folder isn't writable.");
+			throw new \Katu\Exceptions\InputErrorException("File folder isn\'t writable.");
 		}
+
+		var_dump(static::getDirPath());die;
 
 		// Get a new file name.
 		$path = new \Katu\Utils\File(static::generatePath($upload->fileName));
-		print_r($path);die;
 		(new \Katu\Utils\File($upload->path))->copy(new \Katu\Utils\File(FILE_PATH, $path));
 
 		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
@@ -74,13 +75,13 @@ class File extends \Katu\Model
 
 		$temporaryFile = \Katu\Utils\File::createTemporaryFromUrl($url);
 		if (!$temporaryFile) {
-			throw new \Katu\Exceptions\InputErrorException("Can't create file from URL $url.");
+			throw new \Katu\Exceptions\InputErrorException("Can\'t create file from URL $url.");
 		}
 
 		$file = static::createFromFile($creator, $temporaryFile);
 		$temporaryFile->delete();
 
-		$file->update('name', pathinfo($url->getParts()['path'])['basename']);
+		$file->update("name", pathinfo($url->getParts()["path"])["basename"]);
 		$file->save();
 
 		return $file;
@@ -89,7 +90,7 @@ class File extends \Katu\Model
 	public function delete()
 	{
 		foreach (\App\Models\FileAttachment::getBy([
-			'fileId' => $this->getId(),
+			"fileId" => $this->getId(),
 		]) as $fileAttachment) {
 			$fileAttachment->delete();
 		}
@@ -106,12 +107,12 @@ class File extends \Katu\Model
 
 	public static function getDirName()
 	{
-		return \Katu\Config::get('app', 'files', 'dir');
+		return \Katu\Config::get("app", "files", "dir");
 	}
 
 	public static function getDirPath()
 	{
-		return realpath(BASE_DIR . '/' . static::getDirName());
+		return realpath(BASE_DIR . "/" . static::getDirName());
 	}
 
 	public function getName()
@@ -128,21 +129,21 @@ class File extends \Katu\Model
 	{
 		while (true) {
 			try {
-				$subDirs = \Katu\Config::get('app', 'files', 'subDirs');
+				$subDirs = \Katu\Config::get("app", "files", "subDirs");
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				$subDirs = 3;
 			}
 
 			try {
-				$fileNameLength = \Katu\Config::get('app', 'files', 'fileNameLength');
+				$fileNameLength = \Katu\Config::get("app", "files", "fileNameLength");
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				$fileNameLength = 32;
 			}
 
 			try {
-				$fileNameChars = \Katu\Config::get('app', 'files', 'fileNameChars');
+				$fileNameChars = \Katu\Config::get("app", "files", "fileNameChars");
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$fileNameChars = 'abcdefghjkmnpqrstuvwxyz123456789';
+				$fileNameChars = "abcdefghjkmnpqrstuvwxyz123456789";
 			}
 
 			$subDirNames = [];
@@ -150,19 +151,19 @@ class File extends \Katu\Model
 				$subDirNames[] = \Katu\Utils\Random::getFromChars($fileNameChars, 1);
 			}
 
-			$path = trim(implode('/', [
-				implode('/', $subDirNames),
+			$path = trim(implode("/", [
+				implode("/", $subDirNames),
 				\Katu\Utils\Random::getFromChars($fileNameChars, $fileNameLength),
-			]), '/');
+			]), "/");
 
 			if ($srcName) {
 				$srcPathinfo = pathinfo($srcName);
-				if (isset($srcPathinfo['extension'])) {
-					$path .= '.' . mb_strtolower($srcPathinfo['extension']);
+				if (isset($srcPathinfo["extension"])) {
+					$path .= "." . mb_strtolower($srcPathinfo["extension"]);
 				}
 			}
 
-			$dstPath = static::getDirPath() . '/' . $path;
+			$dstPath = static::getDirPath() . "/" . $path;
 			if (file_exists($dstPath)) {
 				continue;
 			}
@@ -182,10 +183,10 @@ class File extends \Katu\Model
 	{
 		$this->getFile()->move($destination);
 
-		$path = preg_replace('/^' . preg_quote(FILE_PATH, '/') . '/', null, $destination);
-		$path = ltrim($path, '/');
+		$path = preg_replace("/^" . preg_quote(FILE_PATH, "/") . "/", null, $destination);
+		$path = ltrim($path, "/");
 
-		$this->update('path', $path);
+		$this->update("path", $path);
 		$this->save();
 
 		return true;
@@ -198,16 +199,16 @@ class File extends \Katu\Model
 
 	public function getPath()
 	{
-		return static::getDirPath() . '/' . $this->path;
+		return static::getDirPath() . "/" . $this->path;
 	}
 
 	public static function getSupportedImageTypes()
 	{
 		return [
-			'image/gif',
-			'image/jpeg',
-			'image/png',
-			'image/webp',
+			"image/gif",
+			"image/jpeg",
+			"image/png",
+			"image/webp",
 		];
 	}
 
@@ -218,22 +219,22 @@ class File extends \Katu\Model
 
 	public function getThumbnailUrl()
 	{
-		return \Katu\Utils\Image::getVersionUrl($this, 'thumbnail');
+		return \Katu\Utils\Image::getVersionUrl($this, "thumbnail");
 	}
 
 	public function getSquareThumbnailUrl()
 	{
-		return \Katu\Utils\Image::getVersionUrl($this, 'squareThumbnail');
+		return \Katu\Utils\Image::getVersionUrl($this, "squareThumbnail");
 	}
 
 	public function getThumbnailFile()
 	{
-		return \Katu\Utils\Image::getVersionFile($this, 'thumbnail');
+		return \Katu\Utils\Image::getVersionFile($this, "thumbnail");
 	}
 
 	public function getSquareThumbnailFile()
 	{
-		return \Katu\Utils\Image::getVersionFile($this, 'squareThumbnail');
+		return \Katu\Utils\Image::getVersionFile($this, "squareThumbnail");
 	}
 
 	public static function normalizePaths()
@@ -243,28 +244,28 @@ class File extends \Katu\Model
 		\Katu\Utils\Cache::clearMemory();
 
 		$filesDir = new \Katu\Utils\File(FILE_PATH);
-		$normalizedDir = new \Katu\Utils\File(BASE_DIR, FILE_DIR . '-normalized');
+		$normalizedDir = new \Katu\Utils\File(BASE_DIR, FILE_DIR . "-normalized");
 
 		if (!$normalizedDir->exists() && !$normalizedDir->makeDir()) {
-			throw new \Katu\Exceptions\Exception("Can't create normalized files dir.");
+			throw new \Katu\Exceptions\Exception("Can\'t create normalized files dir.");
 		}
 
 		try {
 			if (!$normalizedDir->chmod(0777)) {
-				throw new \Katu\Exceptions\Exception("Can't change permissions on normalized files dir.");
+				throw new \Katu\Exceptions\Exception("Can\'t change permissions on normalized files dir.");
 			}
 		} catch (\Exception $e) {
 			// Nevermind.
 		}
 
 		if (!$normalizedDir->isWritable()) {
-			throw new \Katu\Exceptions\Exception("Normalized dir isn't writable.");
+			throw new \Katu\Exceptions\Exception("Normalized dir isn\'t writable.");
 		}
 
-		$gitignoreOriginal = new \Katu\Utils\File($filesDir, '.gitignore');
-		$gitignoreTarget = new \Katu\Utils\File($normalizedDir, '.gitignore');
+		$gitignoreOriginal = new \Katu\Utils\File($filesDir, ".gitignore");
+		$gitignoreTarget = new \Katu\Utils\File($normalizedDir, ".gitignore");
 		if (!$gitignoreOriginal->copy($gitignoreTarget)) {
-			throw new \Katu\Exceptions\Exception("Can't copy .gitignore.");
+			throw new \Katu\Exceptions\Exception("Can\'t copy .gitignore.");
 		}
 
 		try {
@@ -283,14 +284,14 @@ class File extends \Katu\Model
 
 		$sql = SX::select()
 			->from(static::getTable())
-			->where(SX::eq(static::getColumn('isNormalized'), 0))
+			->where(SX::eq(static::getColumn("isNormalized"), 0))
 			->setPage(SX::page(1, 500))
 			;
 
 		$files = static::getBySql($sql);
 		if ($files->getTotal()) {
 			foreach ($files as $file) {
-				$file->update('preNormalizedPath', $file->path);
+				$file->update("preNormalizedPath", $file->path);
 				$file->save();
 
 				$destination = new \Katu\Utils\File($normalizedDir, static::generatePath($file->path));
@@ -298,15 +299,15 @@ class File extends \Katu\Model
 				try {
 					$file->copy($destination);
 					if ($destination->exists()) {
-						$path = preg_replace('/^' . preg_quote($normalizedDir, '/') . '/', null, $destination);
-						$path = ltrim($path, '/');
+						$path = preg_replace("/^" . preg_quote($normalizedDir, "/") . "/", null, $destination);
+						$path = ltrim($path, "/");
 
-						$file->update('isNormalized', 1);
-						$file->update('path', $path);
+						$file->update("isNormalized", 1);
+						$file->update("path", $path);
 						$file->save();
 					}
 				} catch (\Katu\Exceptions\Exception $e) {
-					if ($e->getAbbr() == 'sourceFileUnavailable') {
+					if ($e->getAbbr() == "sourceFileUnavailable") {
 						var_dump($file->path);
 					} else {
 						var_dump($file);
