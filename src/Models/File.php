@@ -243,7 +243,7 @@ class File extends \Katu\Model
 		\Katu\Utils\Cache::clearMemory();
 
 		$filesDir = new \Katu\Utils\File(FILE_PATH);
-		$normalizedDir = new \Katu\Utils\File(BASE_DIR, FILE_DIR . "-normalized");
+		$normalizedDir = new \Katu\Utils\File(BASE_DIR, static::getDirName() . "-normalized");
 
 		if (!$normalizedDir->exists() && !$normalizedDir->makeDir()) {
 			throw new \Katu\Exceptions\Exception("Can\'t create normalized files dir.");
