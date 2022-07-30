@@ -2,7 +2,6 @@
 
 namespace Katu\Tools\Routing;
 
-use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 use Psr\Http\Message\ServerRequestInterface;
 
