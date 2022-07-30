@@ -65,6 +65,9 @@ class File extends \Katu\Model
 
 		var_dump(static::getDirPath());
 		var_dump($path);
+
+		var_dump(new \Katu\Utils\File(static::getDirPath(), $path));
+
 		die;
 
 		(new \Katu\Utils\File($upload->path))->copy(new \Katu\Utils\File(FILE_PATH, $path));
