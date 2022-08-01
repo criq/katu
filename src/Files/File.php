@@ -5,6 +5,7 @@ namespace Katu\Files;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 use Katu\Types\TURL;
+use Psr\Http\Message\StreamInterface;
 
 class File
 {
@@ -446,5 +447,10 @@ class File
 		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__), $timeout, function ($file, $algo, $paramName) {
 			return $file->getHashedURL($algo, $paramName);
 		}, $this, $algo, $paramName);
+	}
+
+	public function getStream(): StreamInterface
+	{
+		return \GuzzleHttp\Psr7\Utils::streamFor((string)$this);
 	}
 }
