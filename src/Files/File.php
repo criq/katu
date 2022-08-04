@@ -451,6 +451,6 @@ class File
 
 	public function getStream(): StreamInterface
 	{
-		return \GuzzleHttp\Psr7\Utils::streamFor((string)$this);
+		return \GuzzleHttp\Psr7\Utils::streamFor(fopen((string)$this, "a+"));
 	}
 }
