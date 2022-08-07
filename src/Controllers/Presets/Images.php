@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Images extends \Katu\Controllers\Controller
 {
-	public static function getVersionSrcURL(ServerRequestInterface $request, ResponseInterface $response)
+	public function getVersionSrcURL(ServerRequestInterface $request, ResponseInterface $response, string $url, string $version)
 	{
 		try {
 			try {
@@ -17,7 +17,7 @@ class Images extends \Katu\Controllers\Controller
 			}
 
 			try {
-				$version = \Katu\Tools\Images\Version::createFromConfig($args["version"]);
+				$version = \Katu\Tools\Images\Version::createFromConfig($version);
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}
@@ -36,14 +36,14 @@ class Images extends \Katu\Controllers\Controller
 		}
 	}
 
-	public static function getVersionSrcFile(ServerRequestInterface $request, ResponseInterface $response)
+	public static function getVersionSrcFile(ServerRequestInterface $request, ResponseInterface $response, string $fileId, string $fileSecret, string $version)
 	{
 		try {
 			$fileClassName = \App\App::getFileModelClass()->getName();
 
 			$file = $fileClassName::getOneBy([
-				"id" => $args["fileId"],
-				"secret" => $args["fileSecret"],
+				"id" => $fileId,
+				"secret" => $fileSecret,
 			]);
 
 			if (!$file) {
@@ -51,7 +51,7 @@ class Images extends \Katu\Controllers\Controller
 			}
 
 			try {
-				$version = \Katu\Tools\Images\Version::createFromConfig($args["version"]);
+				$version = \Katu\Tools\Images\Version::createFromConfig($version);
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				throw new \Katu\Exceptions\NotFoundException;
 			}

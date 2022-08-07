@@ -2,6 +2,9 @@
 
 namespace Katu\Files;
 
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileInterface;
+
 class Upload
 {
 	const ERROR_OK       = 0;
@@ -14,15 +17,15 @@ class Upload
 	public $fileName;
 	public $fileSize;
 	public $fileType;
-	public $path;
+	public $stream;
 
-	public function __construct(\Slim\Http\UploadedFile $upload)
+	public function __construct(UploadedFileInterface $uploadedFile)
 	{
-		$this->path = (string)$upload->file;
-		$this->fileName = (string)$upload->getClientFilename();
-		$this->fileType = (string)$upload->getClientMediaType();
-		$this->fileSize = (int)$upload->getSize();
-		$this->error = (int)$upload->getError();
+		$this->stream = $uploadedFile->getStream();
+		$this->fileName = (string)$uploadedFile->getClientFilename();
+		$this->fileType = (string)$uploadedFile->getClientMediaType();
+		$this->fileSize = (int)$uploadedFile->getSize();
+		$this->error = (int)$uploadedFile->getError();
 	}
 
 	public function getError(): int
@@ -159,19 +162,9 @@ class Upload
 		return in_array($this->fileType, \Katu\Models\Presets\File::getSupportedImageTypes());
 	}
 
-	public function getPath(): string
+	public function getStream(): StreamInterface
 	{
-		return $this->path;
-	}
-
-	public function getFile(): \Katu\Files\File
-	{
-		return new \Katu\Files\File($this->path);
-	}
-
-	public function getHash(): string
-	{
-		return sha1(file_get_contents($this->path));
+		return $this->stream;
 	}
 
 	public static function getMaxSize(): \Katu\Types\TFileSize

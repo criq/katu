@@ -3,6 +3,7 @@
 namespace Katu\Files;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 class UploadCollection extends \ArrayObject
 {
@@ -15,7 +16,7 @@ class UploadCollection extends \ArrayObject
 			return null;
 		}
 
-		if (($uploadedFiles[$key] ?? null) instanceof \Slim\Http\UploadedFile) {
+		if (($uploadedFiles[$key] ?? null) instanceof UploadedFileInterface) {
 			$upload = new Upload($uploadedFiles[$key]);
 			if (($upload->error ?? null) === UPLOAD_ERR_NO_FILE) {
 				return null;
