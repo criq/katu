@@ -139,4 +139,9 @@ class Interval
 
 		return $res;
 	}
+
+	public function fitsTime(Time $time): bool
+	{
+		return $this->getStart() <= $time && $this->getEnd() >= $time;
+	}
 }
