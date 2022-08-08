@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Images extends \Katu\Controllers\Controller
 {
-	public function getVersionSrcURL(ServerRequestInterface $request, ResponseInterface $response, string $url, string $version)
+	public function getVersionSrcURL(ServerRequestInterface $request, ResponseInterface $response, string $version)
 	{
 		try {
 			try {
