@@ -9,11 +9,11 @@ abstract class File extends \Katu\Models\Model
 	const DEFAULT_DIR = "files";
 	const TABLE = "files";
 
-	public static function create(\Katu\Models\Presets\User $creator = null, string $path, string $fileName, string $fileType, int $fileSize) : File
+	public static function create(\Katu\Models\Presets\User $user = null, string $path, string $fileName, string $fileType, int $fileSize) : File
 	{
 		return static::insert([
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
-			"creatorId" => $creator ? $creator->getId() : null,
+			"creatorId" => $user ? $user->getId() : null,
 			"path" => $path,
 			"name" => $fileName,
 			"type" => $fileType,
@@ -21,7 +21,7 @@ abstract class File extends \Katu\Models\Model
 		]);
 	}
 
-	public static function createFromFile(\Katu\Models\Presets\User $creator = null, \Katu\Files\File $file) : File
+	public static function createFromFile(\Katu\Models\Presets\User $user = null, \Katu\Files\File $file) : File
 	{
 		if (!$file->exists()) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
@@ -42,18 +42,18 @@ abstract class File extends \Katu\Models\Model
 		$path = new \Katu\Files\File(static::generatePath($file));
 		$file->copy(new \Katu\Files\File(\App\App::getFileDir(), $path));
 
-		return static::create($creator, $path, $file->getBasename(), $fileType, $fileSize);
+		return static::create($user, $path, $file->getBasename(), $fileType, $fileSize);
 	}
 
-	public static function createFromUpload(\Katu\Models\Presets\User $creator = null, \Katu\Files\Upload $upload) : File
+	public static function createFromUpload(\Katu\Models\Presets\User $user = null, \Katu\Files\Upload $upload) : File
 	{
 		if (!$upload) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
 		}
 
 		// Check source file.
-		if (!file_exists($upload->path)) {
-			throw new \Katu\Exceptions\InputErrorException("Source file doesn't exist.");
+		if (!$upload->getStream()->isReadable()) {
+			throw new \Katu\Exceptions\InputErrorException("Can't read source stream.");
 		}
 
 		// Check the writability of files folder.
@@ -62,13 +62,15 @@ abstract class File extends \Katu\Models\Model
 		}
 
 		// Get a new file name.
-		$path = new \Katu\Files\File(static::generatePath($upload->fileName));
-		(new \Katu\Files\File($upload->path))->copy(new \Katu\Files\File(\App\App::getFileDir(), $path));
+		$path = new \Katu\Files\File(static::generatePath($upload->getFileName()));
 
-		return static::create($creator, $path, $upload->fileName, $upload->fileType, $upload->fileSize);
+		// Copy into permanent file.
+		(new \Katu\Files\File(\App\App::getFileDir(), $path))->set($upload->getStream()->getContents());
+
+		return static::create($user, $path, $upload->getFileName(), $upload->getFileType(), $upload->getFileSize());
 	}
 
-	public static function createFromURL(\Katu\Models\Presets\User $creator = null, $url) : File
+	public static function createFromURL(\Katu\Models\Presets\User $user = null, $url) : File
 	{
 		$url = new \Katu\Types\TURL($url);
 
@@ -77,7 +79,7 @@ abstract class File extends \Katu\Models\Model
 			throw new \Katu\Exceptions\InputErrorException("Can't create file from URL {$url}.");
 		}
 
-		$file = static::createFromFile($creator, $temporaryFile);
+		$file = static::createFromFile($user, $temporaryFile);
 		$temporaryFile->delete();
 
 		$file->name = pathinfo($url->getParts()["path"])["basename"];
@@ -194,9 +196,9 @@ abstract class File extends \Katu\Models\Model
 		return true;
 	}
 
-	public function attachTo(\Katu\Models\Presets\User $creator = null, \Katu\Models\Model $object)
+	public function attachTo(\Katu\Models\Presets\User $user = null, \Katu\Models\Model $object)
 	{
-		return \App\App::getFileAttachmentModelClass()->getName()::make($creator, $object, $this);
+		return \App\App::getFileAttachmentModelClass()->getName()::make($user, $object, $this);
 	}
 
 	public function getSecret()
