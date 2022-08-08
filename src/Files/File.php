@@ -195,7 +195,7 @@ class File
 		}
 	}
 
-	public function getMime()
+	public function getMime(): ?string
 	{
 		clearstatcache();
 
