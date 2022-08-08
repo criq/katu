@@ -2,8 +2,6 @@
 
 namespace Katu;
 
-use DI\Factory\RequestedEntry;
-use Katu\Tools\Views\ViewEngineInterface;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 use Psr\Container\ContainerInterface;
