@@ -35,11 +35,11 @@ class Controller
 	/****************************************************************************
 	 * View data.
 	 */
-	public function getViewData(): array
+	public function getViewData(array $data = []): array
 	{
-		return array_merge($this->data, [
+		return array_merge((array)$this->data, [
 			"errors" => $this->getErrors(),
-		]);
+		], $data ?: []);
 	}
 
 	/****************************************************************************
