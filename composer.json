@@ -32,6 +32,7 @@
 		"slim/extras": "@stable",
 		"slim/slim": "^4",
 		"squizlabs/php_codesniffer": "@stable",
+		"symfony/cache": "@stable",
 		"symfony/css-selector": "@stable",
 		"symfony/dom-crawler": "@stable",
 		"symfony/intl": "@stable",

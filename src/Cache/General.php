@@ -16,6 +16,20 @@ class General
 
 	public function __construct(TIdentifier $identifier, ?Timeout $timeout = null, ?callable $callback = null)
 	{
+		// $cache = new \Symfony\Component\Cache\Adapter\FilesystemAdapter;
+		// var_dump($cache);
+		// var_dump($cache->get("a", function(){
+		// 	return "A";
+		// }));
+
+		// $cache = new \Symfony\Component\Cache\Adapter\RedisAdapter(new \Predis\Client());
+		// var_dump($cache);
+		// var_dump($cache->get("b", function(){
+		// 	return "A";
+		// }));
+
+		// die;
+
 		$this->setIdentifier($identifier);
 		$this->setTimeout($timeout);
 		$this->setCallback($callback);
