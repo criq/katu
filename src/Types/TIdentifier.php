@@ -71,7 +71,7 @@ class TIdentifier implements PackagedInterface
 			try {
 				return (string)$i;
 			} catch (\Throwable $e) {
-				return sha1(serialize($i));
+				return md5(serialize($i));
 			}
 		}, $parts);
 		// var_dump($parts);die;
@@ -170,7 +170,7 @@ class TIdentifier implements PackagedInterface
 	{
 		$key = $this->getPath();
 		if (strlen($key) > 250) {
-			$key = sha1($key);
+			$key = md5($key);
 		}
 
 		return $key;
