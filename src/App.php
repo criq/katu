@@ -21,6 +21,11 @@ class App
 		return new \Katu\Files\File(realpath(__DIR__ . "/../../../../"));
 	}
 
+	public static function getAppDir(): \Katu\Files\File
+	{
+		return new \Katu\Files\File(static::getBaseDir(), "app");
+	}
+
 	public static function getFileDir(): \Katu\Files\File
 	{
 		return \Katu\Models\Presets\File::getDir();
