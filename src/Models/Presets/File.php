@@ -3,13 +3,14 @@
 namespace Katu\Models\Presets;
 
 use Katu\Tools\Random\Generator;
+use Katu\Types\TFileSize;
 
 abstract class File extends \Katu\Models\Model
 {
 	const DEFAULT_DIR = "files";
 	const TABLE = "files";
 
-	public static function create(\Katu\Models\Presets\User $user = null, string $path, string $fileName, string $fileType, int $fileSize) : File
+	public static function create(\Katu\Models\Presets\User $user = null, string $path, string $fileName, string $fileType, int $fileSize): File
 	{
 		return static::insert([
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
@@ -21,7 +22,7 @@ abstract class File extends \Katu\Models\Model
 		]);
 	}
 
-	public static function createFromFile(\Katu\Models\Presets\User $user = null, \Katu\Files\File $file) : File
+	public static function createFromFile(\Katu\Models\Presets\User $user = null, \Katu\Files\File $file): File
 	{
 		if (!$file->exists()) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
@@ -45,7 +46,7 @@ abstract class File extends \Katu\Models\Model
 		return static::create($user, $path, $file->getBasename(), $fileType, $fileSize);
 	}
 
-	public static function createFromUpload(\Katu\Models\Presets\User $user = null, \Katu\Files\Upload $upload) : File
+	public static function createFromUpload(\Katu\Models\Presets\User $user = null, \Katu\Files\Upload $upload): File
 	{
 		if (!$upload) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
@@ -70,7 +71,7 @@ abstract class File extends \Katu\Models\Model
 		return static::create($user, $path, $upload->getFileName(), $upload->getFileType(), $upload->getFileSize());
 	}
 
-	public static function createFromURL(\Katu\Models\Presets\User $user = null, $url) : File
+	public static function createFromURL(\Katu\Models\Presets\User $user = null, $url): File
 	{
 		$url = new \Katu\Types\TURL($url);
 
@@ -105,12 +106,12 @@ abstract class File extends \Katu\Models\Model
 		return parent::delete();
 	}
 
-	public function getFile() : ?\Katu\Files\File
+	public function getFile(): ?\Katu\Files\File
 	{
 		return new \Katu\Files\File($this->getPath());
 	}
 
-	public static function getDirName() : string
+	public static function getDirName(): string
 	{
 		try {
 			return \Katu\Config\Config::get("app", "files", "dir");
@@ -119,12 +120,12 @@ abstract class File extends \Katu\Models\Model
 		}
 	}
 
-	public static function getDir() : \Katu\Files\File
+	public static function getDir(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(\App\App::getBaseDir(), static::getDirName());
 	}
 
-	public function getName() : string
+	public function getName(): string
 	{
 		return $this->name;
 	}
@@ -201,7 +202,7 @@ abstract class File extends \Katu\Models\Model
 		return \App\App::getFileAttachmentModelClass()->getName()::make($user, $object, $this);
 	}
 
-	public function getSecret()
+	public function getSecret(): string
 	{
 		if (!$this->secret) {
 			$this->secret = Generator::generateString($this->getTable()->getColumn(new \Katu\PDO\Name("secret"))->getDescription()->length, Generator::ALNUM);
@@ -211,12 +212,12 @@ abstract class File extends \Katu\Models\Model
 		return $this->secret;
 	}
 
-	public function getPath()
+	public function getPath(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(static::getDir(), $this->path);
 	}
 
-	public static function getSupportedImageTypes()
+	public static function getSupportedImageTypes(): array
 	{
 		return [
 			"image/gif",
@@ -226,7 +227,7 @@ abstract class File extends \Katu\Models\Model
 		];
 	}
 
-	public function isSupportedImage()
+	public function getIsSupportedImage(): bool
 	{
 		return in_array($this->type, static::getSupportedImageTypes());
 	}
@@ -236,8 +237,8 @@ abstract class File extends \Katu\Models\Model
 		return new \Katu\Tools\Images\Image($this);
 	}
 
-	public function getSize()
+	public function getSize(): TFileSize
 	{
-		return new \Katu\Types\TFileSize($this->size);
+		return new TFileSize($this->size);
 	}
 }

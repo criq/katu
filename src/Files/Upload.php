@@ -157,7 +157,7 @@ class Upload
 		return in_array($this->fileType, $types);
 	}
 
-	public function isSupportedImage(): bool
+	public function getIsSupportedImage(): bool
 	{
 		return in_array($this->fileType, \Katu\Models\Presets\File::getSupportedImageTypes());
 	}
