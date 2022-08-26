@@ -509,7 +509,7 @@ abstract class View extends Base
 
 	public static function getAllViewClasses(): array
 	{
-		$dir = new \Katu\Files\File("app", "Models");
+		$dir = new \Katu\Files\File(\App\App::getAppDir(), "Models");
 		if ($dir->exists()) {
 			$dir->includeAllPhpFiles();
 		}
