@@ -47,16 +47,23 @@ class Env
 	{
 		try {
 			exec("git log --pretty=\"%H\" -n1 HEAD", $output);
-			return $output[0];
-		} catch (\Throwable $e) {
-			try {
-				$file = new \Katu\Files\File(\App\App::getBaseDir(), ".git", "logs", "HEAD");
-				$lines = $file->getLines();
-				$line = trim($lines[count($lines)-1]);
-				preg_match("/^(?<commit>[0-9a-f]{40})/", $line, $match);
-				return $match["commit"];
-			} catch (\Throwable $e) {
+			if ($output[0] ?? null) {
+				return $output[0];
 			}
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
+		try {
+			$file = new \Katu\Files\File(\App\App::getBaseDir(), ".git", "logs", "HEAD");
+			$lines = $file->getLines();
+			$line = trim($lines[count($lines)-1]);
+			preg_match("/^(?<commit>[0-9a-f]{40})/", $line, $match);
+			if ($match["commit"] ?? null) {
+				return $match["commit"];
+			}
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
 		return null;
