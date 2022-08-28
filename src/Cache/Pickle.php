@@ -51,9 +51,9 @@ class Pickle
 		return $this->getFile()->delete();
 	}
 
-	public function getDateTimeModified(): ?\Katu\Tools\Calendar\Time
+	public function getModifiedTime(): ?\Katu\Tools\Calendar\Time
 	{
-		return $this->getFile()->getDateTimeModified() ?: null;
+		return $this->getFile()->getModifiedTime() ?: null;
 	}
 
 	public function hasContents(): bool
@@ -64,7 +64,7 @@ class Pickle
 	public function getAge(): ?Seconds
 	{
 		try {
-			return $this->getFile()->getDateTimeModified()->getAge();
+			return $this->getFile()->getModifiedTime()->getAge();
 		} catch (\Throwable $e) {
 			return null;
 		}
@@ -73,7 +73,7 @@ class Pickle
 	public function isExpired(Timeout $timeout): bool
 	{
 		try {
-			return (bool)(!$this->hasContents() || !$timeout->fits($this->getDateTimeModified()));
+			return (bool)(!$this->hasContents() || !$timeout->fits($this->getModifiedTime()));
 		} catch (\Throwable $e) {
 			return true;
 		}

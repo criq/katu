@@ -286,7 +286,7 @@ class Table extends \Sexy\Expression
 	{
 		$file = $this->getLastUpdatedTemporaryFile();
 
-		return $file->getDateTimeModified();
+		return $file->getModifiedTime();
 	}
 
 	public function getType(): string

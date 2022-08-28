@@ -2,6 +2,7 @@
 
 namespace Katu\Files;
 
+use Katu\Tools\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 use Katu\Types\TURL;
@@ -363,13 +364,17 @@ class File
 		}
 	}
 
-	public function getDateTimeModified()
+	public function getModifiedTime(): ?Time
 	{
 		try {
-			return new \Katu\Tools\Calendar\Time("@" . filemtime((string)$this));
+			if ($this->exists()) {
+				return new Time("@" . filemtime((string)$this));
+			}
 		} catch (\Throwable $e) {
-			return false;
+			// Nevermind.
 		}
+
+		return null;
 	}
 
 	public function eachRecursive($callback)
