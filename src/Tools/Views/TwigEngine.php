@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Views;
 
+use Katu\Types\TIdentifier;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -315,6 +316,12 @@ abstract class TwigEngine implements ViewEngineInterface
 		$twig = $this->getTwig();
 		$data = array_merge_recursive($this->getCommonData($this->getRequest()), $data);
 
-		return \GuzzleHttp\Psr7\Utils::streamFor(trim($twig->render($template, $data)));
+		try {
+			return \GuzzleHttp\Psr7\Utils::streamFor(trim($twig->render($template, $data)));
+		} catch (\Throwable $e) {
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+
+			throw $e;
+		}
 	}
 }
