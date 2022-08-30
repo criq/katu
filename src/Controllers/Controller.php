@@ -14,7 +14,7 @@ class Controller
 	 */
 	public function isSubmitted(ServerRequestInterface $request, ?string $name = null)
 	{
-		return ($request->getParsedBody()["formSubmitted"] ?? null) && ($request->getParsedBody()["formName"] ?? null) == $name;
+		return $request->getMethod() == "POST" && ($request->getParsedBody()["formName"] ?? null) == $name;
 	}
 
 	public function isSubmittedWithToken(ServerRequestInterface $request, ?string $name = null)

@@ -1,6 +1,5 @@
 {% set token = getCsrfToken() %}
 
-<input type="hidden" name="formSubmitted" value="1" />
 <input type="hidden" name="formName" value="{{ name }}" />
 <input type="hidden" name="formToken" value="{{ token }}" />
 {% if captcha %}
