@@ -10,7 +10,7 @@ class Memory
 
 	public static function setLimit(TFileSize $limit): bool
 	{
-		return (bool)ini_set("memory_limit", $limit->getInB());
+		return (bool)ini_set("memory_limit", (string)$limit->getInB());
 	}
 
 	public static function getLimit(): TFileSize
