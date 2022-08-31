@@ -273,15 +273,15 @@ abstract class TwigEngine implements ViewEngineInterface
 		}
 
 		try {
-			if ($this->getRequest()->getAttribute("route")) {
-				$data["_request"]["route"] = (array)[
-					"pattern" => $this->getRequest()->getAttribute("route")->getPattern(),
-					"name" => $this->getRequest()->getAttribute("route")->getName(),
-					"params" => $this->getRequest()->getAttribute("route")->getArguments(),
+			if ($this->getRequest()->getAttribute("__route__")) {
+				$data["_request"]["route"] = [
+					"pattern" => $this->getRequest()->getAttribute("__route__")->getPattern(),
+					"name" => $this->getRequest()->getAttribute("__route__")->getName(),
+					"params" => $this->getRequest()->getAttribute("__route__")->getArguments(),
 				];
 			}
 		} catch (\Throwable $e) {
-
+			// Nevermind.
 		}
 
 		$data["_agent"] = new \Jenssegers\Agent\Agent();
