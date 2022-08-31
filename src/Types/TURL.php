@@ -172,7 +172,7 @@ class TURL
 		return $this;
 	}
 
-	public function getQueryParams()
+	public function getQueryParams(): ?array
 	{
 		$parts = $this->getParts();
 
@@ -243,7 +243,7 @@ class TURL
 		}
 	}
 
-	public function getAsTemporaryFile()
+	public function getAsTemporaryFile(): \Katu\Files\File
 	{
 		$basename = (new \Katu\Files\File($this))->getBasename();
 		$tmpFile = new \Katu\Files\File(\App\App::getTemporaryDir(), "url", \Katu\Tools\Random\Generator::getFileName(), $basename);
