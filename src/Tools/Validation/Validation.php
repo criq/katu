@@ -4,9 +4,9 @@ namespace Katu\Tools\Validation;
 
 class Validation implements \ArrayAccess
 {
-	protected $response;
-	protected $params;
 	protected $errors;
+	protected $params;
+	protected $response;
 
 	public function __construct(?ParamCollection $params = null)
 	{
