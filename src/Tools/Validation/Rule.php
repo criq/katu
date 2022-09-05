@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Validation;
 
-abstract class Rule
+abstract class Rule implements ValidatableInterface
 {
 	protected $message;
 
