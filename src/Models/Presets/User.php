@@ -346,22 +346,22 @@ abstract class User extends \Katu\Models\Model
 		return !in_array(false, $status);
 	}
 
-	public function hasRolePermission($permission): bool
+	public function hasRolePermission(string $permission): bool
 	{
 		return in_array($permission, $this->getRolePermissions());
 	}
 
-	public function hasUserPermission($permission): bool
+	public function hasUserPermission(string $permission): bool
 	{
 		return in_array($permission, $this->getUserPermissions());
 	}
 
-	public function setUserSetting($name, $value)
+	public function setUserSetting(string $name, $value)
 	{
 		return \App\App::getUserSettingModelClass()->getName()::getOrCreate($this, $name, $value);
 	}
 
-	public function getUserSetting($name)
+	public function getUserSetting(string $name)
 	{
 		return \App\App::getUserSettingModelClass()->getName()::getOneBy([
 			"userId" => $this->getId(),
