@@ -27,7 +27,7 @@ class TString
 
 	public function getNumberOfWords()
 	{
-		return count(array_filter(explode(' ', $this->string)));
+		return count(array_filter(explode(" ", $this->string)));
 	}
 
 	public function hasAtLeastWords($n): bool
@@ -38,27 +38,27 @@ class TString
 	public function getForURL($options = []) : string
 	{
 		$options = array_merge($options, [
-			'delimiter' => '-',
-			'lowercase' => true,
+			"delimiter" => "-",
+			"lowercase" => true,
 		]);
 
 		\URLify::$remove_list = [];
 
-		$maxLength = $options['maxLength'] ?? 255;
-		$language = $options['language'] ?? 'en';
+		$maxLength = $options["maxLength"] ?? 255;
+		$language = $options["language"] ?? "en";
 
 		return \URLify::filter($this->string, $maxLength, $language);
 	}
 
 	public function getAsFloat()
 	{
-		return (float)floatval(trim(strtr(preg_replace('/\s/u', null, $this->string), ',', '.')));
+		return (float)floatval(trim(strtr(preg_replace("/\s/u", "", $this->string), ",", ".")));
 	}
 
 	public function getAsFloatIfNumeric()
 	{
-		if (preg_match('/^(([0-9]+(\.[0-9]+)?)|(\.[0-9]+))$/', $this->string, $match)) {
-			return (float)$this->string;
+		if (preg_match("/^(([0-9]+([,\.][0-9]+)?)|([,\.][0-9]+))$/", $this->string, $match)) {
+			return $this->getAsFloat();
 		}
 
 		return (string)$this->string;
@@ -76,7 +76,7 @@ class TString
 
 	public function getWbr(): TString
 	{
-		return new static(implode('<wbr />', $this->getAsArray()));
+		return new static(implode("<wbr />", $this->getAsArray()));
 	}
 
 	public function normalizeSpaces(): TString
