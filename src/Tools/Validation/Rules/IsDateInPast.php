@@ -17,7 +17,7 @@ class IsDateInPast extends Rule
 		$output = trim($param);
 		if (strlen($output)) {
 			$output = Time::createFromString($output);
-			if (!$output) {
+			if (!strlen($output)) {
 				$validation->addError((new Error($this->getMessage()))->addParam($param));
 			} elseif ($output->isInFuture()) {
 				$validation->addError((new Error($this->getMessage()))->addParam($param));
@@ -29,5 +29,3 @@ class IsDateInPast extends Rule
 		return $validation;
 	}
 }
-
-
