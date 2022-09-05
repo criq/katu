@@ -14,12 +14,22 @@ abstract class UserSetting extends \Katu\Models\Model
 		], [
 			"timeCreated" => (string)new \Katu\Tools\Calendar\Time,
 		], [
-			"value" => \Katu\Files\Formats\JSON::encodeStandard($value),
+			"value" => static::encodeValue($value),
 		]);
 	}
 
 	public function getValue()
 	{
-		return \Katu\Files\Formats\JSON::decodeAsArray($this->value);
+		return static::decodeValue($this->value);
+	}
+
+	public static function encodeValue($value)
+	{
+		return \Katu\Files\Formats\JSON::encodeStandard($value);
+	}
+
+	public static function decodeValue($value)
+	{
+		return \Katu\Files\Formats\JSON::decodeAsArray($value);
 	}
 }
