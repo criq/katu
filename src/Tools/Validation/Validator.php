@@ -4,25 +4,7 @@ namespace Katu\Tools\Validation;
 
 class Validator
 {
-	protected $param;
 	protected $rules = [];
-
-	public function __construct(Param $param)
-	{
-		$this->param = $param;
-	}
-
-	public function setParam(Param $param): Validator
-	{
-		$this->param = $param;
-
-		return $this;
-	}
-
-	public function getParam(): Param
-	{
-		return $this->param;
-	}
 
 	public function addRule(Rule $rule): Validator
 	{
@@ -36,15 +18,15 @@ class Validator
 		return $this->rules;
 	}
 
-	public function validate(): Validation
+	public function validate(Param $param): Validation
 	{
 		foreach ($this->getRules() as $rule) {
-			$validation = $rule->validate($this->getParam());
+			$validation = $rule->validate($param);
 			if ($validation->hasErrors()) {
 				return $validation;
 			}
 		}
 
-		return (new Validation)->addParam($this->getParam());
+		return (new Validation)->addParam($param);
 	}
 }
