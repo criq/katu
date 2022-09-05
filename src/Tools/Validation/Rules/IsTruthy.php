@@ -13,8 +13,8 @@ class IsTruthy extends Rule
 	{
 		$validation = new Validation;
 
-		$output = trim($param);
-		if ((bool)$output === true) {
+		$output = (bool)trim($param);
+		if ($output === true) {
 			$validation->addParam($param->setOutput($output));
 		} else {
 			$validation->addError((new Error($this->getMessage()))->addParam($param));
