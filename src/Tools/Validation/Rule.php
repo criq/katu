@@ -10,7 +10,7 @@ abstract class Rule
 
 	public function __construct(?string $message = null)
 	{
-		$this->message = $message;
+		$this->setMessage($message);
 	}
 
 	public function setMessage(string $message): Rule
