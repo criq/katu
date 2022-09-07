@@ -3,11 +3,10 @@
 namespace Katu\Tools\Emails\ThirdParty;
 
 use Katu\Types\TIdentifier;
+use Katu\Types\TURL;
 
 class Ecomail extends \Katu\Tools\Emails\ThirdParty
 {
-	public $attachments = [];
-
 	public function getEmail(): array
 	{
 		$email = [];
@@ -19,17 +18,17 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		$email["message"]["subject"] = $this->getSubject();
 		$email["message"]["html"] = $this->getHtml();
 		$email["message"]["text"] = $this->getPlain() ?: strip_tags($this->html);
-		$email["message"]["from_email"] = $this->getFromEmailAddress();
-		$email["message"]["from_name"] = $this->getFromName();
+		$email["message"]["from_email"] = $this->getSender()->getEmailAddress();
+		$email["message"]["from_name"] = $this->getSender()->getName();
 
-		foreach ($this->to as $toEmailAddress => $toName) {
+		foreach ($this->getRecipients() as $recipient) {
 			$email["message"]["to"][] = [
-				"email" => $toEmailAddress,
-				"name" => $toName,
+				"email" => $recipient->getEmailAddress(),
+				"name" => $recipient->getName(),
 			];
 		}
 
-		foreach ($this->variables as $name => $content) {
+		foreach ($this->globalVariables as $name => $content) {
 			$email["message"]["global_merge_vars"][] = [
 				"name" => $name,
 				"content" => $content,
@@ -47,17 +46,20 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		return $email;
 	}
 
+	public function getEndpointURL(): TURL
+	{
+		return $this->getTemplate()
+			? new TURL("http://api2.ecomailapp.cz/transactional/send-template")
+			: new TURL("http://api2.ecomailapp.cz/transactional/send-message")
+			;
+	}
+
 	public function send()
 	{
 		$curl = new \Curl\Curl;
 		$curl->setHeader("key", \Katu\Config\Config::get("ecomail", "api", "key"));
 
-		if ($this->getTemplate()) {
-			$res = $curl->post("http://api2.ecomailapp.cz/transactional/send-template", $this->getEmail());
-		} else {
-			$res = $curl->post("http://api2.ecomailapp.cz/transactional/send-message", $this->getEmail());
-		}
-
+		$res = $curl->post($this->getEndpointURL(), $this->getEmail());
 		$info = $curl->getInfo();
 
 		if ($info["http_code"] != 200) {

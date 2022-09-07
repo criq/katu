@@ -2,11 +2,13 @@
 
 namespace Katu\Tools\Emails;
 
+use Katu\Types\TEmailAddress;
+
 abstract class ThirdParty extends \Katu\Tools\Emails\Email
 {
-	public $substitutions = [];
-	public $template;
-	public $variables = [];
+	protected $globalVariables = [];
+	protected $recipientVariables = [];
+	protected $template;
 
 	abstract public function send();
 
@@ -22,32 +24,19 @@ abstract class ThirdParty extends \Katu\Tools\Emails\Email
 		return (string)$this->template;
 	}
 
-	public function addAttachment($file, $params = []): ThirdParty
-	{
-		$this->attachments[] = [
-			"file" => new \Katu\Files\File($file),
-			"name" => $params["name"] ?? null,
-			"cid" => $params["cid"] ?? null,
-		];
-
-		return $this;
-	}
-
-	public function setVariable($name, $value): ThirdParty
+	public function setGlobalVariable(string $name, string $value): ThirdParty
 	{
 		if (trim($name)) {
-			$this->variables[$name] = $value;
+			$this->globalVariables[$name] = $value;
 		}
 
 		return $this;
 	}
 
-	public function setRecipientVariable($emailAddress, $name, $value): ThirdParty
+	public function setRecipientVariable(TEmailAddress $emailAddress, string $name, string $value): ThirdParty
 	{
-		foreach (static::resolveEmailAddress($emailAddress) as $emailAddress) {
-			if (trim($name)) {
-				$this->substitutions[$emailAddress][$name] = $value;
-			}
+		if (trim($name)) {
+			$this->recipientVariables[$emailAddress->getEmailAddress()][$name] = $value;
 		}
 
 		return $this;
