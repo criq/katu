@@ -9,6 +9,7 @@ class Procedure
 {
 	protected $callback;
 	protected $identifier;
+	protected $ignoreLoadAveragePlatforms;
 	protected $lockExcludedPlatforms;
 	protected $maxLoadAverage;
 	protected $timeout;
@@ -68,9 +69,9 @@ class Procedure
 		return $this->maxLoadAverage;
 	}
 
-	public function setLockExcludedPlatforms(?array $value): Procedure
+	public function setLockExcludedPlatforms(?array $platforms): Procedure
 	{
-		$this->lockExcludedPlatforms = $value;
+		$this->lockExcludedPlatforms = $platforms;
 
 		return $this;
 	}
@@ -80,10 +81,22 @@ class Procedure
 		return $this->lockExcludedPlatforms ?: [];
 	}
 
+	public function setIgnoreLoadAveragePlatforms(?array $platforms): Procedure
+	{
+		$this->ignoreLoadAveragePlatforms = $platforms;
+
+		return $this;
+	}
+
+	public function getIgnoreLoadAveragePlatforms(): array
+	{
+		return $this->ignoreLoadAveragePlatforms ?: [];
+	}
+
 	public function run()
 	{
 		try {
-			if ($this->getMaxLoadAverage()) {
+			if (!in_array(\Katu\Config\Env::getPlatform(), $this->getIgnoreLoadAveragePlatforms()) && $this->getMaxLoadAverage()) {
 				\Katu\Tools\System\System::assertMaxLoadAverage($this->getMaxLoadAverage());
 			}
 
