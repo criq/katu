@@ -2,6 +2,9 @@
 
 namespace Katu\Tools\Emails\ThirdParty;
 
+use Katu\Errors\Error;
+use Katu\Errors\ErrorCollection;
+use Katu\Tools\Emails\Response;
 use Katu\Types\TIdentifier;
 use Katu\Types\TURL;
 
@@ -54,7 +57,7 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 			;
 	}
 
-	public function send()
+	public function send(): Response
 	{
 		$curl = new \Curl\Curl;
 		$curl->setHeader("key", \Katu\Config\Config::get("ecomail", "api", "key"));
@@ -62,12 +65,15 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		$res = $curl->post($this->getEndpointURL(), $this->getEmail());
 		$info = $curl->getInfo();
 
-		if ($info["http_code"] != 200) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error(serialize($res));
+		if ($info["http_code"] == 200) {
+			return (new Response(true))->setPayload($res);
+		} else {
+			$errors = new ErrorCollection;
+			foreach ((array)$res->errors as $key => $error) {
+				$errors[] = new Error($error[0], $key);
+			}
 
-			throw new \Exception("Došlo k chybě při odesílání e-mailu.");
+			return (new Response(false))->setPayload($res)->setErrors($errors);
 		}
-
-		return $res;
 	}
 }
