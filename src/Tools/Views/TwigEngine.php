@@ -104,6 +104,10 @@ abstract class TwigEngine implements ViewEngineInterface
 			return (string)$value;
 		}));
 
+		$twig->addFilter(new \Twig\TwigFilter("json_decode", function ($string) {
+			return \Katu\Files\Formats\JSON::decodeAsArray($string);
+		}));
+
 		/***************************************************************************
 		 * Functions.
 		 */
