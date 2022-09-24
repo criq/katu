@@ -5,7 +5,6 @@ namespace Katu\Tools\Emails\ThirdParty;
 use Katu\Errors\Error;
 use Katu\Errors\ErrorCollection;
 use Katu\Tools\Emails\Response;
-use Katu\Types\TIdentifier;
 use Katu\Types\TURL;
 
 class Ecomail extends \Katu\Tools\Emails\ThirdParty
