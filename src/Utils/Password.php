@@ -18,25 +18,25 @@ class Password
 		return static::DELIMITER . implode(static::DELIMITER, array($hashFunction, $salt, hash($hashFunction, static::getHashable($password, $salt))));
 	}
 
-	static function verify($attempt, $token): bool
+	static function verify($attempt, $token): ?bool
 	{
 		$analyzed = static::analyzeHashed($token);
 		if (!$analyzed) {
-			return false;
+			return null;
 		}
 
 		return hash($analyzed["hash"], static::getHashable($attempt, $analyzed["salt"])) == $analyzed["hashed"];
 	}
 
-	static function analyzeHashed($token): array
+	static function analyzeHashed($token): ?array
 	{
 		if (!$token) {
-			return false;
+			return null;
 		}
 
 		$delimiter = substr($token, 0, 1);
 		if (!$delimiter) {
-			return false;
+			return null;
 		}
 
 		list($hash, $salt, $hashed) = explode($delimiter, substr($token, 1));
