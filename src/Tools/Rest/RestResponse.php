@@ -35,6 +35,9 @@ class RestResponse
 			if ($value instanceof static) {
 				$value = $value->getResponse();
 			}
+			if ($value instanceof \GuzzleHttp\Psr7\Stream) {
+				$value = $value->getContents();
+			}
 			if ($value instanceof \DateTime) {
 				$value = $value->format("r");
 			}
