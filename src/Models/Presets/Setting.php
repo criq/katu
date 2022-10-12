@@ -17,7 +17,7 @@ abstract class Setting extends \Katu\Models\Model
 	{
 		try {
 			if (!static::checkName($name)) {
-				throw (new \Katu\Exceptions\InputErrorException("Invalid setting name '{$name}'."))
+				throw (new \Katu\Exceptions\InputErrorException("Invalid setting name \"{$name}\"."))
 					->addErrorName("name")
 					;
 			}
@@ -62,7 +62,7 @@ abstract class Setting extends \Katu\Models\Model
 		}
 
 		if (static::select($sql)->getResult()->getTotal()) {
-			throw (new \Katu\Exceptions\InputErrorException("Setting name '{$name}' already used."))
+			throw (new \Katu\Exceptions\InputErrorException("Setting name \"{$name}\" already used."))
 				->setAbbr("nameInUse")
 				->addErrorName("name")
 				;
