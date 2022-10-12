@@ -4,6 +4,8 @@ namespace Katu\Tools\Rest;
 
 use Psr\Http\Message\StreamInterface;
 
+use function Ramsey\Uuid\v1;
+
 class RestResponse
 {
 	protected $payload = [];
@@ -35,6 +37,9 @@ class RestResponse
 			}
 			if ($value instanceof \DateTime) {
 				$value = $value->format("r");
+			}
+			if ($value instanceof \Katu\Types\TURL) {
+				$value = (string)$value;
 			}
 		});
 
