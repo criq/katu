@@ -7,6 +7,7 @@ use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TClass;
+use Psr\Http\Message\ServerRequestInterface;
 
 class ErrorCollection extends \ArrayObject implements PackagedInterface, RestResponseInterface
 {
@@ -87,7 +88,7 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface, RestRes
 		];
 	}
 
-	public function getRestResponse(): RestResponse
+	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
 	{
 		return new RestResponse($this->getResponseArray());
 	}
