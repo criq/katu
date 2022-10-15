@@ -4,8 +4,6 @@ namespace Katu\Tools\Rest;
 
 use Psr\Http\Message\StreamInterface;
 
-use function Ramsey\Uuid\v1;
-
 class RestResponse
 {
 	protected $payload = [];
