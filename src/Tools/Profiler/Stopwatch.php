@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Profiler;
 
+use Katu\Tools\Calendar\Seconds;
+
 class Stopwatch
 {
 	const FACTOR_NANO  = 1000000000;
@@ -55,6 +57,11 @@ class Stopwatch
 	public function getNanoValues(): array
 	{
 		return [$this->getStart(), $this->getFinish() ?: static::getCurrentMictorime()];
+	}
+
+	public function getSeconds(): Seconds
+	{
+		return new Seconds($this->getDuration());
 	}
 
 	public function getDuration(): float
