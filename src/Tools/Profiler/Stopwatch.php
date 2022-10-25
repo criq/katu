@@ -3,7 +3,6 @@
 namespace Katu\Tools\Profiler;
 
 use Katu\Tools\Calendar\Seconds;
-use Phan\Language\Element\Func;
 
 class Stopwatch
 {
