@@ -3,6 +3,7 @@
 namespace Katu\Tools\Profiler;
 
 use Katu\Tools\Calendar\Seconds;
+use Phan\Language\Element\Func;
 
 class Stopwatch
 {
@@ -84,5 +85,10 @@ class Stopwatch
 	public function getMilliDuration(): float
 	{
 		return (float)($this->getNanoDuration() * (static::FACTOR_MILLI / static::FACTOR_NANO));
+	}
+
+	public function getElapsedRatio(Seconds $total): float
+	{
+		return $this->getSeconds()->getValue() / abs($total->getValue());
 	}
 }
