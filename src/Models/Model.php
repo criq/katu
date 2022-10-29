@@ -99,17 +99,9 @@ class Model extends Base
 				SET " . implode(", ", $set) . "
 				WHERE ( {$this->getPrimaryKeyColumn()} = :{$this->getPrimaryKeyColumn()->getName()->getPlain()} ) ";
 
-			if (defined("AAAAAAA")) {
-				echo $sql;
-			}
-
 			$query = static::getConnection()->createQuery($sql, $values);
 			$query->setParam($this->getPrimaryKeyColumn()->getName()->getPlain(), $this->getId());
-			$res = $query->getResult();
-			if (defined("AAAAAAA")) {
-				var_dump($res);
-				die;
-			}
+			$query->getResult();
 		}
 
 		return $this;
