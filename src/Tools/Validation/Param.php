@@ -10,7 +10,7 @@ class Param
 	protected $output;
 	protected $display;
 
-	public function __construct(string $key, $input = null, ?string $alias = null)
+	public function __construct(?string $key, $input = null, ?string $alias = null)
 	{
 		$this->setKey($key);
 		$this->setInput($input);
@@ -22,14 +22,14 @@ class Param
 		return (string)$this->getInput();
 	}
 
-	public function setKey(string $value): Param
+	public function setKey(?string $value): Param
 	{
 		$this->key = $value;
 
 		return $this;
 	}
 
-	public function getKey(): string
+	public function getKey(): ?string
 	{
 		return $this->key;
 	}
