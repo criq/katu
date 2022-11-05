@@ -2,6 +2,7 @@
 
 namespace Katu\Files;
 
+use Katu\Types\TFileSize;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
@@ -142,9 +143,9 @@ class Upload
 		return $this->fileName;
 	}
 
-	public function getFileSize(): int
+	public function getFileSize(): TFileSize
 	{
-		return $this->fileSize;
+		return new TFileSize($this->fileSize);
 	}
 
 	public function getFileType(): string
