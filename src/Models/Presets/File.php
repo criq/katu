@@ -68,7 +68,7 @@ abstract class File extends \Katu\Models\Model
 		// Copy into permanent file.
 		(new \Katu\Files\File(\App\App::getFileDir(), $path))->set($upload->getStream()->getContents());
 
-		return static::create($user, $path, $upload->getFileName(), $upload->getFileType(), $upload->getFileSize());
+		return static::create($user, $path, $upload->getFileName(), $upload->getFileType(), $upload->getFileSize()->getInB()->getAmount());
 	}
 
 	public static function createFromURL(\Katu\Models\Presets\User $user = null, $url): File
