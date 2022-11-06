@@ -18,7 +18,7 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface, RestRes
 
 		$errors = new $className;
 
-		foreach ($package->getPayload()["errorPackagePayloads"] as $errorPackagePayload) {
+		foreach ($package->getPayload()["errors"] as $errorPackagePayload) {
 			$error = Error::createFromPackage(new Package($errorPackagePayload));
 			$errors->addError($error);
 		}
@@ -28,14 +28,11 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface, RestRes
 
 	public function getPackage(): Package
 	{
-		$errorPackagePayloads = [];
-		foreach ($this as $error) {
-			$errorPackagePayloads[] = $error->getPackage()->getPayload();
-		}
-
 		return new Package([
 			"class" => (new TClass($this))->getPortableName(),
-			"errorPackagePayloads" => $errorPackagePayloads,
+			"errors" => array_map(function (Error $error) {
+				return $error->getPackage();
+			}, $this->getArrayCopy()),
 		]);
 	}
 
