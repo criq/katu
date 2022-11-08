@@ -2,7 +2,12 @@
 
 namespace Katu\Tools\Validation;
 
-class Validation implements \ArrayAccess
+use Katu\Errors\ErrorCollection;
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
+use Katu\Types\TClass;
+
+class Validation implements \ArrayAccess, PackagedInterface
 {
 	protected $errors;
 	protected $params;
@@ -11,7 +16,20 @@ class Validation implements \ArrayAccess
 	public function __construct(?ParamCollection $params = null)
 	{
 		$this->params = $params ?: new ParamCollection;
-		$this->errors = new \Katu\Errors\ErrorCollection;
+		$this->errors = new ErrorCollection;
+	}
+
+	public function getPackage(): Package
+	{
+		return new Package([
+			"class" => (new TClass($this))->getPackage(),
+			"errors" => $this->getErrors()->getPackage(),
+			"params" => $this->getParams()->getPackage(),
+		]);
+	}
+
+	public static function createFromPackage(Package $package)
+	{
 	}
 
 	public function setResponse($value): Validation
@@ -50,10 +68,10 @@ class Validation implements \ArrayAccess
 		return $this;
 	}
 
-	public function getErrors(): \Katu\Errors\ErrorCollection
+	public function getErrors(): ErrorCollection
 	{
 		if (!$this->errors) {
-			$this->errors = new \Katu\Errors\ErrorCollection;
+			$this->errors = new ErrorCollection;
 		}
 
 		return $this->errors;
@@ -66,7 +84,7 @@ class Validation implements \ArrayAccess
 		return $this;
 	}
 
-	public function addErrors(\Katu\Errors\ErrorCollection $errors): Validation
+	public function addErrors(ErrorCollection $errors): Validation
 	{
 		$this->getErrors()->addErrors($errors);
 

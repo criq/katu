@@ -2,7 +2,11 @@
 
 namespace Katu\Tools\Validation;
 
-class Param
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
+use Katu\Types\TClass;
+
+class Param implements PackagedInterface
 {
 	protected $key;
 	protected $alias;
@@ -10,7 +14,7 @@ class Param
 	protected $output;
 	protected $display;
 
-	public function __construct(string $key, $input = null, ?string $alias = null)
+	public function __construct(?string $key, $input = null, ?string $alias = null)
 	{
 		$this->setKey($key);
 		$this->setInput($input);
@@ -22,14 +26,31 @@ class Param
 		return (string)$this->getInput();
 	}
 
-	public function setKey(string $value): Param
+	public function getPackage(): Package
+	{
+		return new Package([
+			"class" => (new TClass($this))->getPackage(),
+			"key" => (string)$this->getKey(),
+			"alias" => (string)$this->getAlias(),
+			"input" => (string)$this->getInput(),
+			"output" => (string)$this->getOutput(),
+			"display" => (string)$this->getDisplay(),
+		]);
+	}
+
+	public static function createFromPackage(Package $package)
+	{
+
+	}
+
+	public function setKey(?string $value): Param
 	{
 		$this->key = $value;
 
 		return $this;
 	}
 
-	public function getKey(): string
+	public function getKey(): ?string
 	{
 		return $this->key;
 	}
@@ -41,7 +62,7 @@ class Param
 		return $this;
 	}
 
-	public function getAlias(): string
+	public function getAlias(): ?string
 	{
 		return $this->alias ?: $this->getKey();
 	}
