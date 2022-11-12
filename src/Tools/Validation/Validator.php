@@ -27,6 +27,6 @@ class Validator
 			}
 		}
 
-		return (new Validation)->addParam($param);
+		return (new Validation)->setResponse($param->getOutput())->addParam($param);
 	}
 }

@@ -16,7 +16,7 @@ class IsDateInPast extends Rule
 
 		$output = trim($param);
 		if (strlen($output)) {
-			$output = Time::createFromString($output);
+			$output = Time::createFromString($output, false);
 			if (!strlen($output)) {
 				$validation->addError((new Error($this->getMessage()))->addParam($param));
 			} elseif ($output->isInFuture()) {
