@@ -109,6 +109,7 @@ class Model extends Base
 
 	public function saveWithCallback()
 	{
+		$this->beforeUpdateCallback();
 		$this->saveWithoutCallback();
 		$this->afterUpdateCallback();
 		static::afterAnyCallback();
@@ -140,6 +141,11 @@ class Model extends Base
 	 * Callbacks.
 	 */
 	public function afterInsertCallback(): bool
+	{
+		return true;
+	}
+
+	public function beforeUpdateCallback(): bool
 	{
 		return true;
 	}
