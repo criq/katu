@@ -31,5 +31,3 @@ class IsOneOf extends Rule
 		return $validation;
 	}
 }
-
-
