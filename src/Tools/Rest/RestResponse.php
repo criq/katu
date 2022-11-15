@@ -37,7 +37,7 @@ class RestResponse
 				$value = $value->getContents();
 			}
 			if ($value instanceof \DateTime) {
-				$value = $value->format("r");
+				$value = $value->format("c");
 			}
 			if ($value instanceof \Katu\Types\TURL) {
 				$value = (string)$value;
