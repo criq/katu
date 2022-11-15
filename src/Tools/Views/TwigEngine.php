@@ -312,6 +312,8 @@ abstract class TwigEngine implements ViewEngineInterface
 			"maxSize" => \Katu\Files\Upload::getMaxSize()->getInB(),
 		];
 
+		\Katu\Tools\Session\Flash::reset();
+
 		return $data;
 	}
 
