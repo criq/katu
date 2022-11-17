@@ -4,11 +4,11 @@ namespace Katu\Tools\Session;
 
 class Session
 {
-	const KEY = "katu.session";
-	const DEFAULT_NAME = "session";
-	const DEFAULT_SID_LENGTH = 32;
-	const DEFAULT_SID_BITS_PER_CHARACTER = 6;
 	const DEFAULT_COOKIE_LIFETIME = "1 year";
+	const DEFAULT_NAME = "session";
+	const DEFAULT_SID_BITS_PER_CHARACTER = 6;
+	const DEFAULT_SID_LENGTH = 32;
+	const KEY = "katu.session";
 
 	public static function getPath()
 	{
@@ -29,8 +29,8 @@ class Session
 		return [
 			"save_path" => (string)static::getPath(),
 			"name" => static::DEFAULT_NAME,
-			//"sid_length" => static::DEFAULT_SID_LENGTH,
-			//"sid_bits_per_character" => static::DEFAULT_SID_BITS_PER_CHARACTER,
+			// "sid_length" => static::DEFAULT_SID_LENGTH,
+			// "sid_bits_per_character" => static::DEFAULT_SID_BITS_PER_CHARACTER,
 			"cookie_lifetime" => abs((string)(new \Katu\Tools\Calendar\Time("+ " . static::DEFAULT_COOKIE_LIFETIME))->getAge()),
 		];
 	}
@@ -68,7 +68,7 @@ class Session
 		return true;
 	}
 
-	public static function get($key = null)
+	public static function get(?string $key = null)
 	{
 		static::init();
 
@@ -92,7 +92,7 @@ class Session
 		return true;
 	}
 
-	public static function add($key, $value, $instance = null)
+	public static function add(string $key, $value, $instance = null)
 	{
 		static::init();
 
@@ -122,7 +122,7 @@ class Session
 		return true;
 	}
 
-	public static function setCookieParams($config = [])
+	public static function setCookieParams(array $config = [])
 	{
 		try {
 			$config = \Katu\Config\Config::get("app", "cookie");

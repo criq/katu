@@ -4,7 +4,7 @@ namespace Katu\Tools\Session;
 
 class Flash extends Session
 {
-	const KEY = 'katu.flash';
+	const KEY = "katu.flash";
 
 	public static function set()
 	{

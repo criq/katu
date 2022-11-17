@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Calendar;
 
+use Katu\Tools\Validation\Param;
+use Katu\Tools\Validation\Validation;
 use Katu\Types\TClass;
 
 class Interval
@@ -19,7 +21,7 @@ class Interval
 		$this->setEnd($end);
 	}
 
-	public static function validate(\Katu\Tools\Validation\Param $startParam, \Katu\Tools\Validation\Param $endParam)
+	public static function validate(Param $startParam, Param $endParam): Validation
 	{
 		$result = new \Katu\Tools\Validation\Validation;
 		$start = null;
