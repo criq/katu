@@ -10,6 +10,7 @@ interface AdapterInterface
 	public function getContentType(StorageItem $item): string;
 	public function getFileSize(StorageItem $item): TFileSize;
 	public function getURI(StorageItem $item): string;
+	public function listStorageItems(Storage $storage): iterable;
 	public function read(StorageItem $item);
 	public function write(StorageItem $item, $content): StorageItem;
 }

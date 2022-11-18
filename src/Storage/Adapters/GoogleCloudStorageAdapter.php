@@ -3,6 +3,7 @@
 namespace Katu\Storage\Adapters;
 
 use Katu\Storage\AdapterInterface;
+use Katu\Storage\Storage;
 use Katu\Storage\StorageItem;
 use Katu\Types\TFileSize;
 
@@ -25,6 +26,16 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 	public function getBucket(): \Google\Cloud\Storage\Bucket
 	{
 		return $this->bucket;
+	}
+
+	public function listStorageItems(Storage $storage): iterable
+	{
+		$res = [];
+		foreach ($this->getBucket()->objects() as $object) {
+			$res[] = new StorageItem($storage, $object->info()["name"]);
+		}
+
+		return $res;
 	}
 
 	public static function getNameFromURI(string $uri): string

@@ -23,6 +23,11 @@ class Storage
 		return $this->adapter;
 	}
 
+	public function listStorageItems(): iterable
+	{
+		return $this->getAdapter()->listStorageItems($this);
+	}
+
 	public function getStorageItem(string $name): StorageItem
 	{
 		return new StorageItem($this, $name);
