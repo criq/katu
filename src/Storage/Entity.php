@@ -40,7 +40,7 @@ class Entity
 		return $this->storage;
 	}
 
-	public function write($content): StorageItem
+	public function write($content): Entity
 	{
 		$this->getStorage()->getAdapter()->write($this, $content);
 
