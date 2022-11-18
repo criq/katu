@@ -5,7 +5,7 @@ namespace Katu\Storage;
 use Katu\Types\TFileSize;
 use Katu\Types\TIdentifier;
 
-class StorageItem
+class Entity
 {
 	protected $name;
 	protected $storage;
@@ -16,7 +16,7 @@ class StorageItem
 		$this->setName($name);
 	}
 
-	public function setName(string $name): StorageItem
+	public function setName(string $name): Entity
 	{
 		$this->name = $name;
 
@@ -28,7 +28,7 @@ class StorageItem
 		return $this->name;
 	}
 
-	public function setStorage(Storage $storage): StorageItem
+	public function setStorage(Storage $storage): Entity
 	{
 		$this->storage = $storage;
 

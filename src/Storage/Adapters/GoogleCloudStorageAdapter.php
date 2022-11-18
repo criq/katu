@@ -4,7 +4,7 @@ namespace Katu\Storage\Adapters;
 
 use Katu\Storage\AdapterInterface;
 use Katu\Storage\Storage;
-use Katu\Storage\StorageItem;
+use Katu\Storage\Entity;
 use Katu\Types\TFileSize;
 
 class GoogleCloudStorageAdapter implements AdapterInterface
@@ -28,11 +28,11 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $this->bucket;
 	}
 
-	public function listStorageItems(Storage $storage): iterable
+	public function listEntities(Storage $storage): iterable
 	{
 		$res = [];
 		foreach ($this->getBucket()->objects() as $object) {
-			$res[] = new StorageItem($storage, $object->info()["name"]);
+			$res[] = new Entity($storage, $object->info()["name"]);
 		}
 
 		return $res;
@@ -45,7 +45,7 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return urldecode($match["objectName"]);
 	}
 
-	public function write(StorageItem $item, $content): StorageItem
+	public function write(Entity $item, $content): Entity
 	{
 		$this->getBucket()->upload($content, [
 			"name" => $item->getName(),
@@ -54,12 +54,12 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $item;
 	}
 
-	public function read(StorageItem $item)
+	public function read(Entity $item)
 	{
 		return $this->getBucket()->object($item->getName())->downloadAsString();
 	}
 
-	public function delete(StorageItem $item): bool
+	public function delete(Entity $item): bool
 	{
 		try {
 			$this->getBucket()->object($item->getName())->delete();
@@ -70,17 +70,17 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		}
 	}
 
-	public function getURI(StorageItem $item): string
+	public function getURI(Entity $item): string
 	{
 		return $this->getBucket()->object($item->getName())->info()["selfLink"];
 	}
 
-	public function getFileSize(StorageItem $item): TFileSize
+	public function getFileSize(Entity $item): TFileSize
 	{
 		return new TFileSize($this->getBucket()->object($item->getName())->info()["size"]);
 	}
 
-	public function getContentType(StorageItem $item): string
+	public function getContentType(Entity $item): string
 	{
 		return $this->getBucket()->object($item->getName())->info()["contentType"];
 	}
