@@ -2,7 +2,6 @@
 
 namespace Katu;
 
-use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
