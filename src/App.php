@@ -138,6 +138,14 @@ class App
 	}
 
 	/****************************************************************************
+	 * DI.
+	 */
+	public static function getDIDefinitions(): array
+	{
+		return [];
+	}
+
+	/****************************************************************************
 	 * Run.
 	 */
 	public static function get(): \Slim\App
@@ -159,12 +167,13 @@ class App
 			\Katu\Tools\Session\Session::setCookieParams();
 
 			// Create the dependency injection container.
-			$builder = new \DI\ContainerBuilder();
-			$builder->addDefinitions([
+			$builder = new \DI\ContainerBuilder;
+			$builder->addDefinitions(array_merge([
 				\Psr\Log\LoggerInterface::class => \DI\factory(function (TIdentifier $identifier) {
 					return static::getLogger($identifier);
 				}),
-			]);
+				\Katu\Storage\Entity::class => \Katu\Storage\Entity::class,
+			], static::getDIDefinitions()));
 
 			// Create the app.
 			static::$app = \DI\Bridge\Slim\Bridge::create($builder->build());

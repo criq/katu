@@ -30,6 +30,8 @@ class Storage
 
 	public function getEntity(string $name): Entity
 	{
-		return new Entity($this, $name);
+		$entityClass = \App\App::getContainer()->get(\Katu\Storage\Entity::class);
+
+		return new $entityClass($this, $name);
 	}
 }

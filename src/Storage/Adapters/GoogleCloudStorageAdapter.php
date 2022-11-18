@@ -30,9 +30,11 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 
 	public function listEntities(Storage $storage): iterable
 	{
+		$entityClass = \App\App::getContainer()->get(\Katu\Storage\Entity::class);
+
 		$res = [];
 		foreach ($this->getBucket()->objects() as $object) {
-			$res[] = new Entity($storage, $object->info()["name"]);
+			$res[] = new $entityClass($storage, $object->info()["name"]);
 		}
 
 		return $res;
