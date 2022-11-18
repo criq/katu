@@ -38,6 +38,8 @@ abstract class FileAttachment extends \Katu\Models\Model
 
 	public function getFile()
 	{
-		return \App\App::getFileModelClass()->getName()::get($this->fileId);
+		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
+
+		return $fileClass::get($this->fileId);
 	}
 }

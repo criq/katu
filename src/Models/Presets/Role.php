@@ -27,13 +27,15 @@ abstract class Role extends \Katu\Models\Model
 
 	public function delete(): bool
 	{
-		foreach (\App\App::getRolePermissionModelClass()->getName()::getBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\RolePermission::class);
+		foreach ($class::getBy([
 			"roleId" => $this->getId(),
 		]) as $rolePermission) {
 			$rolePermission->delete();
 		}
 
-		foreach (\App\App::getUserRoleModelClass()->getName()::getBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserRole::class);
+		foreach ($class::getBy([
 			"roleId" => $this->getId(),
 		]) as $userRole) {
 			$userRole->delete();
@@ -72,7 +74,9 @@ abstract class Role extends \Katu\Models\Model
 
 	public function addPermission($permission)
 	{
-		return \App\App::getRolePermissionModelClass()->getName()::make($this, $permission);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\RolePermission::class);
+
+		return $class::make($this, $permission);
 	}
 
 	public function addPermissions($permissions)
@@ -86,7 +90,9 @@ abstract class Role extends \Katu\Models\Model
 
 	public function getRolePermissions()
 	{
-		return \App\App::getRolePermissionModelClass()->getName()::getBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\RolePermission::class);
+
+		return $class::getBy([
 			"roleId" => $this->getId(),
 		]);
 	}
@@ -100,7 +106,9 @@ abstract class Role extends \Katu\Models\Model
 
 	public function hasPermission($permission) : bool
 	{
-		return (bool)(\App\App::getRolePermissionModelClass()->getName()::getOneBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\RolePermission::class);
+
+		return (bool)($class::getOneBy([
 			"roleId" => $this->getId(),
 			"permission" => trim($permission),
 		]));
@@ -108,7 +116,9 @@ abstract class Role extends \Katu\Models\Model
 
 	public function deleteAllPermissions()
 	{
-		foreach (\App\App::getRolePermissionModelClass()->getName()::getBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\RolePermission::class);
+
+		foreach ($class::getBy([
 			"roleId" => $this->getId(),
 		]) as $rolePermission) {
 			$rolePermission->delete();

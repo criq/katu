@@ -39,9 +39,9 @@ class Images extends \Katu\Controllers\Controller
 	public static function getVersionSrcFile(ServerRequestInterface $request, ResponseInterface $response, string $fileId, string $fileSecret, string $version)
 	{
 		try {
-			$fileClassName = \App\App::getFileModelClass()->getName();
+			$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
 
-			$file = $fileClassName::getOneBy([
+			$file = $fileClass::getOneBy([
 				"id" => $fileId,
 				"secret" => $fileSecret,
 			]);

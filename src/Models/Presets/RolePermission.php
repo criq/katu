@@ -39,6 +39,8 @@ abstract class RolePermission extends \Katu\Models\Model
 
 	public static function isValidPermission($permission) : bool
 	{
-		return in_array($permission, \App\App::getUserPermissionModelClass()->getName()::getAvailable());
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserPermission::class);
+
+		return in_array($permission, $class::getAvailable());
 	}
 }

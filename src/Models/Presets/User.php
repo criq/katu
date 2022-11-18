@@ -73,7 +73,7 @@ abstract class User extends \Katu\Models\Model
 
 	public static function getByAccessToken(?string $token): ?User
 	{
-		$accessTokenClass = \App\App::getAccessTokenModelClass()->getName();
+		$accessTokenClass = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
 		$accessToken = $accessTokenClass::getOneBy([
 			"token" => preg_replace("/^(Bearer)\s+/", "", $token),
 		]);
@@ -101,8 +101,9 @@ abstract class User extends \Katu\Models\Model
 
 	public function setEmailAddress($emailAddress)
 	{
-		$emailAddressClassName = \App\App::getEmailAddressModelClass()->getName();
-		if (!$emailAddress || !($emailAddress instanceof $emailAddressClassName)) {
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\EmailAddress::class);
+
+		if (!$emailAddress || !($emailAddress instanceof $class)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
 				->setAbbr("invalidEmailAddress")
 				->addErrorName("emailAddress")
@@ -127,7 +128,9 @@ abstract class User extends \Katu\Models\Model
 
 	public function getEmailAddress()
 	{
-		return \App\App::getEmailAddressModelClass()->getName()::get($this->{static::$columnNames["emailAddressId"]});
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\EmailAddress::class);
+
+		return $class::get($this->{static::$columnNames["emailAddressId"]});
 	}
 
 	public function setPlainPassword(string $password)
@@ -154,22 +157,30 @@ abstract class User extends \Katu\Models\Model
 
 	public function createAccessToken(): AccessToken
 	{
-		return \App\App::getAccessTokenModelClass()->getName()::create($this);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
+
+		return $class::create($this);
 	}
 
 	public function getSafeAccessToken(): AccessToken
 	{
-		return \App\App::getAccessTokenModelClass()->getName()::getOrCreateSafe($this);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
+
+		return $class::getOrCreateSafe($this);
 	}
 
 	public function addUserService($serviceName, $serviceUserId)
 	{
-		return \App\App::getUserServiceModelClass()->getName()::create($this, $serviceName, $serviceUserId);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserService::class);
+
+		return $class::create($this, $serviceName, $serviceUserId);
 	}
 
 	public function makeUserService($serviceName, $serviceUserId)
 	{
-		return \App\App::getUserServiceModelClass()->getName()::upsert([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserService::class);
+
+		return $class::upsert([
 			"userId" => $this->getId(),
 			"serviceName" => (string)$serviceName,
 			"serviceUserId" => (string)$serviceUserId,
@@ -180,7 +191,9 @@ abstract class User extends \Katu\Models\Model
 
 	public function getDefaultUserServiceByName($serviceName)
 	{
-		return \App\App::getUserServiceModelClass()->getName()::getOneBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserService::class);
+
+		return $class::getOneBy([
 			"userId" => $this->getId(),
 			"serviceName" => (string)$serviceName,
 		]);
@@ -214,14 +227,18 @@ abstract class User extends \Katu\Models\Model
 
 	public function addRole($role)
 	{
-		return \App\App::getUserRoleModelClass()->getName()::make($this, $role);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserRole::class);
+
+		return $class::make($this, $role);
 	}
 
 	public function addRolesByIds($roleIds)
 	{
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\Role::class);
+
 		$roles = [];
 		foreach ((array) $roleIds as $roleId) {
-			$role = \App\App::getRoleModelClass()->getName()::get($roleId);
+			$role = $class::get($roleId);
 			if (!$role) {
 				throw (new \Katu\Exceptions\InputErrorException("Invalid role ID."))
 					->setAbbr("invalidRoleId")
@@ -240,7 +257,9 @@ abstract class User extends \Katu\Models\Model
 
 	public function hasRole($role)
 	{
-		return (bool)\App\App::getUserRoleModelClass()->getName()::getOneBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserRole::class);
+
+		return (bool)$class::getOneBy([
 			"userId" => $this->getId(),
 			"roleId" => $role->getId(),
 		]);
@@ -248,14 +267,18 @@ abstract class User extends \Katu\Models\Model
 
 	public function getUserRoles()
 	{
-		return \App\App::getUserRoleModelClass()->getName()::getBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserRole::class);
+
+		return $class::getBy([
 			"userId" => $this->getId(),
 		]);
 	}
 
 	public function deleteAllRoles()
 	{
-		foreach (\App\App::getUserRoleModelClass()->getName()::getBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserRole::class);
+
+		foreach ($class::getBy([
 			"userId" => $this->getId(),
 		]) as $userRole) {
 			$userRole->delete();
@@ -266,7 +289,9 @@ abstract class User extends \Katu\Models\Model
 
 	public function addUserPermission($permission)
 	{
-		return \App\App::getUserPermissionModelClass()->getName()::make($this, $permission);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserPermission::class);
+
+		return $class::make($this, $permission);
 	}
 
 	public function addUserPermissions($permissions)
@@ -280,7 +305,9 @@ abstract class User extends \Katu\Models\Model
 
 	public function deleteAllUserPermissions()
 	{
-		foreach (\App\App::getUserPermissionModelClass()->getName()::getBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserPermission::class);
+
+		foreach ($class::getBy([
 			"userId" => $this->getId(),
 		]) as $userPermission) {
 			$userPermission->delete();
@@ -299,10 +326,10 @@ abstract class User extends \Katu\Models\Model
 		return $user->hasPermission($permission);
 	}
 
-	public function getRolePermissions()
+	public function getRolePermissions(): array
 	{
-		$userRoleClass = \App\App::getUserRoleModelClass()->getName();
-		$rolePermissionClass = \App\App::getRolePermissionModelClass()->getName();
+		$userRoleClass = \App\App::getContainer()->get(\Katu\Models\Presets\UserRole::class);
+		$rolePermissionClass = \App\App::getContainer()->get(\Katu\Models\Presets\RolePermission::class);
 
 		$sql = (SX::select($rolePermissionClass::getColumn("permission")))
 			->from($rolePermissionClass::getTable())
@@ -316,7 +343,9 @@ abstract class User extends \Katu\Models\Model
 
 	public function getUserPermissions()
 	{
-		return \App\App::getUserPermissionModelClass()->getName()::getBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserPermission::class);
+
+		return $class::getBy([
 			"userId" => $this->getId(),
 		])->getColumnValues("permission");
 	}
@@ -358,12 +387,16 @@ abstract class User extends \Katu\Models\Model
 
 	public function setUserSetting(string $name, $value)
 	{
-		return \App\App::getUserSettingModelClass()->getName()::getOrCreate($this, $name, $value);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserSetting::class);
+
+		return $class::getOrCreate($this, $name, $value);
 	}
 
 	public function getUserSetting(string $name)
 	{
-		return \App\App::getUserSettingModelClass()->getName()::getOneBy([
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserSetting::class);
+
+		return $class::getOneBy([
 			"userId" => $this->getId(),
 			"name" => $name,
 		]);

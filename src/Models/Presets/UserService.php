@@ -31,7 +31,9 @@ abstract class UserService extends \Katu\Models\Model
 
 	public function getUser(): User
 	{
-		return \App\App::getUserModelClass()->getName()::get($this->userId);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
+
+		return $class::get($this->userId);
 	}
 
 	public function setServiceAccessToken($serviceAccessToken)

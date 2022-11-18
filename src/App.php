@@ -67,69 +67,6 @@ class App
 	}
 
 	/****************************************************************************
-	 * Models.
-	 */
-	public static function getAccessTokenModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\AccessToken");
-	}
-
-	public static function getEmailAddressModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\EmailAddress");
-	}
-
-	public static function getFileModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\File");
-	}
-
-	public static function getFileAttachmentModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\FileAttachment");
-	}
-
-	public static function getSettingModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\Setting");
-	}
-
-	public static function getRoleModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\Role");
-	}
-
-	public static function getRolePermissionModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\RolePermission");
-	}
-
-	public static function getUserModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\User");
-	}
-
-	public static function getUserPermissionModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\UserPermission");
-	}
-
-	public static function getUserRoleModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\UserRole");
-	}
-
-	public static function getUserServiceModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\UserService");
-	}
-
-	public static function getUserSettingModelClass(): TClass
-	{
-		return new TClass("Katu\Models\Presets\UserSetting");
-	}
-
-	/****************************************************************************
 	 * Autoload.
 	 */
 	public static function getAutoloadRegisterFunctions(): array
@@ -172,6 +109,18 @@ class App
 				\Psr\Log\LoggerInterface::class => \DI\factory(function (TIdentifier $identifier) {
 					return static::getLogger($identifier);
 				}),
+				\Katu\Models\Presets\AccessToken::class => \Katu\Models\Presets\AccessToken::class,
+				\Katu\Models\Presets\EmailAddress::class => \Katu\Models\Presets\EmailAddress::class,
+				\Katu\Models\Presets\File::class => \Katu\Models\Presets\File::class,
+				\Katu\Models\Presets\FileAttachment::class => \Katu\Models\Presets\FileAttachment::class,
+				\Katu\Models\Presets\Role::class => \Katu\Models\Presets\Role::class,
+				\Katu\Models\Presets\RolePermission::class => \Katu\Models\Presets\RolePermission::class,
+				\Katu\Models\Presets\Setting::class => \Katu\Models\Presets\Setting::class,
+				\Katu\Models\Presets\User::class => \Katu\Models\Presets\User::class,
+				\Katu\Models\Presets\UserPermission::class => \Katu\Models\Presets\UserPermission::class,
+				\Katu\Models\Presets\UserRole::class => \Katu\Models\Presets\UserRole::class,
+				\Katu\Models\Presets\UserService::class => \Katu\Models\Presets\UserService::class,
+				\Katu\Models\Presets\UserSetting::class => \Katu\Models\Presets\UserSetting::class,
 				\Katu\Storage\Entity::class => \Katu\Storage\Entity::class,
 			], static::getDIDefinitions()));
 
