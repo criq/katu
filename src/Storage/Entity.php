@@ -72,7 +72,7 @@ class Entity
 		return $this->getStorage()->getAdapter()->getContentType($this);
 	}
 
-	public function getLocalCopy(): \Katu\Files\File
+	public function getLocalFile(): \Katu\Files\File
 	{
 		$extension = pathinfo($this->getURI())["extension"] ?? null;
 		$identifier = new TIdentifier(__CLASS__, __FUNCTION__, sha1($this->getURI()));
