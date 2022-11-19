@@ -11,6 +11,7 @@ class Entity
 	protected $fileSize;
 	protected $name;
 	protected $storage;
+	protected $uri;
 
 	public function __construct(Storage $storage, string $name)
 	{
@@ -59,9 +60,20 @@ class Entity
 		return $this->getStorage()->getAdapter()->delete($this);
 	}
 
+	public function setURI(string $uri): Entity
+	{
+		$this->uri = $uri;
+
+		return $this;
+	}
+
 	public function getURI(): string
 	{
-		return $this->getStorage()->getAdapter()->getURI($this);
+		if (!$this->uri) {
+			$this->uri = $this->getStorage()->getAdapter()->getURI($this);
+		}
+
+		return $this->uri;
 	}
 
 	public function setFileSize(?TFileSize $fileSize): Entity

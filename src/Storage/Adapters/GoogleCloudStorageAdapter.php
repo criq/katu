@@ -35,6 +35,7 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		$res = [];
 		foreach ($this->getBucket()->objects() as $object) {
 			$res[] = (new $entityClass($storage, $object->info()["name"]))
+				->setURI($object->info()["selfLink"])
 				->setContentType($object->info()["contentType"])
 				->setFileSize(new TFileSize($object->info()["size"]))
 				;
