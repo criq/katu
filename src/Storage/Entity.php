@@ -7,6 +7,8 @@ use Katu\Types\TIdentifier;
 
 class Entity
 {
+	protected $contentType;
+	protected $fileSize;
 	protected $name;
 	protected $storage;
 
@@ -62,14 +64,36 @@ class Entity
 		return $this->getStorage()->getAdapter()->getURI($this);
 	}
 
+	public function setFileSize(?TFileSize $fileSize): Entity
+	{
+		$this->fileSize = $fileSize;
+
+		return $this;
+	}
+
 	public function getFileSize(): TFileSize
 	{
-		return $this->getStorage()->getAdapter()->getFileSize($this);
+		if (!$this->fileSize) {
+			$this->fileSize = $this->getStorage()->getAdapter()->getFileSize($this);
+		}
+
+		return $this->fileSize;
+	}
+
+	public function setContentType(?string $contentType): Entity
+	{
+		$this->contentType = $contentType;
+
+		return $this;
 	}
 
 	public function getContentType(): string
 	{
-		return $this->getStorage()->getAdapter()->getContentType($this);
+		if (!$this->contentType) {
+			$this->contentType = $this->getStorage()->getAdapter()->getContentType($this);
+		}
+
+		return $this->contentType;
 	}
 
 	public function getLocalFile(): \Katu\Files\File
