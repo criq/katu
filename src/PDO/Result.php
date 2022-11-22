@@ -2,9 +2,12 @@
 
 namespace Katu\PDO;
 
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TPagination;
+use Psr\Http\Message\ServerRequestInterface;
 
-class Result extends \ArrayObject
+class Result extends \ArrayObject implements RestResponseInterface
 {
 	protected $error;
 	protected $pagination;
@@ -121,15 +124,15 @@ class Result extends \ArrayObject
 	/****************************************************************************
 	 * REST.
 	 */
-	public function getResponseArray(): array
+	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
 	{
 		$res = [];
-		$res["pagination"] = $this->getPagination()->getResponseArray();
+		$res["pagination"] = $this->getPagination()->getRestResponse();
 
 		foreach ($this as $object) {
-			$res["items"][] = $object->getResponseArray(...func_get_args());
+			$res["items"][] = $object->getRestResponse(...func_get_args());
 		}
 
-		return $res;
+		return new RestResponse($res);
 	}
 }
