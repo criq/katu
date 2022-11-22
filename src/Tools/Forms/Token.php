@@ -113,7 +113,6 @@ class Token
 		try {
 			return TokenCollection::getSessionTokenCollection()->filterByCode($code)[0]->isAcceptable();
 		} catch (\Throwable $e) {
-			var_dump($e);die;
 			return false;
 		}
 	}
