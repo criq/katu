@@ -29,10 +29,14 @@ class TEmailAddress
 
 	public function getEnvelope(): string
 	{
-		return implode(" ", array_filter([
-			$this->getName(),
-			"<" . $this->getEmailAddress() . ">",
-		]));
+		if ($this->getName() && $this->getEmailAddress()) {
+			return implode(" ", array_filter([
+				$this->getName(),
+				"<{$this->getEmailAddress()}>",
+			]));
+		}
+
+		return $this->getEmailAddress();
 	}
 
 	public static function validateEmailAddress(string $emailAddress): bool

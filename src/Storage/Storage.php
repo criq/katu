@@ -23,8 +23,15 @@ class Storage
 		return $this->adapter;
 	}
 
-	public function getStorageItem(string $name): StorageItem
+	public function listEntities(): iterable
 	{
-		return new StorageItem($this, $name);
+		return $this->getAdapter()->listEntities($this);
+	}
+
+	public function getEntity(string $name): Entity
+	{
+		$entityClass = \App\App::getContainer()->get(\Katu\Storage\Entity::class);
+
+		return new $entityClass($this, $name);
 	}
 }

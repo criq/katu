@@ -5,10 +5,13 @@ namespace Katu\Storage;
 use Katu\Types\TFileSize;
 use Katu\Types\TIdentifier;
 
-class StorageItem
+class Entity
 {
+	protected $contentType;
+	protected $fileSize;
 	protected $name;
 	protected $storage;
+	protected $uri;
 
 	public function __construct(Storage $storage, string $name)
 	{
@@ -16,7 +19,7 @@ class StorageItem
 		$this->setName($name);
 	}
 
-	public function setName(string $name): StorageItem
+	public function setName(string $name): Entity
 	{
 		$this->name = $name;
 
@@ -28,7 +31,7 @@ class StorageItem
 		return $this->name;
 	}
 
-	public function setStorage(Storage $storage): StorageItem
+	public function setStorage(Storage $storage): Entity
 	{
 		$this->storage = $storage;
 
@@ -40,7 +43,7 @@ class StorageItem
 		return $this->storage;
 	}
 
-	public function write($content): StorageItem
+	public function write($content): Entity
 	{
 		$this->getStorage()->getAdapter()->write($this, $content);
 
@@ -57,22 +60,55 @@ class StorageItem
 		return $this->getStorage()->getAdapter()->delete($this);
 	}
 
+	public function setURI(string $uri): Entity
+	{
+		$this->uri = $uri;
+
+		return $this;
+	}
+
 	public function getURI(): string
 	{
-		return $this->getStorage()->getAdapter()->getURI($this);
+		if (!$this->uri) {
+			$this->uri = $this->getStorage()->getAdapter()->getURI($this);
+		}
+
+		return $this->uri;
+	}
+
+	public function setFileSize(?TFileSize $fileSize): Entity
+	{
+		$this->fileSize = $fileSize;
+
+		return $this;
 	}
 
 	public function getFileSize(): TFileSize
 	{
-		return $this->getStorage()->getAdapter()->getFileSize($this);
+		if (!$this->fileSize) {
+			$this->fileSize = $this->getStorage()->getAdapter()->getFileSize($this);
+		}
+
+		return $this->fileSize;
+	}
+
+	public function setContentType(?string $contentType): Entity
+	{
+		$this->contentType = $contentType;
+
+		return $this;
 	}
 
 	public function getContentType(): string
 	{
-		return $this->getStorage()->getAdapter()->getContentType($this);
+		if (!$this->contentType) {
+			$this->contentType = $this->getStorage()->getAdapter()->getContentType($this);
+		}
+
+		return $this->contentType;
 	}
 
-	public function getLocalCopy(): \Katu\Files\File
+	public function getLocalFile(): \Katu\Files\File
 	{
 		$extension = pathinfo($this->getURI())["extension"] ?? null;
 		$identifier = new TIdentifier(__CLASS__, __FUNCTION__, sha1($this->getURI()));

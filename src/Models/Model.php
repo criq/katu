@@ -317,57 +317,68 @@ class Model extends Base
 	 */
 	public function getFileAttachments()
 	{
+		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
+
 		$sql = SX::select()
-			->select(\App\App::getFileAttachmentModelClass()->getName()::getTable())
-			->from(\App\App::getFileAttachmentModelClass()->getName()::getTable())
-			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectModel"), static::getClass()->getName()))
-			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectId"), $this->getId()))
+			->select($fileAttachmentClass::getTable())
+			->from($fileAttachmentClass::getTable())
+			->where(SX::eq($fileAttachmentClass::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq($fileAttachmentClass::getColumn("objectId"), $this->getId()))
 			;
 
-		return \App\App::getFileAttachmentModelClass()->getName()::getBySql($sql);
+		return $fileAttachmentClass::getBySql($sql);
 	}
 
 	public function getImageFileAttachments()
 	{
+		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
+		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
+
 		$sql = SX::select()
-			->select(\App\App::getFileAttachmentModelClass()->getName()::getTable())
-			->from(\App\App::getFileAttachmentModelClass()->getName()::getTable())
-			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectModel"), static::getClass()->getName()))
-			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectId"), $this->getId()))
-			->joinColumns(\App\App::getFileAttachmentModelClass()->getName()::getColumn("fileId"), \App\App::getFileModelClass()->getName()::getIdColumn())
-			->where(SX::cmpLike(\App\App::getFileModelClass()->getName()::getColumn("type"), "image/%"))
+			->select($fileAttachmentClass::getTable())
+			->from($fileAttachmentClass::getTable())
+			->where(SX::eq($fileAttachmentClass::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq($fileAttachmentClass::getColumn("objectId"), $this->getId()))
+			->joinColumns($fileAttachmentClass::getColumn("fileId"), $fileClass::getIdColumn())
+			->where(SX::cmpLike($fileClass::getColumn("type"), "image/%"))
 			;
 
-		return \App\App::getFileAttachmentModelClass()->getName()::getBySql($sql);
+		return $fileAttachmentClass::getBySql($sql);
 	}
 
 	public function getImageFile(): ?\Katu\Models\Presets\File
 	{
+		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
+		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
+
 		$sql = SX::select()
 			->setGetFoundRows(false)
-			->select(\App\App::getFileModelClass()->getName()::getTable())
-			->from(\App\App::getFileAttachmentModelClass()->getName()::getTable())
-			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectModel"), static::getClass()->getName()))
-			->where(SX::eq(\App\App::getFileAttachmentModelClass()->getName()::getColumn("objectId"), $this->getId()))
-			->orderBy(SX::orderBy(\App\App::getFileAttachmentModelClass()->getName()::getColumn("position")))
-			->joinColumns(\App\App::getFileAttachmentModelClass()->getName()::getColumn("fileId"), \App\App::getFileModelClass()->getName()::getIdColumn())
+			->select($fileClass::getTable())
+			->from($fileAttachmentClass::getTable())
+			->where(SX::eq($fileAttachmentClass::getColumn("objectModel"), static::getClass()->getName()))
+			->where(SX::eq($fileAttachmentClass::getColumn("objectId"), $this->getId()))
+			->orderBy(SX::orderBy($fileAttachmentClass::getColumn("position")))
+			->joinColumns($fileAttachmentClass::getColumn("fileId"), $fileClass::getIdColumn())
 			;
 		// echo $sql;die;
 
-		return \App\App::getFileModelClass()->getName()::getBySql($sql)->getOne();
+		return $fileClass::getBySql($sql)->getOne();
 	}
 
 	public function refreshFileAttachmentsFromFileIds(User $user, ?array $fileIds)
 	{
+		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
+		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
+
 		foreach ($this->getFileAttachments() as $fileAttachment) {
 			$fileAttachment->delete();
 		}
 
 		$position = 1;
 		foreach ($fileIds as $fileId) {
-			$file = \App\App::getFileModelClass()->getName()::get($fileId);
+			$file = $fileClass::get($fileId);
 			if ($file) {
-				\App\App::getFileAttachmentModelClass()->getName()::upsert([
+				$fileAttachmentClass::upsert([
 					"objectModel" => static::getClass()->getName(),
 					"objectId" => $this->getId(),
 					"fileId" => $file->getId(),

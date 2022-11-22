@@ -3,7 +3,8 @@
 namespace Katu\Storage\Adapters;
 
 use Katu\Storage\AdapterInterface;
-use Katu\Storage\StorageItem;
+use Katu\Storage\Storage;
+use Katu\Storage\Entity;
 use Katu\Types\TFileSize;
 
 class GoogleCloudStorageAdapter implements AdapterInterface
@@ -27,6 +28,29 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $this->bucket;
 	}
 
+	public function listEntities(Storage $storage): iterable
+	{
+		$entityClass = \App\App::getContainer()->get(\Katu\Storage\Entity::class);
+
+		// $objects = $this->getBucket()->objects([
+		// 	"delimiter" => "/",
+		// 	"prefix" => "dev/2022/2022-11-18/",
+		// ]);
+		// foreach ($objects as $object) {}
+		// var_dump($objects->prefixes());die;
+
+		$res = [];
+		foreach ($this->getBucket()->objects() as $object) {
+			$res[] = (new $entityClass($storage, $object->info()["name"]))
+				->setURI($object->info()["selfLink"])
+				->setContentType($object->info()["contentType"])
+				->setFileSize(new TFileSize($object->info()["size"]))
+				;
+		}
+
+		return $res;
+	}
+
 	public static function getNameFromURI(string $uri): string
 	{
 		preg_match("/https:\/\/www.googleapis.com\/storage\/v1\/b\/(?<bucketName>.+)\/o\/(?<objectName>.+)/", $uri, $match);
@@ -34,7 +58,7 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return urldecode($match["objectName"]);
 	}
 
-	public function write(StorageItem $item, $content): StorageItem
+	public function write(Entity $item, $content): Entity
 	{
 		$this->getBucket()->upload($content, [
 			"name" => $item->getName(),
@@ -43,12 +67,12 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		return $item;
 	}
 
-	public function read(StorageItem $item)
+	public function read(Entity $item)
 	{
 		return $this->getBucket()->object($item->getName())->downloadAsString();
 	}
 
-	public function delete(StorageItem $item): bool
+	public function delete(Entity $item): bool
 	{
 		try {
 			$this->getBucket()->object($item->getName())->delete();
@@ -59,17 +83,17 @@ class GoogleCloudStorageAdapter implements AdapterInterface
 		}
 	}
 
-	public function getURI(StorageItem $item): string
+	public function getURI(Entity $item): string
 	{
 		return $this->getBucket()->object($item->getName())->info()["selfLink"];
 	}
 
-	public function getFileSize(StorageItem $item): TFileSize
+	public function getFileSize(Entity $item): TFileSize
 	{
 		return new TFileSize($this->getBucket()->object($item->getName())->info()["size"]);
 	}
 
-	public function getContentType(StorageItem $item): string
+	public function getContentType(Entity $item): string
 	{
 		return $this->getBucket()->object($item->getName())->info()["contentType"];
 	}

@@ -19,7 +19,9 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 
 	public function getUser()
 	{
-		return \App\App::getUserModelClass()->getName()::get($this->userId);
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
+
+		return $class::get($this->userId);
 	}
 
 	public function isValid()
