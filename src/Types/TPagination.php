@@ -2,13 +2,15 @@
 
 namespace Katu\Types;
 
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class TPagination
+class TPagination implements RestResponseInterface
 {
-	const DEFAULT_COPY_NEXT = 'Next';
-	const DEFAULT_COPY_PREV = 'Previous';
-	const DEFAULT_PAGE_QUERY_PARAM = 'page';
+	const DEFAULT_COPY_NEXT = "Next";
+	const DEFAULT_COPY_PREV = "Previous";
+	const DEFAULT_PAGE_QUERY_PARAM = "page";
 	const DEFAULT_PER_PAGE = 50;
 	const PAGINATION_ALL_PAGES_LIMIT = 10;
 	const PAGINATION_CURRENT_OFFSET = 3;
@@ -96,7 +98,7 @@ class TPagination
 	public static function getPageQueryParam(): string
 	{
 		try {
-			return \Katu\Config\Config::get('pagination', 'queryParam');
+			return \Katu\Config\Config::get("pagination", "queryParam");
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return static::DEFAULT_PAGE_QUERY_PARAM;
 		}
@@ -105,7 +107,7 @@ class TPagination
 	public static function getResolvedPerPage(): int
 	{
 		try {
-			return \Katu\Config\Config::get('pagination', 'perPage');
+			return \Katu\Config\Config::get("pagination", "perPage");
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
 			return static::DEFAULT_PER_PAGE;
 		}
@@ -143,23 +145,23 @@ class TPagination
 	public function getTemplatePages(): array
 	{
 		$options = [
-			'allPagesLimit' => static::PAGINATION_ALL_PAGES_LIMIT,
-			'currentOffset' => static::PAGINATION_CURRENT_OFFSET,
-			'endsOffset' => static::PAGINATION_ENDS_OFFSET,
+			"allPagesLimit" => static::PAGINATION_ALL_PAGES_LIMIT,
+			"currentOffset" => static::PAGINATION_CURRENT_OFFSET,
+			"endsOffset" => static::PAGINATION_ENDS_OFFSET,
 		];
 
 		if (!$this->total) {
 			return [];
 		}
 
-		if ($this->getMaxPage() <= $options['allPagesLimit']) {
+		if ($this->getMaxPage() <= $options["allPagesLimit"]) {
 			return range($this->getMinPage(), $this->getMaxPage());
 		}
 
 		$pages = [];
-		$pages = array_merge($pages, range($this->getMinPage(), $this->getMinPage() + $options['endsOffset']));
-		$pages = array_merge($pages, range($this->page - $options['currentOffset'], $this->page + $options['currentOffset']));
-		$pages = array_merge($pages, range($this->getMaxPage() - $options['endsOffset'], $this->getMaxPage()));
+		$pages = array_merge($pages, range($this->getMinPage(), $this->getMinPage() + $options["endsOffset"]));
+		$pages = array_merge($pages, range($this->page - $options["currentOffset"], $this->page + $options["currentOffset"]));
+		$pages = array_merge($pages, range($this->getMaxPage() - $options["endsOffset"], $this->getMaxPage()));
 
 		$pages = array_unique(array_filter($pages, function ($i) {
 			return ($i > 0 && $i <= $this->getMaxPage()) ? true : false;
@@ -185,18 +187,8 @@ class TPagination
 	public function getCopy(): array
 	{
 		return [
-			'prev' => \Katu\Config\Config::getWithDefault('pagination', 'copy', 'prev', static::DEFAULT_COPY_PREV),
-			'next' => \Katu\Config\Config::getWithDefault('pagination', 'copy', 'next', static::DEFAULT_COPY_NEXT),
-		];
-	}
-
-	public function getResponseArray(): array
-	{
-		return [
-			'total' => $this->getTotal(),
-			'pages' => $this->getPages(),
-			'perPage' => $this->getPerPage(),
-			'page' => $this->getPage(),
+			"prev" => \Katu\Config\Config::getWithDefault("pagination", "copy", "prev", static::DEFAULT_COPY_PREV),
+			"next" => \Katu\Config\Config::getWithDefault("pagination", "copy", "next", static::DEFAULT_COPY_NEXT),
 		];
 	}
 
@@ -255,5 +247,15 @@ class TPagination
 	public function getLastPageButtonEnabled(): bool
 	{
 		return $this->getPage() < $this->getPages();
+	}
+
+	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	{
+		return new RestResponse([
+			"total" => $this->getTotal(),
+			"pages" => $this->getPages(),
+			"perPage" => $this->getPerPage(),
+			"page" => $this->getPage(),
+		]);
 	}
 }
