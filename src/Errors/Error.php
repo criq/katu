@@ -4,9 +4,12 @@ namespace Katu\Errors;
 
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TClass;
+use Psr\Http\Message\ServerRequestInterface;
 
-class Error implements PackagedInterface
+class Error implements PackagedInterface, RestResponseInterface
 {
 	protected $code;
 	protected $help;
@@ -139,7 +142,7 @@ class Error implements PackagedInterface
 		return $this;
 	}
 
-	public function getResponseArray(): array
+	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
 	{
 		$array = [
 			"message" => $this->getMessage(),
@@ -158,9 +161,9 @@ class Error implements PackagedInterface
 			$array["options"] = $this->getOptions();
 		}
 		if (count($this->getParams())) {
-			$array["params"] = $this->getParams()->getResponseArray();
+			$array["params"] = $this->getParams()->getRestResponse();
 		}
 
-		return $array;
+		return new RestResponse($array);
 	}
 }

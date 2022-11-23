@@ -5,8 +5,11 @@ namespace Katu\Exceptions;
 use ArrayAccess;
 use Countable;
 use Iterator;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
-class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Countable
+class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Countable, RestResponseInterface
 {
 	protected $iteratorPosition = 0;
 	protected $storage = [];
@@ -61,15 +64,6 @@ class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Co
 		}
 
 		return $this;
-	}
-
-	public function getResponseArray(): array
-	{
-		return [
-			'errors' => array_map(function ($e) {
-				return $e->getResponseArray();
-			}, $this->storage),
-		];
 	}
 
 	/****************************************************************************
@@ -133,5 +127,17 @@ class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Co
 	public function count()
 	{
 		return count($this->storage);
+	}
+
+	/****************************************************************************
+	 * REST.
+	 */
+	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	{
+		return new RestResponse([
+			"errors" => array_map(function ($e) {
+				return $e->getRestResponse();
+			}, $this->storage),
+		]);
 	}
 }

@@ -76,17 +76,12 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface, RestRes
 		return !(bool)$this->getTotal();
 	}
 
-	public function getResponseArray(): array
-	{
-		return [
-			"errors" => array_map(function (Error $error) {
-				return $error->getResponseArray();
-			}, $this->getArrayCopy()),
-		];
-	}
-
 	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
 	{
-		return new RestResponse($this->getResponseArray());
+		return new RestResponse([
+			"errors" => array_map(function (Error $error) {
+				return $error->getRestResponse();
+			}, $this->getArrayCopy()),
+		]);
 	}
 }
