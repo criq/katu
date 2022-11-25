@@ -2,7 +2,11 @@
 
 namespace Katu\Exceptions;
 
-class Exception extends \Exception
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+class Exception extends \Exception implements RestResponseInterface
 {
 	const HTTP_CODE = 400;
 
@@ -82,13 +86,13 @@ class Exception extends \Exception
 		return $this->errorNames;
 	}
 
-	public function getResponseArray()
+	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
 	{
-		return [
+		return new RestResponse([
 			"message" => $this->getMessage(),
 			"abbr" => $this->getAbbr() ?: null,
 			"names" => $this->getErrorNames() ?: null,
-		];
+		]);
 	}
 
 	public function setContext(?array $context): Exception

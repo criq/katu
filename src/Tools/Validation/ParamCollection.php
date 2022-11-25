@@ -4,9 +4,12 @@ namespace Katu\Tools\Validation;
 
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TClass;
+use Psr\Http\Message\ServerRequestInterface;
 
-class ParamCollection extends \ArrayObject implements PackagedInterface
+class ParamCollection extends \ArrayObject implements PackagedInterface, RestResponseInterface
 {
 	public function __construct(?array $params = [])
 	{
@@ -53,11 +56,11 @@ class ParamCollection extends \ArrayObject implements PackagedInterface
 		return $array;
 	}
 
-	public function getResponseArray(): array
+	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
 	{
-		return array_map(function (Param $param) {
-			return $param->getResponseArray();
-		}, $this->getAliasArray());
+		return new RestResponse(array_map(function (Param $param) {
+			return $param->getRestResponse();
+		}, $this->getAliasArray()));
 	}
 
 	public function filterWithoutKeys(array $keys): ParamCollection

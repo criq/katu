@@ -4,9 +4,12 @@ namespace Katu\Tools\Validation;
 
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TClass;
+use Psr\Http\Message\ServerRequestInterface;
 
-class Param implements PackagedInterface
+class Param implements PackagedInterface, RestResponseInterface
 {
 	protected $key;
 	protected $alias;
@@ -117,12 +120,12 @@ class Param implements PackagedInterface
 		return $this;
 	}
 
-	public function getResponseArray(): array
+	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
 	{
-		return [
+		return new RestResponse([
 			"key" => $this->getKey(),
 			"alias" => $this->getAlias(),
 			"input" => $this->getInput(),
-		];
+		]);
 	}
 }
