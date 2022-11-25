@@ -68,7 +68,7 @@ class Result extends \ArrayObject implements RestResponseInterface
 		return $this[0] ?? null;
 	}
 
-	public function each(callable $callback)
+	public function each($callback)
 	{
 		$res = [];
 		foreach ($this->getItems() as $item) {
