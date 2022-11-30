@@ -40,18 +40,6 @@ class Email
 		return $this->subject;
 	}
 
-	public function setPlain(?string $plain): Email
-	{
-		$this->plain = $plain;
-
-		return $this;
-	}
-
-	public function getPlain(): ?string
-	{
-		return $this->plain;
-	}
-
 	public function setHtml(?string $html): Email
 	{
 		$this->html = $html;
@@ -62,6 +50,18 @@ class Email
 	public function getHtml(): ?string
 	{
 		return $this->html;
+	}
+
+	public function setPlain(?string $plain): Email
+	{
+		$this->plain = $plain;
+
+		return $this;
+	}
+
+	public function getPlain(): ?string
+	{
+		return $this->plain;
 	}
 
 	public function setBody(string $html, ?string $plain = null): Email
