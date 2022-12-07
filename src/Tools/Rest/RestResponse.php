@@ -8,43 +8,45 @@ class RestResponse
 {
 	protected $payload = [];
 
-	public function __construct(array $payload)
+	public function __construct($payload)
 	{
 		$this->payload = $payload;
 	}
 
-	public function setPayload(array $payload): RestResponse
+	public function setPayload($payload): RestResponse
 	{
 		$this->payload = $payload;
 
 		return $this;
 	}
 
-	public function getPayload(): array
+	public function getPayload()
 	{
 		return $this->payload;
 	}
 
-	public function getResponse(): array
+	public function getResponse()
 	{
-		$array = $this->getPayload();
+		$payload = $this->getPayload();
 
-		array_walk_recursive($array, function (&$value, $key) {
-			if ($value instanceof static) {
-				$value = $value->getResponse();
-			}
-			if ($value instanceof \GuzzleHttp\Psr7\Stream) {
-				$value = $value->getContents();
-			}
-			if ($value instanceof \DateTime) {
-				$value = $value->format("c");
-			}
-			if ($value instanceof \Katu\Types\TURL) {
-				$value = (string)$value;
-			}
-		});
+		if (is_array($payload)) {
+			array_walk_recursive($payload, function (&$value, $key) {
+				if ($value instanceof static) {
+					$value = $value->getResponse();
+				}
+				if ($value instanceof \GuzzleHttp\Psr7\Stream) {
+					$value = $value->getContents();
+				}
+				if ($value instanceof \DateTime) {
+					$value = $value->format("c");
+				}
+				if ($value instanceof \Katu\Types\TURL) {
+					$value = (string)$value;
+				}
+			});
+		}
 
-		return $array;
+		return $payload;
 	}
 
 	public function getStream(): StreamInterface
