@@ -271,7 +271,22 @@ abstract class TwigEngine implements ViewEngineInterface
 		}
 
 		try {
-			$data["_request"]["params"] = (array)$this->getRequest()->getQueryParams();
+			$data["_request"]["params"] = array_merge(
+				$this->getRequest()->getQueryParams(),
+				$this->getRequest()->getParsedBody(),
+			);
+		} catch (\Throwable $e) {
+			// Doesn"t exist.
+		}
+
+		try {
+			$data["_request"]["queryParams"] = $this->getRequest()->getQueryParams();
+		} catch (\Throwable $e) {
+			// Doesn"t exist.
+		}
+
+		try {
+			$data["_request"]["parsedBody"] = $this->getRequest()->getParsedBody();
 		} catch (\Throwable $e) {
 			// Doesn"t exist.
 		}
