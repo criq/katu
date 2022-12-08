@@ -18,7 +18,7 @@ class TURL
 		// Is just a string.
 		} else {
 			if (!static::isValid($value)) {
-				throw new \Exception("Invalid URL '{$value}'.");
+				throw new \Exception("Invalid URL \"{$value}\".");
 			}
 
 			$this->value = (string)trim($value);
@@ -44,11 +44,11 @@ class TURL
 		return $result;
 	}
 
-	public static function make($url, array $params = []): TURL
+	public static function make($url, ?array $params = []): TURL
 	{
 		$queryParams = trim(http_build_query($params));
 
-		return new static($url . ($queryParams ? ("?" . $queryParams) : null));
+		return new static($url . ($queryParams ? ("?{$queryParams}") : null));
 	}
 
 	public static function build(array $parts): TURL
