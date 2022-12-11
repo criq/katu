@@ -5,10 +5,12 @@ namespace Katu\Tools\Calendar;
 class Timeout
 {
 	protected $timeout;
+	protected $referenceTime;
 
-	public function __construct($timeout)
+	public function __construct($timeout, ?Time $referenceTime = null)
 	{
 		$this->setTimeout($timeout);
+		$this->setReferenceTime($referenceTime);
 	}
 
 	public function setTimeout(string $value): Timeout
@@ -21,6 +23,18 @@ class Timeout
 	public function getTimeout(): string
 	{
 		return $this->timeout;
+	}
+
+	public function setReferenceTime(?Time $referenceTime): Timeout
+	{
+		$this->referenceTime = $referenceTime;
+
+		return $this;
+	}
+
+	public function getReferenceTime(): ?Time
+	{
+		return $this->referenceTime ?: new Time;
 	}
 
 	public function getSeconds(): Seconds
@@ -36,7 +50,7 @@ class Timeout
 
 	public function getTime(): Time
 	{
-		return new Time("{$this->getSeconds()->getValue()} seconds");
+		return (clone $this->getReferenceTime())->modify("{$this->getSeconds()->getValue()} seconds");
 	}
 
 	public function fits(\DateTime $datetime): bool
