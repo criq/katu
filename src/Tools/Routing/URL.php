@@ -19,7 +19,7 @@ class URL
 		return new \Katu\Types\TURL(\Katu\Config\Config::get("app", "baseUrl"));
 	}
 
-	public static function getFor($route, $args = [], $params = []): \Katu\Types\TURL
+	public static function getFor($route, ?array $args = [], ?array $params = []): \Katu\Types\TURL
 	{
 		$path = \App\App::get()->getRouteCollector()->getRouteParser()->urlFor($route, array_map("urlencode", (array)$args));
 

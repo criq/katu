@@ -32,28 +32,63 @@ class Time extends \DateTime
 		return new static($dateTime->format("Y-m-d H:i:s"), $dateTime->getTimezone());
 	}
 
-	public static function createFromString(?string $string): ?Time
+	public static function createFromString(?string $string, bool $timeRequired): ?Time
 	{
-		if (!trim($string)) {
-			return null;
+		$string = trim($string);
+
+		if (static::createFromFormat("Y-m-d\TH:i:sP", $string)) { // 2022-04-01T13:00:00+02:00
+			$time = new static($string);
+		} elseif (static::createFromFormat("D, j M Y H:i:s O", $string)) { // Thu, 21 Dec 2000 16:01:07 +0200
+			$time = new static($string);
 		}
 
-		if ($string == "0000-00-00" || $string == "0000-00-00 00:00:00") {
-			return null;
+		if (!$time) {
+			$time =
+				   static::createFromFormat("!Y-m-d H:i:s", $string)
+				?: static::createFromFormat("!Y-m-d H:i", $string)
+				?: static::createFromFormat("!Y-m-d H", $string)
+				?: (!$timeRequired ? static::createFromFormat("!Y-m-d", $string) : null)
+				?: static::createFromFormat("!j.n.Y H:i:s", $string)
+				?: static::createFromFormat("!j.n.Y H:i", $string)
+				?: static::createFromFormat("!j.n.Y H", $string)
+				?: (!$timeRequired ? static::createFromFormat("!j.n.Y", $string) : null)
+				;
 		}
 
-		try {
-			$datetime = new static($string);
-			if ($datetime->format("Y") < 0) {
-				return null;
+		if (!$time) {
+			$y = "(?<y>([0-9]{2})|([0-9]{4}))";
+			$m = "(?<m>(0?[1-9])|(1[0-2]))";
+			$d = "(?<d>(0?[1-9])|([12][0-9])|(3[01]))";
+			$h = "(?<h>(0?[0-9])|(1[0-9])|(2[0-3]))";
+			$i = "(?<i>(0[0-9])|([1-5][0-9]))";
+			$s = "(?<s>(0[0-9])|([1-5][0-9]))";
+
+			$regexps = array_values(array_filter([
+				"/^$y-$m-$d $h:$i:$s$/",
+				!$timeRequired ? "/^$y-$m-$d$/" : null,
+				!$timeRequired ? "/^$d.\s*$m.\s*$y$/" : null,
+			]));
+
+			foreach ($regexps as $regexp) {
+				if (preg_match($regexp, $string, $match)) {
+					$time = (new Time)
+						->setDate(
+							$match["y"] ?? null,
+							$match["m"] ?? null,
+							$match["d"] ?? null,
+						)
+						->setTime(
+							$match["h"] ?? null,
+							$match["i"] ?? null,
+							$match["s"] ?? null,
+						)
+						;
+					break;
+				}
 			}
-
-			return $datetime;
-		} catch (\Throwable $e) {
-			return null;
 		}
 
-		return null;
+		return $time ? new Time($time) : null;
 	}
 
 	public function getLocalTimeZone(): \DateTimeZone
