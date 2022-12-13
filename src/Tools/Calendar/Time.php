@@ -88,7 +88,7 @@ class Time extends \DateTime
 			}
 		}
 
-		return $time ? new Time($time) : null;
+		return $time ? new static($time) : null;
 	}
 
 	public function getLocalTimeZone(): \DateTimeZone
