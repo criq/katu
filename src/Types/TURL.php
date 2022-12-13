@@ -46,7 +46,7 @@ class TURL
 
 	public static function make($url, ?array $params = []): TURL
 	{
-		$queryParams = trim(http_build_query($params));
+		$queryParams = trim(http_build_query((array)$params));
 
 		return new static($url . ($queryParams ? ("?{$queryParams}") : null));
 	}
