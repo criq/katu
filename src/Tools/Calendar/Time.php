@@ -46,10 +46,12 @@ class Time extends \DateTime
 			$time =
 				   static::createFromFormat("!Y-m-d H:i:s", $string)
 				?: static::createFromFormat("!Y-m-d H:i", $string)
+				?: static::createFromFormat("!Y-m-d H.i", $string)
 				?: static::createFromFormat("!Y-m-d H", $string)
 				?: (!$timeRequired ? static::createFromFormat("!Y-m-d", $string) : null)
 				?: static::createFromFormat("!j.n.Y H:i:s", $string)
 				?: static::createFromFormat("!j.n.Y H:i", $string)
+				?: static::createFromFormat("!j.n.Y H.i", $string)
 				?: static::createFromFormat("!j.n.Y H", $string)
 				?: (!$timeRequired ? static::createFromFormat("!j.n.Y", $string) : null)
 				;
