@@ -11,6 +11,7 @@ class Result extends \ArrayObject implements RestResponseInterface
 {
 	protected $error;
 	protected $pagination;
+	protected $query;
 
 	public function __construct(?Query $query = null)
 	{
