@@ -33,4 +33,11 @@ class LedgerKeyCollection extends \ArrayObject
 	{
 		return $this[$key] ?? null;
 	}
+
+	public function removeLedgerKey(string $key): LedgerKeyCollection
+	{
+		unset($this[$key]);
+
+		return $this;
+	}
 }
