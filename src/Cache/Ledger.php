@@ -66,6 +66,14 @@ class Ledger
 		return $this;
 	}
 
+	public function removeKey(string $key): Ledger
+	{
+		$this->getLedgerKeys()->removeLedgerKey($key);
+		$this->persist();
+
+		return $this;
+	}
+
 	public function getExpiredKeys(Timeout $timeout): array
 	{
 		return $this->getLedgerKeys()->filterExpired($timeout)->getKeys();
