@@ -28,7 +28,7 @@ class LedgerKeyCollection extends \ArrayObject
 	{
 		$array = $this->getArrayCopy();
 
-		usort($array, function (LedgerKey $a, LedgerKey $b) {
+		uasort($array, function (LedgerKey $a, LedgerKey $b) {
 			return $a->getTime() > $b->getTime() ? 1 : -1;
 		});
 
