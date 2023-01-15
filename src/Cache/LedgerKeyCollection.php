@@ -39,7 +39,9 @@ class LedgerKeyCollection extends \ArrayObject
 	{
 		return (new LedgerKeyCollection(array_filter($this->getArrayCopy(), function (LedgerKey $key) use ($timeout) {
 			return is_null($key->getTime()) || !$key->getTime()->fitsInTimeout($timeout);
-		})))->sortByTime();
+		})));
+
+		// ->sortByTime();
 	}
 
 	public function getLedgerKey(string $key): ?LedgerKey
