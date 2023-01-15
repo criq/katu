@@ -4,8 +4,6 @@ namespace Katu\Cache;
 
 use Katu\Tools\Calendar\Timeout;
 
-use function PHPUnit\Framework\returnSelf;
-
 class LedgerKeyCollection extends \ArrayObject
 {
 	public function populate(array $keys): LedgerKeyCollection
