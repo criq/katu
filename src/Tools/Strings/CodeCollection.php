@@ -13,7 +13,7 @@ class CodeCollection extends \ArrayObject
 
 	public static function createFromRequestParam(?string $param): CodeCollection
 	{
-		return static::createFromArray(array_values(array_unique(array_filter(preg_split("/[^A-Za-z0-9]/", $param)))));
+		return static::createFromArray(array_values(array_unique(array_filter(preg_split("/[^A-Za-z0-9_]/", $param)))));
 	}
 
 	public function getCamelCaseArray(): array
