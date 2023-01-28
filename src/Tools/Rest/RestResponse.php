@@ -33,15 +33,14 @@ class RestResponse
 			array_walk_recursive($payload, function (&$value, $key) {
 				if ($value instanceof static) {
 					$value = $value->getResponse();
-				}
-				if ($value instanceof \GuzzleHttp\Psr7\Stream) {
+				} elseif ($value instanceof \GuzzleHttp\Psr7\Stream) {
 					$value = $value->getContents();
-				}
-				if ($value instanceof \DateTime) {
+				} elseif ($value instanceof \DateTime) {
 					$value = $value->format("c");
-				}
-				if ($value instanceof \Katu\Types\TURL) {
+				} elseif ($value instanceof \Katu\Types\TURL) {
 					$value = (string)$value;
+				} elseif ($value instanceof \Katu\Types\TClass) {
+					$value = $value->getPortableName();
 				}
 			});
 		}

@@ -18,7 +18,7 @@ class Error implements PackagedInterface, RestResponseInterface
 	protected $options;
 	protected $versions;
 
-	public function __construct(string $message = null, ?string $code = null, ?array $versions = [])
+	public function __construct(?string $message = null, ?string $code = null, ?array $versions = [])
 	{
 		$this->setMessage($message);
 		$this->setCode($code);
@@ -47,14 +47,14 @@ class Error implements PackagedInterface, RestResponseInterface
 		]);
 	}
 
-	public function setMessage(string $value): Error
+	public function setMessage(?string $value): Error
 	{
 		$this->message = $value;
 
 		return $this;
 	}
 
-	public function getMessage(): string
+	public function getMessage(): ?string
 	{
 		return $this->message;
 	}

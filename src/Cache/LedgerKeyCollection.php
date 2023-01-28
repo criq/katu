@@ -22,11 +22,24 @@ class LedgerKeyCollection extends \ArrayObject
 		}, array_keys($this->getArrayCopy()));
 	}
 
+	public function sortByTime(): LedgerKeyCollection
+	{
+		$array = $this->getArrayCopy();
+
+		uasort($array, function (LedgerKey $a, LedgerKey $b) {
+			return $a->getTime() > $b->getTime() ? 1 : -1;
+		});
+
+		return new static($array);
+	}
+
 	public function filterExpired(Timeout $timeout): LedgerKeyCollection
 	{
-		return new LedgerKeyCollection(array_filter($this->getArrayCopy(), function (LedgerKey $key) use ($timeout) {
+		return (new LedgerKeyCollection(array_filter($this->getArrayCopy(), function (LedgerKey $key) use ($timeout) {
 			return is_null($key->getTime()) || !$key->getTime()->fitsInTimeout($timeout);
-		}));
+		})));
+
+		// ->sortByTime();
 	}
 
 	public function getLedgerKey(string $key): ?LedgerKey

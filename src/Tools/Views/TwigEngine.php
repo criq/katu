@@ -243,52 +243,52 @@ abstract class TwigEngine implements ViewEngineInterface
 		try {
 			$data["_site"]["apiUrl"] = \Katu\Config\Config::get("app", "apiUrl");
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+			// Doesn't exist.
 		}
 
 		try {
 			$data["_site"]["timezone"] = \Katu\Config\Config::get("app", "timezone");
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+			// Doesn't exist.
 		}
 
 		try {
 			$data["_request"]["uri"] = (string)$this->getRequest()->getUri();
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+			// Doesn't exist.
 		}
 
 		try {
 			$data["_request"]["url"] = (string)\Katu\Tools\Routing\URL::getCurrent();
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+			// Doesn't exist.
 		}
 
 		try {
 			$data["_request"]["ip"] = (string)$this->getRequest()->getServerParams()["REMOTE_ADDR"];
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+			// Doesn't exist.
 		}
 
 		try {
 			$data["_request"]["params"] = array_merge(
-				$this->getRequest()->getQueryParams(),
-				$this->getRequest()->getParsedBody(),
+				(array)$this->getRequest()->getQueryParams(),
+				(array)$this->getRequest()->getParsedBody(),
 			);
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+			// Doesn't exist.
 		}
 
 		try {
 			$data["_request"]["queryParams"] = $this->getRequest()->getQueryParams();
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+			// Doesn't exist.
 		}
 
 		try {
 			$data["_request"]["parsedBody"] = $this->getRequest()->getParsedBody();
 		} catch (\Throwable $e) {
-			// Doesn"t exist.
+			// Doesn't exist.
 		}
 
 		try {
