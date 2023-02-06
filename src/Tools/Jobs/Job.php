@@ -12,7 +12,7 @@ abstract class Job
 {
 	abstract public function getCallback(): callable;
 
-	const INTERVAL = "1 hour";
+	const INTERVAL = "1 day";
 	const MAX_LOAD_AVERAGE = 1.5;
 	const TIMEOUT = "1 hour";
 
