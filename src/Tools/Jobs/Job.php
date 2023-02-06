@@ -14,6 +14,7 @@ abstract class Job
 	abstract public function getInterval(): Timeout;
 
 	protected $args = [];
+	protected $maxLoadAverage;
 
 	public function __construct(array $args = [])
 	{
@@ -84,6 +85,18 @@ abstract class Job
 		return false;
 	}
 
+	public function setMaxLoadAverage(?float $maxLoadAverage): Job
+	{
+		$this->maxLoadAverage = $maxLoadAverage;
+
+		return $this;
+	}
+
+	public function getMaxLoadAverage(): ?float
+	{
+		return $this->maxLoadAverage;
+	}
+
 	public function getIdentifier(): TIdentifier
 	{
 		return new TIdentifier(static::class);
@@ -96,6 +109,11 @@ abstract class Job
 
 	public function run(): bool
 	{
+		// Check max load average.
+		if ($this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAverage() >= $this->getMaxLoadAverage()) {
+			return false;
+		}
+
 		try {
 			$this->setTimeStarted(new Time);
 			$this->getProcedure()->run();
