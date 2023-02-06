@@ -13,7 +13,7 @@ abstract class Job
 	abstract public function getCallback(): callable;
 
 	const INTERVAL = "1 hour";
-	const MAX_LOAD_AVERAGE = null;
+	const MAX_LOAD_AVERAGE = 1.5;
 	const TIMEOUT = "1 hour";
 
 	protected $args = [];
@@ -111,7 +111,7 @@ abstract class Job
 	public function run(): bool
 	{
 		// Check max load average.
-		if ($this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAverage() >= $this->getMaxLoadAverage()) {
+		if ($this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAveragePerCpu()[0] >= $this->getMaxLoadAverage()) {
 			return false;
 		}
 
