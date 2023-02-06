@@ -11,7 +11,10 @@ use Katu\Types\TIdentifier;
 abstract class Job
 {
 	abstract public function getCallback(): callable;
-	abstract public function getInterval(): Timeout;
+
+	const INTERVAL = "1 hour";
+	const MAX_LOAD_AVERAGE = null;
+	const TIMEOUT = "1 hour";
 
 	protected $args = [];
 	protected $maxLoadAverage;
@@ -67,9 +70,14 @@ abstract class Job
 		return $this->getTimeFinishedPickle()->get() ?: null;
 	}
 
+	public function getInterval(): Timeout
+	{
+		return new Timeout(static::INTERVAL);
+	}
+
 	public function getTimeout(): Timeout
 	{
-		return new Timeout("1 hour");
+		return new Timeout(static::TIMEOUT);
 	}
 
 	public function isExpired(): bool
@@ -85,16 +93,9 @@ abstract class Job
 		return false;
 	}
 
-	public function setMaxLoadAverage(?float $maxLoadAverage): Job
-	{
-		$this->maxLoadAverage = $maxLoadAverage;
-
-		return $this;
-	}
-
 	public function getMaxLoadAverage(): ?float
 	{
-		return $this->maxLoadAverage;
+		return static::MAX_LOAD_AVERAGE;
 	}
 
 	public function getIdentifier(): TIdentifier
