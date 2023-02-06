@@ -12,7 +12,6 @@ abstract class Job
 {
 	abstract public function getCallback(): callable;
 	abstract public function getInterval(): Timeout;
-	abstract public function getTimeout(): Timeout;
 
 	protected $args = [];
 
@@ -65,6 +64,11 @@ abstract class Job
 	public function getTimeFinished(): ?Time
 	{
 		return $this->getTimeFinishedPickle()->get() ?: null;
+	}
+
+	public function getTimeout(): Timeout
+	{
+		return new Timeout("1 hour");
 	}
 
 	public function isExpired(): bool
