@@ -11,7 +11,7 @@ use Katu\Types\TIdentifier;
 abstract class Job
 {
 	abstract public function getCallback(): callable;
-	abstract public function getLaunchInterval(): Timeout;
+	abstract public function getInterval(): Timeout;
 	abstract public function getTimeout(): Timeout;
 
 	protected $args = [];
@@ -33,30 +33,47 @@ abstract class Job
 		return $this->args;
 	}
 
-	public function getLastFinishedTimePickle(): Pickle
+	public function getTimeStartedPickle(): Pickle
 	{
 		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
 	}
 
-	public function setLastFinishedTime(?Time $time): Job
+	public function setTimeStarted(?Time $time): Job
 	{
-		$this->getLastFinishedTimePickle()->set($time);
+		$this->getTimeStartedPickle()->set($time);
 
 		return $this;
 	}
 
-	public function getLastFinishedTime(): ?Time
+	public function getTimeStarted(): ?Time
 	{
-		return $this->getLastFinishedTimePickle()->get() ?: null;
+		return $this->getTimeStartedPickle()->get() ?: null;
+	}
+
+	public function getTimeFinishedPickle(): Pickle
+	{
+		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
+	}
+
+	public function setTimeFinished(?Time $time): Job
+	{
+		$this->getTimeFinishedPickle()->set($time);
+
+		return $this;
+	}
+
+	public function getTimeFinished(): ?Time
+	{
+		return $this->getTimeFinishedPickle()->get() ?: null;
 	}
 
 	public function isExpired(): bool
 	{
-		if (is_null($this->getLastFinishedTime())) {
+		if (is_null($this->getTimeFinished())) {
 			return true;
 		}
 
-		if (!$this->getLastFinishedTime()->fitsInTimeout($this->getLaunchInterval())) {
+		if (!$this->getTimeFinished()->fitsInTimeout($this->getInterval())) {
 			return true;
 		}
 
@@ -76,8 +93,9 @@ abstract class Job
 	public function run(): bool
 	{
 		try {
+			$this->setTimeStarted(new Time);
 			$this->getProcedure()->run();
-			$this->setLastFinishedTime(new Time);
+			$this->setTimeFinished(new Time);
 
 			return true;
 		} catch (\Throwable $e) {
