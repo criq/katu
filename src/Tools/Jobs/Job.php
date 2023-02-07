@@ -2,8 +2,8 @@
 
 namespace Katu\Tools\Jobs;
 
-use App\Classes\Time;
 use Katu\Cache\Pickle;
+use Katu\Tools\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Tools\Locks\Procedure;
 use Katu\Types\TIdentifier;
@@ -112,6 +112,17 @@ abstract class Job
 		return new ScheduleCollection([
 			new Schedule,
 		]);
+	}
+
+	public function isScheduled(Time $time): bool
+	{
+		foreach ($this->getSchedules() as $schedule) {
+			if (preg_match("/^{$schedule->getRegexp()}$/", $time->format("m d H i"))) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function run(): bool
