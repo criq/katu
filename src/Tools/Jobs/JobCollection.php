@@ -76,6 +76,11 @@ class JobCollection extends \ArrayObject
 		return new static($array);
 	}
 
+	public function getReversed(): JobCollection
+	{
+		return new static(array_reverse($this->getArrayCopy()));
+	}
+
 	public function getCallback(): callable
 	{
 		return function () {
