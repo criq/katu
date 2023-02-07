@@ -52,6 +52,15 @@ class JobCollection extends \ArrayObject
 		})));
 	}
 
+	public function getExecutable(): JobCollection
+	{
+		return $this
+			->filterScheduled(new Time)
+			->filterExpired()
+			->sortByTimeStarted()
+			;
+	}
+
 	public function sortByTimeStarted(): JobCollection
 	{
 		$array = $this->getArrayCopy();
@@ -66,13 +75,7 @@ class JobCollection extends \ArrayObject
 	{
 		return function () {
 			$stopwatch = new Stopwatch;
-			$jobs = $this
-				->filterScheduled(new Time)
-				->filterExpired()
-				->sortByTimeStarted()
-				;
-
-			foreach ($jobs as $job) {
+			foreach ($this->getExecutable() as $job) {
 				$job->run();
 				if ($stopwatch->getElapsedRatio($this->getMaxRunningSeconds()) >= 1) {
 					break;
