@@ -14,6 +14,11 @@ class JobCollection extends \ArrayObject
 	protected $lockTimeout;
 	protected $maxRunningSeconds;
 
+	public function getIdentifier(): TIdentifier
+	{
+		return new TIdentifier(static::class);
+	}
+
 	public function setLockTimeout(Timeout $lockTimeout): JobCollection
 	{
 		$this->lockTimeout = $lockTimeout;
@@ -86,7 +91,7 @@ class JobCollection extends \ArrayObject
 
 	public function getProcedure(): Procedure
 	{
-		return new Procedure(new TIdentifier(static::class, __FUNCTION__), $this->getLockTimeout(), $this->getCallback());
+		return new Procedure($this->getIdentifier(), $this->getLockTimeout(), $this->getCallback());
 	}
 
 	public function run()
