@@ -81,11 +81,11 @@ abstract class Job
 
 	public function isExpired(): bool
 	{
-		if (is_null($this->getTimeFinished())) {
+		if (is_null($this->getTimeStarted())) {
 			return true;
 		}
 
-		if (!$this->getTimeFinished()->fitsInTimeout($this->getInterval())) {
+		if (!$this->getTimeStarted()->fitsInTimeout($this->getInterval())) {
 			return true;
 		}
 
