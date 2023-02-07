@@ -70,7 +70,7 @@ class JobCollection extends \ArrayObject
 	{
 		$array = $this->getArrayCopy();
 		usort($array, function (Job $a, Job $b) {
-			return $a->getTimeStarted() > $b->getTimeStarted() ? -1 : 1;
+			return $a->getTimeStarted() < $b->getTimeStarted() ? -1 : 1;
 		});
 
 		return new static($array);
