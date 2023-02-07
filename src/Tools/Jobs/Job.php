@@ -37,7 +37,7 @@ abstract class Job
 
 	public function getTimeStartedPickle(): Pickle
 	{
-		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
+		return new Pickle(new TIdentifier(static::class, $this->getArgs(), __FUNCTION__));
 	}
 
 	public function setTimeStarted(?Time $time): Job
@@ -54,7 +54,7 @@ abstract class Job
 
 	public function getTimeFinishedPickle(): Pickle
 	{
-		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
+		return new Pickle(new TIdentifier(static::class, $this->getArgs(), __FUNCTION__));
 	}
 
 	public function setTimeFinished(?Time $time): Job
@@ -99,7 +99,7 @@ abstract class Job
 
 	public function getIdentifier(): TIdentifier
 	{
-		return new TIdentifier(static::class);
+		return new TIdentifier(static::class, $this->getArgs());
 	}
 
 	public function getProcedure(): Procedure
