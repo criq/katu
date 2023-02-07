@@ -6,6 +6,7 @@ use Katu\Cache\Pickle;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Tools\Locks\Procedure;
+use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 
 abstract class Job
@@ -21,6 +22,11 @@ abstract class Job
 	public function __construct(array $args = [])
 	{
 		$this->setArgs($args);
+	}
+
+	public function getClass(): TClass
+	{
+		return new TClass($this);
 	}
 
 	public function setArgs(array $args = []): Job
