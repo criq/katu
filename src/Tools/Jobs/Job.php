@@ -17,7 +17,6 @@ abstract class Job
 	const TIMEOUT = "1 hour";
 
 	protected $args = [];
-	protected $maxLoadAverage;
 
 	public function __construct(array $args = [])
 	{
