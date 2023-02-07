@@ -3,6 +3,7 @@
 namespace Katu\Tools\Jobs;
 
 use Katu\Tools\Calendar\Seconds;
+use Katu\Tools\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Tools\Locks\Procedure;
 use Katu\Tools\Profiler\Stopwatch;
@@ -44,6 +45,13 @@ class JobCollection extends \ArrayObject
 		})));
 	}
 
+	public function filterScheduled(Time $time): JobCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Job $job) use ($time) {
+			return $job->isScheduled($time);
+		})));
+	}
+
 	public function sortByTimeStarted(): JobCollection
 	{
 		$array = $this->getArrayCopy();
@@ -58,7 +66,13 @@ class JobCollection extends \ArrayObject
 	{
 		return function () {
 			$stopwatch = new Stopwatch;
-			foreach ($this->filterExpired()->sortByTimeStarted() as $job) {
+			$jobs = $this
+				->filterScheduled(new Time)
+				->filterExpired()
+				->sortByTimeStarted()
+				;
+
+			foreach ($jobs as $job) {
 				$job->run();
 				if ($stopwatch->getElapsedRatio($this->getMaxRunningSeconds()) >= 1) {
 					break;
