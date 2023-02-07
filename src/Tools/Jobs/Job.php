@@ -108,6 +108,13 @@ abstract class Job
 		return new Procedure($this->getIdentifier(), $this->getTimeout(), $this->getCallback());
 	}
 
+	public function getSchedules(): ScheduleCollection
+	{
+		return new ScheduleCollection([
+			new Schedule,
+		]);
+	}
+
 	public function run(): bool
 	{
 		// Check max load average.
