@@ -20,7 +20,7 @@ class TClass implements PackagedInterface
 			$this->name = $name;
 		}
 
-		$this->name = ltrim($this->name, "\\");
+		$this->name = ltrim(strtr($this->name, "/", "\\"), "\\");
 	}
 
 	public function __toString(): string

@@ -6,10 +6,12 @@ use Katu\Cache\Pickle;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Tools\Locks\Procedure;
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 
-abstract class Job
+abstract class Job implements PackagedInterface
 {
 	abstract public function getCallback(): callable;
 
@@ -22,6 +24,25 @@ abstract class Job
 	public function __construct(array $args = [])
 	{
 		$this->setArgs($args);
+	}
+
+	public function getPackage(): Package
+	{
+		return new Package([
+			"class" => (new TClass($this))->getPortableName(),
+			"args" => $this->getArgs(),
+		]);
+	}
+
+	public static function createFromPackage(Package $package): ?Job
+	{
+		try {
+			$className = TClass::createFromPortableName($package->getPayload()["class"])->getName();
+
+			return new $className($package->getPayload()["args"] ?? []);
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public function getClass(): TClass

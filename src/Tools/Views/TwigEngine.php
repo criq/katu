@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Views;
 
+use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -207,6 +208,15 @@ abstract class TwigEngine implements ViewEngineInterface
 			}
 
 			return false;
+		}));
+
+		$twig->addFunction(new \Twig\TwigFunction("getJob", function (string $identifier) {
+			$class = new TClass($identifier);
+			if ($class->exists()) {
+				return new ($class->getName());
+			}
+
+			return null;
 		}));
 
 		return $twig;
