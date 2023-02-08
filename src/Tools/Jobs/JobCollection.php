@@ -11,7 +11,7 @@ use Katu\Types\TIdentifier;
 
 class JobCollection extends \ArrayObject
 {
-	protected $cycleEvery;
+	protected $cyclePause;
 	protected $cycles = 1;
 	protected $lockTimeout;
 	protected $maxRunningSeconds;
@@ -33,16 +33,16 @@ class JobCollection extends \ArrayObject
 		return $this->cycles;
 	}
 
-	public function setCycleEvery(?Seconds $cycleEvery): JobCollection
+	public function setCyclePause(?Seconds $cyclePause): JobCollection
 	{
-		$this->cycleEvery = $cycleEvery;
+		$this->cyclePause = $cyclePause;
 
 		return $this;
 	}
 
-	public function getCycleEvery(): Seconds
+	public function getCyclePause(): Seconds
 	{
-		return $this->cycleEvery ?: new Seconds(10);
+		return $this->cyclePause ?: new Seconds(10);
 	}
 
 	public function setLockTimeout(Timeout $lockTimeout): JobCollection
@@ -130,7 +130,7 @@ class JobCollection extends \ArrayObject
 		for ($cycle = 1; $cycle <= $this->getCycles(); $cycle++) {
 			$this->getProcedure()->run();
 			if ($cycle < $this->getCycles()) {
-				sleep($this->getCycleEvery()->getValue());
+				sleep($this->getCyclePause()->getValue());
 			}
 		}
 	}
