@@ -210,10 +210,11 @@ abstract class TwigEngine implements ViewEngineInterface
 			return false;
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction("getJob", function (string $identifier) {
+		$twig->addFunction(new \Twig\TwigFunction("getJob", function (string $identifier, ?array $args = []) {
 			$class = new TClass($identifier);
 			if ($class->exists()) {
-				return new ($class->getName());
+				$className = $class->getName();
+				return new $className($args);
 			}
 
 			return null;
