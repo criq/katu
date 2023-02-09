@@ -36,6 +36,8 @@ class Time extends \DateTime
 	{
 		$string = trim($string);
 
+		$time = null;
+
 		if (static::createFromFormat("Y-m-d\TH:i:sP", $string)) { // 2022-04-01T13:00:00+02:00
 			$time = new static($string);
 		} elseif (static::createFromFormat("D, j M Y H:i:s O", $string)) { // Thu, 21 Dec 2000 16:01:07 +0200

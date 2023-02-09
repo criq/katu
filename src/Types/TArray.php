@@ -122,7 +122,7 @@ class TArray extends \ArrayObject
 		return new static(array_values($this->getArray()));
 	}
 
-	public function natsort(): TArray
+	public function sortNaturally(): TArray
 	{
 		$array = $this->getArray();
 		natsort($array);
@@ -130,7 +130,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function asort($sortFlags = \SORT_REGULAR): TArray
+	public function sortAssoc($sortFlags = \SORT_REGULAR): TArray
 	{
 		$array = $this->getArray();
 		asort($array, $sortFlags);
@@ -138,7 +138,7 @@ class TArray extends \ArrayObject
 		return new static($array);
 	}
 
-	public function ksort($sortFlags = \SORT_REGULAR): TArray
+	public function sortByKey($sortFlags = \SORT_REGULAR): TArray
 	{
 		$array = $this->getArray();
 		ksort($array, $sortFlags);
