@@ -173,7 +173,7 @@ abstract class Base
 
 	public static function getOneBy(?array $where = [], $orderBy = null)
 	{
-		return static::getBy($where, $orderBy)->getOne();
+		return static::getBy($where, $orderBy, SX::page(1, 1))->getOne();
 	}
 
 	public static function getAll($orderBy = null): \Katu\PDO\Result
