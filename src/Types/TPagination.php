@@ -2,6 +2,7 @@
 
 namespace Katu\Types;
 
+use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -249,7 +250,7 @@ class TPagination implements RestResponseInterface
 		return $this->getPage() < $this->getPages();
 	}
 
-	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		return new RestResponse([
 			"total" => $this->getTotal(),

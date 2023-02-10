@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Validation;
 
+use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
@@ -56,10 +57,10 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 		return $array;
 	}
 
-	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		return new RestResponse(array_map(function (Param $param) {
-			return $param->getRestResponse();
+		return new RestResponse(array_map(function (Param $param) use ($request, $options) {
+			return $param->getRestResponse($request, $options);
 		}, $this->getAliasArray()));
 	}
 

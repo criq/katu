@@ -2,6 +2,7 @@
 
 namespace Katu\Errors;
 
+use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
@@ -76,11 +77,11 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface, RestRes
 		return !(bool)$this->getTotal();
 	}
 
-	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		return new RestResponse([
-			"errors" => array_map(function (Error $error) {
-				return $error->getRestResponse();
+			"errors" => array_map(function (Error $error) use ($request, $options) {
+				return $error->getRestResponse($request, $options);
 			}, $this->getArrayCopy()),
 		]);
 	}

@@ -2,6 +2,7 @@
 
 namespace Katu\Errors;
 
+use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
@@ -142,7 +143,7 @@ class Error implements PackagedInterface, RestResponseInterface
 		return $this;
 	}
 
-	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		$array = [
 			"message" => $this->getMessage(),
@@ -161,7 +162,7 @@ class Error implements PackagedInterface, RestResponseInterface
 			$array["options"] = $this->getOptions();
 		}
 		if (count($this->getParams())) {
-			$array["params"] = $this->getParams()->getRestResponse();
+			$array["params"] = $this->getParams()->getRestResponse($request, $options);
 		}
 
 		return new RestResponse($array);
