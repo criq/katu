@@ -2,20 +2,15 @@
 
 namespace Katu\Tools\Options;
 
+use Katu\Tools\Strings\Code;
+
 class OptionCollection extends \ArrayObject
 {
-	public function __construct(?array $array = [])
-	{
-		foreach ($array as $item) {
-			$this[$item->getName()] = $item;
-		}
-	}
-
-	public function mergeWith(?OptionCollection $optionCollection = null)
+	public function mergeWith(?OptionCollection $options = null): OptionCollection
 	{
 		$res = clone $this;
-		if ($optionCollection) {
-			foreach ($optionCollection as $option) {
+		if ($options) {
+			foreach ($options as $option) {
 				$res->append($option);
 			}
 		}
@@ -23,26 +18,26 @@ class OptionCollection extends \ArrayObject
 		return $res;
 	}
 
-	public function filterByName(string $name): OptionCollection
+	public function filterByCode(Code $code): OptionCollection
 	{
-		return new static(array_values(array_filter($this->getArrayCopy(), function ($option) use ($name) {
-			return $option->getName() == $name;
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Option $option) use ($code) {
+			return $option->getCode()->getConstantFormat() == $code->getConstantFormat();
 		})));
 	}
 
-	public function getByName(string $name): ?Option
+	public function getByCode(Code $code): ?Option
 	{
 		try {
-			return array_values($this->filterByName($name)->getArrayCopy())[0] ?? null;
+			return array_values($this->filterByCode($code)->getArrayCopy())[0] ?? null;
 		} catch (\Throwable $e) {
 			return null;
 		}
 	}
 
-	public function getValue(string $name)
+	public function getValue(Code $code)
 	{
 		try {
-			return $this->getByName($name)->getValue();
+			return $this->getByCode($code)->getValue();
 		} catch (\Throwable $e) {
 			return null;
 		}
