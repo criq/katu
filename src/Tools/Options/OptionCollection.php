@@ -11,11 +11,6 @@ class OptionCollection extends \ArrayObject
 		}
 	}
 
-	public function offsetSet($key, $value)
-	{
-		return parent::offsetSet($value->getName(), $value);
-	}
-
 	public function mergeWith(?OptionCollection $optionCollection = null)
 	{
 		$res = clone $this;
@@ -38,7 +33,7 @@ class OptionCollection extends \ArrayObject
 	public function getByName(string $name): ?Option
 	{
 		try {
-			return array_values($this->filterByName($name)->getArrayCopy())[0];
+			return array_values($this->filterByName($name)->getArrayCopy())[0] ?? null;
 		} catch (\Throwable $e) {
 			return null;
 		}
