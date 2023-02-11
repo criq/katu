@@ -6,13 +6,23 @@ use Katu\Tools\Strings\Code;
 
 class OptionCollection extends \ArrayObject
 {
+	/**
+	 * @param Option $value
+	 */
+	public function offsetSet($key, $value): void
+	{
+		parent::offsetSet((string)$value->getCode(), $value);
+	}
+
 	public function mergeWith(?OptionCollection $options = null): OptionCollection
 	{
-		$res = clone $this;
-		if ($options) {
-			foreach ($options as $option) {
-				$res->append($option);
-			}
+		$res = new static;
+
+		foreach ($this as $option) {
+			$res[] = $option;
+		}
+		foreach (($options ?: new OptionCollection) as $option) {
+			$res[] = $option;
 		}
 
 		return $res;
@@ -34,10 +44,10 @@ class OptionCollection extends \ArrayObject
 		}
 	}
 
-	public function getValue(Code $code)
+	public function getValue(string $code)
 	{
 		try {
-			return $this->getByCode($code)->getValue();
+			return $this->getByCode(new Code($code))->getValue();
 		} catch (\Throwable $e) {
 			return null;
 		}

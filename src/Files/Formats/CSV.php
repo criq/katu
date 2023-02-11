@@ -17,9 +17,9 @@ class CSV extends \ArrayObject
 	{
 		$this->setFile($file);
 		$this->setOptions((new OptionCollection([
-			new Option(new Code("DELIMITER"), ","),
-			new Option(new Code("ENCLOSURE"), "\""),
-			new Option(new Code("READ_ONLY"), false),
+			new Option("DELIMITER", ","),
+			new Option("ENCLOSURE", "\""),
+			new Option("READ_ONLY", false),
 		]))->mergeWith($options));
 	}
 
@@ -70,7 +70,7 @@ class CSV extends \ArrayObject
 	public function setDelimiter(string $delimiter): CSV
 	{
 		$this->getOptions()->mergeWith(new OptionCollection([
-			new Option(new Code("DELIMITER"), $delimiter),
+			new Option("DELIMITER", $delimiter),
 		]));
 
 		return $this;
@@ -78,13 +78,13 @@ class CSV extends \ArrayObject
 
 	public function getDelimiter(): string
 	{
-		return $this->getOptions()->getValue(new Code("DELIMITER"));
+		return $this->getOptions()->getValue("DELIMITER");
 	}
 
 	public function setEnclosure(string $enclosure): CSV
 	{
 		$this->getOptions()->mergeWith(new OptionCollection([
-			new Option(new Code("ENCLOSURE"), $enclosure),
+			new Option("ENCLOSURE", $enclosure),
 		]));
 
 		return $this;
@@ -92,7 +92,7 @@ class CSV extends \ArrayObject
 
 	public function getEnclosure(): string
 	{
-		return $this->getOptions()->getValue(new Code("ENCLOSURE"));
+		return $this->getOptions()->getValue("ENCLOSURE");
 	}
 
 	public function getReader(): \League\Csv\Reader

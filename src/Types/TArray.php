@@ -27,7 +27,7 @@ class TArray extends \ArrayObject
 			if (isset($value[$key])) {
 				$value = $value[$key];
 			} else {
-				throw new \Katu\Exceptions\MissingArrayKeyException("Invalid key " . $key . ".");
+				throw new \Katu\Exceptions\MissingArrayKeyException("Invalid key \"{$key}\".");
 			}
 		}
 
