@@ -125,7 +125,7 @@ class Image
 
 	public function getSortedColors(): array
 	{
-		return (new TArray(array_count_values($this->getColors())))->natsort()->reverse()->getArray();
+		return (new TArray(array_count_values($this->getColors())))->sortNaturally()->reverse()->getArray();
 	}
 
 	public function getImageSize(): ?TImageSize

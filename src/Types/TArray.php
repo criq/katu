@@ -225,7 +225,7 @@ class TArray extends \ArrayObject
 	{
 		$numbers = $this->map(function ($i) {
 			return (int)$i;
-		})->natsort();
+		})->sortNaturally();
 
 		$intervals = [];
 
