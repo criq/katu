@@ -14,7 +14,7 @@ class OptionCollection extends \ArrayObject
 		parent::offsetSet((string)$value->getCode(), $value);
 	}
 
-	public function mergeWith(?OptionCollection $options = null): OptionCollection
+	public function getMergedWith(?OptionCollection $options = null): OptionCollection
 	{
 		$res = new static;
 

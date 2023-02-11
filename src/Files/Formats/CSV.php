@@ -20,7 +20,7 @@ class CSV extends \ArrayObject
 			new Option("DELIMITER", ","),
 			new Option("ENCLOSURE", "\""),
 			new Option("READ_ONLY", false),
-		]))->mergeWith($options));
+		]))->getMergedWith($options));
 	}
 
 	public function __toString(): string
@@ -69,7 +69,7 @@ class CSV extends \ArrayObject
 
 	public function setDelimiter(string $delimiter): CSV
 	{
-		$this->getOptions()->mergeWith(new OptionCollection([
+		$this->getOptions()->getMergedWith(new OptionCollection([
 			new Option("DELIMITER", $delimiter),
 		]));
 
@@ -83,7 +83,7 @@ class CSV extends \ArrayObject
 
 	public function setEnclosure(string $enclosure): CSV
 	{
-		$this->getOptions()->mergeWith(new OptionCollection([
+		$this->getOptions()->getMergedWith(new OptionCollection([
 			new Option("ENCLOSURE", $enclosure),
 		]));
 
