@@ -61,9 +61,9 @@ class Validation implements \ArrayAccess, PackagedInterface
 		return $this[$key] ?? null;
 	}
 
-	public function addParamCollection(ParamCollection $params): Validation
+	public function addParams(ParamCollection $params): Validation
 	{
-		$this->getParams()->addParamCollection($params);
+		$this->getParams()->addParams($params);
 
 		return $this;
 	}
@@ -93,7 +93,7 @@ class Validation implements \ArrayAccess, PackagedInterface
 
 	public function addResult(Validation $result): Validation
 	{
-		$this->addParamCollection($result->getParams());
+		$this->addParams($result->getParams());
 		$this->addErrors($result->getErrors());
 
 		return $this;
