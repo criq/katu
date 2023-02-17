@@ -107,7 +107,7 @@ class Param implements PackagedInterface, RestResponseInterface
 		return $this->display;
 	}
 
-	public function forward(): Param
+	public function forwardInput(): Param
 	{
 		$this->setOutput($this->getInput());
 

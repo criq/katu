@@ -101,6 +101,15 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 		return $this;
 	}
 
+	public function forwardInputs(): ParamCollection
+	{
+		array_map(function (Param $param) {
+			return $param->forwardInput();
+		}, $this->getArrayCopy());
+
+		return $this;
+	}
+
 	public function getAliasArray(): array
 	{
 		$array = [];
