@@ -44,7 +44,7 @@ class Time extends \DateTime
 			$time = new static($string);
 		}
 
-		if (!$time) {
+		if (!($time ?? null)) {
 			$time =
 				   static::createFromFormat("!Y-m-d H:i:s", $string)
 				?: static::createFromFormat("!Y-m-d H:i", $string)
