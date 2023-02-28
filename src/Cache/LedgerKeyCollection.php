@@ -38,8 +38,13 @@ class LedgerKeyCollection extends \ArrayObject
 		return (new LedgerKeyCollection(array_filter($this->getArrayCopy(), function (LedgerKey $key) use ($timeout) {
 			return is_null($key->getTime()) || !$key->getTime()->fitsInTimeout($timeout);
 		})));
+	}
 
-		// ->sortByTime();
+	public function filterByKey(string $string): LedgerKeyCollection
+	{
+		return (new LedgerKeyCollection(array_filter($this->getArrayCopy(), function (LedgerKey $key) use ($string) {
+			return $key->getKey() == $string;
+		})));
 	}
 
 	public function getLedgerKey(string $key): ?LedgerKey

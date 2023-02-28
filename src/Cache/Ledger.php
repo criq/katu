@@ -38,6 +38,11 @@ class Ledger
 		return $this;
 	}
 
+	public function getKey(string $key): ?LedgerKey
+	{
+		return array_values($this->getLedgerKeys()->filterByKey($key)->getArrayCopy())[0] ?? null;
+	}
+
 	public function getKeys(): array
 	{
 		return $this->getLedgerKeys()->getKeys();
