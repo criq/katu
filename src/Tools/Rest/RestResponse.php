@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Rest;
 
+use Katu\Types\TJSON;
 use Psr\Http\Message\StreamInterface;
 
 class RestResponse
@@ -48,8 +49,13 @@ class RestResponse
 		return $payload;
 	}
 
+	public function getJSON(): TJSON
+	{
+		return \Katu\Files\Formats\JSON::encode($this->getResponse());
+	}
+
 	public function getStream(): StreamInterface
 	{
-		return \GuzzleHttp\Psr7\Utils::streamFor(\Katu\Files\Formats\JSON::encode($this->getResponse()));
+		return \GuzzleHttp\Psr7\Utils::streamFor($this->getJSON());
 	}
 }
