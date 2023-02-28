@@ -15,11 +15,13 @@ abstract class Job implements PackagedInterface
 {
 	abstract public function getCallback(): callable;
 
-	const INTERVAL = "1 day";
-	const MAX_LOAD_AVERAGE = 1.5;
-	const TIMEOUT = "1 hour";
+	const DEFAULT_INTERVAL = "1 day";
+	const DEFAULT_TIMEOUT = "1 hour";
 
 	protected $args = [];
+	protected $interval;
+	protected $maxLoadAverage = 1.5;
+	protected $timeout;
 
 	public function __construct(array $args = [])
 	{
@@ -96,14 +98,28 @@ abstract class Job implements PackagedInterface
 		return $this->getTimeFinishedPickle()->get() ?: null;
 	}
 
+	public function setInterval(?Timeout $interval): Job
+	{
+		$this->interval = $interval;
+
+		return $this;
+	}
+
 	public function getInterval(): Timeout
 	{
-		return new Timeout(static::INTERVAL);
+		return $this->interval ?: new Timeout(static::DEFAULT_INTERVAL);
+	}
+
+	public function setTimeout(?Timeout $timeout): Job
+	{
+		$this->timeout = $timeout;
+
+		return $this;
 	}
 
 	public function getTimeout(): Timeout
 	{
-		return new Timeout(static::TIMEOUT);
+		return $this->timeout ?: new Timeout(static::DEFAULT_TIMEOUT);
 	}
 
 	public function isExpired(): bool
@@ -119,9 +135,16 @@ abstract class Job implements PackagedInterface
 		return false;
 	}
 
+	public function setMaxLoadAverage(?float $maxLoadAverage): Job
+	{
+		$this->maxLoadAverage = $maxLoadAverage;
+
+		return $this;
+	}
+
 	public function getMaxLoadAverage(): ?float
 	{
-		return static::MAX_LOAD_AVERAGE;
+		return $this->maxLoadAverage;
 	}
 
 	public function getIdentifier(): TIdentifier
