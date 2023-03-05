@@ -32,7 +32,7 @@ class TColor
 		return (string)$this->color;
 	}
 
-	public function getColor()
+	public function getColor(): \MischiefCollective\ColorJizz\ColorJizz
 	{
 		return $this->color;
 	}

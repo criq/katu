@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Validation;
 
+use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
@@ -106,9 +107,9 @@ class Param implements PackagedInterface, RestResponseInterface
 		return $this->display;
 	}
 
-	public function forward(): Param
+	public function forwardInput(): Param
 	{
-		$this->setOutput($this->getInput());
+		$this->setOutput($this->getInput() ?: null);
 
 		return $this;
 	}
@@ -120,7 +121,7 @@ class Param implements PackagedInterface, RestResponseInterface
 		return $this;
 	}
 
-	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		return new RestResponse([
 			"key" => $this->getKey(),

@@ -2,6 +2,7 @@
 
 namespace Katu\Errors;
 
+use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
@@ -18,7 +19,7 @@ class Error implements PackagedInterface, RestResponseInterface
 	protected $options;
 	protected $versions;
 
-	public function __construct(string $message = null, ?string $code = null, ?array $versions = [])
+	public function __construct(?string $message = null, ?string $code = null, ?array $versions = [])
 	{
 		$this->setMessage($message);
 		$this->setCode($code);
@@ -47,14 +48,14 @@ class Error implements PackagedInterface, RestResponseInterface
 		]);
 	}
 
-	public function setMessage(string $value): Error
+	public function setMessage(?string $value): Error
 	{
 		$this->message = $value;
 
 		return $this;
 	}
 
-	public function getMessage(): string
+	public function getMessage(): ?string
 	{
 		return $this->message;
 	}
@@ -142,7 +143,7 @@ class Error implements PackagedInterface, RestResponseInterface
 		return $this;
 	}
 
-	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		$array = [
 			"message" => $this->getMessage(),
@@ -161,7 +162,7 @@ class Error implements PackagedInterface, RestResponseInterface
 			$array["options"] = $this->getOptions();
 		}
 		if (count($this->getParams())) {
-			$array["params"] = $this->getParams()->getRestResponse();
+			$array["params"] = $this->getParams()->getRestResponse($request, $options);
 		}
 
 		return new RestResponse($array);

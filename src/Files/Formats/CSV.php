@@ -4,10 +4,12 @@ namespace Katu\Files\Formats;
 
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
+use Katu\Tools\Strings\Code;
 
 class CSV extends \ArrayObject
 {
 	protected $file;
+	protected $options;
 	protected $reader;
 	protected $writer;
 
@@ -15,10 +17,10 @@ class CSV extends \ArrayObject
 	{
 		$this->setFile($file);
 		$this->setOptions((new OptionCollection([
-			new Option("delimiter", ","),
-			new Option("enclosure", "\""),
-			new Option("readOnly", false),
-		]))->mergeWith($options));
+			new Option("DELIMITER", ","),
+			new Option("ENCLOSURE", "\""),
+			new Option("READ_ONLY", false),
+		]))->getMergedWith($options));
 	}
 
 	public function __toString(): string
@@ -67,8 +69,8 @@ class CSV extends \ArrayObject
 
 	public function setDelimiter(string $delimiter): CSV
 	{
-		$this->getOptions()->mergeWith(new OptionCollection([
-			new Option("delimiter", $delimiter),
+		$this->getOptions()->getMergedWith(new OptionCollection([
+			new Option("DELIMITER", $delimiter),
 		]));
 
 		return $this;
@@ -76,13 +78,13 @@ class CSV extends \ArrayObject
 
 	public function getDelimiter(): string
 	{
-		return $this->getOptions()->getValue("delimiter");
+		return $this->getOptions()->getValue("DELIMITER");
 	}
 
 	public function setEnclosure(string $enclosure): CSV
 	{
-		$this->getOptions()->mergeWith(new OptionCollection([
-			new Option("enclosure", $enclosure),
+		$this->getOptions()->getMergedWith(new OptionCollection([
+			new Option("ENCLOSURE", $enclosure),
 		]));
 
 		return $this;
@@ -90,7 +92,7 @@ class CSV extends \ArrayObject
 
 	public function getEnclosure(): string
 	{
-		return $this->getOptions()->getValue("enclosure");
+		return $this->getOptions()->getValue("ENCLOSURE");
 	}
 
 	public function getReader(): \League\Csv\Reader

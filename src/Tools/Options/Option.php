@@ -2,25 +2,41 @@
 
 namespace Katu\Tools\Options;
 
+use Katu\Tools\Strings\Code;
+
 class Option
 {
-	protected $name;
+	protected $code;
 	protected $value;
 
-	public function __construct(string $name, $value)
+	public function __construct(string $code, $value)
 	{
-		$this->name = $name;
-		$this->value = $value;
+		$this->setCode(new Code($code));
+		$this->setValue($value);
 	}
 
 	public function __toString(): string
 	{
-		return $this->getName();
+		return $this->getCode()->getConstantFormat();
 	}
 
-	public function getName(): string
+	public function setCode(Code $code): Option
 	{
-		return $this->name;
+		$this->code = $code;
+
+		return $this;
+	}
+
+	public function getCode(): Code
+	{
+		return $this->code;
+	}
+
+	public function setValue($value): Option
+	{
+		$this->value = $value;
+
+		return $this;
 	}
 
 	public function getValue()

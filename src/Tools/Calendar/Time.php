@@ -36,20 +36,24 @@ class Time extends \DateTime
 	{
 		$string = trim($string);
 
+		$time = null;
+
 		if (static::createFromFormat("Y-m-d\TH:i:sP", $string)) { // 2022-04-01T13:00:00+02:00
 			$time = new static($string);
 		} elseif (static::createFromFormat("D, j M Y H:i:s O", $string)) { // Thu, 21 Dec 2000 16:01:07 +0200
 			$time = new static($string);
 		}
 
-		if (!$time) {
+		if (!($time ?? null)) {
 			$time =
 				   static::createFromFormat("!Y-m-d H:i:s", $string)
 				?: static::createFromFormat("!Y-m-d H:i", $string)
+				?: static::createFromFormat("!Y-m-d H.i", $string)
 				?: static::createFromFormat("!Y-m-d H", $string)
 				?: (!$timeRequired ? static::createFromFormat("!Y-m-d", $string) : null)
 				?: static::createFromFormat("!j.n.Y H:i:s", $string)
 				?: static::createFromFormat("!j.n.Y H:i", $string)
+				?: static::createFromFormat("!j.n.Y H.i", $string)
 				?: static::createFromFormat("!j.n.Y H", $string)
 				?: (!$timeRequired ? static::createFromFormat("!j.n.Y", $string) : null)
 				;
@@ -88,7 +92,7 @@ class Time extends \DateTime
 			}
 		}
 
-		return $time ? new Time($time) : null;
+		return $time ? new static($time) : null;
 	}
 
 	public function getLocalTimeZone(): \DateTimeZone

@@ -16,6 +16,11 @@ class Seconds
 		return (string)$this->getValue();
 	}
 
+	public static function createFromString(string $string): Seconds
+	{
+		return new static((new Time($string))->getTimestamp() - (new Time())->getTimestamp());
+	}
+
 	public function getValue(): float
 	{
 		return (float)$this->value;

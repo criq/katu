@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Validation;
 
+use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
@@ -18,6 +19,17 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 		}
 	}
 
+	/****************************************************************************
+	 * Offset.
+	 */
+	public function offsetSet($key, $value)
+	{
+		parent::offsetSet($key ?: $value->getKey(), $value);
+	}
+
+	/****************************************************************************
+	 * PackagedInterface.
+	 */
 	public function getPackage(): Package
 	{
 		return new Package([
@@ -32,35 +44,40 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 	{
 	}
 
-	public function offsetSet($key, $value)
+	/****************************************************************************
+	 * RestResponseInterface.
+	 */
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		parent::offsetSet($key ?: $value->getKey(), $value);
-	}
-
-	public function addParamCollection(ParamCollection $params): ParamCollection
-	{
-		foreach ($params as $param) {
-			$this->append($param);
-		}
-
-		return $this;
-	}
-
-	public function getAliasArray(): array
-	{
-		$array = [];
-		foreach ($this as $param) {
-			$array[$param->getAlias()] = $param;
-		}
-
-		return $array;
-	}
-
-	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
-	{
-		return new RestResponse(array_map(function (Param $param) {
-			return $param->getRestResponse();
+		return new RestResponse(array_map(function (Param $param) use ($request, $options) {
+			return $param->getRestResponse($request, $options);
 		}, $this->getAliasArray()));
+	}
+
+	/****************************************************************************
+	 * Filter.
+	 */
+	public function getByKey(string $key): ?Param
+	{
+		return $this[$key] ?? null;
+	}
+
+	public function get(string $key): ?Param
+	{
+		return $this->getByKey($key);
+	}
+
+	public function getWithKeys(array $keys): ParamCollection
+	{
+		$res = clone $this;
+
+		foreach ($keys as $key) {
+			if (!$this->getByKey($key)) {
+				$res[] = new Param($key);
+			}
+		}
+
+		return $res;
 	}
 
 	public function filterWithoutKeys(array $keys): ParamCollection
@@ -73,5 +90,33 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 		}
 
 		return $res;
+	}
+
+	public function addParams(ParamCollection $params): ParamCollection
+	{
+		foreach ($params as $param) {
+			$this[] = $param;
+		}
+
+		return $this;
+	}
+
+	public function forwardInputs(): ParamCollection
+	{
+		array_map(function (Param $param) {
+			return $param->forwardInput();
+		}, $this->getArrayCopy());
+
+		return $this;
+	}
+
+	public function getAliasArray(): array
+	{
+		$array = [];
+		foreach ($this as $param) {
+			$array[$param->getAlias()] = $param;
+		}
+
+		return $array;
 	}
 }

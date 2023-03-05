@@ -2,52 +2,52 @@
 
 namespace Katu\Tools\Options;
 
+use Katu\Tools\Strings\Code;
+
 class OptionCollection extends \ArrayObject
 {
-	public function __construct(?array $array = [])
+	/**
+	 * @param Option $value
+	 */
+	public function offsetSet($key, $value): void
 	{
-		foreach ($array as $item) {
-			$this[$item->getName()] = $item;
+		parent::offsetSet((string)$value->getCode(), $value);
+	}
+
+	public function getMergedWith(?OptionCollection $options = null): OptionCollection
+	{
+		$res = new static;
+
+		foreach ($this as $option) {
+			$res[] = $option;
 		}
-	}
-
-	public function offsetSet($key, $value)
-	{
-		return parent::offsetSet($value->getName(), $value);
-	}
-
-	public function mergeWith(?OptionCollection $optionCollection = null)
-	{
-		$res = clone $this;
-		if ($optionCollection) {
-			foreach ($optionCollection as $option) {
-				$res->append($option);
-			}
+		foreach (($options ?: new OptionCollection) as $option) {
+			$res[] = $option;
 		}
 
 		return $res;
 	}
 
-	public function filterByName(string $name): OptionCollection
+	public function filterByCode(Code $code): OptionCollection
 	{
-		return new static(array_values(array_filter($this->getArrayCopy(), function ($option) use ($name) {
-			return $option->getName() == $name;
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Option $option) use ($code) {
+			return $option->getCode()->getConstantFormat() == $code->getConstantFormat();
 		})));
 	}
 
-	public function getByName(string $name): ?Option
+	public function getByCode(Code $code): ?Option
 	{
 		try {
-			return array_values($this->filterByName($name)->getArrayCopy())[0];
+			return array_values($this->filterByCode($code)->getArrayCopy())[0] ?? null;
 		} catch (\Throwable $e) {
 			return null;
 		}
 	}
 
-	public function getValue(string $name)
+	public function getValue(string $code)
 	{
 		try {
-			return $this->getByName($name)->getValue();
+			return $this->getByCode(new Code($code))->getValue();
 		} catch (\Throwable $e) {
 			return null;
 		}

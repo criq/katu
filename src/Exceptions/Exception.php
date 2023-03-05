@@ -2,6 +2,7 @@
 
 namespace Katu\Exceptions;
 
+use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -86,7 +87,7 @@ class Exception extends \Exception implements RestResponseInterface
 		return $this->errorNames;
 	}
 
-	public function getRestResponse(?ServerRequestInterface $request = null): RestResponse
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		return new RestResponse([
 			"message" => $this->getMessage(),

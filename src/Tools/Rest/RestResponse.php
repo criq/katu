@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Rest;
 
+use Katu\Types\TJSON;
 use Psr\Http\Message\StreamInterface;
 
 class RestResponse
@@ -33,15 +34,14 @@ class RestResponse
 			array_walk_recursive($payload, function (&$value, $key) {
 				if ($value instanceof static) {
 					$value = $value->getResponse();
-				}
-				if ($value instanceof \GuzzleHttp\Psr7\Stream) {
+				} elseif ($value instanceof \GuzzleHttp\Psr7\Stream) {
 					$value = $value->getContents();
-				}
-				if ($value instanceof \DateTime) {
+				} elseif ($value instanceof \DateTime) {
 					$value = $value->format("c");
-				}
-				if ($value instanceof \Katu\Types\TURL) {
+				} elseif ($value instanceof \Katu\Types\TURL) {
 					$value = (string)$value;
+				} elseif ($value instanceof \Katu\Types\TClass) {
+					$value = $value->getPortableName();
 				}
 			});
 		}
@@ -49,8 +49,13 @@ class RestResponse
 		return $payload;
 	}
 
+	public function getJSON(): TJSON
+	{
+		return \Katu\Files\Formats\JSON::encode($this->getResponse());
+	}
+
 	public function getStream(): StreamInterface
 	{
-		return \GuzzleHttp\Psr7\Utils::streamFor(\Katu\Files\Formats\JSON::encode($this->getResponse()));
+		return \GuzzleHttp\Psr7\Utils::streamFor($this->getJSON());
 	}
 }
