@@ -8,7 +8,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class DOM
 {
-	public static function crawlHtml($src)
+	public static function crawlHTML($src)
 	{
 		$crawler = new Crawler();
 		$crawler->addHtmlContent($src);
@@ -16,7 +16,7 @@ class DOM
 		return $crawler;
 	}
 
-	public static function crawlXml($src)
+	public static function crawlXML($src)
 	{
 		$crawler = new Crawler();
 		$crawler->addXmlContent($src);
@@ -24,8 +24,8 @@ class DOM
 		return $crawler;
 	}
 
-	public static function crawlUrl(TURL $url, Timeout $timeout)
+	public static function crawlURL(TURL $url, Timeout $timeout)
 	{
-		return static::crawlHtml(\Katu\Cache\URL::get($url, $timeout));
+		return static::crawlHTML(\Katu\Cache\URL::get($url, $timeout));
 	}
 }

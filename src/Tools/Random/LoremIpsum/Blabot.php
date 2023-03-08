@@ -12,7 +12,7 @@ class Blabot extends \Katu\Tools\Random\LoremIpsum
 	{
 		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout(static::TIMEOUT), function () {
 			$src = \Katu\Cache\URL::get(new TURL('https://www.blabot.cz'), new Timeout(static::TIMEOUT));
-			$dom = \Katu\Tools\DOM\DOM::crawlHtml($src);
+			$dom = \Katu\Tools\DOM\DOM::crawlHTML($src);
 
 			$sets = $dom->filter('#blabols p')->each(function ($e) {
 				if (preg_match_all(static::SENTENCE_REGEXP, $e->text(), $matches)) {
