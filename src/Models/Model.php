@@ -4,6 +4,7 @@ namespace Katu\Models;
 
 use App\Models\Users\User;
 use Katu\PDO\Column;
+use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
 
 class Model extends Base
@@ -101,7 +102,11 @@ class Model extends Base
 
 			$query = static::getConnection()->createQuery($sql, $values);
 			$query->setParam($this->getPrimaryKeyColumn()->getName()->getPlain(), $this->getId());
-			$query->getResult();
+			$result = $query->getResult();
+
+			if ($result->hasError()) {
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($result->getError());
+			}
 		}
 
 		return $this;
