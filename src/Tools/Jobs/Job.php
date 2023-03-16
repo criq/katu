@@ -178,7 +178,7 @@ abstract class Job implements PackagedInterface
 	public function run(): bool
 	{
 		// Check max load average.
-		if ($this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAveragePerCpu()[0] >= $this->getMaxLoadAverage()) {
+		if (\Katu\Config\Env::getPlatform() != "dev" && $this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAveragePerCpu()[0] >= $this->getMaxLoadAverage()) {
 			return false;
 		}
 
