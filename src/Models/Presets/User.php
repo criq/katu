@@ -11,6 +11,9 @@ abstract class User extends \Katu\Models\Model
 {
 	const TABLE = "users";
 
+	public $name;
+	public $password;
+
 	public static $columnNames = [
 		"emailAddressId" => "emailAddressId",
 		"timeCreated" => "timeCreated",
@@ -121,7 +124,7 @@ abstract class User extends \Katu\Models\Model
 				;
 		}
 
-		$this->static::$columnNames["emailAddressId"] = $emailAddress->getId();
+		static::$columnNames["emailAddressId"] = $emailAddress->getId();
 
 		return true;
 	}
