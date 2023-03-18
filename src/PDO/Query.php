@@ -3,6 +3,7 @@
 namespace Katu\PDO;
 
 use Katu\Tools\Calendar\Seconds;
+use Katu\Types\TIdentifier;
 
 class Query
 {
@@ -251,6 +252,12 @@ class Query
 			$result = new Result($this);
 			if ($error->getCode()) {
 				$result->setError($error);
+			}
+
+			if ($result->hasError()) {
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($result->getError(), [
+					"sql" => $result->getSQL(),
+				]);
 			}
 
 			// Pagination.

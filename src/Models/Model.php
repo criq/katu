@@ -102,11 +102,7 @@ class Model extends Base
 
 			$query = static::getConnection()->createQuery($sql, $values);
 			$query->setParam($this->getPrimaryKeyColumn()->getName()->getPlain(), $this->getId());
-			$result = $query->getResult();
-
-			if ($result->hasError()) {
-				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($result->getError());
-			}
+			$query->getResult();
 		}
 
 		return $this;
