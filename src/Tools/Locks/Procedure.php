@@ -101,7 +101,7 @@ class Procedure
 			}
 
 			$lock = new \Katu\Tools\Locks\Lock($this->getIdentifier(), $this->getTimeout(), function () {
-				call_user_func($this->getCallback());
+				return call_user_func($this->getCallback());
 			});
 
 			foreach ($this->getLockExcludedPlatforms() as $platform) {

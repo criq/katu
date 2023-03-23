@@ -23,79 +23,79 @@ class Lock
 		$this->setCallback($callback);
 	}
 
-	public function setIdentifier(TIdentifier $identifier) : Lock
+	public function setIdentifier(TIdentifier $identifier): Lock
 	{
 		$this->identifier = $identifier;
 
 		return $this;
 	}
 
-	public function getIdentifier() : TIdentifier
+	public function getIdentifier(): TIdentifier
 	{
 		return $this->identifier;
 	}
 
-	public function setTimeout(Timeout $timeout) : Lock
+	public function setTimeout(Timeout $timeout): Lock
 	{
 		$this->timeout = $timeout;
 
 		return $this;
 	}
 
-	public function getTimeout() : Timeout
+	public function getTimeout(): Timeout
 	{
 		return $this->timeout;
 	}
 
-	public function setCallback(?callable $callback) : Lock
+	public function setCallback(?callable $callback): Lock
 	{
 		$this->callback = $callback;
 
 		return $this;
 	}
 
-	public function getCallback() : ?callable
+	public function getCallback(): ?callable
 	{
 		return $this->callback;
 	}
 
-	public function setArgs() : Lock
+	public function setArgs(): Lock
 	{
 		$this->args = func_get_args();
 
 		return $this;
 	}
 
-	public function getArgs() : array
+	public function getArgs(): array
 	{
 		return $this->args;
 	}
 
-	public function setUseLock(bool $useLock) : Lock
+	public function setUseLock(bool $useLock): Lock
 	{
 		$this->useLock = $useLock;
 
 		return $this;
 	}
 
-	public function getUseLock() : bool
+	public function getUseLock(): bool
 	{
 		return (bool)($this->useLock && !in_array(\Katu\Config\Env::getPlatform(), $this->excludedPlatforms));
 	}
 
-	public function excludePlatform(string $platform) : Lock
+	public function excludePlatform(string $platform): Lock
 	{
 		$this->excludedPlatforms[] = $platform;
 
 		return $this;
 	}
 
-	public function getFile() : \Katu\Files\File
+	public function getFile(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(\App\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath("lock"));
 	}
 
-	public function isLocked() : bool
+	public function isLocked(): bool
 	{
 		$file = $this->getFile();
 		if (!$file->exists()) {
@@ -109,7 +109,7 @@ class Lock
 		return false;
 	}
 
-	public function lock() : Lock
+	public function lock(): Lock
 	{
 		if ($this->isLocked()) {
 			throw new \Katu\Exceptions\LockException;
@@ -120,7 +120,7 @@ class Lock
 		return $this;
 	}
 
-	public function unlock() : Lock
+	public function unlock(): Lock
 	{
 		$file = $this->getFile();
 		if ($file->exists()) {
@@ -137,8 +137,7 @@ class Lock
 		}
 
 		@set_time_limit((string)$this->getTimeout()->getSeconds());
-		$callback = $this->getCallback();
-		$res = $callback(...$this->args);
+		$res = call_user_func_array($this->getCallback(), $this->getArgs());
 
 		if ($this->getUseLock()) {
 			$this->unlock();
