@@ -40,8 +40,8 @@ class Replacement
 				$array[] = "[" . implode(array_unique([
 					mb_strtoupper($char),
 					mb_strtolower($char),
-					mb_strtoupper((new TString($char))->getForURL()),
-					mb_strtolower((new TString($char))->getForURL()),
+					mb_strtoupper((new TString((string)$char))->getForURL()),
+					mb_strtolower((new TString((string)$char))->getForURL()),
 				])) . "]";
 			}
 		}

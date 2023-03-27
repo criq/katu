@@ -2,69 +2,83 @@
 
 namespace Katu\Types;
 
+use Katu\Tools\Options\Option;
+use Katu\Tools\Options\OptionCollection;
+
 class TString
 {
-	public $string;
+	protected $string;
 
-	public function __construct($string)
+	public function __construct(string $string)
 	{
-		if (!self::isValid($string)) {
-			throw new \Exception("Invalid string.");
-		}
-
-		$this->string = $string;
+		$this->setString($string);
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return (string)$this->string;
 	}
 
-	public static function isValid($string): bool
+	public function setString(string $string): TString
 	{
-		return is_string($string) || is_int($string) || is_float($string);
+		$this->string = $string;
+
+		return $this;
 	}
 
-	public function getNumberOfWords()
+	public function getString(): string
 	{
-		return count(array_filter(explode(" ", $this->string)));
+		return $this->string;
 	}
 
-	public function hasAtLeastWords($n): bool
+	public function getNumberOfWords(): int
 	{
-		return $this->getNumberOfWords() >= $n;
+		return count(array_filter(preg_split("/\s/", $this->getString())));
 	}
 
-	public function getForURL($options = []) : string
+	public function hasAtLeastWords(int $words): bool
 	{
-		$options = array_merge($options, [
-			"delimiter" => "-",
-			"lowercase" => true,
-		]);
+		return $this->getNumberOfWords() >= $words;
+	}
+
+	public function getForURL(?OptionCollection $options = null): string
+	{
+		$options = (new OptionCollection([
+			new Option("DELIMITER", "-"),
+			new Option("LANGUAGE", "en"),
+			new Option("LOWERCASE", true),
+			new Option("MAX_LENGTH", 255),
+		]))->getMergedWith($options);
 
 		\URLify::$remove_list = [];
 
-		$maxLength = $options["maxLength"] ?? 255;
-		$language = $options["language"] ?? "en";
-
-		return \URLify::filter($this->string, $maxLength, $language);
+		return \URLify::filter(
+			$this->getString(),
+			$options->getValue("MAX_LENGTH"),
+			$options->getValue("LANGUAGE"),
+			false,
+			false,
+			(bool)$options->getValue("LOWERCASE"),
+			$options->getValue("SEPARATOR")
+		);
 	}
 
-	public function getAsFloat()
+	public function getIsFloat(): bool
 	{
-		return (float)floatval(trim(strtr(preg_replace("/\s/u", "", $this->string), ",", ".")));
+		return preg_match("/^\s*(([0-9]+([,\.][0-9]+)?)|([,\.][0-9]+))\s*$/", $this->getString());
+	}
+
+	public function getAsFloat(): float
+	{
+		return (float)floatval(trim(strtr(preg_replace("/\s/u", "", (string)$this->trim()), ",", ".")));
 	}
 
 	public function getAsFloatIfNumeric()
 	{
-		if (preg_match("/^(([0-9]+([,\.][0-9]+)?)|([,\.][0-9]+))$/", $this->string, $match)) {
-			return $this->getAsFloat();
-		}
-
-		return (string)$this->string;
+		return $this->getIsFloat() ? $this->getAsFloat() : $this;
 	}
 
-	public function getAsArray()
+	public function getAsArray(): array
 	{
 		$chars = [];
 		for ($i = 0; $i < mb_strlen($this->string); $i++) {
@@ -81,16 +95,22 @@ class TString
 
 	public function normalizeSpaces(): TString
 	{
-		return new static(str_replace("\xc2\xa0", "\x20", $this));
+		$this->setString(str_replace("\xc2\xa0", "\x20", $this));
+
+		return $this;
 	}
 
 	public function trim(): TString
 	{
-		return new static(trim($this));
+		$this->setString(trim($this));
+
+		return $this;
 	}
 
 	public function ucfirst(): TString
 	{
-		return new static(ucfirst($this));
+		$this->setString(ucfirst($this));
+
+		return $this;
 	}
 }
