@@ -4,6 +4,8 @@ namespace Katu\Models;
 
 use App\Models\Users\User;
 use Katu\PDO\Column;
+use Katu\Tools\Options\Option;
+use Katu\Tools\Options\OptionCollection;
 use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
 
@@ -237,9 +239,9 @@ class Model extends Base
 	public function setUniqueColumnSlug(Column $column, array $source, bool $force = false, array $constraints = [])
 	{
 		// Generate slug.
-		$slug = (new \Katu\Types\TString(trim(implode(" ", (array)$source))))->getForUrl([
-			"maxLength" => 245,
-		]);
+		$slug = (new \Katu\Types\TString(trim(implode(" ", (array)$source))))->getForURL(new OptionCollection([
+			new Option("MAX_LENGTH", 245),
+		]));
 
 		// If there already is a slug, keep it.
 		if (!$force && $this->{$column->getName()->getPlain()}) {
