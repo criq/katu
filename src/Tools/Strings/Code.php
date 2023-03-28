@@ -6,9 +6,9 @@ class Code
 {
 	protected $code;
 
-	public function __construct(string $code)
+	public function __construct($code)
 	{
-		$this->code = $code;
+		$this->code = (string)$code;
 	}
 
 	public function __toString()
