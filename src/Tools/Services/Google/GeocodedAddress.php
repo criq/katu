@@ -78,6 +78,11 @@ class GeocodedAddress
 		return $this->premise;
 	}
 
+	public function getDistrict(): ?string
+	{
+		return $this->district;
+	}
+
 	public function getCountry(): ?string
 	{
 		return $this->country;
