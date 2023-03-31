@@ -2,6 +2,9 @@
 
 namespace Katu\Tools\Keys;
 
+use Katu\Tools\Options\Option;
+use Katu\Tools\Options\OptionCollection;
+
 abstract class Key
 {
 	protected $delimiter = "/";
@@ -71,10 +74,10 @@ abstract class Key
 	public function getSanitizedString($string)
 	{
 		return array_map(function ($i) {
-			return (new \Katu\Types\TString($i))->getForUrl([
-				'delimiter' => $this->delimiter,
-				'lowercase' => true,
-			]);
+			return (new \Katu\Types\TString((string)$i))->getForURL(new OptionCollection([
+				new Option("DELIMITER", $this->delimiter),
+				new Option("LOWERCASE", true),
+			]));
 		}, preg_split("/[^\d\pL]/ui", $string));
 	}
 }
