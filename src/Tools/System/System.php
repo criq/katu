@@ -42,9 +42,9 @@ class System
 		});
 	}
 
-	public static function getLoadAverage(): array
+	public static function getLoadAverage(): ?array
 	{
-		return sys_getloadavg();
+		return sys_getloadavg() ?: null;
 	}
 
 	public static function getLoadAveragePerCpu(): array
