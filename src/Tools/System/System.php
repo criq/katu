@@ -42,16 +42,21 @@ class System
 		});
 	}
 
-	public static function getLoadAverage(): array
+	public static function getLoadAverage(): ?array
 	{
-		return sys_getloadavg();
+		return sys_getloadavg() ?: null;
 	}
 
-	public static function getLoadAveragePerCpu(): array
+	public static function getLoadAveragePerCpu(): ?array
 	{
-		return array_map(function ($i) {
-			return $i / static::getNumberOfCpus();
-		}, static::getLoadAverage());
+		$loadAverage = static::getLoadAverage();
+		if ($loadAverage) {
+			return array_map(function ($i) {
+				return $i / static::getNumberOfCpus();
+			}, static::getLoadAverage());
+		}
+
+		return null;
 	}
 
 	public static function assertMaxLoadAverage(float $loadAverage): bool
