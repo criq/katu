@@ -26,8 +26,9 @@ class StatementDump
 	public function getSentSQL(): ?string
 	{
 		preg_match("/^(Sent )?SQL: \[[0-9]+\](?<sql>.+)Params:/ms", $this->getSource(), $match);
-		$sql = $match["sql"] ?? null;
-		$sql = preg_replace("\s+", " ", preg_replace("/[\r\n\t]/", " ", $sql));
+		$sql = $match["sql"] ?? "";
+		$sql = preg_replace("/[\r\n\t]/", " ", $sql);
+		$sql = preg_replace("/\s+/", " ", $sql);
 
 		return trim($sql) ?: null;
 	}
