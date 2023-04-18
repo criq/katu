@@ -91,6 +91,13 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface, RestRes
 		return $res;
 	}
 
+	public function filterWithParamKey(string $key): ErrorCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Error $error) use ($key) {
+			return $error->getParams()->get($key);
+		})));
+	}
+
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		return new RestResponse(array_map(function (Error $error) use ($request, $options) {
