@@ -161,12 +161,12 @@ abstract class Base
 		return $query->getResult();
 	}
 
-	public static function getBySql(\Sexy\Select $sql): \Katu\PDO\Result
+	public static function getBySQL(\Sexy\Select $sql): \Katu\PDO\Result
 	{
 		return static::select($sql)->getResult();
 	}
 
-	public static function getOneBySql(\Sexy\Select $sql)
+	public static function getOneBySQL(\Sexy\Select $sql)
 	{
 		return static::getBySql($sql->setGetFoundRows(false))->getOne();
 	}
