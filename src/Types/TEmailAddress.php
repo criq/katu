@@ -18,12 +18,12 @@ class TEmailAddress
 		return (string)$this->emailAddress;
 	}
 
-	public static function createFromEnvelope(?string $encoded = null)
+	public static function createFromEnvelope(?string $envelope = null)
 	{
-		if (preg_match("/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U", $encoded, $match)) {
+		if (preg_match("/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U", $envelope, $match)) {
 			return new static($match["emailAddress"], $match["name"]);
 		} else {
-			return new static($encoded);
+			return new static($envelope);
 		}
 	}
 
