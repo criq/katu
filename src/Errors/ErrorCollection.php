@@ -7,6 +7,7 @@ use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
+use Katu\Tools\Validation\ParamCollection;
 use Katu\Types\TClass;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -75,6 +76,26 @@ class ErrorCollection extends \ArrayObject implements PackagedInterface, RestRes
 	public function isEmpty(): bool
 	{
 		return !(bool)$this->getTotal();
+	}
+
+	public function getParams(): ParamCollection
+	{
+		$res = new ParamCollection;
+
+		foreach (array_map(function (Error $error) {
+			return $error->getParams();
+		}, $this->getArrayCopy()) as $params) {
+			$res->addParams($params);
+		}
+
+		return $res;
+	}
+
+	public function filterWithParamKey(string $key): ErrorCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Error $error) use ($key) {
+			return $error->getParams()->get($key);
+		})));
 	}
 
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
