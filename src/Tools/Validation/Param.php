@@ -114,7 +114,7 @@ class Param implements PackagedInterface, RestResponseInterface
 		return $this;
 	}
 
-	public function map(callable $callback): Param
+	public function each(callable $callback): Param
 	{
 		$this->setOutput(call_user_func_array($callback, [$this->getOutput()]));
 
