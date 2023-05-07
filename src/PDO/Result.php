@@ -67,7 +67,7 @@ class Result extends \ArrayObject implements RestResponseInterface
 
 	public function getOne()
 	{
-		return $this[0] ?? null;
+		return array_values($this->getArrayCopy())[0] ?? null;
 	}
 
 	public function each($callback)
