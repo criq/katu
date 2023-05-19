@@ -39,7 +39,7 @@ class Month
 
 	public function getEndDay(): Day
 	{
-		return (clone $this->getStart())->modify("+ 1 month")
+		return new Day((clone $this->getStart())->modify("+ 1 month")->modify("- 1 day"));
 	}
 
 	public function getWeeks(): WeekCollection
