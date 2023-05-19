@@ -34,15 +34,20 @@ class Timeout
 
 	public function getReferenceTime(): ?Time
 	{
-		return $this->referenceTime ?: new Time;
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return $this->referenceTime ?: new $timeClass;
 	}
 
 	public function getSeconds(): Seconds
 	{
+		$secondsClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Seconds::class);
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
 		if (is_numeric($this->getTimeout())) {
-			return new Seconds(abs($this->getTimeout()) * -1);
+			return new $secondsClass(abs($this->getTimeout()) * -1);
 		} elseif (is_string($this->getTimeout())) {
-			return (new Time("- {$this->getTimeout()}"))->getAge();
+			return (new $timeClass("- {$this->getTimeout()}"))->getAge();
 		}
 
 		throw new \Katu\Exceptions\InputErrorException("Invalid timeout.");

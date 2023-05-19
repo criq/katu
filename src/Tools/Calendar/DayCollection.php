@@ -34,22 +34,28 @@ class DayCollection extends \ArrayObject
 
 	public function getUnique(): DayCollection
 	{
-		return new static(array_values(array_unique($this->getArrayCopy())));
+		$dayCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\DayCollection::class);
+
+		return new $dayCollectionClass(array_values(array_unique($this->getArrayCopy())));
 	}
 
 	public function sortAscending(): DayCollection
 	{
+		$dayCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\DayCollection::class);
+
 		$array = $this->getArrayCopy();
 		usort($array, function (Day $a, Day $b) {
 			return $a > $b ? 1 : -1;
 		});
 
-		return new static($array);
+		return new $dayCollectionClass($array);
 	}
 
 	public function getMonths(): MonthCollection
 	{
-		$months = new MonthCollection;
+		$monthCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\MonthCollection::class);
+
+		$months = new $monthCollectionClass;
 		foreach ($this as $day) {
 			$months->getOrCreateMonth($day->getMonth());
 		}
@@ -59,7 +65,9 @@ class DayCollection extends \ArrayObject
 
 	public function getWeeks(): WeekCollection
 	{
-		$weeks = new WeekCollection;
+		$weekCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\WeekCollection::class);
+
+		$weeks = new $weekCollectionClass;
 		foreach ($this as $day) {
 			$weeks->getOrCreateWeek($day->getWeek());
 		}

@@ -13,12 +13,16 @@ class Year extends Time
 
 	public function getTime(): Time
 	{
-		return new Time($this);
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return new $timeClass($this);
 	}
 
 	public function getStartDay(): Day
 	{
-		return new Day((clone $this->getTime())->setMonth(1)->setDay(1));
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		return new $dayClass((clone $this->getTime())->setMonth(1)->setDay(1));
 	}
 
 	public function getStart(): Time
@@ -28,7 +32,9 @@ class Year extends Time
 
 	public function getEndDay(): Day
 	{
-		return new Day(($this->getStartDay()->getStart())->modify("+ 1 year")->modify("- 1 day"));
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		return new $dayClass(($this->getStartDay()->getStart())->modify("+ 1 year")->modify("- 1 day"));
 	}
 
 	public function getEnd(): Time

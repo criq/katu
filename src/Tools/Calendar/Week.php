@@ -13,12 +13,16 @@ class Week extends Time
 
 	public function getTime(): Time
 	{
-		return new Time($this);
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return new $timeClass($this);
 	}
 
 	public function getStartDay(): Day
 	{
-		return new Day((clone $this->getTime())->getThisWeekday("Monday"));
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		return new $dayClass((clone $this->getTime())->getThisWeekday("Monday"));
 	}
 
 	public function getStart(): Time
@@ -28,7 +32,9 @@ class Week extends Time
 
 	public function getEndDay(): Day
 	{
-		return new Day((clone $this->getTime())->getThisWeekday("Sunday"));
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		return new $dayClass((clone $this->getTime())->getThisWeekday("Sunday"));
 	}
 
 	public function getEnd(): Time
@@ -38,11 +44,14 @@ class Week extends Time
 
 	public function getDays(): DayCollection
 	{
-		$res = new DayCollection;
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+		$dayCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\DayCollection::class);
+
+		$res = new $dayCollectionClass;
 
 		$date = clone $this->getStart();
 		while ($date <= $this->getEnd()) {
-			$res[] = new Day($date);
+			$res[] = new $dayClass($date);
 			$date = (clone $date)->modify("+ 1 day");
 		}
 

@@ -11,7 +11,9 @@ class Day extends Time
 
 	public function getTime(): Time
 	{
-		return new Time($this);
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return new $timeClass($this);
 	}
 
 	public function getStart(): Time
@@ -37,7 +39,9 @@ class Day extends Time
 
 	public function getWeek(): Week
 	{
-		return new Week(clone $this);
+		$weekClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Week::class);
+
+		return new $weekClass(clone $this);
 	}
 
 	public function getWeekStartOffset(): int
@@ -52,32 +56,43 @@ class Day extends Time
 
 	public function getMonth(): Month
 	{
-		return new Month(clone $this);
+		$monthClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Month::class);
+
+		return new $monthClass(clone $this);
 	}
 
 	public function getYear(): Year
 	{
-		return new Year(clone $this);
+		$yearClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Year::class);
+
+		return new $yearClass(clone $this);
 	}
 
 	public function getPrevious(): Day
 	{
-		return new static((clone $this)->modify("- 1 day"));
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		return new $dayClass((clone $this)->modify("- 1 day"));
 	}
 
 	public function getNext(): Day
 	{
-		return new static((clone $this)->modify("+ 1 day"));
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		return new $dayClass((clone $this)->modify("+ 1 day"));
 	}
 
 	public function getDaysUntil(Day $day): DayCollection
 	{
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+		$dayCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\DayCollection::class);
+
 		$currentDay = clone $this;
 		while ($currentDay->getStart() <= $day->getStart()) {
 			$days[] = clone $currentDay;
-			$currentDay = new static((clone $currentDay)->modify("+ 1 day"));
+			$currentDay = new $dayClass((clone $currentDay)->modify("+ 1 day"));
 		}
 
-		return new DayCollection($days);
+		return new $dayCollectionClass($days);
 	}
 }

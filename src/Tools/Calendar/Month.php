@@ -13,12 +13,16 @@ class Month extends Time
 
 	public function getTime(): Time
 	{
-		return new Time($this);
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return new $timeClass($this);
 	}
 
 	public function getStartDay(): Day
 	{
-		return new Day($this->getTime()->setDay(1));
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		return new $dayClass($this->getTime()->setDay(1));
 	}
 
 	public function getStart(): Time
@@ -28,7 +32,9 @@ class Month extends Time
 
 	public function getEndDay(): Day
 	{
-		return new Day((clone $this->getStart())->modify("+ 1 month")->modify("- 1 day"));
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		return new $dayClass((clone $this->getStart())->modify("+ 1 month")->modify("- 1 day"));
 	}
 
 	public function getEnd(): Time
@@ -38,7 +44,11 @@ class Month extends Time
 
 	public function getWeeks(): WeekCollection
 	{
-		$weeks = new WeekCollection;
+		$weekCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\WeekCollection::class);
+		$weekClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Week::class);
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		$weeks = new $weekCollectionClass;
 
 		$startDay = $this->getStartDay()->getWeek()->getStartDay();
 		$endDay = $this->getEndDay()->getWeek()->getEndDay();
@@ -46,9 +56,9 @@ class Month extends Time
 
 		while ($currentDay <= $endDay) {
 			if ((int)$currentDay->format("N") == 1) {
-				$weeks[] = new Week($currentDay);
+				$weeks[] = new $weekClass($currentDay);
 			}
-			$currentDay = new Day((clone $currentDay)->modify("+ 1 day"));
+			$currentDay = new $dayClass((clone $currentDay)->modify("+ 1 day"));
 		}
 
 		return $weeks;
@@ -56,7 +66,10 @@ class Month extends Time
 
 	public function getDays(): DayCollection
 	{
-		$days = new DayCollection;
+		$dayCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\DayCollection::class);
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
+		$days = new $dayCollectionClass;
 
 		$startDay = $this->getStartDay();
 		$endDay = $this->getEndDay();
@@ -64,7 +77,7 @@ class Month extends Time
 
 		while ($currentDay->getStart() <= $endDay->getStart()) {
 			$days[] = (clone $currentDay);
-			$currentDay = new Day((clone $currentDay->getStart())->modify("+ 1 day"));
+			$currentDay = new $dayClass((clone $currentDay->getStart())->modify("+ 1 day"));
 		}
 
 		return $days;
@@ -72,11 +85,15 @@ class Month extends Time
 
 	public function getPrevious(): Month
 	{
-		return new static((clone $this->getTime())->modify("-1 month"));
+		$monthClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Month::class);
+
+		return new $monthClass((clone $this->getTime())->modify("-1 month"));
 	}
 
 	public function getNext(): Month
 	{
-		return new static((clone $this->getTime())->modify("+1 month"));
+		$monthClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Month::class);
+
+		return new $monthClass((clone $this->getTime())->modify("+1 month"));
 	}
 }

@@ -18,7 +18,9 @@ class Seconds
 
 	public static function createFromString(string $string): Seconds
 	{
-		return new static((new Time($string))->getTimestamp() - (new Time())->getTimestamp());
+		$secondsClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Seconds::class);
+
+		return new $secondsClass((new Time($string))->getTimestamp() - (new Time())->getTimestamp());
 	}
 
 	public function getValue(): float
@@ -28,7 +30,9 @@ class Seconds
 
 	public function getTime(): Time
 	{
-		return new Time("{$this->getValue()} seconds");
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return new $timeClass("{$this->getValue()} seconds");
 	}
 
 	public function getMinutes(): float

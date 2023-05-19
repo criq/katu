@@ -23,6 +23,9 @@ class Interval
 
 	public static function validate(Param $startParam, Param $endParam): Validation
 	{
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+		$intervalClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Interval::class);
+
 		$result = new \Katu\Tools\Validation\Validation;
 		$start = null;
 		$end = null;
@@ -33,7 +36,7 @@ class Interval
 					->addParam($startParam)
 			);
 		} else {
-			$start = static::getTimeClass()->getName()::createFromString($startParam);
+			$start = $timeClass::createFromString($startParam);
 			if (!$start) {
 				$result->addError(
 					(new \Katu\Errors\Error("Neplatný začátek intervalu."))
@@ -43,7 +46,7 @@ class Interval
 		}
 
 		if (trim($endParam)) {
-			$end = static::getTimeClass()->getName()::createFromString($endParam);
+			$end = $timeClass::createFromString($endParam);
 			if (!$end) {
 				$result->addError(
 					(new \Katu\Errors\Error("Neplatný konec intervalu."))
@@ -63,15 +66,10 @@ class Interval
 					->addParam($endParam)
 			);
 		} elseif ($start && $end) {
-			$result->setResponse(new static($start, $end));
+			$result->setResponse(new $intervalClass($start, $end));
 		}
 
 		return $result;
-	}
-
-	public static function getTimeClass(): TClass
-	{
-		return new TClass("Katu\Tools\Calendar\Time");
 	}
 
 	public function setStart(Time $value): Interval
@@ -100,7 +98,9 @@ class Interval
 
 	public function getDays(): TimeCollection
 	{
-		$res = new TimeCollection;
+		$timeCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\TimeCollection::class);
+
+		$res = new $timeCollectionClass;
 
 		$day = clone $this->getStart();
 		while ($day <= $this->getEnd()) {
@@ -114,11 +114,13 @@ class Interval
 
 	public function getIntersection(Interval $interval): ?Interval
 	{
+		$intervalClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Interval::class);
+
 		$start = max($this->getStart(), $interval->getStart());
 		$end = min($this->getEnd(), $interval->getEnd());
 
 		try {
-			return new static($start, $end);
+			return new $intervalClass($start, $end);
 		} catch (\Throwable $e) {
 			return null;
 		}
@@ -126,16 +128,21 @@ class Interval
 
 	public function getSeconds(): Seconds
 	{
-		return new Seconds($this->getEnd()->getTimestamp() - $this->getStart()->getTimestamp());
+		$secondsClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Seconds::class);
+
+		return new $secondsClass($this->getEnd()->getTimestamp() - $this->getStart()->getTimestamp());
 	}
 
 	public function getMonths(): MonthCollection
 	{
-		$res = new MonthCollection;
+		$monthCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\MonthCollection::class);
+		$monthClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Month::class);
+
+		$res = new $monthCollectionClass;
 
 		$time = (clone $this->getStart())->setDay(1);
 		while ($time <= $this->getEnd()) {
-			$res[] = new Month($time);
+			$res[] = new $monthClass($time);
 			$time = $time->modify("+ 1 month");
 		}
 
