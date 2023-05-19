@@ -6,7 +6,7 @@ class Month extends Time
 {
 	protected $time;
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->getTime()->format("Y-m");
 	}
