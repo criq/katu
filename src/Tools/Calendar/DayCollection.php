@@ -32,6 +32,21 @@ class DayCollection extends \ArrayObject
 		return $this->getDay($day);
 	}
 
+	public function getUnique(): DayCollection
+	{
+		return new static(array_values(array_unique($this->getArrayCopy())));
+	}
+
+	public function sortAscending(): DayCollection
+	{
+		$array = $this->getArrayCopy();
+		usort($array, function (Day $a, Day $b) {
+			return $a > $b ? 1 : -1;
+		});
+
+		return new static($array);
+	}
+
 	public function getMonths(): MonthCollection
 	{
 		$months = new MonthCollection;

@@ -2,44 +2,47 @@
 
 namespace Katu\Tools\Calendar;
 
-class Week
+class Week extends Time
 {
-	protected $start;
-
-	public function __construct(Time $start)
-	{
-		$this->setStart($start);
-	}
+	protected $time;
 
 	public function __toString(): string
 	{
-		return $this->getStart()->format("oW");
+		return $this->getTime()->format("oW");
 	}
 
-	public function setStart(Time $value): Week
+	public function getTime(): Time
 	{
-		$this->start = (clone $value)->getThisWeekday("Monday")->setTime(0, 0, 0);
+		return new Time($this);
+	}
 
-		return $this;
+	public function getStartDay(): Day
+	{
+		return new Day((clone $this->getTime())->getThisWeekday("Monday"));
 	}
 
 	public function getStart(): Time
 	{
-		return $this->start;
+		return $this->getStartDay()->getStart();
+	}
+
+	public function getEndDay(): Day
+	{
+		return new Day((clone $this->getTime())->getThisWeekday("Sunday"));
 	}
 
 	public function getEnd(): Time
 	{
-		return (clone $this->getStart())->getThisWeekday("Sunday");
+		return $this->getEndDay()->getEnd();
 	}
 
-	public function getDays(): TimeCollection
+	public function getDays(): DayCollection
 	{
-		$res = new TimeCollection;
+		$res = new DayCollection;
 
 		$date = clone $this->getStart();
 		while ($date <= $this->getEnd()) {
-			$res[] = $date;
+			$res[] = new Day($date);
 			$date = (clone $date)->modify("+ 1 day");
 		}
 

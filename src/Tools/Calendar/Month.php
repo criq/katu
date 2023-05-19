@@ -2,39 +2,28 @@
 
 namespace Katu\Tools\Calendar;
 
-class Month
+class Month extends Time
 {
-	protected $start;
-
-	public function __construct(Time $start)
-	{
-		$this->setStart($start);
-	}
+	protected $time;
 
 	public function __toString()
 	{
-		return $this->getStart()->format("Y-m");
+		return $this->getTime()->format("Y-m");
 	}
 
-	public function setStart(Time $start): Month
+	public function getTime(): Time
 	{
-		$this->start = (clone $start)->setDay(1)->setTime(0, 0, 0);
-
-		return $this;
-	}
-
-	public function getStart(): Time
-	{
-		return $this->start;
+		return new Time($this);
 	}
 
 	public function getStartDay(): Day
 	{
-		return new Day($this->getStart());
+		return new Day($this->getTime()->setDay(1));
 	}
 
-	public function getEnd(): Time
+	public function getStart(): Time
 	{
+		return $this->getStartDay()->getStart();
 	}
 
 	public function getEndDay(): Day
@@ -42,47 +31,52 @@ class Month
 		return new Day((clone $this->getStart())->modify("+ 1 month")->modify("- 1 day"));
 	}
 
+	public function getEnd(): Time
+	{
+		return $this->getEndDay()->getEnd();
+	}
+
 	public function getWeeks(): WeekCollection
 	{
 		$weeks = new WeekCollection;
 
-		$startDay = $this->getStart()->getWeek()->getStartDay();
-		$endDay = $this->getEnd()->getWeek()->getEndDay();
+		$startDay = $this->getStartDay()->getWeek()->getStartDay();
+		$endDay = $this->getEndDay()->getWeek()->getEndDay();
 		$currentDay = clone $startDay;
 
-		while ($currentDay->getDateTime() <= $endDay->getDateTime()) {
-			if ((int)$currentDay->getDateTime()->format("N") == 1) {
-				$weeks[] = new Week($currentDay->getDateTime());
+		while ($currentDay <= $endDay) {
+			if ((int)$currentDay->format("N") == 1) {
+				$weeks[] = new Week($currentDay);
 			}
-			$currentDay = new Day((clone $currentDay->getDateTime())->modify("+ 1 day"));
+			$currentDay = new Day((clone $currentDay)->modify("+ 1 day"));
 		}
 
 		return $weeks;
 	}
 
-	public function getDays(): Days
+	public function getDays(): DayCollection
 	{
-		$days = new Days;
+		$days = new DayCollection;
 
 		$startDay = $this->getStartDay();
 		$endDay = $this->getEndDay();
 		$currentDay = clone $startDay;
 
-		while ($currentDay->getDateTime() <= $endDay->getDateTime()) {
-			$days[] = new Day($currentDay->getDateTime());
-			$currentDay = new Day((clone $currentDay->getDateTime())->modify("+ 1 day"));
+		while ($currentDay->getStart() <= $endDay->getStart()) {
+			$days[] = (clone $currentDay);
+			$currentDay = new Day((clone $currentDay->getStart())->modify("+ 1 day"));
 		}
 
 		return $days;
 	}
 
-	public function getPrevious()
+	public function getPrevious(): Month
 	{
-		return new static((clone $this->getDateTime())->modify("-1 month"));
+		return new static((clone $this->getTime())->modify("-1 month"));
 	}
 
-	public function getNext()
+	public function getNext(): Month
 	{
-		return new static((clone $this->getDateTime())->modify("+1 month"));
+		return new static((clone $this->getTime())->modify("+1 month"));
 	}
 }

@@ -179,7 +179,7 @@ class Time extends \DateTime
 		return (float)($timestamp + $micro);
 	}
 
-	public function getThisWeekday(string $weekday): Time
+	public function getThisWeekday(string $weekday): Day
 	{
 		$date = clone $this;
 
@@ -197,7 +197,7 @@ class Time extends \DateTime
 
 		foreach ($weekdays as $position => $names) {
 			if (in_array($weekday, $names)) {
-				return $monday->modify("+ " . ($position - 1) . " days");
+				return new Day($monday->modify("+ " . ($position - 1) . " days"));
 			}
 		}
 

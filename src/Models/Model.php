@@ -312,7 +312,7 @@ class Model extends Base
 			$sql->where(SX::cmpNotEq(static::getIdColumn(), $excludeObject->getId()));
 		}
 
-		return !static::getBySql($sql)->getTotal();
+		return !static::getBySQL($sql)->getTotal();
 	}
 
 	/****************************************************************************
@@ -329,7 +329,7 @@ class Model extends Base
 			->where(SX::eq($fileAttachmentClass::getColumn("objectId"), $this->getId()))
 			;
 
-		return $fileAttachmentClass::getBySql($sql);
+		return $fileAttachmentClass::getBySQL($sql);
 	}
 
 	public function getImageFileAttachments()
@@ -346,7 +346,7 @@ class Model extends Base
 			->where(SX::cmpLike($fileClass::getColumn("type"), "image/%"))
 			;
 
-		return $fileAttachmentClass::getBySql($sql);
+		return $fileAttachmentClass::getBySQL($sql);
 	}
 
 	public function getImageFile(): ?\Katu\Models\Presets\File
@@ -365,7 +365,7 @@ class Model extends Base
 			;
 		// echo $sql;die;
 
-		return $fileClass::getBySql($sql)->getOne();
+		return $fileClass::getBySQL($sql)->getOne();
 	}
 
 	public function refreshFileAttachmentsFromFileIds(User $user, ?array $fileIds)

@@ -4,11 +4,14 @@ namespace Katu\Tools\Calendar;
 
 class Day extends Time
 {
-	protected $events;
-
 	public function __toString()
 	{
 		return $this->format("Y-m-d");
+	}
+
+	public function getTime(): Time
+	{
+		return new Time($this);
 	}
 
 	public function getStart(): Time

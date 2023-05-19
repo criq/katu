@@ -25,7 +25,7 @@ abstract class TableFactory extends Factory
 			;
 	}
 
-	public static function getBySql($sql): \Katu\PDO\Result
+	public static function getBySQL($sql): \Katu\PDO\Result
 	{
 		return static::getTable()->getConnection()->createQuery($sql)
 			->setFactory(new static)

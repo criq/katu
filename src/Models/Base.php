@@ -168,7 +168,7 @@ abstract class Base
 
 	public static function getOneBySQL(\Sexy\Select $sql)
 	{
-		return static::getBySql($sql->setGetFoundRows(false))->getOne();
+		return static::getBySQL($sql->setGetFoundRows(false))->getOne();
 	}
 
 	public static function getOneBy(?array $where = [], $orderBy = null)

@@ -26,7 +26,7 @@ class Seconds
 		return (float)$this->value;
 	}
 
-	public function getDateTime(): Time
+	public function getTime(): Time
 	{
 		return new Time("{$this->getValue()} seconds");
 	}

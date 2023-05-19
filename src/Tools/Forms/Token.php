@@ -46,7 +46,7 @@ class Token
 		return $this;
 	}
 
-	public function getDateTimeSpoils(): Time
+	public function getTimeSpoils(): Time
 	{
 		return new Time($this->timeSpoils);
 	}
@@ -58,14 +58,14 @@ class Token
 		return $this;
 	}
 
-	public function getDateTimeRots(): Time
+	public function getTimeRots(): Time
 	{
 		return new Time($this->timeRots);
 	}
 
 	public function getTTL(): Seconds
 	{
-		return new Seconds($this->getDateTimeRots()->getTimestamp() - (new Time)->getTimestamp());
+		return new Seconds($this->getTimeRots()->getTimestamp() - (new Time)->getTimestamp());
 	}
 
 	public function isAcceptable(): bool
@@ -75,17 +75,17 @@ class Token
 
 	public function isFresh(): bool
 	{
-		return $this->getDateTimeSpoils()->isInFuture();
+		return $this->getTimeSpoils()->isInFuture();
 	}
 
 	public function isSpoilt(): bool
 	{
-		return $this->getDateTimeSpoils()->isInPast();
+		return $this->getTimeSpoils()->isInPast();
 	}
 
 	public function isRotten(): bool
 	{
-		return $this->getDateTimeRots()->isInPast();
+		return $this->getTimeRots()->isInPast();
 	}
 
 	public static function getFreshToken(): Token
