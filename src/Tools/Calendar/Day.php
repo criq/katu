@@ -4,7 +4,7 @@ namespace Katu\Tools\Calendar;
 
 class Day extends Time
 {
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->format("Y-m-d");
 	}
