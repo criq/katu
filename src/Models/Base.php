@@ -131,7 +131,7 @@ abstract class Base
 		$sql = SX::select();
 		$sql->from(static::getTable());
 
-		foreach ($where as $name => $value) {
+		foreach ((array)$where as $name => $value) {
 			if ($value instanceof \Sexy\Expression) {
 				$sql->where($value);
 			} elseif (is_null($value)) {
