@@ -183,15 +183,9 @@ class TURL
 		return null;
 	}
 
-	public function getQueryParam(string $name)
+	public function getQueryParam(string $name): ?string
 	{
-		$params = $this->getQueryParams();
-
-		if ($params[$name] ?? null) {
-			return $params[$name];
-		}
-
-		return null;
+		return $this->getQueryParams()[$name] ?? null;
 	}
 
 	public function getWithoutQuery(): TURL
