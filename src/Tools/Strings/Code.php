@@ -42,4 +42,9 @@ class Code
 			return mb_strtoupper($match[1]);
 		}, mb_strtolower($this->code));
 	}
+
+	public function getUpperCamelCaseFormat(): string
+	{
+		return ucfirst($this->getCamelCaseFormat());
+	}
 }
