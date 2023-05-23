@@ -121,6 +121,18 @@ class App
 				\Katu\Models\Presets\UserService::class => \Katu\Models\Presets\UserService::class,
 				\Katu\Models\Presets\UserSetting::class => \Katu\Models\Presets\UserSetting::class,
 				\Katu\Storage\Entity::class => \Katu\Storage\Entity::class,
+				\Katu\Tools\Calendar\Day::class => \Katu\Tools\Calendar\Day::class,
+				\Katu\Tools\Calendar\DayCollection::class => \Katu\Tools\Calendar\DayCollection::class,
+				\Katu\Tools\Calendar\Interval::class => \Katu\Tools\Calendar\Interval::class,
+				\Katu\Tools\Calendar\Month::class => \Katu\Tools\Calendar\Month::class,
+				\Katu\Tools\Calendar\MonthCollection::class => \Katu\Tools\Calendar\MonthCollection::class,
+				\Katu\Tools\Calendar\Seconds::class => \Katu\Tools\Calendar\Seconds::class,
+				\Katu\Tools\Calendar\Time::class => \Katu\Tools\Calendar\Time::class,
+				\Katu\Tools\Calendar\TimeCollection::class => \Katu\Tools\Calendar\TimeCollection::class,
+				\Katu\Tools\Calendar\Timeout::class => \Katu\Tools\Calendar\Timeout::class,
+				\Katu\Tools\Calendar\Week::class => \Katu\Tools\Calendar\Week::class,
+				\Katu\Tools\Calendar\WeekCollection::class => \Katu\Tools\Calendar\WeekCollection::class,
+				\Katu\Tools\Calendar\Year::class => \Katu\Tools\Calendar\Year::class,
 			], static::getDIDefinitions()));
 
 			// Create the app.

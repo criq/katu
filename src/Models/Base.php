@@ -131,7 +131,7 @@ abstract class Base
 		$sql = SX::select();
 		$sql->from(static::getTable());
 
-		foreach ($where as $name => $value) {
+		foreach ((array)$where as $name => $value) {
 			if ($value instanceof \Sexy\Expression) {
 				$sql->where($value);
 			} elseif (is_null($value)) {
@@ -168,7 +168,7 @@ abstract class Base
 
 	public static function getOneBySQL(\Sexy\Select $sql)
 	{
-		return static::getBySql($sql->setGetFoundRows(false))->getOne();
+		return static::getBySQL($sql->setGetFoundRows(false))->getOne();
 	}
 
 	public static function getOneBy(?array $where = [], $orderBy = null)

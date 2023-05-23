@@ -2,13 +2,13 @@
 
 namespace Katu\Tools\Calendar;
 
-class Week extends Time
+class Year extends Time
 {
 	protected $time;
 
 	public function __toString(): string
 	{
-		return $this->getTime()->format("oW");
+		return $this->getTime()->format("Y");
 	}
 
 	public function getTime(): Time
@@ -22,7 +22,7 @@ class Week extends Time
 	{
 		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
 
-		return new $dayClass((clone $this->getTime())->getThisWeekday("Monday"));
+		return new $dayClass((clone $this->getTime())->setMonth(1)->setDay(1));
 	}
 
 	public function getStart(): Time
@@ -34,27 +34,11 @@ class Week extends Time
 	{
 		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
 
-		return new $dayClass((clone $this->getTime())->getThisWeekday("Sunday"));
+		return new $dayClass(($this->getStartDay()->getStart())->modify("+ 1 year")->modify("- 1 day"));
 	}
 
 	public function getEnd(): Time
 	{
 		return $this->getEndDay()->getEnd();
-	}
-
-	public function getDays(): DayCollection
-	{
-		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
-		$dayCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\DayCollection::class);
-
-		$res = new $dayCollectionClass;
-
-		$date = clone $this->getStart();
-		while ($date <= $this->getEnd()) {
-			$res[] = new $dayClass($date);
-			$date = (clone $date)->modify("+ 1 day");
-		}
-
-		return $res;
 	}
 }

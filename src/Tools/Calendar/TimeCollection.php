@@ -6,19 +6,24 @@ class TimeCollection extends \ArrayObject
 {
 	public function sortAscending(): TimeCollection
 	{
+		$timeCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\TimeCollection::class);
+
 		$array = $this->getArrayCopy();
 
 		usort($array, function (Time $a, Time $b) {
 			return $a->getTimestamp() > $b->getTimestamp() ? 1 : -1;
 		});
 
-		return new static($array);
+		return new $timeCollectionClass($array);
 	}
 
 	public function getUniqueDays(): TimeCollection
 	{
-		return new static(array_map(function (string $date) {
-			return new Time($date);
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+		$timeCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\TimeCollection::class);
+
+		return new $timeCollectionClass(array_map(function (string $date) use ($timeClass) {
+			return new $timeClass($date);
 		}, array_unique(array_map(function (Time $time) {
 			return $time->format("Y-m-d");
 		}, $this->getArrayCopy()))));

@@ -4,15 +4,45 @@ namespace Katu\Tools\Calendar;
 
 class WeekCollection extends \ArrayObject
 {
+	public function createWeek(Week $week): WeekCollection
+	{
+		if (array_search((string)$week, $this->getArrayCopy()) === false) {
+			$this[] = $week;
+		}
+
+		return $this;
+	}
+
+	public function getWeek(Week $week): ?Week
+	{
+		$key = array_search((string)$week, $this->getArrayCopy());
+		if ($key !== false) {
+			return $this[$key];
+		}
+
+		return null;
+	}
+
+	public function getOrCreateWeek(Week $week)
+	{
+		if (!$this->getWeek($week)) {
+			$this->createWeek($week);
+		}
+
+		return $this->getWeek($week);
+	}
+
 	public function sortAscending(): WeekCollection
 	{
+		$weekClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Week::class);
+
 		$array = $this->getArrayCopy();
 
 		usort($array, function (Week $a, Week $b) {
 			return $a->getStart() > $b->getStart() ? 1 : -1;
 		});
 
-		return new static($array);
+		return new $weekClass($array);
 	}
 
 	public function getFirst(): ?Week

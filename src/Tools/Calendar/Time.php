@@ -24,38 +24,56 @@ class Time extends \DateTime
 
 	public static function createFromTimestamp(int $timestamp): Time
 	{
-		return new static("@{$timestamp}");
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return new $timeClass("@{$timestamp}");
 	}
 
 	public static function createFromDateTime(\DateTime $dateTime): Time
 	{
-		return new static($dateTime->format("Y-m-d H:i:s"), $dateTime->getTimezone());
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return new $timeClass($dateTime->format("Y-m-d H:i:s"), $dateTime->getTimezone());
 	}
 
 	public static function createFromString(?string $string, bool $timeRequired): ?Time
 	{
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
 		$string = trim($string);
 
 		$time = null;
 
-		if (static::createFromFormat("Y-m-d\TH:i:sP", $string)) { // 2022-04-01T13:00:00+02:00
-			$time = new static($string);
-		} elseif (static::createFromFormat("D, j M Y H:i:s O", $string)) { // Thu, 21 Dec 2000 16:01:07 +0200
-			$time = new static($string);
+		if ($timeClass::createFromFormat("Y-m-d\TH:i:sP", $string)) { // 2022-04-01T13:00:00+02:00
+			$time = new $timeClass($string);
+		} elseif ($timeClass::createFromFormat("D, j M Y H:i:s O", $string)) { // Thu, 21 Dec 2000 16:01:07 +0200
+			$time = new $timeClass($string);
 		}
 
 		if (!($time ?? null)) {
 			$time =
-				   static::createFromFormat("!Y-m-d H:i:s", $string)
-				?: static::createFromFormat("!Y-m-d H:i", $string)
-				?: static::createFromFormat("!Y-m-d H.i", $string)
-				?: static::createFromFormat("!Y-m-d H", $string)
-				?: (!$timeRequired ? static::createFromFormat("!Y-m-d", $string) : null)
-				?: static::createFromFormat("!j.n.Y H:i:s", $string)
-				?: static::createFromFormat("!j.n.Y H:i", $string)
-				?: static::createFromFormat("!j.n.Y H.i", $string)
-				?: static::createFromFormat("!j.n.Y H", $string)
-				?: (!$timeRequired ? static::createFromFormat("!j.n.Y", $string) : null)
+				$timeClass::createFromFormat("!Y-m-d H:i:s", $string)
+				?: $timeClass::createFromFormat("!Y-m-d H:i", $string)
+				?: $timeClass::createFromFormat("!Y-m-d H.i", $string)
+				?: $timeClass::createFromFormat("!Y-m-d H", $string)
+				?: (!$timeRequired ? $timeClass::createFromFormat("!Y-m-d", $string) : null)
+				?: $timeClass::createFromFormat("!j.n.Y H:i:s", $string)
+				?: $timeClass::createFromFormat("!j. n. Y H:i:s", $string)
+				?: $timeClass::createFromFormat("!j.n. Y H:i:s", $string)
+				?: $timeClass::createFromFormat("!j. n.Y H:i:s", $string)
+				?: $timeClass::createFromFormat("!j.n.Y H:i", $string)
+				?: $timeClass::createFromFormat("!j. n. Y H:i", $string)
+				?: $timeClass::createFromFormat("!j.n. Y H:i", $string)
+				?: $timeClass::createFromFormat("!j. n.Y H:i", $string)
+				?: $timeClass::createFromFormat("!j.n.Y H.i", $string)
+				?: $timeClass::createFromFormat("!j. n. Y H.i", $string)
+				?: $timeClass::createFromFormat("!j.n. Y H.i", $string)
+				?: $timeClass::createFromFormat("!j. n.Y H.i", $string)
+				?: $timeClass::createFromFormat("!j.n.Y H", $string)
+				?: $timeClass::createFromFormat("!j. n. Y H", $string)
+				?: $timeClass::createFromFormat("!j.n. Y H", $string)
+				?: $timeClass::createFromFormat("!j. n.Y H", $string)
+				?: (!$timeRequired ? $timeClass::createFromFormat("!j.n.Y", $string) : null)
 				;
 		}
 
@@ -75,7 +93,7 @@ class Time extends \DateTime
 
 			foreach ($regexps as $regexp) {
 				if (preg_match($regexp, $string, $match)) {
-					$time = (new Time)
+					$time = (new $timeClass)
 						->setDate(
 							$match["y"] ?? null,
 							$match["m"] ?? null,
@@ -92,7 +110,7 @@ class Time extends \DateTime
 			}
 		}
 
-		return $time ? new static($time) : null;
+		return $time ? new $timeClass($time) : null;
 	}
 
 	public function getLocalTimeZone(): \DateTimeZone
@@ -132,17 +150,23 @@ class Time extends \DateTime
 
 	public function isYesterday(): bool
 	{
-		return (new static("- 1 day", $this->getTimezone()))->format("Y-m-d") == $this->format("Y-m-d");
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return (new $timeClass("- 1 day", $this->getTimezone()))->format("Y-m-d") == $this->format("Y-m-d");
 	}
 
 	public function isToday(): bool
 	{
-		return (new static("now", $this->getTimezone()))->format("Y-m-d") == $this->format("Y-m-d");
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return (new $timeClass("now", $this->getTimezone()))->format("Y-m-d") == $this->format("Y-m-d");
 	}
 
 	public function isTomorrow(): bool
 	{
-		return (new static("+ 1 day", $this->getTimezone()))->format("Y-m-d") == $this->format("Y-m-d");
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return (new $timeClass("+ 1 day", $this->getTimezone()))->format("Y-m-d") == $this->format("Y-m-d");
 	}
 
 	public function isInFuture(): bool
@@ -179,8 +203,10 @@ class Time extends \DateTime
 		return (float)($timestamp + $micro);
 	}
 
-	public function getThisWeekday(string $weekday): Time
+	public function getThisWeekday(string $weekday): Day
 	{
+		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
+
 		$date = clone $this;
 
 		$weekdays = [
@@ -197,7 +223,7 @@ class Time extends \DateTime
 
 		foreach ($weekdays as $position => $names) {
 			if (in_array($weekday, $names)) {
-				return $monday->modify("+ " . ($position - 1) . " days");
+				return new $dayClass($monday->modify("+ " . ($position - 1) . " days"));
 			}
 		}
 
@@ -248,7 +274,9 @@ class Time extends \DateTime
 
 	public function getDiff($dateTime = null)
 	{
-		return $this->diff($dateTime ?: new static);
+		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+
+		return $this->diff($dateTime ?: new $timeClass);
 	}
 
 	public function change($value): Time
