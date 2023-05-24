@@ -166,8 +166,13 @@ class Image implements RestResponseInterface
 	 */
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
+		$requestSizes = array_values(array_unique(array_filter(array_map(function (string $size) {
+			return (int)$size;
+		}, array_map("trim", explode(",", $request->getQueryParams()["imageSizes"] ?? null))))));
+		$defaultSizes = [400, 800, 1600, 2400];
+
 		$options = (new OptionCollection([
-			new Option("SIZES", [400, 800, 1600, 2400]),
+			new Option("SIZES", $requestSizes ?: $defaultSizes),
 			new Option("QUALITY", 80),
 			new Option("INCLUDE_SQUARE", true),
 		]))->getMergedWith($options);
