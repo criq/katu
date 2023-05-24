@@ -11,7 +11,9 @@ class OptionCollection extends \ArrayObject
 	 */
 	public function offsetSet($key, $value): void
 	{
-		parent::offsetSet((string)$value->getCode(), $value);
+		if ($value instanceof Option) {
+			parent::offsetSet((string)$value->getCode(), $value);
+		}
 	}
 
 	public function getMergedWith(?OptionCollection $options = null): OptionCollection
