@@ -168,35 +168,38 @@ class Image implements RestResponseInterface
 	{
 		$options = (new OptionCollection([
 			new Option("SIZES", [400, 800, 1600, 2400]),
+			new Option("QUALITY", 80),
+			new Option("INCLUDE_SQUARE", true),
 		]))->getMergedWith($options);
 
 		$sizes = $options->getValue("SIZES");
+		$quality = $options->getValue("QUALITY");
 
 		$versions = array_merge(
-			array_map(function (int $size) {
+			array_map(function (int $size) use ($quality) {
 				return new Version("{$size}", [
 					new Resize([
 						"width" => $size,
 						"height" => $size,
 					]),
-				]);
+				], "jpg", $quality);
 			}, $sizes),
-			array_map(function (int $size) {
+			$options->getValue("INCLUDE_SQUARE") ? array_map(function (int $size) use ($quality) {
 				return new Version("{$size}_SQUARE", [
 					new Fit([
 						"width" => $size,
 						"height" => $size,
 					]),
-				]);
-			}, $sizes),
+				], "jpg", $quality);
+			}, $sizes) : [],
 		);
 
 		$versions = array_combine(array_map(function (Version $version) {
 			return $version->getName();
 		}, $versions), $versions);
 
-		return new RestResponse(array_map(function (Version $version) {
-			return (new ImageVersion($this, $version))->getURL();
+		return new RestResponse(array_map(function (Version $version) use ($request, $options) {
+			return (new ImageVersion($this, $version))->getRestResponse($request, $options);
 		}, $versions));
 	}
 }

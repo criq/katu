@@ -2,10 +2,14 @@
 
 namespace Katu\Tools\Images;
 
+use Katu\Tools\Options\OptionCollection;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TIdentifier;
 use Katu\Types\TURL;
+use Psr\Http\Message\ServerRequestInterface;
 
-class ImageVersion
+class ImageVersion implements RestResponseInterface
 {
 	protected $image;
 	protected $version;
@@ -113,5 +117,17 @@ class ImageVersion
 		} catch (\Throwable $e) {
 			return null;
 		}
+	}
+
+	/****************************************************************************
+	 * REST.
+	 */
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
+	{
+		return new RestResponse([
+			"extension" => $this->getVersion()->getExtension(),
+			"size" => $this->getFile()->getSize()->getInB()->getAmount(),
+			"url" => (string)$this->getURL(),
+		]);
 	}
 }
