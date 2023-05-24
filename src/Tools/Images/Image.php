@@ -2,12 +2,19 @@
 
 namespace Katu\Tools\Images;
 
+use Katu\Tools\Images\Filters\Fit;
+use Katu\Tools\Images\Filters\Resize;
+use Katu\Tools\Options\Option;
+use Katu\Tools\Options\OptionCollection;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TArray;
 use Katu\Types\TIdentifier;
 use Katu\Types\TImageSize;
 use Katu\Types\TURL;
+use Psr\Http\Message\ServerRequestInterface;
 
-class Image
+class Image implements RestResponseInterface
 {
 	protected $source;
 
@@ -152,5 +159,44 @@ class Image
 		}
 
 		return null;
+	}
+
+	/****************************************************************************
+	 * REST.
+	 */
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
+	{
+		$options = (new OptionCollection([
+			new Option("SIZES", [400, 800, 1600, 2400]),
+		]))->getMergedWith($options);
+
+		$sizes = $options->getValue("SIZES");
+
+		$versions = array_merge(
+			array_map(function (int $size) {
+				return new Version("{$size}", [
+					new Resize([
+						"width" => $size,
+						"height" => $size,
+					]),
+				]);
+			}, $sizes),
+			array_map(function (int $size) {
+				return new Version("{$size}_SQUARE", [
+					new Fit([
+						"width" => $size,
+						"height" => $size,
+					]),
+				]);
+			}, $sizes),
+		);
+
+		$versions = array_combine(array_map(function (Version $version) {
+			return $version->getName();
+		}, $versions), $versions);
+
+		return new RestResponse(array_map(function (Version $version) {
+			return (new ImageVersion($this, $version))->getURL();
+		}, $versions));
 	}
 }
