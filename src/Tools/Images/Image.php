@@ -167,21 +167,14 @@ class Image implements RestResponseInterface
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		$defaultOptions = new OptionCollection([
-			new Option("SIZES", [400, 800, 1600, 2400]),
+			new Option("IMAGE_SIZES", [400, 800, 1600, 2400]),
 			new Option("QUALITY", 80),
-			new Option("INCLUDE_SQUARE", true),
+			new Option("INCLUDE_SQUARE_IMAGE", false),
 		]);
 
-		$requestSizes = array_values(array_unique(array_filter(array_map(function (string $size) {
-			return (int)$size;
-		}, array_map("trim", explode(",", $request->getQueryParams()["imageSizes"] ?? null))))));
-		$requestOptions = new OptionCollection([
-			$requestSizes ? new Option("SIZES", $requestSizes) : null,
-		]);
+		$options = $defaultOptions->getMergedWith($options);
 
-		$options = $defaultOptions->getMergedWith($requestOptions)->getMergedWith($options);
-
-		$sizes = $options->getValue("SIZES");
+		$sizes = $options->getValue("IMAGE_SIZES");
 		$quality = $options->getValue("QUALITY");
 
 		$versions = array_merge(
@@ -193,7 +186,7 @@ class Image implements RestResponseInterface
 					]),
 				], "jpg", $quality);
 			}, $sizes),
-			$options->getValue("INCLUDE_SQUARE") ? array_map(function (int $size) use ($quality) {
+			$options->getValue("INCLUDE_SQUARE_IMAGE") ? array_map(function (int $size) use ($quality) {
 				return new Version("{$size}_SQUARE", [
 					new Fit([
 						"width" => $size,
