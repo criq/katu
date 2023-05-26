@@ -200,8 +200,10 @@ class Image implements RestResponseInterface
 			return $version->getName();
 		}, $versions), $versions);
 
-		return new RestResponse(array_map(function (Version $version) use ($request, $options) {
-			return (new ImageVersion($this, $version))->getRestResponse($request, $options);
-		}, $versions));
+		return new RestResponse([
+			"versions" => array_map(function (Version $version) use ($request, $options) {
+				return (new ImageVersion($this, $version))->getRestResponse($request, $options);
+			}, $versions),
+		]);
 	}
 }
