@@ -125,9 +125,10 @@ class ImageVersion implements RestResponseInterface
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		return new RestResponse([
+			"url" => (string)$this->getURL(),
 			"extension" => $this->getVersion()->getExtension(),
 			"size" => $this->getFile()->getSize()->getInB()->getAmount(),
-			"url" => (string)$this->getURL(),
+			"dimensions" => $this->getVersionImage()->getImageSize()->getRestResponse($request, $options),
 		]);
 	}
 }
