@@ -2,12 +2,19 @@
 
 namespace Katu\Tools\Images;
 
+use Katu\Tools\Images\Filters\Fit;
+use Katu\Tools\Images\Filters\Resize;
+use Katu\Tools\Options\Option;
+use Katu\Tools\Options\OptionCollection;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TArray;
 use Katu\Types\TIdentifier;
 use Katu\Types\TImageSize;
 use Katu\Types\TURL;
+use Psr\Http\Message\ServerRequestInterface;
 
-class Image
+class Image implements RestResponseInterface
 {
 	protected $source;
 
@@ -152,5 +159,51 @@ class Image
 		}
 
 		return null;
+	}
+
+	/****************************************************************************
+	 * REST.
+	 */
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
+	{
+		$defaultOptions = new OptionCollection([
+			new Option("IMAGE_SIZES", [400, 800, 1600, 2400]),
+			new Option("QUALITY", 80),
+			new Option("INCLUDE_SQUARE_IMAGE", false),
+		]);
+
+		$options = $defaultOptions->getMergedWith($options);
+
+		$sizes = $options->getValue("IMAGE_SIZES");
+		$quality = $options->getValue("QUALITY");
+
+		$versions = array_merge(
+			array_map(function (int $size) use ($quality) {
+				return new Version("{$size}", [
+					new Resize([
+						"width" => $size,
+						"height" => $size,
+					]),
+				], "jpg", $quality);
+			}, $sizes),
+			$options->getValue("INCLUDE_SQUARE_IMAGE") ? array_map(function (int $size) use ($quality) {
+				return new Version("{$size}_SQUARE", [
+					new Fit([
+						"width" => $size,
+						"height" => $size,
+					]),
+				], "jpg", $quality);
+			}, $sizes) : [],
+		);
+
+		$versions = array_combine(array_map(function (Version $version) {
+			return $version->getName();
+		}, $versions), $versions);
+
+		return new RestResponse([
+			"versions" => array_map(function (Version $version) use ($request, $options) {
+				return (new ImageVersion($this, $version))->getRestResponse($request, $options);
+			}, $versions),
+		]);
 	}
 }

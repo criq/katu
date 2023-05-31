@@ -6,12 +6,18 @@ use Katu\Tools\Strings\Code;
 
 class OptionCollection extends \ArrayObject
 {
-	/**
-	 * @param Option $value
-	 */
-	public function offsetSet($key, $value): void
+	public function __construct()
 	{
-		parent::offsetSet((string)$value->getCode(), $value);
+		foreach (func_get_args()[0] ?? [] as $option) {
+			$this[] = $option;
+		}
+	}
+
+	public function offsetSet($key, $option): void
+	{
+		if ($option instanceof Option && !is_null($option->getValue())) {
+			parent::offsetSet((string)$option->getCode(), $option);
+		}
 	}
 
 	public function getMergedWith(?OptionCollection $options = null): OptionCollection
