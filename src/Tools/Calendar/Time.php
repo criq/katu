@@ -46,6 +46,12 @@ class Time extends \DateTime
 
 		if ($timeClass::createFromFormat("Y-m-d\TH:i:sP", $string)) { // 2022-04-01T13:00:00+02:00
 			$time = new $timeClass($string);
+		} elseif ($timeClass::createFromFormat("Y-m-d\TH:i:sp", $string)) { // 2022-04-01T13:00:00Z
+			$time = new $timeClass($string);
+		} elseif ($timeClass::createFromFormat("Y-m-d\TH:i:s.vP", $string)) { // 2022-04-01T13:00:00.000+02:00
+			$time = new $timeClass($string);
+		} elseif ($timeClass::createFromFormat("Y-m-d\TH:i:s.vp", $string)) { // 2022-04-01T13:00:00.000Z
+			$time = new $timeClass($string);
 		} elseif ($timeClass::createFromFormat("D, j M Y H:i:s O", $string)) { // Thu, 21 Dec 2000 16:01:07 +0200
 			$time = new $timeClass($string);
 		}
