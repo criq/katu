@@ -124,7 +124,7 @@ abstract class User extends \Katu\Models\Model
 				;
 		}
 
-		static::$columnNames["emailAddressId"] = $emailAddress->getId();
+		$this->{static::$columnNames["emailAddressId"]} = $emailAddress->getId();
 
 		return true;
 	}
