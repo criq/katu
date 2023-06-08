@@ -65,6 +65,11 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 		return $this->token;
 	}
 
+	public function getIsExpired(): bool
+	{
+		return $this->getTimeExpires()->isInPast();
+	}
+
 	public function getIsValid(): bool
 	{
 		return $this->getTimeExpires()->isInFuture() && !$this->getTimeUsed();
