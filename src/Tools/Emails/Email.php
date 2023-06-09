@@ -4,7 +4,7 @@ namespace Katu\Tools\Emails;
 
 use Katu\Types\TEmailAddress;
 
-class Email
+abstract class Email
 {
 	protected $attachments = [];
 	protected $cc = [];
@@ -15,6 +15,8 @@ class Email
 	protected $replyTo;
 	protected $sender;
 	protected $subject;
+
+	abstract public function send();
 
 	public function __construct($subject = null)
 	{
