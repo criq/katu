@@ -47,4 +47,31 @@ class Code
 	{
 		return ucfirst($this->getCamelCaseFormat());
 	}
+
+	public function getStylized(): string
+	{
+		$delimiter = "-";
+		$code = $this->getConstantFormat();
+
+		if (mb_strlen($code) > 5) {
+			if (!(mb_strlen($code) % 3)) {
+				return implode($delimiter, str_split($code, 3));
+			} elseif (!(mb_strlen($code) % 4)) {
+				return implode($delimiter, str_split($code, 4));
+			} elseif (!(mb_strlen($code) % 5)) {
+				return implode($delimiter, str_split($code, 5));
+			} else {
+				if (mb_strlen($code) % 4 == 1) {
+					$chunkLength = 5;
+				} elseif (mb_strlen($code) % 3 == 1) {
+					$chunkLength = 4;
+				} else {
+					$chunkLength = 3;
+				}
+				return implode($delimiter, str_split($code, $chunkLength));
+			}
+		}
+
+		return $code;
+	}
 }
