@@ -3,6 +3,8 @@
 namespace Katu\Models\Presets;
 
 use Katu\Tools\Calendar\Time;
+use Katu\Tools\Security\EncodedPassword;
+use Katu\Tools\Security\PlainPassword;
 use Katu\Types\TIdentifier;
 use Psr\Http\Message\ServerRequestInterface;
 use Sexy\Sexy as SX;
@@ -136,26 +138,40 @@ abstract class User extends \Katu\Models\Model
 		return $class::get($this->{static::$columnNames["emailAddressId"]});
 	}
 
-	public function setPlainPassword(string $password)
+	public function setPassword(?string $password): User
 	{
-		$this->password = (new \Katu\Tools\Security\PasswordEncoder($password))->getEncoded();
+		$this->password = $password;
 
 		return $this;
 	}
 
-	public function getEncodedPassword(): ?string
+	public function getPassword(): ?string
 	{
 		return $this->password;
 	}
 
-	public function hasEncodedPassword()
+	public function setPlainPassword(PlainPassword $plainPassword): User
 	{
-		return (bool)$this->password;
+		$plainPassword
+			->setSaltLength(128)
+			->setIterations(10)
+			;
+
+		$encodedPassword = $plainPassword->getEncodedPassword();
+
+		$this->setPassword($encodedPassword);
+
+		return $this;
 	}
 
-	public function getPasswordEncoder(): \Katu\Tools\Security\PasswordEncoder
+	public function getEncodedPassword(): ?EncodedPassword
 	{
-		return \Katu\Tools\Security\PasswordEncoder::createFromEncoded($this->getEncodedPassword());
+		return new EncodedPassword($this->getPassword());
+	}
+
+	public function hasEncodedPassword(): bool
+	{
+		return (bool)$this->getPassword();
 	}
 
 	public function createAccessToken(): AccessToken
