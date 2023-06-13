@@ -274,7 +274,7 @@ abstract class User extends \Katu\Models\Model
 		return true;
 	}
 
-	public function hasRole($role)
+	public function hasRole(Role $role): bool
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserRole::class);
 
