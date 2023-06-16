@@ -15,6 +15,11 @@ class PlainPassword
 		$this->setPlain($plain);
 	}
 
+	public function __toString(): string
+	{
+		return $this->getPlain();
+	}
+
 	public function setPlain(string $plain): PlainPassword
 	{
 		$this->plain = $plain;
