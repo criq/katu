@@ -25,8 +25,10 @@ class ValidationCollection extends \ArrayObject
 	{
 		$merged = new Validation;
 		foreach ($this as $validation) {
-			$merged->getParams()->addParams($validation->getParams());
-			$merged->getErrors()->addErrors($validation->getErrors());
+			if ($validation instanceof Validation) {
+				$merged->getParams()->addParams($validation->getParams());
+				$merged->getErrors()->addErrors($validation->getErrors());
+			}
 		}
 
 		return $merged;
