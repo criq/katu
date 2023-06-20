@@ -92,7 +92,7 @@ abstract class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Getters & Setters.
 	 */
-	public function setName($name)
+	public function setName(string $name): User
 	{
 		$this->name = trim($name) ?: null;
 
