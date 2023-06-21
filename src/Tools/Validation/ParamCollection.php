@@ -57,12 +57,16 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 	/****************************************************************************
 	 * Filter.
 	 */
-	public function getByKey(string $key): ?Param
+	public function getByKey(string $key): Param
 	{
-		return $this[$key] ?? null;
+		if (!($this[$key] ?? null)) {
+			$this[] = new Param($key);
+		}
+
+		return $this[$key];
 	}
 
-	public function get(string $key): ?Param
+	public function get(string $key): Param
 	{
 		return $this->getByKey($key);
 	}
