@@ -12,17 +12,16 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Param implements PackagedInterface, RestResponseInterface
 {
-	protected $key;
-	protected $alias;
-	protected $input;
-	protected $output;
+	protected $aliases = [];
 	protected $display;
+	protected $input;
+	protected $key;
+	protected $output;
 
-	public function __construct(?string $key, $input = null, ?string $alias = null)
+	public function __construct(?string $key, $input = null)
 	{
 		$this->setKey($key);
 		$this->setInput($input);
-		$this->setAlias($alias);
 	}
 
 	public function __toString(): string
@@ -35,7 +34,7 @@ class Param implements PackagedInterface, RestResponseInterface
 		return new Package([
 			"class" => (new TClass($this))->getPackage(),
 			"key" => (string)$this->getKey(),
-			"alias" => (string)$this->getAlias(),
+			"aliases" => (array)$this->getAliases(),
 			"input" => (string)$this->getInput(),
 			"output" => (string)$this->getOutput(),
 			"display" => (string)$this->getDisplay(),
@@ -58,16 +57,21 @@ class Param implements PackagedInterface, RestResponseInterface
 		return $this->key;
 	}
 
-	public function setAlias(?string $value): Param
+	public function addAlias(?string $alias): Param
 	{
-		$this->alias = $value;
+		$this->aliases[] = $alias;
 
 		return $this;
 	}
 
-	public function getAlias(): ?string
+	public function getAliases(): array
 	{
-		return $this->alias ?: $this->getKey();
+		return $this->aliases;
+	}
+
+	public function hasAlias(string $alias): bool
+	{
+		return in_array($alias, $this->getAliases());
 	}
 
 	public function setInput($value): Param
@@ -82,14 +86,14 @@ class Param implements PackagedInterface, RestResponseInterface
 		return $this->input;
 	}
 
-	public function getIsNullInput(): bool
+	public function isNullInput(): bool
 	{
 		return is_null($this->getInput());
 	}
 
-	public function getIsNotNullInput(): bool
+	public function isNotNullInput(): bool
 	{
-		return !$this->getIsNullInput();
+		return !$this->isNullInput();
 	}
 
 	public function setOutput($value): Param
@@ -134,7 +138,7 @@ class Param implements PackagedInterface, RestResponseInterface
 	{
 		return new RestResponse([
 			"key" => $this->getKey(),
-			"alias" => ($this->getAlias() != $this->getKey()) ? $this->getAlias() : null,
+			"aliases" => $this->getAliases(),
 			"input" => $this->getInput(),
 		]);
 	}

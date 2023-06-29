@@ -23,7 +23,7 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 
 	public static function createFromRequest(ServerRequestInterface $request): ParamCollection
 	{
-		return static::createFromArray(array_merge($request->getQueryParams(), $request->getParsedBody()));
+		return static::createFromArray(array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody()));
 	}
 
 	public static function createFromArray(array $array): ParamCollection
@@ -68,7 +68,7 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 	{
 		return new RestResponse(array_map(function (Param $param) use ($request, $options) {
 			return $param->getRestResponse($request, $options);
-		}, $this->getAliasArray()));
+		}, $this->getArrayCopy()));
 	}
 
 	/****************************************************************************
@@ -76,11 +76,32 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 	 */
 	public function getByKey(string $key): Param
 	{
-		if (!($this[$key] ?? null)) {
-			$this[] = new GeneratedParam($key);
+		$param = ($this[$key] ?? null);
+		if ($param) {
+			return $param;
 		}
 
-		return $this[$key];
+		$param = $this->getByAlias($key);
+		if ($param) {
+			return $param;
+		}
+
+		$param = new GeneratedParam($key);
+		$this[] = $param;
+
+		return $param;
+	}
+
+	public function getByAlias(string $alias): ?Param
+	{
+		return $this->filterByAlias($alias)->getFirst();
+	}
+
+	public function filterByAlias(string $alias): ParamCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Param $param) use ($alias) {
+			return $param->hasAlias($alias);
+		})));
 	}
 
 	public function get(string $key): Param
@@ -131,13 +152,8 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 		return $this;
 	}
 
-	public function getAliasArray(): array
+	public function getFirst(): ?Param
 	{
-		$array = [];
-		foreach ($this as $param) {
-			$array[$param->getAlias()] = $param;
-		}
-
-		return $array;
+		return array_values($this->getArrayCopy())[0] ?? null;
 	}
 }
