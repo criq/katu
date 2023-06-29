@@ -2,6 +2,6 @@
 
 namespace Katu\Tools\Validation\Params;
 
-class UserInput extends \Katu\Tools\Validation\Param
+class UserInput extends RequestParam
 {
 }

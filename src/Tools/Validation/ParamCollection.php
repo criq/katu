@@ -8,6 +8,7 @@ use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Tools\Validation\Params\GeneratedParam;
+use Katu\Tools\Validation\Params\RequestParam;
 use Katu\Types\TClass;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,6 +19,21 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 		foreach ($params as $param) {
 			$this->append($param);
 		}
+	}
+
+	public static function createFromRequest(ServerRequestInterface $request): ParamCollection
+	{
+		return static::createFromArray(array_merge($request->getQueryParams(), $request->getParsedBody()));
+	}
+
+	public static function createFromArray(array $array): ParamCollection
+	{
+		$res = new static;
+		foreach ($array as $key => $value) {
+			$res[] = new RequestParam($key, $value);
+		}
+
+		return $res;
 	}
 
 	/****************************************************************************
