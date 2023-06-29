@@ -7,6 +7,7 @@ use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
+use Katu\Tools\Validation\Params\GeneratedParam;
 use Katu\Types\TClass;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -60,7 +61,7 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 	public function getByKey(string $key): Param
 	{
 		if (!($this[$key] ?? null)) {
-			$this[] = new Param($key);
+			$this[] = new GeneratedParam($key);
 		}
 
 		return $this[$key];

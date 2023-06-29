@@ -44,7 +44,6 @@ class Param implements PackagedInterface, RestResponseInterface
 
 	public static function createFromPackage(Package $package)
 	{
-
 	}
 
 	public function setKey(?string $value): Param
@@ -81,6 +80,16 @@ class Param implements PackagedInterface, RestResponseInterface
 	public function getInput()
 	{
 		return $this->input;
+	}
+
+	public function getIsNullInput(): bool
+	{
+		return is_null($this->getInput());
+	}
+
+	public function getIsNotNullInput(): bool
+	{
+		return !$this->getIsNullInput();
 	}
 
 	public function setOutput($value): Param
