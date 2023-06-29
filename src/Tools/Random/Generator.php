@@ -19,7 +19,7 @@ class Generator
 	{
 		try {
 			$factory = new \RandomLib\Factory;
-			$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::LOW));
+			$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::MEDIUM));
 
 			return $generator->generateString($length, $chars);
 		} catch (\Throwable $e) {
