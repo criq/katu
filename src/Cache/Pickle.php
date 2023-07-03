@@ -36,6 +36,10 @@ class Pickle
 
 	public function get()
 	{
+		if (!$this->getFile()->exists()) {
+			return null;
+		}
+
 		return unserialize($this->getFile()->get());
 	}
 
