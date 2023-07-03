@@ -7,6 +7,8 @@ use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
+use Katu\Tools\Validation\Params\GeneratedParam;
+use Katu\Tools\Validation\Params\RequestParam;
 use Katu\Types\TClass;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -17,6 +19,21 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 		foreach ($params as $param) {
 			$this->append($param);
 		}
+	}
+
+	public static function createFromRequest(ServerRequestInterface $request): ParamCollection
+	{
+		return static::createFromArray(array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody()));
+	}
+
+	public static function createFromArray(array $array): ParamCollection
+	{
+		$res = new static;
+		foreach ($array as $key => $value) {
+			$res[] = new RequestParam($key, $value);
+		}
+
+		return $res;
 	}
 
 	/****************************************************************************
@@ -51,18 +68,43 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 	{
 		return new RestResponse(array_map(function (Param $param) use ($request, $options) {
 			return $param->getRestResponse($request, $options);
-		}, $this->getAliasArray()));
+		}, $this->getArrayCopy()));
 	}
 
 	/****************************************************************************
 	 * Filter.
 	 */
-	public function getByKey(string $key): ?Param
+	public function getByKey(string $key): Param
 	{
-		return $this[$key] ?? null;
+		$param = ($this[$key] ?? null);
+		if ($param) {
+			return $param;
+		}
+
+		$param = $this->getByAlias($key);
+		if ($param) {
+			return $param;
+		}
+
+		$param = new GeneratedParam($key);
+		$this[] = $param;
+
+		return $param;
 	}
 
-	public function get(string $key): ?Param
+	public function getByAlias(string $alias): ?Param
+	{
+		return $this->filterByAlias($alias)->getFirst();
+	}
+
+	public function filterByAlias(string $alias): ParamCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Param $param) use ($alias) {
+			return $param->hasAlias($alias);
+		})));
+	}
+
+	public function get(string $key): Param
 	{
 		return $this->getByKey($key);
 	}
@@ -110,13 +152,8 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 		return $this;
 	}
 
-	public function getAliasArray(): array
+	public function getFirst(): ?Param
 	{
-		$array = [];
-		foreach ($this as $param) {
-			$array[$param->getAlias()] = $param;
-		}
-
-		return $array;
+		return array_values($this->getArrayCopy())[0] ?? null;
 	}
 }

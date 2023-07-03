@@ -6,7 +6,7 @@ class Generator
 {
 	const ALNUM = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	const ALNUM_LOWER = "abcdefghijklmnopqrstuvwxyz0123456789";
-	const ALNUM_SPECIAL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$-_.+!*()";
+	const ALNUM_SPECIAL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*_+-=.~";
 	const ALNUM_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	const ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	const ALPHA_LOWER = "abcdefghijklmnopqrstuvwxyz";
@@ -19,7 +19,7 @@ class Generator
 	{
 		try {
 			$factory = new \RandomLib\Factory;
-			$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::LOW));
+			$generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::MEDIUM));
 
 			return $generator->generateString($length, $chars);
 		} catch (\Throwable $e) {

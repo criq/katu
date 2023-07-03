@@ -34,7 +34,7 @@ class WeekCollection extends \ArrayObject
 
 	public function sortAscending(): WeekCollection
 	{
-		$weekClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Week::class);
+		$weekCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\WeekCollection::class);
 
 		$array = $this->getArrayCopy();
 
@@ -42,7 +42,7 @@ class WeekCollection extends \ArrayObject
 			return $a->getStart() > $b->getStart() ? 1 : -1;
 		});
 
-		return new $weekClass($array);
+		return new $weekCollectionClass($array);
 	}
 
 	public function getFirst(): ?Week

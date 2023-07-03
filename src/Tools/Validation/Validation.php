@@ -58,7 +58,7 @@ class Validation implements \ArrayAccess, PackagedInterface
 
 	public function getParam(string $key): ?Param
 	{
-		return $this->getParams()[$key] ?? null;
+		return $this->getParams()->getByKey($key);
 	}
 
 	public function addParams(ParamCollection $params): Validation

@@ -114,10 +114,10 @@ class File
 			if (preg_match("/^" . preg_quote($publicPath, "/") . "(.*)$/", (string)$this->getPath(), $match)) {
 				return new TURL(implode("/", array_map(function ($i) {
 					return trim($i, "/");
-				}, [
+				}, array_filter([
 					\Katu\Config\Config::get("app", "baseUrl"),
 					$match[1],
-				])));
+				]))));
 			}
 		} catch (\Throwable $e) {
 			// Nevermind.

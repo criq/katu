@@ -44,7 +44,7 @@ abstract class Role extends \Katu\Models\Model
 		return parent::delete();
 	}
 
-	public static function sanitizeName(string $value) : ?string
+	public static function sanitizeName(string $value): ?string
 	{
 		$value = trim($value);
 		if (!strlen($value)) {
@@ -54,7 +54,7 @@ abstract class Role extends \Katu\Models\Model
 		return $value;
 	}
 
-	public function setName($name) : Role
+	public function setName($name): Role
 	{
 		if (!static::sanitizeName($name, $this)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid name."))
@@ -67,7 +67,7 @@ abstract class Role extends \Katu\Models\Model
 		return $this;
 	}
 
-	public function getName() : string
+	public function getName(): string
 	{
 		return $this->name;
 	}
@@ -104,7 +104,7 @@ abstract class Role extends \Katu\Models\Model
 		}, $this->getRolePermissions()->getItems());
 	}
 
-	public function hasPermission($permission) : bool
+	public function hasPermission($permission): bool
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\RolePermission::class);
 
@@ -130,39 +130,39 @@ abstract class Role extends \Katu\Models\Model
 	/****************************************************************************
 	 * Permissions.
 	 */
-	public function userCanView($user) : bool
+	public function userCanView(?User $user): bool
 	{
-		if (!$user) {
+		try {
+			return $user->hasPermission("roles.view");
+		} catch (\Throwable $e) {
 			return false;
 		}
-
-		return $user->hasPermission("roles.view");
 	}
 
-	public function userCanEdit($user) : bool
+	public function userCanEdit(?User $user): bool
 	{
-		if (!$user) {
+		try {
+			return $user->hasPermission("roles.edit");
+		} catch (\Throwable $e) {
 			return false;
 		}
-
-		return $user->hasPermission("roles.edit");
 	}
 
-	public function userCanEditPermissions($user) : bool
+	public function userCanEditPermissions(?User $user): bool
 	{
-		if (!$user) {
+		try {
+			return $user->hasPermission("roles.editPermissions");
+		} catch (\Throwable $e) {
 			return false;
 		}
-
-		return $user->hasPermission("roles.editPermissions");
 	}
 
-	public function userCanDelete($user) : bool
+	public function userCanDelete(?User $user): bool
 	{
-		if (!$user) {
+		try {
+			return $user->hasPermission("roles.delete");
+		} catch (\Throwable $e) {
 			return false;
 		}
-
-		return $user->hasPermission("roles.delete");
 	}
 }
