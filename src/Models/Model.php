@@ -6,7 +6,6 @@ use App\Models\Users\User;
 use Katu\PDO\Column;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
-use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
 
 class Model extends Base
