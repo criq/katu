@@ -289,4 +289,9 @@ class Time extends \DateTime
 	{
 		return (clone $this)->modify($value);
 	}
+
+	public function getTimeInDayRatio(): float
+	{
+		return (($this->format("H") * 3600) + ($this->format("i") * 60)) / 86400;
+	}
 }
