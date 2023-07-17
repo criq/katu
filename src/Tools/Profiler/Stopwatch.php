@@ -11,8 +11,9 @@ class Stopwatch
 	const FACTOR_MILLI = 1000;
 	const FACTOR_BASE  = 1;
 
-	protected $start;
+	protected $duration;
 	protected $finish;
+	protected $start;
 
 	public function __construct()
 	{
