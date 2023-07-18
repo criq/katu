@@ -4,7 +4,6 @@ namespace Katu\Tools\Calendar;
 
 use Katu\Tools\Validation\Param;
 use Katu\Tools\Validation\Validation;
-use Katu\Types\TClass;
 
 class Interval
 {
@@ -147,6 +146,15 @@ class Interval
 		} catch (\Throwable $e) {
 			return null;
 		}
+	}
+
+	public function subtract(Interval $subtract): IntervalCollection
+	{
+		$intervalCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\IntervalCollection::class);
+
+		var_dump($this);
+		var_dump($subtract);
+		die;
 	}
 
 	public function fitsTime(Time $time): bool
