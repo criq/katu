@@ -4,7 +4,6 @@ namespace Katu\Tools\Calendar;
 
 use Katu\Tools\Validation\Param;
 use Katu\Tools\Validation\Validation;
-use Katu\Types\TClass;
 
 class Interval
 {
@@ -96,6 +95,22 @@ class Interval
 		return $this->end;
 	}
 
+	public function getMonths(): MonthCollection
+	{
+		$monthCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\MonthCollection::class);
+		$monthClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Month::class);
+
+		$res = new $monthCollectionClass;
+
+		$time = (clone $this->getStart())->setDay(1);
+		while ($time <= $this->getEnd()) {
+			$res[] = new $monthClass($time);
+			$time = $time->modify("+ 1 month");
+		}
+
+		return $res;
+	}
+
 	public function getDays(): TimeCollection
 	{
 		$timeCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\TimeCollection::class);
@@ -112,6 +127,13 @@ class Interval
 		return $res;
 	}
 
+	public function getSeconds(): Seconds
+	{
+		$secondsClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Seconds::class);
+
+		return new $secondsClass($this->getEnd()->getTimestamp() - $this->getStart()->getTimestamp());
+	}
+
 	public function getIntersection(Interval $interval): ?Interval
 	{
 		$intervalClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Interval::class);
@@ -126,27 +148,13 @@ class Interval
 		}
 	}
 
-	public function getSeconds(): Seconds
+	public function subtract(Interval $subtract): IntervalCollection
 	{
-		$secondsClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Seconds::class);
+		$intervalCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\IntervalCollection::class);
 
-		return new $secondsClass($this->getEnd()->getTimestamp() - $this->getStart()->getTimestamp());
-	}
-
-	public function getMonths(): MonthCollection
-	{
-		$monthCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\MonthCollection::class);
-		$monthClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Month::class);
-
-		$res = new $monthCollectionClass;
-
-		$time = (clone $this->getStart())->setDay(1);
-		while ($time <= $this->getEnd()) {
-			$res[] = new $monthClass($time);
-			$time = $time->modify("+ 1 month");
-		}
-
-		return $res;
+		var_dump($this);
+		var_dump($subtract);
+		die;
 	}
 
 	public function fitsTime(Time $time): bool

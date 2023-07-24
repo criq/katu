@@ -28,7 +28,7 @@ class Day extends Time
 		return (clone $this)
 			->modify("+ 1 day")
 			->setTime(0, 0, 0)
-			->modify("- 1 second")
+			->modify("- 1 microsecond")
 			;
 	}
 

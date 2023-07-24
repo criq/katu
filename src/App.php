@@ -124,6 +124,7 @@ class App
 				\Katu\Tools\Calendar\Day::class => \Katu\Tools\Calendar\Day::class,
 				\Katu\Tools\Calendar\DayCollection::class => \Katu\Tools\Calendar\DayCollection::class,
 				\Katu\Tools\Calendar\Interval::class => \Katu\Tools\Calendar\Interval::class,
+				\Katu\Tools\Calendar\IntervalCollection::class => \Katu\Tools\Calendar\IntervalCollection::class,
 				\Katu\Tools\Calendar\Month::class => \Katu\Tools\Calendar\Month::class,
 				\Katu\Tools\Calendar\MonthCollection::class => \Katu\Tools\Calendar\MonthCollection::class,
 				\Katu\Tools\Calendar\Seconds::class => \Katu\Tools\Calendar\Seconds::class,
