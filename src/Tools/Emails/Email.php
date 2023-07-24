@@ -86,11 +86,16 @@ abstract class Email
 		return $this->sender;
 	}
 
-	public function setReplyTo(TEmailAddress $emailAddress): Email
+	public function setReplyTo(?TEmailAddress $emailAddress): Email
 	{
-		$this->addHeader("Reply-To", $emailAddress->getEnvelope());
+		$this->replyTo = $emailAddress;
 
 		return $this;
+	}
+
+	public function getReplyTo(): ?TEmailAddress
+	{
+		return $this->replyTo;
 	}
 
 	public function addRecipient(TEmailAddress $emailAddress): Email

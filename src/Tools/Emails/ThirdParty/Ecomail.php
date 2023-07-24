@@ -23,6 +23,10 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		$email["message"]["from_email"] = $this->getSender()->getEmailAddress();
 		$email["message"]["from_name"] = $this->getSender()->getName();
 
+		if ($this->getReplyTo()) {
+			$email["message"]["reply_to"] = $this->getReplyTo()->getEmailAddress();
+		}
+
 		foreach ($this->getRecipients() as $recipient) {
 			$email["message"]["to"][] = [
 				"email" => $recipient->getEmailAddress(),
