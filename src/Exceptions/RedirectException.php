@@ -6,7 +6,7 @@ class RedirectException extends Exception
 {
 	protected $url;
 
-	public function setUrl($value) : RedirectException
+	public function setURL($value) : RedirectException
 	{
 		$this->url = $value;
 
