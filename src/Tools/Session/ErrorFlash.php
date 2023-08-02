@@ -2,6 +2,6 @@
 
 namespace Katu\Tools\Session;
 
-class ErrorFlash extends Flash
+class ErrorFlash extends MessageFlash
 {
 }

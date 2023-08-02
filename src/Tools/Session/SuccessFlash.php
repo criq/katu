@@ -2,6 +2,6 @@
 
 namespace Katu\Tools\Session;
 
-class SuccessFlash extends Flash
+class SuccessFlash extends MessageFlash
 {
 }
