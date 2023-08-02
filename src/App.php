@@ -2,6 +2,7 @@
 
 namespace Katu;
 
+use Katu\Tools\Session\Session;
 use Katu\Types\TIdentifier;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -100,7 +101,7 @@ class App
 			}
 
 			// Session.
-			\Katu\Tools\Session\Session::setCookieParams();
+			Session::setCookieParams();
 
 			// Create the dependency injection container.
 			$builder = new \DI\ContainerBuilder;

@@ -13,6 +13,16 @@ class OptionCollection extends \ArrayObject
 		}
 	}
 
+	public static function createFromArray(array $array): OptionCollection
+	{
+		$res = new static;
+		foreach ($array as $key => $value) {
+			$res[] = new Option((new Code($key))->getConstantFormat(), $value);
+		}
+
+		return $res;
+	}
+
 	public function offsetSet($key, $option): void
 	{
 		if ($option instanceof Option && !is_null($option->getValue())) {

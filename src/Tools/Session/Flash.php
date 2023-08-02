@@ -2,20 +2,24 @@
 
 namespace Katu\Tools\Session;
 
-class Flash extends Session
+abstract class Flash
 {
-	const KEY = "katu.flash";
+	protected $message;
 
-	public static function set()
+	public function __construct(string $message)
 	{
-		static::init();
+		$this->setMessage($message);
+	}
 
-		if (count(func_get_args()) == 1) {
-			$_SESSION[static::KEY][] = func_get_arg(0);
-		} else {
-			$_SESSION[static::KEY][func_get_arg(0)] = func_get_arg(1);
-		}
+	public function setMessage(string $message): Flash
+	{
+		$this->message = $message;
 
-		return true;
+		return $this;
+	}
+
+	public function getMessage(): string
+	{
+		return $this->message;
 	}
 }

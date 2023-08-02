@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Views;
 
+use Katu\Tools\Cookies\CookieCollection;
+use Katu\Tools\Session\Session;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 use Psr\Http\Message\ServerRequestInterface;
@@ -155,16 +157,8 @@ abstract class TwigEngine implements ViewEngineInterface
 			return call_user_func_array(["\Katu\Config", "get"], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction("getCookie", function () {
-			return call_user_func_array(["\Katu\Tools\Cookies\Cookie", "get"], func_get_args());
-		}));
-
 		$twig->addFunction(new \Twig\TwigFunction("getSession", function () {
-			return call_user_func_array(["\Katu\Tools\Session\Session", "get"], func_get_args());
-		}));
-
-		$twig->addFunction(new \Twig\TwigFunction("getFlash", function () {
-			return call_user_func_array(["\Katu\Tools\Session\Flash", "get"], func_get_args());
+			return new Session;
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction("getCsrfToken", function () {
@@ -314,7 +308,7 @@ abstract class TwigEngine implements ViewEngineInterface
 			// Nevermind.
 		}
 
-		$data["_agent"] = new \Jenssegers\Agent\Agent();
+		$data["_agent"] = new \Jenssegers\Agent\Agent;
 
 		// User.
 		$userClass = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
@@ -330,14 +324,19 @@ abstract class TwigEngine implements ViewEngineInterface
 
 		$data["_platform"] = \Katu\Config\Env::getPlatform();
 		$data["_config"] = \Katu\Config\Config::get();
-		$data["_session"] = \Katu\Tools\Session\Session::get();
-		$data["_flash"] = \Katu\Tools\Session\Flash::get();
-		$data["_cookies"] = \Katu\Tools\Cookies\Cookie::get();
 		$data["_upload"] = [
 			"maxSize" => \Katu\Files\Upload::getMaxSize()->getInB(),
 		];
 
-		\Katu\Tools\Session\Flash::reset();
+		if ($this->getRequest()) {
+			$data["_cookies"] = CookieCollection::createFromRequest($this->getRequest());
+		}
+
+		$session = (new Session);
+		$data["_session"] = $session;
+		$data["_flash"] = (clone $session->getFlashes());
+
+		$session->unsetKey($session->getFlashes()->getKey());
 
 		return $data;
 	}
@@ -345,7 +344,7 @@ abstract class TwigEngine implements ViewEngineInterface
 	public function render(string $template, array $data = []): StreamInterface
 	{
 		$twig = $this->getTwig();
-		$data = array_merge_recursive($this->getCommonData($this->getRequest()), $data);
+		$data = array_merge_recursive($this->getCommonData(), $data);
 
 		try {
 			return \GuzzleHttp\Psr7\Utils::streamFor(trim($twig->render($template, $data)));

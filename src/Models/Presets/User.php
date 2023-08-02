@@ -3,6 +3,8 @@
 namespace Katu\Models\Presets;
 
 use Katu\Tools\Calendar\Time;
+use Katu\Tools\Cookies\Cookie;
+use Katu\Tools\Cookies\CookieCollection;
 use Katu\Tools\Security\EncodedPassword;
 use Katu\Tools\Security\PlainPassword;
 use Katu\Types\TIdentifier;
@@ -60,7 +62,7 @@ abstract class User extends \Katu\Models\Model
 	{
 		if ($request) {
 			// Cookie.
-			$user = static::getByAccessToken($request->getCookieParams()["accessToken"] ?? null);
+			$user = static::getByAccessToken(CookieCollection::createFromRequest($request)->getCookieValue("accessToken"));
 			if ($user) {
 				return $user;
 			}
@@ -223,23 +225,18 @@ abstract class User extends \Katu\Models\Model
 		return (bool) $this->{static::$columnNames["emailAddressId"]};
 	}
 
-	public function login(): bool
+	public function login(): User
 	{
-		$this->createAccessToken()->setCookie();
+		$accessToken = $this->createAccessToken();
+		$cookie = $accessToken->getCookie();
+		$cookie->persist();
 
-		// $jwt = (new \Katu\Tools\Security\JWT);
-		// $token = $jwt->createToken(new \DateTimeImmutable("+ 1 day", new \DateTimeZone(\Katu\Config\Config::get("app", "timezone"))), [
-		// 	"uid" => 111,
-		// ]);
-
-		// \Katu\Tools\Cookies\Cookie::set("jwt", $token->toString());
-
-		return true;
+		return $this;
 	}
 
 	public static function logout(): bool
 	{
-		\Katu\Tools\Cookies\Cookie::remove("accessToken");
+		(new Cookie("accessToken"))->expire();
 
 		return true;
 	}

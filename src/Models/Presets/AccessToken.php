@@ -4,6 +4,7 @@ namespace Katu\Models\Presets;
 
 use Katu\Tools\Calendar\Seconds;
 use Katu\Tools\Calendar\Time;
+use Katu\Tools\Cookies\Cookie;
 use Sexy\Sexy as SX;
 
 abstract class AccessToken extends \Katu\Models\Model
@@ -101,13 +102,15 @@ abstract class AccessToken extends \Katu\Models\Model
 		return $this->token;
 	}
 
-	public function setCookie(): bool
-	{
-		return \Katu\Tools\Cookies\Cookie::set("accessToken", $this->getToken(), $this->getTTL()->getValue());
-	}
-
 	public function getTTL(): Seconds
 	{
 		return (new Time($this->timeExpires))->getAge();
+	}
+
+	public function getCookie(): Cookie
+	{
+		return (new Cookie("accessToken", $this->getToken()))
+			// ->setTimeExpires($this->getTTL()->getTime())
+			;
 	}
 }

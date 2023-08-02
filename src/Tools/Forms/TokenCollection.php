@@ -2,20 +2,26 @@
 
 namespace Katu\Tools\Forms;
 
+use Katu\Tools\Session\Session;
+
 class TokenCollection extends \ArrayObject
 {
-	const SESSION_KEY = "csrfTokens";
+	const KEY = "CSRF_TOKENS";
 
-	public static function getSessionTokenCollection(): TokenCollection
+	public static function createFromSession(): TokenCollection
 	{
-		return \Katu\Tools\Session\Session::get(static::SESSION_KEY) ?: new TokenCollection;
+		$session = new Session;
+		if (!($session->getVariable(static::KEY) instanceof TokenCollection)) {
+			$session->setVariable(static::KEY, new static);
+		}
+
+		return $session->getVariable(static::KEY);
 	}
 
-	public function saveToSession(): TokenCollection
+	public function persist(): TokenCollection
 	{
-		$tokenCollection = $this->filterAcceptable();
-
-		\Katu\Tools\Session\Session::set(static::SESSION_KEY, $tokenCollection);
+		$session = new Session;
+		$session->setVariable(static::KEY, $this->filterAcceptable());
 
 		return $this;
 	}

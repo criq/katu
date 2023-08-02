@@ -90,14 +90,14 @@ class Token
 
 	public static function getFreshToken(): Token
 	{
-		$tokenCollection = TokenCollection::getSessionTokenCollection();
+		$tokenCollection = TokenCollection::createFromSession();
 		$freshTokenCollection = $tokenCollection->filterFresh()->sortByTTL();
 		if (count($freshTokenCollection)) {
 			$token = $freshTokenCollection[0];
 		} else {
 			$token = new static;
 			$tokenCollection->append($token);
-			$tokenCollection->saveToSession();
+			$tokenCollection->persist();
 		}
 
 		return $token;
@@ -111,7 +111,7 @@ class Token
 	public static function validate(string $code): bool
 	{
 		try {
-			return TokenCollection::getSessionTokenCollection()->filterByCode($code)[0]->isAcceptable();
+			return TokenCollection::createFromSession()->filterByCode($code)[0]->isAcceptable();
 		} catch (\Throwable $e) {
 			return false;
 		}
