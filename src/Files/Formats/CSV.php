@@ -4,7 +4,6 @@ namespace Katu\Files\Formats;
 
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
-use Katu\Tools\Strings\Code;
 
 class CSV extends \ArrayObject
 {
