@@ -54,4 +54,9 @@ class Column extends \Sexy\Expression
 			$this->getName() == "*" ? "*" : $this->getName(),
 		]);
 	}
+
+	public function exists(): bool
+	{
+		return in_array($this->getName(), $this->getTable()->getColumnNames()->getArrayCopy());
+	}
 }
