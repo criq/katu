@@ -27,9 +27,9 @@ class Code
 			return $this->code;
 		}
 
-		return mb_strtoupper(preg_replace_callback("/[A-Z]/", function (array $match) {
+		return trim(mb_strtoupper(preg_replace_callback("/[A-Z]/", function (array $match) {
 			return "_{$match[0]}";
-		}, $this->code));
+		}, $this->code)), "_");
 	}
 
 	public function getCamelCaseFormat(): string

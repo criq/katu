@@ -110,7 +110,7 @@ abstract class AccessToken extends \Katu\Models\Model
 	public function getCookie(): Cookie
 	{
 		return (new Cookie("accessToken", $this->getToken()))
-			// ->setTimeExpires($this->getTTL()->getTime())
+			->setTimeExpires($this->getTTL()->getTime())
 			;
 	}
 }

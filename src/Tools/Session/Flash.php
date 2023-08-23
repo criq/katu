@@ -2,24 +2,13 @@
 
 namespace Katu\Tools\Session;
 
+use Katu\Tools\Strings\Code;
+use Katu\Types\TClass;
+
 abstract class Flash
 {
-	protected $message;
-
-	public function __construct(string $message)
+	public function getClassCode(): Code
 	{
-		$this->setMessage($message);
-	}
-
-	public function setMessage(string $message): Flash
-	{
-		$this->message = $message;
-
-		return $this;
-	}
-
-	public function getMessage(): string
-	{
-		return $this->message;
+		return new Code((new TClass($this))->getShortName());
 	}
 }
