@@ -167,7 +167,7 @@ abstract class Job implements PackagedInterface
 	public function isScheduled(Time $time): bool
 	{
 		foreach ($this->getSchedules() as $schedule) {
-			if (preg_match("/^{$schedule->getRegexp()}$/", $time->format("m d H i"))) {
+			if (preg_match("/^{$schedule->getRegexp()}$/", $time->format("Y m d H i"))) {
 				return true;
 			}
 		}

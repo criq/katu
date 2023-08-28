@@ -8,13 +8,15 @@ class Schedule
 	protected $hours;
 	protected $days;
 	protected $months;
+	protected $years;
 
-	public function __construct(?array $minutes = null, ?array $hours = null, ?array $days = null, ?array $months = null)
+	public function __construct(?array $minutes = null, ?array $hours = null, ?array $days = null, ?array $months = null, ?array $years = null)
 	{
 		$this->minutes = $minutes;
 		$this->hours = $hours;
 		$this->days = $days;
 		$this->months = $months;
+		$this->years = $years;
 	}
 
 	public function getMinutes(): array
@@ -37,6 +39,11 @@ class Schedule
 		return $this->months ?: range(0, 12);
 	}
 
+	public function getYears(): array
+	{
+		return $this->years ?: [date("Y")];
+	}
+
 	public static function getRangeRegexp(array $range): string
 	{
 		return "(" . implode("|", array_map(function (string $item) {
@@ -47,6 +54,7 @@ class Schedule
 	public function getRegexp(): string
 	{
 		return implode("\s*", [
+			static::getRangeRegexp($this->getYears()),
 			static::getRangeRegexp($this->getMonths()),
 			static::getRangeRegexp($this->getDays()),
 			static::getRangeRegexp($this->getHours()),
