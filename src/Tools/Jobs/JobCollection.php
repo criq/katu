@@ -16,6 +16,22 @@ class JobCollection extends \ArrayObject
 	protected $lockTimeout;
 	protected $maxRunningSeconds;
 
+	public function addJob(Job $job): JobCollection
+	{
+		$this[] = $job;
+
+		return $this;
+	}
+
+	public function addJobs(JobCollection $jobs): JobCollection
+	{
+		foreach ($jobs as $job) {
+			$this->addJob($job);
+		}
+
+		return $this;
+	}
+
 	public function getIdentifier(): TIdentifier
 	{
 		return new TIdentifier(static::class);

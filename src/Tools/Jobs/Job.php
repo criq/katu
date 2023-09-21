@@ -21,6 +21,7 @@ abstract class Job implements PackagedInterface
 	protected $args = [];
 	protected $interval;
 	protected $maxLoadAverage = 1.5;
+	protected $schedules;
 	protected $timeout;
 
 	public function __construct(array $args = [])
@@ -157,11 +158,23 @@ abstract class Job implements PackagedInterface
 		return new Procedure($this->getIdentifier(), $this->getTimeout(), $this->getCallback());
 	}
 
+	public function setSchedules(ScheduleCollection $schedules)
+	{
+		$this->schedules = $schedules;
+
+		return $this;
+	}
+
 	public function getSchedules(): ScheduleCollection
 	{
-		return new ScheduleCollection([
+		return $this->schedules ?: $this->getDefaultSchedules() ?: new ScheduleCollection([
 			new Schedule,
 		]);
+	}
+
+	public function getDefaultSchedules(): ?ScheduleCollection
+	{
+		return null;
 	}
 
 	public function isScheduled(Time $time): bool
