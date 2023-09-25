@@ -3,9 +3,13 @@
 namespace Katu\Tools\Strings;
 
 use App\Classes\Users\RepresentativeCollection;
+use Katu\Tools\Options\OptionCollection;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Tools\Views\ArrayLoaderTwigEngine;
+use Psr\Http\Message\ServerRequestInterface;
 
-class ReplacementCollection extends \ArrayObject
+class ReplacementCollection extends \ArrayObject implements RestResponseInterface
 {
 	public static function createFromArray(array $array)
 	{
@@ -42,5 +46,10 @@ class ReplacementCollection extends \ArrayObject
 		}, $this->getArrayCopy()), array_map(function (Replacement $replacement) {
 			return $replacement->getValue();
 		}, $this->getArrayCopy()));
+	}
+
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
+	{
+		return new RestResponse($this->getArray());
 	}
 }
