@@ -122,7 +122,7 @@ class Param implements PackagedInterface, RestResponseInterface
 
 	public function forwardInput(): Param
 	{
-		$this->setOutput($this->getInput() ?: null);
+		$this->setOutput($this->getInput());
 
 		return $this;
 	}
