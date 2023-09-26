@@ -67,7 +67,7 @@ class TEmailAddress
 
 	public function setName(?string $name = null)
 	{
-		$this->name = trim($name);
+		$this->name = trim($name, " \"");
 
 		return $this;
 	}

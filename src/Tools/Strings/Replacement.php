@@ -2,50 +2,38 @@
 
 namespace Katu\Tools\Strings;
 
-use Katu\Types\TString;
-
 class Replacement
 {
-	protected $enclosures;
-	protected $key;
+	protected $code;
 	protected $value;
 
-	public function __construct(string $key, ?string $value)
+	public function __construct(Code $code, ?string $value)
 	{
-		$this->enclosures = [
-			new Enclosure("[", "]"),
-		];
-		$this->key = $key;
-		$this->value = $value;
+		$this->setCode($code);
+		$this->setValue($value);
 	}
 
-	public function getKey(): string
+	public function setCode(Code $code): Replacement
 	{
-		return $this->key;
+		$this->code = $code;
+
+		return $this;
+	}
+
+	public function getCode(): Code
+	{
+		return $this->code;
+	}
+
+	public function setValue(?string $value): Replacement
+	{
+		$this->value = $value;
+
+		return $this;
 	}
 
 	public function getValue(): ?string
 	{
 		return $this->value;
-	}
-
-	public function getKeyRegex(): string
-	{
-		$array = [];
-		for ($position = 0; $position < mb_strlen($this->getKey()); $position++) {
-			$char = mb_substr($this->getKey(), $position, 1);
-			if ($char == " ") {
-				$array[] = "[_\-\s]*";
-			} else {
-				$array[] = "[" . implode(array_unique([
-					mb_strtoupper($char),
-					mb_strtolower($char),
-					mb_strtoupper((new TString((string)$char))->getForURL()),
-					mb_strtolower((new TString((string)$char))->getForURL()),
-				])) . "]";
-			}
-		}
-
-		return "/\[" . implode($array) . "\]/Uui";
 	}
 }

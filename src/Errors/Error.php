@@ -120,7 +120,7 @@ class Error implements PackagedInterface, RestResponseInterface
 		return $this->options;
 	}
 
-	public function setParamCollection(\Katu\Tools\Validation\ParamCollection $params): Error
+	public function setParams(\Katu\Tools\Validation\ParamCollection $params): Error
 	{
 		$this->params = $params;
 
