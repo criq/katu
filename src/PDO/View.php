@@ -9,7 +9,7 @@ class View extends Table
 {
 	public function getCreateSyntax(): string
 	{
-		$sql = " SHOW CREATE TABLE {$this->getName()}";
+		$sql = " SHOW CREATE TABLE {$this->getName()} ";
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		return $res[0]["Create View"];
