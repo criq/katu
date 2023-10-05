@@ -51,6 +51,16 @@ class OptionCollection extends \ArrayObject
 		})));
 	}
 
+	public function sort(): OptionCollection
+	{
+		$array = $this->getArrayCopy();
+		usort($array, function (Option $a, Option $b) {
+			return $a->getCode()->getConstantFormat() < $b->getCode()->getConstantFormat() ? -1 : 1;
+		});
+
+		return new static($array);
+	}
+
 	public function getByCode(Code $code): ?Option
 	{
 		try {

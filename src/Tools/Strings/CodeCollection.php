@@ -16,6 +16,16 @@ class CodeCollection extends \ArrayObject
 		return static::createFromArray(array_values(array_unique(array_filter(preg_split("/[^A-Za-z0-9_]/", $param)))));
 	}
 
+	public function sort(): CodeCollection
+	{
+		$array = $this->getArrayCopy();
+		usort($array, function (Code $a, Code $b) {
+			return $a->getConstantFormat() < $b->getConstantFormat() ? -1 : 1;
+		});
+
+		return new static($array);
+	}
+
 	public function getCamelCaseArray(): array
 	{
 		return array_map(function (Code $code) {
