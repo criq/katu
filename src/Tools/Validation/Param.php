@@ -136,10 +136,12 @@ class Param implements PackagedInterface, RestResponseInterface
 
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		return new RestResponse([
-			"key" => $this->getKey(),
-			"aliases" => $this->getAliases(),
-			"input" => $this->getInput(),
-		]);
+		$data["key"] = $this->getKey();
+		if (count($this->getAliases())) {
+			$data["aliases"] = $this->getAliases();
+		}
+		$data["input"] = $this->getInput();
+
+		return new RestResponse($data);
 	}
 }
