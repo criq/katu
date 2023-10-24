@@ -18,7 +18,7 @@ class Model extends Base
 	/****************************************************************************
 	 * CRUD.
 	 */
-	public static function insert(?array $values = [], $saveWithCallback = true)
+	public static function insert(?array $values = [], $saveWithCallback = true): Model
 	{
 		$connection = static::getConnection();
 
@@ -47,14 +47,16 @@ class Model extends Base
 		}
 
 		if ($saveWithCallback) {
-			$object->afterInsertCallback();
-			static::afterAnyCallback();
+			$object
+				->afterInsertCallback()
+				->afterAnyCallback()
+				;
 		}
 
 		return $object;
 	}
 
-	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [], $saveWithCallback = true)
+	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [], $saveWithCallback = true): Model
 	{
 		$object = static::getOneBy($getByParams);
 		if ($object) {
@@ -75,12 +77,12 @@ class Model extends Base
 		return $object;
 	}
 
-	public function save()
+	public function save(): Model
 	{
 		return $this->saveWithCallback();
 	}
 
-	public function saveWithoutCallback()
+	public function saveWithoutCallback(): Model
 	{
 		$plainColumnsNames = static::getTable()->getColumnNames()->getPlain();
 
@@ -109,14 +111,14 @@ class Model extends Base
 		return $this;
 	}
 
-	public function saveWithCallback()
+	public function saveWithCallback(): Model
 	{
-		$this->beforeUpdateCallback();
-		$this->saveWithoutCallback();
-		$this->afterUpdateCallback();
-		static::afterAnyCallback();
-
-		return $this;
+		return $this
+			->beforeUpdateCallback()
+			->saveWithoutCallback()
+			->afterUpdateCallback()
+			->afterAnyCallback()
+			;
 	}
 
 	public function delete(): bool
@@ -133,8 +135,7 @@ class Model extends Base
 		$res = $query->getResult();
 
 		$this->afterDeleteCallback();
-
-		static::afterAnyCallback();
+		$this->afterAnyCallback();
 
 		return !$res->hasError();
 	}
@@ -142,34 +143,34 @@ class Model extends Base
 	/****************************************************************************
 	 * Callbacks.
 	 */
-	public function afterInsertCallback(): bool
+	public function afterInsertCallback(): Model
 	{
-		return true;
+		return $this;
 	}
 
-	public function beforeUpdateCallback(): bool
+	public function beforeUpdateCallback(): Model
 	{
-		return true;
+		return $this;
 	}
 
-	public function afterUpdateCallback(): bool
+	public function afterUpdateCallback(): Model
 	{
-		return true;
+		return $this;
 	}
 
-	public function beforeDeleteCallback(): bool
+	public function beforeDeleteCallback(): Model
 	{
-		return true;
+		return $this;
 	}
 
-	public function afterDeleteCallback(): bool
+	public function afterDeleteCallback(): Model
 	{
-		return true;
+		return $this;
 	}
 
-	public static function afterAnyCallback(): bool
+	public function afterAnyCallback(): Model
 	{
-		return true;
+		return $this;
 	}
 
 	/****************************************************************************
