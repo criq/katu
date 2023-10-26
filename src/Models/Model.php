@@ -15,8 +15,122 @@ class Model extends Base
 		return (string)$this->getId();
 	}
 
-	/****************************************************************************
-	 * CRUD.
+	public function beforePersistCallback(): Model
+	{
+		return $this;
+	}
+
+	public function afterPersistCallback(): Model
+	{
+		return $this;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function beforeInsertCallback(): Model
+	{
+		return $this;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function afterInsertCallback(): Model
+	{
+		return $this;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function beforeUpdateCallback(): Model
+	{
+		return $this;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function afterUpdateCallback(): Model
+	{
+		return $this;
+	}
+
+	public function beforeDeleteCallback(): Model
+	{
+		return $this;
+	}
+
+	public function afterDeleteCallback(): Model
+	{
+		return $this;
+	}
+
+	public function beforeAnyCallback(): Model
+	{
+		return $this;
+	}
+
+	public function afterAnyCallback(): Model
+	{
+		return $this;
+	}
+
+	public function getColumnValues(): ColumnValueCollection
+	{
+		$res = new ColumnValueCollection;
+		foreach (static::getTable()->getColumns() as $column) {
+			$res[] = new ColumnValue($column, $this->{$column->getName()->getPlain()});
+		}
+
+		return $res;
+	}
+
+	public function persist(): Model
+	{
+		$this->beforePersistCallback();
+		$this->beforeAnyCallback();
+
+		$connection = static::getConnection();
+		$table = static::getTable();
+
+		$id = $this->getId();
+		$columnValues = $this->getColumnValues();
+
+		// Insert.
+		if (is_null($id)) {
+			$sql = " INSERT INTO {$table} ( {$columnValues->getColumnsString()} ) VALUES ( {$columnValues->getParamsString()} ) ";
+			$query = $connection->createQuery($sql, $columnValues->getStatementParams());
+			$query->getResult();
+
+			$id = $connection->getLastInsertId();
+			if (!$id) {
+				throw (new \Katu\Exceptions\NoPrimaryKeyReturnedException)->setContext([
+					"sql" => $query->getStatementDump()->getSentSQL(),
+				]);
+			}
+
+			$this->setId($id);
+		// Update.
+		} else {
+			$idColumn = static::getIdColumn();
+			$idColumnParamName = "__PRIMARY_KEY__";
+			$sql = " UPDATE {$table} SET {$columnValues->getSetString()} WHERE {$idColumn} = :{$idColumnParamName} ";
+			$query = $connection->createQuery($sql, array_merge($columnValues->getStatementParams(), [
+				$idColumnParamName => $this->getId(),
+			]));
+			$query->getResult();
+		}
+
+		$this->afterPersistCallback();
+		$this->afterAnyCallback();
+
+		return $this;
+	}
+
+	/**
+	 * @deprecated
 	 */
 	public static function insert(?array $values = [], $saveWithCallback = true): Model
 	{
@@ -56,6 +170,9 @@ class Model extends Base
 		return $object;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [], $saveWithCallback = true): Model
 	{
 		$object = static::getOneBy($getByParams);
@@ -77,6 +194,9 @@ class Model extends Base
 		return $object;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function save(): Model
 	{
 		return $this->saveWithCallback();
@@ -88,7 +208,7 @@ class Model extends Base
 
 		$values = [];
 		foreach (get_object_vars($this) as $name => $value) {
-			if (in_array($name, $plainColumnsNames) && $name != $this->getPrimaryKeyColumn()->getName()->getPlain()) {
+			if (in_array($name, $plainColumnsNames) && $name != $this->getIdColumn()->getName()->getPlain()) {
 				$values[$name] = $value;
 			}
 		}
@@ -101,10 +221,10 @@ class Model extends Base
 		if ($set) {
 			$sql = " UPDATE " . static::getTable() . "
 				SET " . implode(", ", $set) . "
-				WHERE ( {$this->getPrimaryKeyColumn()} = :{$this->getPrimaryKeyColumn()->getName()->getPlain()} ) ";
+				WHERE ( {$this->getIdColumn()} = :{$this->getIdColumn()->getName()->getPlain()} ) ";
 
 			$query = static::getConnection()->createQuery($sql, $values);
-			$query->setParam($this->getPrimaryKeyColumn()->getName()->getPlain(), $this->getId());
+			$query->setParam($this->getIdColumn()->getName()->getPlain(), $this->getId());
 			$query->getResult();
 		}
 
@@ -126,10 +246,10 @@ class Model extends Base
 		$this->beforeDeleteCallback();
 
 		$sql = " DELETE FROM " . static::getTable() . "
-			WHERE {$this->getPrimaryKeyColumn()} = :{$this->getPrimaryKeyColumn()->getName()->getPlain()}";
+			WHERE {$this->getIdColumn()} = :{$this->getIdColumn()->getName()->getPlain()}";
 
 		$query = static::getConnection()->createQuery($sql, [
-			$this->getPrimaryKeyColumn()->getName()->getPlain() => $this->getId(),
+			$this->getIdColumn()->getName()->getPlain() => $this->getId(),
 		]);
 
 		$res = $query->getResult();
@@ -140,52 +260,26 @@ class Model extends Base
 		return !$res->hasError();
 	}
 
-	/****************************************************************************
-	 * Callbacks.
-	 */
-	public function afterInsertCallback(): Model
-	{
-		return $this;
-	}
-
-	public function beforeUpdateCallback(): Model
-	{
-		return $this;
-	}
-
-	public function afterUpdateCallback(): Model
-	{
-		return $this;
-	}
-
-	public function beforeDeleteCallback(): Model
-	{
-		return $this;
-	}
-
-	public function afterDeleteCallback(): Model
-	{
-		return $this;
-	}
-
-	public function afterAnyCallback(): Model
-	{
-		return $this;
-	}
-
-	/****************************************************************************
-	 * Properties.
+	/**
+	 * @deprecated
 	 */
 	public static function getPrimaryKeyColumn(): ?Column
+	{
+		return static::getIdColumn();
+	}
+
+	public static function getIdColumn(): ?\Katu\PDO\Column
 	{
 		$columnClassName = static::getColumnClass()->getName();
 
 		return new $columnClassName(static::getTable(), static::getTable()->getPrimaryKeyColumn()->getName());
 	}
 
-	public static function getIdColumn(): ?\Katu\PDO\Column
+	public function setId(?string $id): Model
 	{
-		return static::getPrimaryKeyColumn();
+		$this->{static::getIdColumn()->getName()->getPlain()} = $id;
+
+		return $this;
 	}
 
 	public function getId(): ?string
@@ -197,10 +291,10 @@ class Model extends Base
 		}
 	}
 
-	public static function get(?string $primaryKey)
+	public static function get(?string $id)
 	{
 		return static::getOneBy([
-			static::getPrimaryKeyColumn()->getName()->getPlain() => $primaryKey,
+			static::getIdColumn()->getName()->getPlain() => $id,
 		]);
 	}
 
@@ -229,7 +323,7 @@ class Model extends Base
 				$column->getName()->getPlain() => $string,
 			])->getTotal()) {
 				$this->{$column->getName()->getPlain()} = $string;
-				$this->save();
+				$this->persist();
 
 				return $string;
 			}
@@ -294,7 +388,7 @@ class Model extends Base
 			]));
 		}
 
-		$this->save();
+		$this->persist();
 
 		return true;
 	}
