@@ -132,7 +132,7 @@ class Model extends Base
 	/**
 	 * @deprecated
 	 */
-	public static function insert(?array $values = [], $saveWithCallback = true): Model
+	public static function insert(?array $values = [], $saveWithCallback = true)
 	{
 		$connection = static::getConnection();
 
@@ -173,7 +173,7 @@ class Model extends Base
 	/**
 	 * @deprecated
 	 */
-	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [], $saveWithCallback = true): Model
+	public static function upsert(array $getByParams, array $insertParams = [], array $updateParams = [], $saveWithCallback = true)
 	{
 		$object = static::getOneBy($getByParams);
 		if ($object) {
