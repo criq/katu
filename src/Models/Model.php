@@ -87,11 +87,8 @@ class Model extends Base
 		return $res;
 	}
 
-	public function persist(): Model
+	public function persistWithoutCallbacks(): Model
 	{
-		$this->beforePersistCallback();
-		$this->beforeAnyCallback();
-
 		$connection = static::getConnection();
 		$table = static::getTable();
 
@@ -122,6 +119,15 @@ class Model extends Base
 			]));
 			$query->getResult();
 		}
+
+		return $this;
+	}
+	public function persist(): Model
+	{
+		$this->beforePersistCallback();
+		$this->beforeAnyCallback();
+
+		$this->persistWithoutCallbacks();
 
 		$this->afterPersistCallback();
 		$this->afterAnyCallback();
