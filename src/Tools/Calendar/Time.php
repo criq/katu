@@ -56,6 +56,8 @@ class Time extends \DateTime
 			$time = new $timeClass($string);
 		}
 
+		$string = preg_replace("/\s*([\-\.:])\s*/", "\\1", $string);
+
 		if (!($time ?? null)) {
 			$time =
 				$timeClass::createFromFormat("!Y-m-d H:i:s", $string)
@@ -64,22 +66,14 @@ class Time extends \DateTime
 				?: $timeClass::createFromFormat("!Y-m-d H", $string)
 				?: (!$timeRequired ? $timeClass::createFromFormat("!Y-m-d", $string) : null)
 				?: $timeClass::createFromFormat("!j.n.Y H:i:s", $string)
-				?: $timeClass::createFromFormat("!j. n. Y H:i:s", $string)
-				?: $timeClass::createFromFormat("!j.n. Y H:i:s", $string)
-				?: $timeClass::createFromFormat("!j. n.Y H:i:s", $string)
 				?: $timeClass::createFromFormat("!j.n.Y H:i", $string)
-				?: $timeClass::createFromFormat("!j. n. Y H:i", $string)
-				?: $timeClass::createFromFormat("!j.n. Y H:i", $string)
-				?: $timeClass::createFromFormat("!j. n.Y H:i", $string)
 				?: $timeClass::createFromFormat("!j.n.Y H.i", $string)
-				?: $timeClass::createFromFormat("!j. n. Y H.i", $string)
-				?: $timeClass::createFromFormat("!j.n. Y H.i", $string)
-				?: $timeClass::createFromFormat("!j. n.Y H.i", $string)
 				?: $timeClass::createFromFormat("!j.n.Y H", $string)
-				?: $timeClass::createFromFormat("!j. n. Y H", $string)
-				?: $timeClass::createFromFormat("!j.n. Y H", $string)
-				?: $timeClass::createFromFormat("!j. n.Y H", $string)
 				?: (!$timeRequired ? $timeClass::createFromFormat("!j.n.Y", $string) : null)
+				?: $timeClass::createFromFormat("!dmY His", $string)
+				?: $timeClass::createFromFormat("!dmY Hi", $string)
+				?: $timeClass::createFromFormat("!dmY H", $string)
+				?: (!$timeRequired ? $timeClass::createFromFormat("!dmY", $string) : null)
 				;
 		}
 
