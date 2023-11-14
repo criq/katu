@@ -281,7 +281,7 @@ class Model extends Base
 		return new $columnClassName(static::getTable(), static::getTable()->getPrimaryKeyColumn()->getName());
 	}
 
-	public function setId(?string $id): Model
+	public function setId(?string $id)
 	{
 		$this->{static::getIdColumn()->getName()->getPlain()} = $id;
 
