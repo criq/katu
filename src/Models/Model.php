@@ -87,41 +87,54 @@ class Model extends Base
 		return $res;
 	}
 
-	public function persistWithoutCallbacks(): Model
+	public function persistInsert(): Model
 	{
 		$connection = static::getConnection();
 		$table = static::getTable();
 
-		$id = $this->getId();
 		$columnValues = $this->getColumnValues();
 
-		// Insert.
-		if (is_null($id)) {
-			$sql = " INSERT INTO {$table} ( {$columnValues->getColumnsString()} ) VALUES ( {$columnValues->getParamsString()} ) ";
-			$query = $connection->createQuery($sql, $columnValues->getStatementParams());
-			$query->getResult();
+		$sql = " INSERT INTO {$table} ( {$columnValues->getColumnsString()} ) VALUES ( {$columnValues->getParamsString()} ) ";
+		$query = $connection->createQuery($sql, $columnValues->getStatementParams());
+		$query->getResult();
 
-			$id = $connection->getLastInsertId();
-			if (!$id) {
-				throw (new \Katu\Exceptions\NoPrimaryKeyReturnedException)->setContext([
-					"sql" => $query->getStatementDump()->getSentSQL(),
-				]);
-			}
-
-			$this->setId($id);
-		// Update.
-		} else {
-			$idColumn = static::getIdColumn();
-			$idColumnParamName = "__PRIMARY_KEY__";
-			$sql = " UPDATE {$table} SET {$columnValues->getSetString()} WHERE {$idColumn} = :{$idColumnParamName} ";
-			$query = $connection->createQuery($sql, array_merge($columnValues->getStatementParams(), [
-				$idColumnParamName => $this->getId(),
-			]));
-			$query->getResult();
+		$id = $connection->getLastInsertId();
+		if (!$id) {
+			throw (new \Katu\Exceptions\NoPrimaryKeyReturnedException)->setContext([
+				"sql" => $query->getStatementDump()->getSentSQL(),
+			]);
 		}
+
+		$this->setId($id);
 
 		return $this;
 	}
+
+	public function persistUpdate(): Model
+	{
+		$connection = static::getConnection();
+		$table = static::getTable();
+
+		$columnValues = $this->getColumnValues();
+
+		$idColumn = static::getIdColumn();
+		$idColumnParamName = "__PRIMARY_KEY__";
+		$sql = " UPDATE {$table} SET {$columnValues->getSetString()} WHERE {$idColumn} = :{$idColumnParamName} ";
+		$query = $connection->createQuery($sql, array_merge($columnValues->getStatementParams(), [
+			$idColumnParamName => $this->getId(),
+		]));
+		$query->getResult();
+
+		return $this;
+	}
+
+	public function persistWithoutCallbacks(): Model
+	{
+		is_null($this->getId()) ? $this->persistInsert() : $this->persistUpdate();
+
+		return $this;
+	}
+
 	public function persist(): Model
 	{
 		$this->beforePersistCallback();
