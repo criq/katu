@@ -20,7 +20,9 @@ class VariableLibrary extends Library
 
 	public function unsetVariable(string $key): Library
 	{
-		unset($this[$key]);
+		if (isset($this[$key])) {
+			unset($this[$key]);
+		}
 
 		return $this;
 	}
