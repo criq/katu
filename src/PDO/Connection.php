@@ -167,9 +167,9 @@ class Connection
 		return $views;
 	}
 
-	public function select(\Sexy\Select $select, array $params = []): Query
+	public function select($select, array $params = []): Query
 	{
-		$query = new Query($this, $select->getSql(), array_merge($select->getParams(), $params));
+		$query = new Query($this, (string)$select, array_merge($select->getParams(), $params));
 		if ($select->getPage()) {
 			$query->setPage($select->getPage());
 		}
