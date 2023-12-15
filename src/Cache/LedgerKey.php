@@ -3,6 +3,7 @@
 namespace Katu\Cache;
 
 use Katu\Tools\Calendar\Time;
+use Katu\Tools\Calendar\Timeout;
 
 class LedgerKey
 {
@@ -36,5 +37,10 @@ class LedgerKey
 	public function getTime(): ?Time
 	{
 		return $this->time;
+	}
+
+	public function getIsExpired(Timeout $timeout): bool
+	{
+		return is_null($this->getTime()) || !$this->getTime()->fitsInTimeout($timeout);
 	}
 }

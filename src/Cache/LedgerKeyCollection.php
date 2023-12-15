@@ -36,7 +36,14 @@ class LedgerKeyCollection extends \ArrayObject
 	public function filterExpired(Timeout $timeout): LedgerKeyCollection
 	{
 		return (new LedgerKeyCollection(array_filter($this->getArrayCopy(), function (LedgerKey $key) use ($timeout) {
-			return is_null($key->getTime()) || !$key->getTime()->fitsInTimeout($timeout);
+			return $key->getIsExpired($timeout);
+		})));
+	}
+
+	public function filterNotExpired(Timeout $timeout): LedgerKeyCollection
+	{
+		return (new LedgerKeyCollection(array_filter($this->getArrayCopy(), function (LedgerKey $key) use ($timeout) {
+			return !$key->getIsExpired($timeout);
 		})));
 	}
 

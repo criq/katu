@@ -84,6 +84,11 @@ class Ledger
 		return $this->getLedgerKeys()->filterExpired($timeout)->getKeys();
 	}
 
+	public function getNotExpiredKeys(Timeout $timeout): array
+	{
+		return $this->getLedgerKeys()->filterNotExpired($timeout)->getKeys();
+	}
+
 	protected function getFile(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(\App\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath("txt"));
