@@ -44,7 +44,7 @@ class TString
 	public function getForURL(?OptionCollection $options = null): string
 	{
 		$options = (new OptionCollection([
-			new Option("DELIMITER", "-"),
+			new Option("SEPARATOR", "-"),
 			new Option("LANGUAGE", "en"),
 			new Option("LOWERCASE", true),
 			new Option("MAX_LENGTH", 255),

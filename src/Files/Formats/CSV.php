@@ -16,7 +16,7 @@ class CSV extends \ArrayObject
 	{
 		$this->setFile($file);
 		$this->setOptions((new OptionCollection([
-			new Option("DELIMITER", ","),
+			new Option("SEPARATOR", ","),
 			new Option("ENCLOSURE", "\""),
 			new Option("READ_ONLY", false),
 		]))->getMergedWith($options));
@@ -69,7 +69,7 @@ class CSV extends \ArrayObject
 	public function setDelimiter(string $delimiter): CSV
 	{
 		$this->getOptions()->getMergedWith(new OptionCollection([
-			new Option("DELIMITER", $delimiter),
+			new Option("SEPARATOR", $delimiter),
 		]));
 
 		return $this;
@@ -77,7 +77,7 @@ class CSV extends \ArrayObject
 
 	public function getDelimiter(): string
 	{
-		return $this->getOptions()->getValue("DELIMITER");
+		return $this->getOptions()->getValue("SEPARATOR");
 	}
 
 	public function setEnclosure(string $enclosure): CSV

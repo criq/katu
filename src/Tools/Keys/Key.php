@@ -75,7 +75,7 @@ abstract class Key
 	{
 		return array_map(function ($i) {
 			return (new \Katu\Types\TString((string)$i))->getForURL(new OptionCollection([
-				new Option("DELIMITER", $this->delimiter),
+				new Option("SEPARATOR", $this->delimiter),
 				new Option("LOWERCASE", true),
 			]));
 		}, preg_split("/[^\d\pL]/ui", $string));
