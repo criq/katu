@@ -19,6 +19,11 @@ class TEncryptedString
 		$this->encrypted = $encrypted;
 	}
 
+	public static function getDefaultMethod(): string
+	{
+		return static::DEFAULT_METHOD;
+	}
+
 	public static function generateIv(string $original): string
 	{
 		try {
@@ -33,13 +38,20 @@ class TEncryptedString
 		]))), 0, 32));
 	}
 
-	public static function encrypt(string $original): TEncryptedString
+	public static function encrypt(string $original, ?string $iv = null): TEncryptedString
 	{
-		$method = static::DEFAULT_METHOD;
-		$iv = static::generateIv($original);
-		$result = openssl_encrypt($original, $method, \Katu\Config\Config::get("encryption", "key"), 0, $iv);
+		$method = static::getDefaultMethod();
+		$key = \Katu\Config\Config::get("encryption", "key");
+		$iv = $iv ?: static::generateIv($original);
+
+		$result = openssl_encrypt($original, $method, $key, 0, $iv);
 
 		return new static($method, $iv, $result);
+	}
+
+	public function getEncrypted(): string
+	{
+		return $this->encrypted;
 	}
 
 	public function getJSON(): TEncryptedStringJSON
