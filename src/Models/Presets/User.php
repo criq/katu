@@ -357,7 +357,7 @@ abstract class User extends \Katu\Models\Model
 		return static::getConnection()->select($sql)->getResult()->getColumnValues("permission");
 	}
 
-	public function getUserPermissions()
+	public function getUserPermissions(): array
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserPermission::class);
 
@@ -366,7 +366,7 @@ abstract class User extends \Katu\Models\Model
 		])->getColumnValues("permission");
 	}
 
-	public function getAllPermissions(): array
+	public function getResolvedPermissions(): array
 	{
 		return \Katu\Cache\Runtime::get(new TIdentifier(__CLASS__, __FUNCTION__, $this->getId()), function () {
 			return array_filter(array_unique(array_merge((array)$this->getRolePermissions(), (array)$this->getUserPermissions())));
@@ -381,7 +381,7 @@ abstract class User extends \Katu\Models\Model
 
 		$status = [];
 		foreach ((array)$permissions as $permission) {
-			$status[$permission] = in_array($permission, $this->getAllPermissions());
+			$status[$permission] = in_array($permission, $this->getResolvedPermissions());
 		}
 
 		if ($any) {
