@@ -10,6 +10,8 @@ use Sexy\Sexy as SX;
 
 class Model extends Base
 {
+	protected $_storedId;
+
 	public function __toString(): string
 	{
 		return (string)$this->getId();
@@ -120,9 +122,10 @@ class Model extends Base
 		$idColumn = static::getIdColumn();
 		$idColumnParamName = "__PRIMARY_KEY__";
 		$sql = " UPDATE {$table} SET {$columnValues->getSetString()} WHERE {$idColumn} = :{$idColumnParamName} ";
-		$query = $connection->createQuery($sql, array_merge($columnValues->getStatementParams(), [
-			$idColumnParamName => $this->getId(),
-		]));
+		$params = array_merge($columnValues->getStatementParams(), [
+			$idColumnParamName => $this->getStoredId(),
+		]);
+		$query = $connection->createQuery($sql, $params);
 		$query->getResult();
 
 		return $this;
@@ -296,6 +299,8 @@ class Model extends Base
 
 	public function setId(?string $id)
 	{
+		$this->setStoredId($this->getId());
+
 		$this->{static::getIdColumn()->getName()->getPlain()} = $id;
 
 		return $this;
@@ -308,6 +313,18 @@ class Model extends Base
 		} catch (\Throwable $e) {
 			return null;
 		}
+	}
+
+	public function setStoredId(?string $id)
+	{
+		$this->_storedId = $id;
+
+		return $this;
+	}
+
+	public function getStoredId(): ?string
+	{
+		return $this->_storedId ?: $this->getId();
 	}
 
 	public static function get(?string $id)
