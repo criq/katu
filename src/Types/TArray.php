@@ -247,4 +247,38 @@ class TArray extends \ArrayObject
 
 		return $intervals;
 	}
+
+	public function getValues(): TArray
+	{
+		return new static(array_values($this->getArray()));
+	}
+
+	public function getSum(): float
+	{
+		return array_sum($this->getArray());
+	}
+
+	public function getAverage(): ?float
+	{
+		if ($this->getCount()) {
+			return $this->getSum() / $this->getCount();
+		}
+
+		return null;
+	}
+
+	public function getMedian(): ?float
+	{
+		if ($this->getCount()) {
+			$values = $this->sortNaturally()->getValues();
+			$anchor = $this->getCount() / 2 - .5;
+
+			return (new static([
+				$values[floor($anchor)],
+				$values[ceil($anchor)],
+			]))->getAverage();
+		}
+
+		return null;
+	}
 }
