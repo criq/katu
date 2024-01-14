@@ -128,8 +128,19 @@ abstract class Base
 
 	public static function getBy(?array $where = [], $orderBy = null, $limitOrPage = null): \Katu\PDO\Result
 	{
-		$sql = SX::select();
-		$sql->from(static::getTable());
+		$sql = SX::select()
+			->from(static::getTable())
+			;
+
+		if ($limitOrPage instanceof \Sexy\Page) {
+			if ($limitOrPage->getPage() == 1 && $limitOrPage->getPerPage()) {
+				$sql->setGetFoundRows(false);
+			}
+		} elseif ($limitOrPage instanceof \Sexy\Limit) {
+			if ($limitOrPage->getLimit() == 1 && (int)$limitOrPage->getOffset() == 0) {
+				$sql->setGetFoundRows(false);
+			}
+		}
 
 		foreach ((array)$where as $name => $value) {
 			if ($value instanceof \Sexy\Expression) {
