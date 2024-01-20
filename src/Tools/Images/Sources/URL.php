@@ -3,6 +3,9 @@
 namespace Katu\Tools\Images\Sources;
 
 use Katu\Tools\Calendar\Timeout;
+use Katu\Tools\Images\Source;
+use Katu\Tools\Package\Package;
+use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 use Katu\Types\TURL;
 
@@ -11,6 +14,19 @@ class URL extends \Katu\Tools\Images\Source
 	public function __construct(\Katu\Types\TURL $input)
 	{
 		return parent::__construct($input);
+	}
+
+	public function getPackage(): Package
+	{
+		return new Package([
+			"class" => (new TClass($this))->getPortableName(),
+			"url" => (string)$this->getInput(),
+		]);
+	}
+
+	public static function createFromPackage(Package $package): Source
+	{
+		return new static(new TURL($package->getPayload()["url"]));
 	}
 
 	public function getFile(): \Katu\Files\File

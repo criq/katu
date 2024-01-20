@@ -6,7 +6,7 @@ use Katu\Types\Encryption\TEncryptedString;
 use Katu\Types\Encryption\TEncryptedStringJSONPortableString;
 use Katu\Types\TJSON;
 
-class Package implements \JsonSerializable
+class Package implements \JsonSerializable, \Stringable
 {
 	protected $payload;
 
