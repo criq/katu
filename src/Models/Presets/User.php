@@ -77,19 +77,6 @@ abstract class User extends \Katu\Models\Model
 		return null;
 	}
 
-	public static function getByAccessToken(?string $token): ?User
-	{
-		$accessTokenClass = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
-		$accessToken = $accessTokenClass::getOneBy([
-			"token" => preg_replace("/^(Bearer)\s+/", "", $token),
-		]);
-		if ($accessToken && $accessToken->getIsValid()) {
-			return $accessToken->getUser();
-		}
-
-		return null;
-	}
-
 	/****************************************************************************
 	 * Getters & Setters.
 	 */
