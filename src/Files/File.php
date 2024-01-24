@@ -303,12 +303,14 @@ class File
 		}
 	}
 
-	public function touch()
+	public function touch(): File
 	{
 		$dir = $this->getDir();
 		$dir->makeDir();
 
-		return touch($this);
+		touch($this);
+
+		return $this;
 	}
 
 	public function chmod($mode)
