@@ -11,8 +11,8 @@ abstract class Source implements PackagedInterface
 {
 	protected $input;
 
-	abstract public function getExtension(): string;
-	abstract public function getFile(): \Katu\Files\File;
+	abstract public function getExtension(): ?string;
+	abstract public function getLocalFile(): ?\Katu\Files\File;
 	abstract public function getURI(): string;
 	abstract public function getURL(): ?TURL;
 

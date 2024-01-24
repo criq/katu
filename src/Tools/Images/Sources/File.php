@@ -17,7 +17,7 @@ class File extends \Katu\Tools\Images\Source
 	{
 		return new Package([
 			"class" => (new TClass($this))->getPortableName(),
-			"path" => $this->getFile()->getPath(),
+			"path" => (string)$this->getURI(),
 		]);
 	}
 
@@ -26,12 +26,12 @@ class File extends \Katu\Tools\Images\Source
 		return new static(new \Katu\Files\File($package->getPayload()["path"]));
 	}
 
-	public function getFile(): \Katu\Files\File
+	public function getLocalFile(): ?\Katu\Files\File
 	{
 		return $this->getInput();
 	}
 
-	public function getExtension(): string
+	public function getExtension(): ?string
 	{
 		return $this->getInput()->getExtension();
 	}

@@ -10,10 +10,13 @@ class Images extends \Katu\Controllers\Controller
 {
 	public function getVersion(ServerRequestInterface $request, ResponseInterface $response, string $imagePackage, string $versionCode)
 	{
+		\Katu\Tools\System\Memory::setLimit(\Katu\Types\TFileSize::createFromShorthand("2G"));
+
 		$image = \Katu\Tools\Images\Image::createFromPackage(Package::createFromPortableString($imagePackage));
 		$version = \Katu\Tools\Images\Version::createFromConfig($versionCode);
 
 		$imageVersion = $image->getImageVersion($version);
+		$imageVersion->getVersionImage();
 
 		return $response
 			->withHeader("Content-Type", $imageVersion->getFile()->getMime())

@@ -82,24 +82,7 @@ class Image implements RestResponseInterface, PackagedInterface
 
 	public function getInterventionImage(): ?\Intervention\Image\Image
 	{
-		$uri = $this->getSource()->getURI();
-
-		try {
-			return \Intervention\Image\ImageManagerStatic::make($uri);
-		} catch (\Throwable $e) {
-			if (preg_match("/(SSL operation failed|Peer certificate)/", $e->getMessage())) {
-				$curl = new \Curl\Curl;
-				$curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
-				$curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-				$res = $curl->get($uri);
-
-				return \Intervention\Image\ImageManagerStatic::make($res);
-			} else {
-				\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e);
-
-				return null;
-			}
-		}
+		return \Intervention\Image\ImageManagerStatic::make((string)$this->getSource()->getLocalFile());
 	}
 
 	public function getPixel(): Image

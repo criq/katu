@@ -24,15 +24,17 @@ class FileModel extends \Katu\Tools\Images\Source
 
 	public static function createFromPackage(Package $package): Source
 	{
-		return new static(\App\Models\File::get($package->getPayload()["fileId"]));
+		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
+
+		return new static($fileClass::get($package->getPayload()["fileId"]));
 	}
 
-	public function getFile(): \Katu\Files\File
+	public function getLocalFile(): ?\Katu\Files\File
 	{
 		return $this->getInput()->getFile();
 	}
 
-	public function getExtension(): string
+	public function getExtension(): ?string
 	{
 		return $this->getInput()->getExtension();
 	}

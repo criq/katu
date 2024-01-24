@@ -29,12 +29,30 @@ class URL extends \Katu\Tools\Images\Source
 		return new static(new TURL($package->getPayload()["url"]));
 	}
 
-	public function getFile(): \Katu\Files\File
+	public function getLocalFile(): ?\Katu\Files\File
 	{
-		return new \Katu\Files\File(pathinfo($this->getInput()->getParts()["path"])["dirname"]);
+		$file = new \Katu\Files\File(\App\App::getTemporaryDir(), [sha1($this->getURI()), $this->getExtension()]);
+		if (!$file->exists()) {
+			$curl = new \Curl\Curl;
+
+			// TODO - lepší ověření
+			$res = $curl->get($this->getURI());
+			if ($res) {
+				$file->set($res);
+			} else {
+				$curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
+				$curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+				$res = $curl->get($this->getURI());
+				if ($res) {
+					$file->set($res);
+				}
+			}
+		}
+
+		return $file;
 	}
 
-	public function getExtension(): string
+	public function getExtension(): ?string
 	{
 		try {
 			$pathinfo = pathinfo($this->getInput()->getParts()["path"]);
@@ -43,7 +61,7 @@ class URL extends \Katu\Tools\Images\Source
 			}
 
 			$size = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout("1 year"), function ($source) {
-				return getimagesize($source->getUri());
+				return getimagesize($source->getURI());
 			}, $this);
 
 			if (isset($size["mime"])) {
@@ -55,8 +73,10 @@ class URL extends \Katu\Tools\Images\Source
 
 			throw new \Exception;
 		} catch (\Throwable $e) {
-			return false;
+			// Nevermind.
 		}
+
+		return null;
 	}
 
 	public function getURI(): string
