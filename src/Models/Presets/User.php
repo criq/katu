@@ -64,11 +64,10 @@ abstract class User extends \Katu\Models\Model
 			$accessToken = $accessTokenClass::getValidFromRequest($request);
 			if ($accessToken) {
 				// Extend access token.
-				$accessToken
-					->setTimeExpires($accessTokenClass::generateTimeExpires())
-					->persist()
-					;
+				$accessToken->setTimeExpires($accessTokenClass::generateTimeExpires());
+				$accessToken->persist();
 
+				// Save extended cookie.
 				$accessToken->getCookie()->persist();
 
 				return $accessToken->getUser();
