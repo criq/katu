@@ -10,6 +10,12 @@ abstract class File extends \Katu\Models\Model
 	const DEFAULT_DIR = "files";
 	const TABLE = "files";
 
+	public $name;
+	public $path;
+	public $secret;
+	public $size;
+	public $type;
+
 	public static function create(\Katu\Models\Presets\User $user = null, string $path, string $fileName, string $fileType, int $fileSize): File
 	{
 		return static::insert([
