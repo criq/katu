@@ -4,7 +4,6 @@ namespace Katu\Models\Presets;
 
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Cookies\Cookie;
-use Katu\Tools\Cookies\CookieCollection;
 use Katu\Tools\Security\EncodedPassword;
 use Katu\Tools\Security\PlainPassword;
 use Katu\Types\TIdentifier;
@@ -61,17 +60,18 @@ abstract class User extends \Katu\Models\Model
 	public static function getFromRequest(?ServerRequestInterface $request): ?User
 	{
 		if ($request) {
-			// Cookie.
-			$user = static::getByAccessToken(CookieCollection::createFromRequest($request)->getCookieValue("accessToken"));
-			if ($user) {
-				return $user;
-			}
+			$accessTokenClass = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
+			$accessToken = $accessTokenClass::getValidFromRequest($request);
+			if ($accessToken) {
+				// Extend access token.
+				$accessToken
+					->setTimeExpires($accessTokenClass::generateTimeExpires())
+					->persist()
+					;
 
-			// Access token.
-			$header = $request->getHeaderLine("Authorization") ?: $request->getHeaderLine("X-Auth");
-			$user = static::getByAccessToken($header);
-			if ($user) {
-				return $user;
+				$accessToken->getCookie()->persist();
+
+				return $accessToken->getUser();
 			}
 		}
 

@@ -5,6 +5,8 @@ namespace Katu\Models\Presets;
 use Katu\Tools\Calendar\Seconds;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Cookies\Cookie;
+use Katu\Tools\Cookies\CookieCollection;
+use Psr\Http\Message\ServerRequestInterface;
 use Sexy\Sexy as SX;
 
 abstract class AccessToken extends \Katu\Models\Model
@@ -17,6 +19,30 @@ abstract class AccessToken extends \Katu\Models\Model
 	public $timeExpires;
 	public $token;
 	public $userId;
+
+	public static function getValidFromRequest(ServerRequestInterface $request): ?AccessToken
+	{
+		$accessTokens = array_values(array_filter(array_filter(array_map(function (?string $string) {
+			return static::getFromString($string);
+		}, [
+			CookieCollection::createFromRequest($request)->getCookieValue("accessToken"),
+			$request->getHeaderLine("Authorization"),
+			$request->getHeaderLine("X-Auth"),
+		])), function (AccessToken $accessToken) {
+			return $accessToken->getIsValid();
+		}));
+
+		return $accessTokens[0] ?? null;
+	}
+
+	public static function getFromString(?string $string): ?AccessToken
+	{
+		$string = preg_replace("/^(Bearer)\s+/", "", $string);
+
+		return static::getOneBy([
+			"token" => $string,
+		]);
+	}
 
 	public function setUser(User $user): AccessToken
 	{
