@@ -207,4 +207,21 @@ abstract class Job implements PackagedInterface
 			return false;
 		}
 	}
+
+	public function getItemCountPickle()
+	{
+		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
+	}
+
+	public function getItemCount(): ?int
+	{
+		return $this->getItemCountPickle()->get();
+	}
+
+	public function setItemCount(?int $count): Job
+	{
+		$this->getItemCountPickle()->set($count);
+
+		return $this;
+	}
 }

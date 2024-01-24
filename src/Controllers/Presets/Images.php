@@ -2,40 +2,31 @@
 
 namespace Katu\Controllers\Presets;
 
+use Katu\Tools\Package\Package;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Images extends \Katu\Controllers\Controller
 {
-	public function getVersionSrcURL(ServerRequestInterface $request, ResponseInterface $response, string $version)
+	public function getVersion(ServerRequestInterface $request, ResponseInterface $response, string $imagePackage, string $versionCode)
 	{
-		try {
-			try {
-				$url = new \Katu\Types\TURL(trim($request->getQueryParams()["url"] ?? null));
-			} catch (\Throwable $e) {
-				throw new \Katu\Exceptions\NotFoundException;
-			}
+		$image = \Katu\Tools\Images\Image::createFromPackage(Package::createFromPortableString($imagePackage));
+		$version = \Katu\Tools\Images\Version::createFromConfig($versionCode);
 
-			try {
-				$version = \Katu\Tools\Images\Version::createFromConfig($version);
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				throw new \Katu\Exceptions\NotFoundException;
-			}
+		$imageVersion = $image->getImageVersion($version);
+		$imageVersion->getVersionImage();
 
-			$image = new \Katu\Tools\Images\Image($url);
-			$imageVersion = $image->getImageVersion($version);
-			$imageVersion->getVersionImage();
+		return $response
+			->withHeader("Content-Type", $imageVersion->getFile()->getMime())
+			->withHeader("Cache-Control", "max-age=604800, public")
+			->withBody(\GuzzleHttp\Psr7\Utils::streamFor($imageVersion->getFile()->get()))
+			;
 
-			return $response
-				->withHeader("Content-Type", $imageVersion->getFile()->getMime())
-				->withHeader("Cache-Control", "max-age=604800, public")
-				->withBody(\GuzzleHttp\Psr7\Utils::streamFor($imageVersion->getFile()->get()))
-				;
-		} catch (\Throwable $e) {
-			throw new \Katu\Exceptions\NotFoundException;
-		}
 	}
 
+	/**
+	 * @deprecated
+	*/
 	public static function getVersionSrcFile(ServerRequestInterface $request, ResponseInterface $response, string $fileId, string $fileSecret, string $version)
 	{
 		try {

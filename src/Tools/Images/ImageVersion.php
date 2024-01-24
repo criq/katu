@@ -39,21 +39,15 @@ class ImageVersion implements RestResponseInterface
 
 	public function getURL(): ?TURL
 	{
-		$url = $this->getImage()->getURL();
-		if ($url) {
-			return \Katu\Tools\Routing\URL::getFor("images.getVersionSrc.url", [
-				"version" => $this->getVersion()->getName(),
-			], [
-				"url" => (string)$url,
+		try {
+			return \Katu\Tools\Routing\URL::getFor("images.getVersion", [
+				"imagePackage" => $this->getImage()->getPackage(),
+				"versionCode" => $this->getVersion()->getName(),
+				"extension" => $this->getVersion()->getExtension(),
 			]);
+		} catch (\Throwable $e) {
+			return null;
 		}
-
-		$versionImage = $this->getVersionImage();
-		if ($versionImage) {
-			return $versionImage->getURL();
-		}
-
-		return null;
 	}
 
 	public function getExtension(): string

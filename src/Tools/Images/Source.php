@@ -2,9 +2,12 @@
 
 namespace Katu\Tools\Images;
 
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
+use Katu\Types\TClass;
 use Katu\Types\TURL;
 
-abstract class Source
+abstract class Source implements PackagedInterface
 {
 	protected $input;
 
@@ -18,6 +21,16 @@ abstract class Source
 		$this->input = $input;
 	}
 
+	public static function createFromPackage(Package $package): Source
+	{
+		$className = TClass::createFromPortableName($package->getPayload()["class"])->getName();
+
+		return $className::createFromPackage($package);
+	}
+
+	/**
+	 * @deprecated
+	 */
 	public static function createFromInput($input): ?Source
 	{
 		// Image.

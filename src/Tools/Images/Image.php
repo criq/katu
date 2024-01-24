@@ -6,6 +6,8 @@ use Katu\Tools\Images\Filters\Fit;
 use Katu\Tools\Images\Filters\Resize;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Types\TArray;
@@ -14,7 +16,7 @@ use Katu\Types\TImageSize;
 use Katu\Types\TURL;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Image implements RestResponseInterface
+class Image implements RestResponseInterface, PackagedInterface
 {
 	protected $source;
 
@@ -26,6 +28,18 @@ class Image implements RestResponseInterface
 	public function __toString(): string
 	{
 		return (string)$this->getURL();
+	}
+
+	public function getPackage(): Package
+	{
+		return new Package([
+			"source" => $this->getSource()->getPackage()->getPayload(),
+		]);
+	}
+
+	public static function createFromPackage(Package $package): Image
+	{
+		return new static(Source::createFromPackage(new Package($package->getPayload()["source"])));
 	}
 
 	public function getURI(): string

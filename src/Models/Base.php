@@ -132,16 +132,6 @@ abstract class Base
 			->from(static::getTable())
 			;
 
-		if ($limitOrPage instanceof \Sexy\Page) {
-			if ($limitOrPage->getPage() == 1 && $limitOrPage->getPerPage()) {
-				$sql->setGetFoundRows(false);
-			}
-		} elseif ($limitOrPage instanceof \Sexy\Limit) {
-			if ($limitOrPage->getLimit() == 1 && (int)$limitOrPage->getOffset() == 0) {
-				$sql->setGetFoundRows(false);
-			}
-		}
-
 		foreach ((array)$where as $name => $value) {
 			if ($value instanceof \Sexy\Expression) {
 				$sql->where($value);
@@ -162,8 +152,14 @@ abstract class Base
 
 		if ($limitOrPage instanceof \Sexy\Limit) {
 			$sql->setLimit($limitOrPage);
+			if ($limitOrPage->getLimit() == 1 && (int)$limitOrPage->getOffset() == 0) {
+				$sql->setGetFoundRows(false);
+			}
 		} elseif ($limitOrPage instanceof \Sexy\Page) {
 			$sql->setPage($limitOrPage);
+			if ($limitOrPage->getPage() == 1 && $limitOrPage->getPerPage()) {
+				$sql->setGetFoundRows(false);
+			}
 		}
 
 		$query = static::getConnection()->select($sql);
