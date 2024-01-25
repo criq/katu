@@ -25,9 +25,9 @@ abstract class AccessToken extends \Katu\Models\Model
 		$accessTokens = array_values(array_filter(array_filter(array_map(function (?string $string) {
 			return static::getFromString($string);
 		}, [
-			CookieCollection::createFromRequest($request)->getCookieValue("accessToken"),
 			$request->getHeaderLine("Authorization"),
 			$request->getHeaderLine("X-Auth"),
+			CookieCollection::createFromRequest($request)->getCookieValue("accessToken"),
 		])), function (AccessToken $accessToken) {
 			return $accessToken->getIsValid();
 		}));
