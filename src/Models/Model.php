@@ -79,6 +79,8 @@ class Model extends Base
 		return $this;
 	}
 
+	/************************************************************************* */
+
 	public function getColumnValues(): ColumnValueCollection
 	{
 		$res = new ColumnValueCollection;
