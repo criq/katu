@@ -20,9 +20,9 @@ class Image implements RestResponseInterface, PackagedInterface
 {
 	protected $source;
 
-	public function __construct(Source $source)
+	public function __construct($input)
 	{
-		$this->setSource($source);
+		$this->setSource(Source::createFromInput($input));
 	}
 
 	public function __toString(): string
