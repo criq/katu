@@ -107,11 +107,7 @@ class Query
 
 	public function getFactory(): ?\Katu\Tools\Factories\FactoryInterface
 	{
-		if (!$this->factory) {
-			$this->factory = new \Katu\Tools\Factories\ArrayFactory;
-		}
-
-		return $this->factory;
+		return $this->factory ?: new \Katu\Tools\Factories\ArrayFactory;
 	}
 
 	public function getStatement(): \PDOStatement
@@ -222,7 +218,7 @@ class Query
 
 			try {
 				if (\Katu\Config\Config::get("app", "profiler", "pdo")) {
-					$file = (\Katu\Files\File::createTemporaryWithFileName($this->getConnection()->getSessionId() . ".csv"));
+					$file = (\Katu\Files\File::createTemporaryWithFileName("{$this->getConnection()->getSessionId()}.csv"));
 					$csv = new \Katu\Files\Formats\CSV($file);
 					$sql = trim($this->getStatementDump()->getSentSQL() ?: $this->statement->queryString);
 					$csv->append([
