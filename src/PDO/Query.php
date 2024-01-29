@@ -2,6 +2,7 @@
 
 namespace Katu\PDO;
 
+use Iterator;
 use Katu\Tools\Calendar\Seconds;
 use Katu\Types\TIdentifier;
 
@@ -273,5 +274,14 @@ class Query
 		}
 
 		return $this->result;
+	}
+
+	public function getIterator(): Iterator
+	{
+		$this->getStatement()->execute();
+
+		while ($row = $this->getStatement()->fetch(\PDO::FETCH_ASSOC)) {
+			yield $row;
+		}
 	}
 }
