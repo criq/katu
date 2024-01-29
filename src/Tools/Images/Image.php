@@ -20,9 +20,9 @@ class Image implements RestResponseInterface, PackagedInterface
 {
 	protected $source;
 
-	public function __construct($source)
+	public function __construct(Source $source)
 	{
-		$this->source = Source::createFromInput($source);
+		$this->setSource($source);
 	}
 
 	public function __toString(): string
@@ -57,7 +57,14 @@ class Image implements RestResponseInterface, PackagedInterface
 		return null;
 	}
 
-	public function getSource(): ?Source
+	public function setSource(Source $source): Image
+	{
+		$this->source = $source;
+
+		return $this;
+	}
+
+	public function getSource(): Source
 	{
 		return $this->source;
 	}

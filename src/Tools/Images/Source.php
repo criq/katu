@@ -28,9 +28,6 @@ abstract class Source implements PackagedInterface
 		return $className::createFromPackage($package);
 	}
 
-	/**
-	 * @deprecated
-	 */
 	public static function createFromInput($input): ?Source
 	{
 		// Image.
