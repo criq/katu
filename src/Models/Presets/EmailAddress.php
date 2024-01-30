@@ -2,86 +2,92 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Errors\Error;
+use Katu\Tools\Calendar\Time;
+use Katu\Tools\Validation\Param;
+use Katu\Tools\Validation\Validation;
+use Katu\Types\TString;
+
 abstract class EmailAddress extends \Katu\Models\Model
 {
 	const TABLE = "email_addresses";
+
+	public $emailAddress;
+	public $id;
+	public $timeCreated;
 
 	public static $columnNames = [
 		"timeCreated" => "timeCreated",
 		"emailAddress" => "emailAddress",
 	];
 
-	public static function validate(\Katu\Tools\Validation\Param $param): \Katu\Tools\Validation\Validation
+	public static function validate(Param $emailAddress): Validation
 	{
-		$result = new \Katu\Tools\Validation\Validation(new \Katu\Tools\Validation\ParamCollection([
-			$param,
-		]));
+		$validation = new Validation;
 
-		if ($param instanceof \Katu\Tools\Validation\Params\UserInput) {
-			try {
-				$object = static::getOrCreate($param->getInput());
-				$result->setResponse($object);
-				$result[] = $param->setOutput($object)->setDisplay($object->getEmailAddress());
-			} catch (\Throwable $e) {
-				$error = (new \Katu\Errors\Error($e->getMessage()))
-					->addParam($param)
-					->addVersion("en", "Invalid e-mail address.")
-					->addVersion("cs", "Neplatná e-mailová adresa.")
-					;
-
-				$result->addError($error);
+		// EmailAddress
+		if ($emailAddress->getInput() instanceof static) {
+			$output = $emailAddress->getInput();
+			$validation->setResponse($output)->addParam($emailAddress->setOutput($output));
+		// string
+		} else {
+			$output = $emailAddress->getInput();
+			if (!mb_strlen($output)) {
+				$validation->addError((new Error("Chybějící e-mailová adresa."))->addParam($emailAddress));
+			} elseif (!\Katu\Types\TEmailAddress::validateEmailAddress($output)) {
+				$validation->addError((new Error("Neplatná e-mailová adresa."))->addParam($emailAddress));
+			} else {
+				$validation->setResponse($output)->addParam($emailAddress->setOutput($output));
 			}
 		}
 
-		return $result;
+		return $validation;
 	}
 
-	public static function create(string $emailAddress): EmailAddress
+	public static function getOrCreate(string $string): EmailAddress
 	{
-		if (!static::sanitizeEmailAddress($emailAddress)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
+		$string = (new TString($string))
+			->getWithRemovedWhitespace()
+			->getWithAccentsRemoved()
+			->getString()
+			;
 
-		return static::insert([
-			static::$columnNames["timeCreated"] => new \Katu\Tools\Calendar\Time,
-			static::$columnNames["emailAddress"] => trim($emailAddress),
+		$emailAddress = static::getOneBy([
+			static::$columnNames["emailAddress"] => $string,
 		]);
-	}
 
-	public static function getOrCreate(string $emailAddress): EmailAddress
-	{
-		$emailAddress = preg_replace("/\s/", "", $emailAddress);
-
-		if (!static::sanitizeEmailAddress($emailAddress)) {
-			throw new \Katu\Exceptions\InputErrorException("Invalid arguments.");
-		}
-
-		return static::upsert([
-			static::$columnNames["emailAddress"] => $emailAddress,
-		], [
-			static::$columnNames["timeCreated"] => new \Katu\Tools\Calendar\Time,
-		]);
-	}
-
-	public static function sanitizeEmailAddress(string $value): string
-	{
-		$value = trim($value);
-		if (!$value) {
-			throw (new \Katu\Exceptions\InputErrorException("Missing e-mail address."))
-				->setAbbr("missingEmailAddress")
+		if (!$emailAddress) {
+			$emailAddress = (new static)
+				->setTimeCreated(new Time)
+				->setEmailAddress($string)
+				->persist()
 				;
 		}
 
-		if (!\Katu\Types\TEmailAddress::validateEmailAddress($value)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
-				->setAbbr("invalidEmailAddress")
-				;
-		}
-
-		return $value;
+		return $emailAddress;
 	}
 
-	public function getEmailAddress()
+	public function setTimeCreated(Time $time): EmailAddress
+	{
+		$this->timeCreated = $time;
+
+		return $this;
+	}
+
+	public function setEmailAddress(string $emailAddress): EmailAddress
+	{
+		$emailAddress = (new TString($emailAddress))
+			->getWithRemovedWhitespace()
+			->getWithAccentsRemoved()
+			->getString()
+			;
+
+		$this->emailAddress = $emailAddress;
+
+		return $this;
+	}
+
+	public function getEmailAddress(): string
 	{
 		return $this->emailAddress;
 	}
