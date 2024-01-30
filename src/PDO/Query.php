@@ -2,6 +2,7 @@
 
 namespace Katu\PDO;
 
+use Iterator;
 use Katu\Tools\Calendar\Seconds;
 use Katu\Types\TIdentifier;
 
@@ -107,11 +108,7 @@ class Query
 
 	public function getFactory(): ?\Katu\Tools\Factories\FactoryInterface
 	{
-		if (!$this->factory) {
-			$this->factory = new \Katu\Tools\Factories\ArrayFactory;
-		}
-
-		return $this->factory;
+		return $this->factory ?: new \Katu\Tools\Factories\ArrayFactory;
 	}
 
 	public function getStatement(): \PDOStatement
@@ -222,7 +219,7 @@ class Query
 
 			try {
 				if (\Katu\Config\Config::get("app", "profiler", "pdo")) {
-					$file = (\Katu\Files\File::createTemporaryWithFileName($this->getConnection()->getSessionId() . ".csv"));
+					$file = (\Katu\Files\File::createTemporaryWithFileName("{$this->getConnection()->getSessionId()}.csv"));
 					$csv = new \Katu\Files\Formats\CSV($file);
 					$sql = trim($this->getStatementDump()->getSentSQL() ?: $this->statement->queryString);
 					$csv->append([
@@ -277,5 +274,14 @@ class Query
 		}
 
 		return $this->result;
+	}
+
+	public function getIterator(): Iterator
+	{
+		$this->getStatement()->execute();
+
+		while ($row = $this->getStatement()->fetch(\PDO::FETCH_ASSOC)) {
+			yield $row;
+		}
 	}
 }

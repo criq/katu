@@ -211,7 +211,7 @@ class Connection
 		return $this->getPdo()->rollBack();
 	}
 
-	public function getSqlModes(): array
+	public function getSQLModes(): array
 	{
 		$sql = " SELECT @@SESSION.sql_mode AS sql_mode ";
 		$array = explode(",", $this->createQuery($sql)->getResult()->getItems()[0]["sql_mode"] ?? null);
@@ -219,7 +219,7 @@ class Connection
 		return array_combine($array, $array);
 	}
 
-	public function setSqlModes(array $sqlModes)
+	public function setSQLModes(array $sqlModes)
 	{
 		$sql = " SET @@SESSION.sql_mode = :sqlMode ";
 		$res = $this->createQuery($sql, [
@@ -229,21 +229,21 @@ class Connection
 		return $res;
 	}
 
-	public function addSqlMode($sqlMode)
+	public function addSQLMode($sqlMode)
 	{
-		$sqlModes = array_merge($this->getSqlModes(), [$sqlMode]);
+		$sqlModes = array_merge($this->getSQLModes(), [$sqlMode]);
 
-		return $this->setSqlModes($sqlModes);
+		return $this->setSQLModes($sqlModes);
 	}
 
-	public function removeSqlMode($sqlMode)
+	public function removeSQLMode($sqlMode)
 	{
-		$sqlModes = $this->getSqlModes();
+		$sqlModes = $this->getSQLModes();
 		if ($sqlModes[$sqlMode] ?? null) {
 			unset($sqlModes[$sqlMode]);
 		}
 
-		return $this->setSqlModes($sqlModes);
+		return $this->setSQLModes($sqlModes);
 	}
 
 	public function getFoundRowsPickledResult($sql, \Katu\Tools\Factories\FactoryInterface $factory, \Katu\Cache\Pickle $pickle, \Katu\Tools\Calendar\Timeout $timeout)

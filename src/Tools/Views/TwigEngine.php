@@ -41,12 +41,14 @@ abstract class TwigEngine implements ViewEngineInterface
 		/***************************************************************************
 		 * Image.
 		 */
-		$twig->addFunction(new \Twig\TwigFunction("getImage", function ($uri) {
+		$twig->addFunction(new \Twig\TwigFunction("getImage", function ($source) {
 			try {
-				return new \Katu\Tools\Images\Image($uri);
-			} catch (\Katu\Exceptions\ImageErrorException $e) {
-				return false;
+				return new \Katu\Tools\Images\Image($source);
+			} catch (\Throwable $e) {
+				// Nevermind.
 			}
+
+			return null;
 		}));
 
 		/***************************************************************************
