@@ -46,11 +46,7 @@ abstract class EmailAddress extends \Katu\Models\Model
 
 	public static function getOrCreate(string $string): EmailAddress
 	{
-		$string = (new TString($string))
-			->getWithRemovedWhitespace()
-			->getWithAccentsRemoved()
-			->getString()
-			;
+		$string = static::sanitizeEmailAddress($string);
 
 		$emailAddress = static::getOneBy([
 			static::$columnNames["emailAddress"] => $string,
@@ -74,15 +70,18 @@ abstract class EmailAddress extends \Katu\Models\Model
 		return $this;
 	}
 
-	public function setEmailAddress(string $emailAddress): EmailAddress
+	public static function sanitizeEmailAddress(string $string): string
 	{
-		$emailAddress = (new TString($emailAddress))
+		return (new TString($string))
 			->getWithRemovedWhitespace()
 			->getWithAccentsRemoved()
 			->getString()
 			;
+	}
 
-		$this->emailAddress = $emailAddress;
+	public function setEmailAddress(string $emailAddress): EmailAddress
+	{
+		$this->emailAddress = static::sanitizeEmailAddress($emailAddress);
 
 		return $this;
 	}
