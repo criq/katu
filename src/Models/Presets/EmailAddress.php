@@ -21,6 +21,13 @@ abstract class EmailAddress extends \Katu\Models\Model
 		"emailAddress" => "emailAddress",
 	];
 
+	public function beforePersistCallback(): EmailAddress
+	{
+		$this->emailAddress = static::sanitizeEmailAddress($this->emailAddress);
+
+		return $this;
+	}
+
 	public static function validate(Param $emailAddress): Validation
 	{
 		$validation = new Validation;
@@ -37,6 +44,7 @@ abstract class EmailAddress extends \Katu\Models\Model
 			} elseif (!\Katu\Types\TEmailAddress::validateEmailAddress($output)) {
 				$validation->addError((new Error("Neplatná e-mailová adresa."))->addParam($emailAddress));
 			} else {
+				$output = static::getOrCreate($output);
 				$validation->setResponse($output)->addParam($emailAddress->setOutput($output));
 			}
 		}
@@ -47,6 +55,11 @@ abstract class EmailAddress extends \Katu\Models\Model
 	public static function getOrCreate(string $string): EmailAddress
 	{
 		$string = static::sanitizeEmailAddress($string);
+		if (!mb_strlen($string)) {
+			throw new \Exception("Missing e-mail address.");
+		} elseif (!\Katu\Types\TEmailAddress::validateEmailAddress($string)) {
+			throw new \Exception("Invalid e-mail address.");
+		}
 
 		$emailAddress = static::getOneBy([
 			static::$columnNames["emailAddress"] => $string,
@@ -75,6 +88,7 @@ abstract class EmailAddress extends \Katu\Models\Model
 		return (new TString($string))
 			->getWithRemovedWhitespace()
 			->getWithAccentsRemoved()
+			->getLowercase()
 			->getString()
 			;
 	}

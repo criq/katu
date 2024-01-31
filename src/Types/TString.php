@@ -164,4 +164,9 @@ class TString implements \Stringable
 
 		return new static($string);
 	}
+
+	public function getLowercase(): TString
+	{
+		return new static(mb_strtolower($this));
+	}
 }
