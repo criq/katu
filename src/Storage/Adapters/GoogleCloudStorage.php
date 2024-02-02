@@ -75,8 +75,10 @@ abstract class GoogleCloudStorage extends Storage
 
 	public function listEntities(): iterable
 	{
-		return array_map(function (\Google\Cloud\Storage\StorageObject $object) {
-			return (new GoogleCloudStorageEntity($this, $object));
+		$class = \App\App::getContainer()->get(\Katu\Storage\Adapters\GoogleCloudStorageEntity::class);
+
+		return array_map(function (\Google\Cloud\Storage\StorageObject $object) use ($class) {
+			return (new $class($this, $object));
 		}, iterator_to_array($this->getBucket()->objects()));
 	}
 }

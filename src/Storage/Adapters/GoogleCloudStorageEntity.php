@@ -57,11 +57,18 @@ class GoogleCloudStorageEntity extends Entity
 		return $this->getStorageObject()->info()["contentType"];
 	}
 
+	// TODO - uniform ACL?
 	public function getIsPublic(): bool
 	{
-		return (bool)count(array_filter($this->getStorageObject()->acl()->get(), function (array $acl) {
-			return ($acl["entity"] ?? null) == "allUsers" && in_array($acl["role"], ["READER", "OWNER"]);
-		}));
+		try {
+			return (bool)count(array_filter($this->getStorageObject()->acl()->get(), function (array $acl) {
+				return ($acl["entity"] ?? null) == "allUsers" && in_array($acl["role"], ["READER", "OWNER"]);
+			}));
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
+		return false;
 	}
 
 	public function getPublicURL(): ?TURL
