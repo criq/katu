@@ -2,33 +2,26 @@
 
 namespace Katu\Storage;
 
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
+use Katu\Types\TClass;
 use Katu\Types\TFileSize;
 use Katu\Types\TIdentifier;
 
-class Entity
+abstract class Entity implements PackagedInterface
 {
-	protected $contentType;
-	protected $fileSize;
-	protected $name;
 	protected $storage;
-	protected $uri;
+	protected $storageObject;
 
-	public function __construct(Storage $storage, string $name)
+	abstract public function getContentType(): ?string;
+	abstract public function getFileSize(): TFileSize;
+	abstract public function getURI(): string;
+
+	public static function createFromPackage(Package $package): Entity
 	{
-		$this->setStorage($storage);
-		$this->setName($name);
-	}
+		$className = TClass::createFromPortableName($package->getPayload()["class"])->getName();
 
-	public function setName(string $name): Entity
-	{
-		$this->name = $name;
-
-		return $this;
-	}
-
-	public function getName(): string
-	{
-		return $this->name;
+		return $className::createFromPackage($package);
 	}
 
 	public function setStorage(Storage $storage): Entity
@@ -43,69 +36,48 @@ class Entity
 		return $this->storage;
 	}
 
+	public function setStorageObject(\Google\Cloud\Storage\StorageObject $storageObject): Entity
+	{
+		$this->storageObject = $storageObject;
+
+		return $this;
+	}
+
+	public function getStorageObject(): \Google\Cloud\Storage\StorageObject
+	{
+		return $this->storageObject;
+	}
+
 	public function write($content): Entity
 	{
-		$this->getStorage()->getAdapter()->write($this, $content);
+		$this->getStorage()->write($this, $content);
 
 		return $this;
 	}
 
 	public function read()
 	{
-		return $this->getStorage()->getAdapter()->read($this);
+		return $this->getStorage()->read($this);
 	}
 
 	public function delete(): bool
 	{
-		return $this->getStorage()->getAdapter()->delete($this);
+		return $this->getStorage()->delete($this);
 	}
 
-	public function setURI(string $uri): Entity
+	public function getFileName(): ?string
 	{
-		$this->uri = $uri;
-
-		return $this;
+		return pathinfo($this->getURI())["basename"] ?? null;
 	}
 
-	public function getURI(): string
+	public function getIsImage(): bool
 	{
-		if (!$this->uri) {
-			$this->uri = $this->getStorage()->getAdapter()->getURI($this);
-		}
-
-		return $this->uri;
+		return strpos($this->getContentType(), "image/") === 0;
 	}
 
-	public function setFileSize(?TFileSize $fileSize): Entity
+	public function getImage(): ?\Katu\Tools\Images\Image
 	{
-		$this->fileSize = $fileSize;
-
-		return $this;
-	}
-
-	public function getFileSize(): TFileSize
-	{
-		if (!$this->fileSize) {
-			$this->fileSize = $this->getStorage()->getAdapter()->getFileSize($this);
-		}
-
-		return $this->fileSize;
-	}
-
-	public function setContentType(?string $contentType): Entity
-	{
-		$this->contentType = $contentType;
-
-		return $this;
-	}
-
-	public function getContentType(): string
-	{
-		if (!$this->contentType) {
-			$this->contentType = $this->getStorage()->getAdapter()->getContentType($this);
-		}
-
-		return $this->contentType;
+		return new \Katu\Tools\Images\Image(new \Katu\Tools\Images\Sources\File($this->getLocalFile()));
 	}
 
 	public function getLocalFile(): \Katu\Files\File
