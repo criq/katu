@@ -11,6 +11,8 @@ use Katu\Types\TURL;
 
 class GoogleCloudStorageEntity extends Entity
 {
+	private $storageObjectInfo;
+
 	public function __construct(GoogleCloudStorage $storage, \Google\Cloud\Storage\StorageObject $storageObject)
 	{
 		$this->setStorage($storage);
@@ -30,31 +32,40 @@ class GoogleCloudStorageEntity extends Entity
 		return new Package([
 			"storage" => [
 				"class" => (new TClass($this->getStorage()))->getPortableName(),
-				"bucket" => $this->getStorageObject()->info()["bucket"],
+				"bucket" => $this->getStorageObjectInfo()["bucket"],
 			],
 			"class" => (new TClass($this))->getPortableName(),
-			"name" => $this->getStorageObject()->info()["name"],
+			"name" => $this->getStorageObjectInfo()["name"],
 		]);
+	}
+
+	public function getStorageObjectInfo(): array
+	{
+		if (is_null($this->storageObjectInfo)) {
+			$this->storageObjectInfo = $this->getStorageObject()->info();
+		}
+
+		return $this->storageObjectInfo;
 	}
 
 	public function getURI(): string
 	{
-		return $this->getStorageObject()->info()["selfLink"];
+		return $this->getStorageObjectInfo()["selfLink"];
 	}
 
 	public function getFileName(): string
 	{
-		return basename(urldecode($this->getStorageObject()->info()["name"]));
+		return basename(urldecode($this->getStorageObjectInfo()["name"]));
 	}
 
 	public function getFileSize(): TFileSize
 	{
-		return new TFileSize($this->getStorageObject()->info()["size"]);
+		return new TFileSize($this->getStorageObjectInfo()["size"]);
 	}
 
 	public function getContentType(): ?string
 	{
-		return $this->getStorageObject()->info()["contentType"];
+		return $this->getStorageObjectInfo()["contentType"];
 	}
 
 	// TODO - uniform ACL?
@@ -73,6 +84,8 @@ class GoogleCloudStorageEntity extends Entity
 
 	public function getPublicURL(): ?TURL
 	{
-		return $this->getIsPublic() ? new TURL("https://storage.googleapis.com/{$this->getStorageObject()->info()["bucket"]}/{$this->getStorageObject()->info()["name"]}") : null;
+		$name = rawurlencode($this->getStorageObjectInfo()["name"]);
+
+		return $this->getIsPublic() ? new TURL("https://storage.googleapis.com/{$this->getStorageObjectInfo()["bucket"]}/{$name}") : null;
 	}
 }

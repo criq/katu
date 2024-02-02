@@ -43,24 +43,24 @@ abstract class GoogleCloudStorage extends Storage
 		return $this->bucket;
 	}
 
-	public function write(Entity $item, $content): Entity
+	public function write(Entity $entity, $content): Entity
 	{
 		$this->getBucket()->upload($content, [
-			"name" => $item->getFileName(),
+			"name" => $entity->getFileName(),
 		]);
 
-		return $item;
+		return $entity;
 	}
 
-	public function read(Entity $item)
+	public function read(Entity $entity)
 	{
-		return $this->getBucket()->object($item->getFileName())->downloadAsString();
+		return $entity->getStorageObject()->downloadAsString();
 	}
 
-	public function delete(Entity $item): bool
+	public function delete(Entity $entity): bool
 	{
 		try {
-			$this->getBucket()->object($item->getFileName())->delete();
+			$this->getBucket()->object($entity->getFileName())->delete();
 
 			return true;
 		} catch (\Throwable $e) {
@@ -79,6 +79,8 @@ abstract class GoogleCloudStorage extends Storage
 
 		return array_map(function (\Google\Cloud\Storage\StorageObject $object) use ($class) {
 			return (new $class($this, $object));
-		}, iterator_to_array($this->getBucket()->objects()));
+		}, iterator_to_array($this->getBucket()->objects([
+			"projection" => "full",
+		])));
 	}
 }
