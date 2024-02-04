@@ -101,10 +101,7 @@ class General
 	public function getResult()
 	{
 		foreach ($this->getAdapters() as $adapter) {
-			$res = $adapter->get($this->getIdentifierWithArgs(), $this->getTimeout());
-			if (!is_null($res)) {
-				return $res;
-			}
+			return $adapter->get($this->getIdentifierWithArgs(), $this->getTimeout());
 		}
 
 		$res = call_user_func_array($this->getCallback(), $this->getArgs());
