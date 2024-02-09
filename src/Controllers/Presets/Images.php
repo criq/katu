@@ -18,9 +18,15 @@ class Images extends \Katu\Controllers\Controller
 		$imageVersion = $image->getImageVersion($version);
 		$imageVersion->getVersionImage();
 
+		try {
+			$maxAge = (int)\Katu\Config\Config::get("images", "cache", "timeout");
+			$response = $response->withAddedHeader("Cache-Control", "max-age={$maxAge}");
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
 		return $response
 			->withHeader("Content-Type", $imageVersion->getFile()->getMime())
-			->withHeader("Cache-Control", "max-age=604800, public")
 			->withBody(\GuzzleHttp\Psr7\Utils::streamFor($imageVersion->getFile()->get()))
 			;
 	}
