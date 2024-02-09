@@ -2,36 +2,22 @@
 
 namespace Katu\Storage;
 
-class Storage
+use Katu\Tools\Package\Package;
+use Katu\Tools\Package\PackagedInterface;
+use Katu\Types\TClass;
+
+abstract class Storage implements PackagedInterface
 {
-	protected $adapter;
+	abstract public function delete(Entity $item): bool;
+	abstract public function getName(): string;
+	abstract public function listEntities(): iterable;
+	abstract public function read(Entity $item);
+	abstract public function write(Entity $item, $content): Entity;
 
-	public function __construct(AdapterInterface $adapter)
+	public static function createFromPackage(Package $package): Storage
 	{
-		$this->setAdapter($adapter);
-	}
+		$className = TClass::createFromPortableName($package->getPayload()["class"])->getName();
 
-	public function setAdapter(AdapterInterface $adapter): Storage
-	{
-		$this->adapter = $adapter;
-
-		return $this;
-	}
-
-	public function getAdapter(): AdapterInterface
-	{
-		return $this->adapter;
-	}
-
-	public function listEntities(): iterable
-	{
-		return $this->getAdapter()->listEntities($this);
-	}
-
-	public function getEntity(string $name): Entity
-	{
-		$entityClass = \App\App::getContainer()->get(\Katu\Storage\Entity::class);
-
-		return new $entityClass($this, $name);
+		return $className::createFromPackage($package);
 	}
 }
