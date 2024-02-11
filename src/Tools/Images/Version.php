@@ -21,7 +21,7 @@ class Version
 
 	public static function createFromConfig(string $name): Version
 	{
-		$config = \Katu\Config\Config::get("images", "versions", $name);
+		$config = \Katu\Config\Config::get("imagea", "versions", $name);
 
 		$version = new static($name);
 
