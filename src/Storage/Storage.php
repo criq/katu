@@ -12,7 +12,7 @@ abstract class Storage implements PackagedInterface
 	abstract public function getName(): string;
 	abstract public function listEntities(): iterable;
 	abstract public function read(Entity $item);
-	abstract public function write(Entity $item, $content): Entity;
+	abstract public function write(string $path, $content): Entity;
 
 	public static function createFromPackage(Package $package): Storage
 	{

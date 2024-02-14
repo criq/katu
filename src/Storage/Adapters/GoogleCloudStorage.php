@@ -43,13 +43,11 @@ abstract class GoogleCloudStorage extends Storage
 		return $this->bucket;
 	}
 
-	public function write(Entity $entity, $content): Entity
+	public function write(string $path, $content): Entity
 	{
-		$this->getBucket()->upload($content, [
-			"name" => $entity->getFileName(),
-		]);
-
-		return $entity;
+		return new GoogleCloudStorageEntity($this, $this->getBucket()->upload($content, [
+			"name" => $path,
+		]));
 	}
 
 	public function read(Entity $entity)

@@ -160,7 +160,7 @@ class Upload
 
 	public function getIsSupportedImage(): bool
 	{
-		return in_array($this->fileType, \Katu\Models\Presets\File::getSupportedImageTypes());
+		return in_array($this->fileType, \Katu\Files\File::getSupportedImageTypes());
 	}
 
 	public function getStream(): StreamInterface
