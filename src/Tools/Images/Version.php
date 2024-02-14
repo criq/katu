@@ -21,7 +21,7 @@ class Version
 
 	public static function createFromConfig(string $name): Version
 	{
-		$config = \Katu\Config\Config::get("image", "versions", $name);
+		$config = \Katu\Config\Config::get("images", "versions", $name);
 
 		$version = new static($name);
 
@@ -88,7 +88,7 @@ class Version
 
 	public function getDir(): \Katu\Files\File
 	{
-		$dir = new \Katu\Files\File(\App\App::getPublicTemporaryDir(), "image", "versions", $this->getName(), $this->getHash());
+		$dir = new \Katu\Files\File(\App\App::getPublicTemporaryDir(), "images", "versions", $this->getName(), $this->getHash());
 		if (!$dir->isWritable()) {
 			try {
 				$dir->makeDir();
