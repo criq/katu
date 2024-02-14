@@ -48,19 +48,19 @@ class GoogleCloudStorageEntity extends Entity
 		return $this->storageObjectInfo;
 	}
 
-	public function getPath(): string
-	{
-		return rawurldecode($this->getStorageObjectInfo()["name"]);
-	}
-
 	public function getURI(): string
 	{
 		return $this->getStorageObjectInfo()["selfLink"];
 	}
 
-	public function getFileName(): string
+	public function getPath(): string
 	{
-		return basename(urldecode($this->getStorageObjectInfo()["name"]));
+		return rawurldecode($this->getStorageObjectInfo()["name"]);
+	}
+
+	public function getContentType(): ?string
+	{
+		return $this->getStorageObjectInfo()["contentType"];
 	}
 
 	public function getFileSize(): TFileSize
@@ -68,9 +68,9 @@ class GoogleCloudStorageEntity extends Entity
 		return new TFileSize($this->getStorageObjectInfo()["size"]);
 	}
 
-	public function getContentType(): ?string
+	public function getFileName(): string
 	{
-		return $this->getStorageObjectInfo()["contentType"];
+		return basename(urldecode($this->getStorageObjectInfo()["name"]));
 	}
 
 	// TODO - uniform ACL?
