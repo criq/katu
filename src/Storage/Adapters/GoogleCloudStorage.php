@@ -58,7 +58,7 @@ abstract class GoogleCloudStorage extends Storage
 	public function delete(Entity $entity): bool
 	{
 		try {
-			$this->getBucket()->object($entity->getFileName())->delete();
+			$entity->getStorageObject()->delete();
 
 			return true;
 		} catch (\Throwable $e) {
