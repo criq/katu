@@ -6,6 +6,7 @@ use Katu\Storage\Storage;
 use Katu\Storage\Entity;
 use Katu\Tools\Package\Package;
 use Katu\Types\TClass;
+use Katu\Types\TIdentifier;
 
 abstract class GoogleCloudStorage extends Storage
 {
@@ -62,6 +63,8 @@ abstract class GoogleCloudStorage extends Storage
 
 			return true;
 		} catch (\Throwable $e) {
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+
 			return false;
 		}
 	}
