@@ -15,6 +15,7 @@ abstract class Entity implements PackagedInterface
 
 	abstract public function getContentType(): ?string;
 	abstract public function getFileSize(): TFileSize;
+	abstract public function getPath(): string;
 	abstract public function getURI(): string;
 
 	public static function createFromPackage(Package $package): Entity
@@ -48,21 +49,19 @@ abstract class Entity implements PackagedInterface
 		return $this->storageObject;
 	}
 
-	public function write($content): Entity
-	{
-		$this->getStorage()->write($this, $content);
-
-		return $this;
-	}
-
 	public function read()
 	{
-		return $this->getStorage()->read($this);
+		return $this->getStorage()->readEntity($this);
+	}
+
+	public function write($contents)
+	{
+		return $this->getStorage()->writeToEntity($this, $contents);
 	}
 
 	public function delete(): bool
 	{
-		return $this->getStorage()->delete($this);
+		return $this->getStorage()->deleteEntity($this);
 	}
 
 	public function getFileName(): ?string

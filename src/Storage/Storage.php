@@ -8,11 +8,14 @@ use Katu\Types\TClass;
 
 abstract class Storage implements PackagedInterface
 {
-	abstract public function delete(Entity $item): bool;
+	abstract public function deleteByPath(string $path): bool;
+	abstract public function deleteEntity(Entity $entity): bool;
 	abstract public function getName(): string;
 	abstract public function listEntities(): iterable;
-	abstract public function read(Entity $item);
-	abstract public function write(string $path, $content): Entity;
+	abstract public function readEntity(Entity $entity);
+	abstract public function readPath(string $path);
+	abstract public function writeToEntity(Entity $entity, $contents): Entity;
+	abstract public function writeToPath(string $path, $contents): Entity;
 
 	public static function createFromPackage(Package $package): Storage
 	{

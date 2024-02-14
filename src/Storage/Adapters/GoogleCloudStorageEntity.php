@@ -2,8 +2,8 @@
 
 namespace Katu\Storage\Adapters;
 
-use Katu\Storage\Entity;
 use Katu\Storage\Storage;
+use Katu\Storage\Entity;
 use Katu\Tools\Package\Package;
 use Katu\Types\TClass;
 use Katu\Types\TFileSize;
@@ -46,6 +46,11 @@ class GoogleCloudStorageEntity extends Entity
 		}
 
 		return $this->storageObjectInfo;
+	}
+
+	public function getPath(): string
+	{
+		return rawurldecode($this->getStorageObjectInfo()["name"]);
 	}
 
 	public function getURI(): string

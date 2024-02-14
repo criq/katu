@@ -6,7 +6,6 @@ use Katu\Storage\Storage;
 use Katu\Storage\Entity;
 use Katu\Tools\Package\Package;
 use Katu\Types\TClass;
-use Katu\Types\TIdentifier;
 
 abstract class GoogleCloudStorage extends Storage
 {
@@ -44,29 +43,42 @@ abstract class GoogleCloudStorage extends Storage
 		return $this->bucket;
 	}
 
-	public function write(string $path, $content): Entity
+	public function writeToPath(string $path, $contents): GoogleCloudStorageEntity
 	{
-		return new GoogleCloudStorageEntity($this, $this->getBucket()->upload($content, [
+		return new GoogleCloudStorageEntity($this, $this->getBucket()->upload($contents, [
 			"name" => $path,
 		]));
 	}
 
-	public function read(Entity $entity)
+	public function writeToEntity(Entity $entity, $contents): GoogleCloudStorageEntity
+	{
+		return new GoogleCloudStorageEntity($this, $this->getBucket()->upload($contents, [
+			"name" => $entity->getPath(),
+		]));
+	}
+
+	public function readPath(string $path)
+	{
+		return $this->getBucket()->object($path)->downloadAsString();
+	}
+
+	public function readEntity(Entity $entity)
 	{
 		return $entity->getStorageObject()->downloadAsString();
 	}
 
-	public function delete(Entity $entity): bool
+	public function deleteByPath(string $path): bool
 	{
-		try {
-			$entity->getStorageObject()->delete();
+		return $this->getBucket()->object($path)->delete();
 
-			return true;
-		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+		return true;
+	}
 
-			return false;
-		}
+	public function deleteEntity(Entity $entity): bool
+	{
+		$entity->getStorageObject()->delete();
+
+		return true;
 	}
 
 	public function getName(): string
