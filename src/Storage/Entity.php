@@ -85,7 +85,9 @@ abstract class Entity implements PackagedInterface
 		$extension = pathinfo($this->getURI())["extension"] ?? null;
 		$identifier = new TIdentifier(__CLASS__, __FUNCTION__, sha1($this->getURI()));
 		$file = new \Katu\Files\File(\App\App::getTemporaryDir(), $identifier->getPath($extension));
-		$file->set($this->read());
+		if (!$file->exists()) {
+			$file->set($this->read());
+		}
 
 		return $file;
 	}

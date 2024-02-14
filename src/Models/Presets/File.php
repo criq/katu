@@ -227,19 +227,9 @@ abstract class File extends \Katu\Models\Model
 		return new \Katu\Files\File(static::getDir(), $this->path);
 	}
 
-	public static function getSupportedImageTypes(): array
-	{
-		return [
-			"image/gif",
-			"image/jpeg",
-			"image/png",
-			"image/webp",
-		];
-	}
-
 	public function getIsSupportedImage(): bool
 	{
-		return in_array($this->type, static::getSupportedImageTypes());
+		return $this->getFile()->getIsSupportedImage();
 	}
 
 	public function getImage(): \Katu\Tools\Images\Image

@@ -48,8 +48,8 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty
 			$email->addTo($recipient->getEmailAddress(), $recipient->getName());
 		}
 
-		foreach ($this->attachments as $attachment) {
-			$email->addAttachment($attachment["file"], $attachment["name"], $attachment["cid"]);
+		foreach ($this->getAttachments() as $attachment) {
+			$email->addAttachment($attachment->getFile(), $attachment->getName(), $attachment->getCID());
 		}
 
 		return $email;

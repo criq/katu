@@ -456,6 +456,21 @@ class File
 		}, $this, $algo, $paramName);
 	}
 
+	public static function getSupportedImageTypes(): array
+	{
+		return [
+			"image/gif",
+			"image/jpeg",
+			"image/png",
+			"image/webp",
+		];
+	}
+
+	public function getIsSupportedImage(): bool
+	{
+		return in_array($this->getMime(), static::getSupportedImageTypes());
+	}
+
 	public function getStream(): StreamInterface
 	{
 		return \GuzzleHttp\Psr7\Utils::streamFor(fopen((string)$this, "a+"));

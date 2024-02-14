@@ -6,7 +6,7 @@ use Katu\Types\TEmailAddress;
 
 abstract class Email
 {
-	protected $attachments = [];
+	protected $attachments;
 	protected $cc = [];
 	protected $headers = [];
 	protected $html = "";
@@ -131,13 +131,25 @@ abstract class Email
 		return $this;
 	}
 
-	public function addAttachment($file, $params = []): ThirdParty
+	public function getAttachments(): AttachmentCollection
 	{
-		$this->attachments[] = [
-			"file" => new \Katu\Files\File($file),
-			"name" => $params["name"] ?? null,
-			"cid" => $params["cid"] ?? null,
-		];
+		if (is_null($this->attachments)) {
+			$this->attachments = new AttachmentCollection;
+		}
+
+		return $this->attachments;
+	}
+
+	public function addAttachments(AttachmentCollection $attachments): Email
+	{
+		$this->getAttachments()->addAttachments($attachments);
+
+		return $this;
+	}
+
+	public function addAttachment(Attachment $attachment): Email
+	{
+		$this->getAttachments()->addAttachment($attachment);
 
 		return $this;
 	}

@@ -6,6 +6,7 @@ use Katu\Storage\Storage;
 use Katu\Storage\Entity;
 use Katu\Tools\Package\Package;
 use Katu\Types\TClass;
+use Katu\Types\TIdentifier;
 
 abstract class GoogleCloudStorage extends Storage
 {
@@ -43,13 +44,11 @@ abstract class GoogleCloudStorage extends Storage
 		return $this->bucket;
 	}
 
-	public function write(Entity $entity, $content): Entity
+	public function write(string $path, $content): Entity
 	{
-		$this->getBucket()->upload($content, [
-			"name" => $entity->getFileName(),
-		]);
-
-		return $entity;
+		return new GoogleCloudStorageEntity($this, $this->getBucket()->upload($content, [
+			"name" => $path,
+		]));
 	}
 
 	public function read(Entity $entity)
@@ -60,10 +59,12 @@ abstract class GoogleCloudStorage extends Storage
 	public function delete(Entity $entity): bool
 	{
 		try {
-			$this->getBucket()->object($entity->getFileName())->delete();
+			$entity->getStorageObject()->delete();
 
 			return true;
 		} catch (\Throwable $e) {
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+
 			return false;
 		}
 	}

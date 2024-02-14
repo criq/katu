@@ -41,11 +41,11 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 			];
 		}
 
-		foreach ($this->attachments as $attachment) {
+		foreach ($this->getAttachments() as $attachment) {
 			$email["message"]["attachments"][] = [
-				"type" => $attachment["file"]->getMime(),
-				"name" => isset($attachment["name"]) ? $attachment["name"] : $attachment["file"]->getBasename(),
-				"content" => \base64_encode($attachment["file"]->get()),
+				"type" => $attachment->getFile()->getMime(),
+				"name" => $attachment->getName() ?: $attachment->getFile()->getBasename(),
+				"content" => base64_encode($attachment->getFile()->get()),
 			];
 		}
 
