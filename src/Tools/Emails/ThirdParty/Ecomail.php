@@ -43,7 +43,7 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 				$entity->getStorageObject()->acl()->add("allUsers", "READER");
 
 				$e->getNode(0)->setAttribute("src", "");
-				$e->getNode(0)->setAttribute("style", "background-image: url('{$entity->getPublicURL()}'); background-size: cover;");
+				$e->getNode(0)->setAttribute("style", "background-image: url('{$entity->getPublicURL()}'); background-size: cover; border: none;");
 			}
 		});
 		$html = trim("<html>{$dom->html()}</html>");
