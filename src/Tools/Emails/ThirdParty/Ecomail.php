@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Emails\ThirdParty;
 
+use App\Classes\ThirdParty\Google\Cloud\GoogleCloudStorage;
+use App\Classes\Time;
 use Katu\Errors\Error;
 use Katu\Errors\ErrorCollection;
 use Katu\Tools\Emails\Attachment;
@@ -19,7 +21,36 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 		}
 
 		$email["message"]["subject"] = $this->getSubject();
-		$email["message"]["html"] = $this->getHtml();
+
+		$html = $this->getHtml();
+
+		$dom = \Katu\Tools\DOM\DOM::crawlHTML($html);
+		$dom->filter("img")->each(function (\Symfony\Component\DomCrawler\Crawler $e) {
+			if (preg_match("/^data:(?<mime>image\/(?<extension>.+));base64,(?<data>.+)$/", $e->attr("src"), $match)) {
+				$path = implode("/", [
+					\Katu\Config\Env::getPlatform(),
+					(new Time)->format("Y"),
+					(new Time)->format("Y-m-d"),
+					\Katu\Tools\Random\Generator::getIdString(),
+					implode(".", [
+						\Katu\Tools\Random\Generator::getFileName(),
+						$match["extension"],
+					]),
+				]);
+
+				$storage = new GoogleCloudStorage(GoogleCloudStorage::getClient()->bucket("hnutiduha-is-email-public-images"));
+
+				$entity = $storage->writeToPath($path, base64_decode($match["data"]));
+				$entity->getStorageObject()->acl()->add("allUsers", "READER");
+
+				$e->getNode(0)->setAttribute("src", "");
+				$e->getNode(0)->setAttribute("style", "background-image: url('{$entity->getPublicURL()}'); background-size: cover;");
+			}
+		});
+		$html = trim("<html>{$dom->html()}</html>");
+
+		$email["message"]["html"] = $html;
+
 		$email["message"]["text"] = $this->getPlain() ?: strip_tags($this->html);
 		$email["message"]["from_email"] = $this->getSender()->getEmailAddress();
 		$email["message"]["from_name"] = $this->getSender()->getName();
@@ -44,8 +75,8 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 
 		$email["message"]["attachments"] = array_map(function (Attachment $attachment) {
 			return [
-				"name" => $attachment->getName() ?: $attachment->getEntity()->getFileName(),
 				"type" => $attachment->getEntity()->getContentType(),
+				"name" => $attachment->getName() ?: $attachment->getEntity()->getFileName(),
 				"content" => base64_encode($attachment->getEntity()->getContents()),
 			];
 		}, $this->getAttachments()->getArrayCopy());
@@ -65,8 +96,10 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 	{
 		$curl = new \Curl\Curl;
 		$curl->setHeader("key", \Katu\Config\Config::get("ecomail", "api", "key"));
+		$curl->setHeader("Content-Type", "application/json");
 
-		$res = $curl->post($this->getEndpointURL(), $this->getEmail());
+		$payload = $this->getEmail();
+		$res = $curl->post($this->getEndpointURL(), $payload);
 		$info = $curl->getInfo();
 
 		if ($info["http_code"] == 200) {

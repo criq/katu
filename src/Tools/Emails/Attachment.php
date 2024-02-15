@@ -6,13 +6,13 @@ class Attachment
 {
 	protected $entity;
 	protected $name;
-	protected $cid;
+	protected $contentId;
 
-	public function __construct(\Katu\Storage\Entity $entity, ?string $name = null, ?string $cid = null)
+	public function __construct(\Katu\Storage\Entity $entity, ?string $name = null, ?string $contentId = null)
 	{
 		$this->setEntity($entity);
 		$this->setName($name);
-		$this->setCID($cid);
+		$this->setContentId($contentId);
 	}
 
 	public function setEntity(\Katu\Storage\Entity $entity): Attachment
@@ -39,8 +39,15 @@ class Attachment
 		return $this->name;
 	}
 
-	public function setCID(): ?string
+	public function setContentId(?string $contentId): Attachment
 	{
-		return $this->cid;
+		$this->contentId = $contentId;
+
+		return $this;
+	}
+
+	public function getContentId(): ?string
+	{
+		return $this->contentId;
 	}
 }
