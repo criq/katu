@@ -27,7 +27,7 @@ abstract class Email
 
 	public function __toString(): string
 	{
-		return (string)$this->getHtml();
+		return (string)$this->getHTML();
 	}
 
 	public function setSubject(?string $subject): Email
@@ -42,16 +42,21 @@ abstract class Email
 		return $this->subject;
 	}
 
-	public function setHtml(?string $html): Email
+	public function setHTML(?string $html): Email
 	{
 		$this->html = $html;
 
 		return $this;
 	}
 
-	public function getHtml(): ?string
+	public function getHTML(): ?string
 	{
 		return $this->html;
+	}
+
+	public function getDispatchedHTML(): ?string
+	{
+		return $this->getHTML();
 	}
 
 	public function setPlain(?string $plain): Email
@@ -66,9 +71,14 @@ abstract class Email
 		return $this->plain;
 	}
 
+	public function getDispatchedPlain(): ?string
+	{
+		return $this->getPlain() ?: strip_tags($this->getDispatchedHTML());
+	}
+
 	public function setBody(string $html, ?string $plain = null): Email
 	{
-		$this->setHtml($html);
+		$this->setHTML($html);
 		$this->setPlain($plain ?: strip_tags($html));
 
 		return $this;

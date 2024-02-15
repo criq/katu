@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Emails\ThirdParty;
 
-use App\Classes\ThirdParty\Google\Cloud\GoogleCloudStorage;
-use App\Classes\Time;
 use Katu\Errors\Error;
 use Katu\Errors\ErrorCollection;
 use Katu\Tools\Emails\Attachment;
@@ -20,37 +18,6 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 			$email["message"]["template_id"] = $this->getTemplate();
 		}
 
-		$email["message"]["subject"] = $this->getSubject();
-
-		$html = $this->getHtml();
-
-		$dom = \Katu\Tools\DOM\DOM::crawlHTML($html);
-		$dom->filter("img")->each(function (\Symfony\Component\DomCrawler\Crawler $e) {
-			if (preg_match("/^data:(?<mime>image\/(?<extension>[a-z0-9]+));base64,(?<data>.+)$/m", $e->attr("src"), $match)) {
-				$path = implode("/", [
-					\Katu\Config\Env::getPlatform(),
-					(new Time)->format("Y"),
-					(new Time)->format("Y-m-d"),
-					implode(".", [
-						sha1($match["data"]),
-						$match["extension"],
-					]),
-				]);
-
-				$storage = new GoogleCloudStorage(GoogleCloudStorage::getClient()->bucket("hnutiduha-is-email-public-images"));
-
-				$entity = $storage->writeToPath($path, base64_decode($match["data"]));
-				$entity->getStorageObject()->acl()->add("allUsers", "READER");
-
-				$e->getNode(0)->setAttribute("src", "");
-				$e->getNode(0)->setAttribute("style", "background-image: url('{$entity->getPublicURL()}'); background-size: cover; border: none;");
-			}
-		});
-		$html = trim("<html>{$dom->html()}</html>");
-
-		$email["message"]["html"] = $html;
-
-		$email["message"]["text"] = $this->getPlain() ?: strip_tags($this->html);
 		$email["message"]["from_email"] = $this->getSender()->getEmailAddress();
 		$email["message"]["from_name"] = $this->getSender()->getName();
 
@@ -64,6 +31,10 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 				"name" => $recipient->getName(),
 			];
 		}
+
+		$email["message"]["subject"] = $this->getSubject();
+		$email["message"]["html"] = $this->getDispatchedHTML();
+		$email["message"]["text"] = $this->getDispatchedPlain();
 
 		foreach ($this->globalVariables as $name => $content) {
 			$email["message"]["global_merge_vars"][] = [
