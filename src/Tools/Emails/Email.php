@@ -163,4 +163,15 @@ abstract class Email
 
 		return $this;
 	}
+
+	public function getDispatchedAttachments(): array
+	{
+		return array_map(function (Attachment $attachment) {
+			return [
+				"type" => $attachment->getEntity()->getContentType(),
+				"name" => $attachment->getName() ?: $attachment->getEntity()->getFileName(),
+				"content" => base64_encode($attachment->getEntity()->getContents()),
+			];
+		}, $this->getAttachments()->getArrayCopy());
+	}
 }

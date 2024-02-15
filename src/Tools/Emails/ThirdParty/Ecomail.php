@@ -4,7 +4,6 @@ namespace Katu\Tools\Emails\ThirdParty;
 
 use Katu\Errors\Error;
 use Katu\Errors\ErrorCollection;
-use Katu\Tools\Emails\Attachment;
 use Katu\Tools\Emails\Response;
 use Katu\Types\TURL;
 
@@ -43,13 +42,7 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 			];
 		}
 
-		$email["message"]["attachments"] = array_map(function (Attachment $attachment) {
-			return [
-				"type" => $attachment->getEntity()->getContentType(),
-				"name" => $attachment->getName() ?: $attachment->getEntity()->getFileName(),
-				"content" => base64_encode($attachment->getEntity()->getContents()),
-			];
-		}, $this->getAttachments()->getArrayCopy());
+		$email["message"]["attachments"] = $this->getDispatchedAttachments();
 
 		return $email;
 	}
