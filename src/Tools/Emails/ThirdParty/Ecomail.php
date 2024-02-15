@@ -26,14 +26,13 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 
 		$dom = \Katu\Tools\DOM\DOM::crawlHTML($html);
 		$dom->filter("img")->each(function (\Symfony\Component\DomCrawler\Crawler $e) {
-			if (preg_match("/^data:(?<mime>image\/(?<extension>.+));base64,(?<data>.+)$/", $e->attr("src"), $match)) {
+			if (preg_match("/^data:(?<mime>image\/(?<extension>[a-z0-9]+));base64,(?<data>.+)$/m", $e->attr("src"), $match)) {
 				$path = implode("/", [
 					\Katu\Config\Env::getPlatform(),
 					(new Time)->format("Y"),
 					(new Time)->format("Y-m-d"),
-					\Katu\Tools\Random\Generator::getIdString(),
 					implode(".", [
-						\Katu\Tools\Random\Generator::getFileName(),
+						sha1($match["data"]),
 						$match["extension"],
 					]),
 				]);
