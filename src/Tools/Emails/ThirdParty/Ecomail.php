@@ -77,6 +77,23 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 				$errors[] = new Error($error[0], $key);
 			}
 
+			// Insert contents of <title>.
+			if (!$errors->hasErrors()) {
+				try {
+					$title = trim(\Katu\Tools\DOM\DOM::crawlHTML($res)->filter("title")->text());
+					if ($title) {
+						$errors[] = new Error($title);
+					}
+				} catch (\Throwable $e) {
+					// Nevermind.
+				}
+			}
+
+			// Insert whole response.
+			if (!$errors->hasErrors()) {
+				$errors[] = new Error((string)$res);
+			}
+
 			return (new Response(false))->setPayload($res)->setErrors($errors);
 		}
 	}
