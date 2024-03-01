@@ -17,9 +17,6 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 			$email["message"]["template_id"] = $this->getTemplate();
 		}
 
-		$email["message"]["subject"] = $this->getSubject();
-		$email["message"]["html"] = $this->getHtml();
-		$email["message"]["text"] = $this->getPlain() ?: strip_tags($this->html);
 		$email["message"]["from_email"] = $this->getSender()->getEmailAddress();
 		$email["message"]["from_name"] = $this->getSender()->getName();
 
@@ -34,6 +31,10 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 			];
 		}
 
+		$email["message"]["subject"] = $this->getSubject();
+		$email["message"]["html"] = $this->getDispatchedHTML();
+		$email["message"]["text"] = $this->getDispatchedPlain();
+
 		foreach ($this->globalVariables as $name => $content) {
 			$email["message"]["global_merge_vars"][] = [
 				"name" => $name,
@@ -41,13 +42,7 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 			];
 		}
 
-		foreach ($this->getAttachments() as $attachment) {
-			$email["message"]["attachments"][] = [
-				"type" => $attachment->getFile()->getMime(),
-				"name" => $attachment->getName() ?: $attachment->getFile()->getBasename(),
-				"content" => base64_encode($attachment->getFile()->get()),
-			];
-		}
+		$email["message"]["attachments"] = $this->getDispatchedAttachments();
 
 		return $email;
 	}
@@ -64,8 +59,10 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 	{
 		$curl = new \Curl\Curl;
 		$curl->setHeader("key", \Katu\Config\Config::get("ecomail", "api", "key"));
+		$curl->setHeader("Content-Type", "application/json");
 
-		$res = $curl->post($this->getEndpointURL(), $this->getEmail());
+		$payload = $this->getEmail();
+		$res = $curl->post($this->getEndpointURL(), $payload);
 		$info = $curl->getInfo();
 
 		if ($info["http_code"] == 200) {
@@ -74,6 +71,23 @@ class Ecomail extends \Katu\Tools\Emails\ThirdParty
 			$errors = new ErrorCollection;
 			foreach ((array)$res->errors as $key => $error) {
 				$errors[] = new Error($error[0], $key);
+			}
+
+			// Insert contents of <title>.
+			if (!$errors->hasErrors()) {
+				try {
+					$title = trim(\Katu\Tools\DOM\DOM::crawlHTML($res)->filter("title")->text());
+					if ($title) {
+						$errors[] = new Error($title);
+					}
+				} catch (\Throwable $e) {
+					// Nevermind.
+				}
+			}
+
+			// Insert whole response.
+			if (!$errors->hasErrors()) {
+				$errors[] = new Error((string)$res);
 			}
 
 			return (new Response(false))->setPayload($res)->setErrors($errors);

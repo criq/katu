@@ -4,27 +4,27 @@ namespace Katu\Tools\Emails;
 
 class Attachment
 {
-	protected $file;
+	protected $entity;
 	protected $name;
-	protected $cid;
+	protected $contentId;
 
-	public function __construct(\Katu\Files\File $file, ?string $name = null, ?string $cid = null)
+	public function __construct(\Katu\Storage\Entity $entity, ?string $name = null, ?string $contentId = null)
 	{
-		$this->setFile($file);
+		$this->setEntity($entity);
 		$this->setName($name);
-		$this->setCID($cid);
+		$this->setContentId($contentId);
 	}
 
-	public function setFile(\Katu\Files\File $file): Attachment
+	public function setEntity(\Katu\Storage\Entity $entity): Attachment
 	{
-		$this->file = $file;
+		$this->entity = $entity;
 
 		return $this;
 	}
 
-	public function getFile(): \Katu\Files\File
+	public function getEntity(): \Katu\Storage\Entity
 	{
-		return $this->file;
+		return $this->entity;
 	}
 
 	public function setName(?string $name): Attachment
@@ -39,8 +39,15 @@ class Attachment
 		return $this->name;
 	}
 
-	public function setCID(): ?string
+	public function setContentId(?string $contentId): Attachment
 	{
-		return $this->cid;
+		$this->contentId = $contentId;
+
+		return $this;
+	}
+
+	public function getContentId(): ?string
+	{
+		return $this->contentId;
 	}
 }

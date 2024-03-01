@@ -49,6 +49,11 @@ abstract class Entity implements PackagedInterface
 		return $this->storageObject;
 	}
 
+	public function getContents()
+	{
+		return $this->read();
+	}
+
 	public function read()
 	{
 		return $this->getStorage()->readEntity($this);

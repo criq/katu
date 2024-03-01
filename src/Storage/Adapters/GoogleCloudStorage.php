@@ -38,9 +38,35 @@ abstract class GoogleCloudStorage extends Storage
 		return $this;
 	}
 
+	public function getName(): string
+	{
+		return $this->getBucket()->info()["name"];
+	}
+
+	public function listEntities(): iterable
+	{
+		$class = \App\App::getContainer()->get(\Katu\Storage\Adapters\GoogleCloudStorageEntity::class);
+
+		return array_map(function (\Google\Cloud\Storage\StorageObject $object) use ($class) {
+			return (new $class($this, $object));
+		}, iterator_to_array($this->getBucket()->objects([
+			"projection" => "full",
+		])));
+	}
+
 	public function getBucket(): \Google\Cloud\Storage\Bucket
 	{
 		return $this->bucket;
+	}
+
+	public function readPath(string $path)
+	{
+		return $this->getBucket()->object($path)->downloadAsString();
+	}
+
+	public function readEntity(Entity $entity)
+	{
+		return $entity->getStorageObject()->downloadAsString();
 	}
 
 	public function writeToPath(string $path, $contents): GoogleCloudStorageEntity
@@ -57,16 +83,6 @@ abstract class GoogleCloudStorage extends Storage
 		]));
 	}
 
-	public function readPath(string $path)
-	{
-		return $this->getBucket()->object($path)->downloadAsString();
-	}
-
-	public function readEntity(Entity $entity)
-	{
-		return $entity->getStorageObject()->downloadAsString();
-	}
-
 	public function deleteByPath(string $path): bool
 	{
 		return $this->getBucket()->object($path)->delete();
@@ -79,21 +95,5 @@ abstract class GoogleCloudStorage extends Storage
 		$entity->getStorageObject()->delete();
 
 		return true;
-	}
-
-	public function getName(): string
-	{
-		return $this->getBucket()->info()["name"];
-	}
-
-	public function listEntities(): iterable
-	{
-		$class = \App\App::getContainer()->get(\Katu\Storage\Adapters\GoogleCloudStorageEntity::class);
-
-		return array_map(function (\Google\Cloud\Storage\StorageObject $object) use ($class) {
-			return (new $class($this, $object));
-		}, iterator_to_array($this->getBucket()->objects([
-			"projection" => "full",
-		])));
 	}
 }
