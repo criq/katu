@@ -4,9 +4,7 @@ namespace Katu\Tools\Emails\ThirdParty;
 
 class Sendgrid extends \Katu\Tools\Emails\ThirdParty
 {
-	public $attachments = [];
-
-	public static function getDefaultApi()
+	public static function getDefaultAPI(): \SendGrid
 	{
 		try {
 			$key = \Katu\Config\Config::get("app", "email", "useSendgridKey");
@@ -21,7 +19,7 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty
 		}
 	}
 
-	public function getEmail()
+	public function getEmail(): \SendGrid\Mail\Mail
 	{
 		$email = new \SendGrid\Mail\Mail;
 		$email->setFrom($this->getSender()->getEmailAddress(), $this->getSender()->getName());
@@ -61,7 +59,7 @@ class Sendgrid extends \Katu\Tools\Emails\ThirdParty
 		if (isset($args[0]) && $args[0] instanceof \SendGrid) {
 			$sendgridApi = $args[0];
 		} else {
-			$sendgridApi = static::getDefaultApi();
+			$sendgridApi = static::getDefaultAPI();
 		}
 
 		$email = $this->getEmail();
