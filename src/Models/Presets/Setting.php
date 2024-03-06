@@ -2,101 +2,21 @@
 
 namespace Katu\Models\Presets;
 
-use Sexy\Sexy as SX;
+use Katu\Tools\Calendar\Time;
 
 abstract class Setting extends \Katu\Models\Model
 {
 	const TABLE = "settings";
 
-	public static function prepareValue($value)
-	{
-		return \Katu\Files\Formats\JSON::encodeStandard($value);
-	}
+	public $creatorId;
+	public $description;
+	public $isSystem = 0;
+	public $name;
+	public $timeCreated;
+	public $timeEdited;
+	public $value;
 
-	public static function getOrCreate(?User $creator = null, string $name, $value, ?bool $isSystem = null, string $description = null) : Setting
-	{
-		try {
-			if (!static::checkName($name)) {
-				throw (new \Katu\Exceptions\InputErrorException("Invalid setting name \"{$name}\"."))
-					->addErrorName("name")
-					;
-			}
-		} catch (\Katu\Exceptions\Exception $e) {
-			if ($e->getAbbr() == "nameInUse") {
-				// Nevermind.
-			} else {
-				throw $e;
-			}
-		}
-
-		return static::upsert([
-			"name" => trim($name),
-		], [
-			"timeCreated" => new \Katu\Tools\Calendar\Time,
-			"creatorId" => $creator ? $creator->getId() : null,
-		], [
-			"timeEdited" => new \Katu\Tools\Calendar\Time,
-			"value" => static::prepareValue($value),
-			"isSystem" => $isSystem ? "1" : "0",
-			"description" => trim($description) ?: null,
-		]);
-	}
-
-	public static function checkName(string $name, ?Setting $object = null)
-	{
-		$name = trim($name);
-
-		if (!$name) {
-			throw (new \Katu\Exceptions\InputErrorException("Missing setting name."))
-				->addErrorName("name")
-				;
-		}
-
-		$sql = SX::select()
-			->from(static::getTable())
-			->where(SX::eq(static::getColumn("name"), $name))
-			;
-
-		if ($object) {
-			$sql->where(SX::cmpNotEq(static::getIdColumn(), $object->getId()));
-		}
-
-		if (static::select($sql)->getResult()->getTotal()) {
-			throw (new \Katu\Exceptions\InputErrorException("Setting name \"{$name}\" already used."))
-				->setAbbr("nameInUse")
-				->addErrorName("name")
-				;
-		}
-
-		return true;
-	}
-
-	public function setName(string $name)
-	{
-		if (!static::checkName($name, $this)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid setting name."))
-				->addErrorName("name")
-				;
-		}
-
-		$this->name = trim($name);
-
-		return true;
-	}
-
-	public function setValue($value): Setting
-	{
-		$this->value = static::prepareValue($value);
-
-		return $this;
-	}
-
-	public function getValue()
-	{
-		return \Katu\Files\Formats\JSON::decodeAsArray($this->value);
-	}
-
-	public static function getAllAsAssoc()
+	public static function getAllAsAssoc(): array
 	{
 		$settings = [];
 		foreach (static::getAll() as $setting) {
@@ -106,35 +26,103 @@ abstract class Setting extends \Katu\Models\Model
 		return $settings;
 	}
 
-	public static function getOneByName(string $name): Setting
+	public static function getOneByName(string $name): ?Setting
 	{
 		return static::getOneBy([
 			"name" => $name,
 		]);
 	}
 
+	public static function getOrCreate(?User $creator = null, string $name): Setting
+	{
+		$setting = static::getOneByName($name);
+		if (!$setting) {
+			$setting = new static;
+			$setting->setTimeCreated(new Time);
+			$setting->setTimeEdited(new Time);
+			$setting->setCreator($creator);
+			$setting->setName($name);
+			$setting->persist();
+		}
+
+		return $setting;
+	}
+
+	public function setTimeCreated(Time $time): Setting
+	{
+		$this->timeCreated = $time;
+
+		return $this;
+	}
+
+	public function setTimeEdited(Time $time): Setting
+	{
+		$this->timeEdited = $time;
+
+		return $this;
+	}
+
+	public function setCreator(?User $creator): Setting
+	{
+		$this->creatorId = $creator ? $creator->getId() : null;
+
+		return $this;
+	}
+
+	public function setName(string $name): Setting
+	{
+		$this->name = trim($name);
+
+		return $this;
+	}
+
+	public function setValue($value): Setting
+	{
+		$this->value = \Katu\Files\Formats\JSON::encodeStandard($value);
+		$this->setTimeEdited(new Time);
+
+		return $this;
+	}
+
+	public function getValue()
+	{
+		return \Katu\Files\Formats\JSON::decodeAsArray($this->value);
+	}
+
+	public function setIsSystem(bool $isSystem): Setting
+	{
+		$this->isSystem = $isSystem ? 1 : 0;
+
+		return $this;
+	}
+
+	public function getIsSystem(): bool
+	{
+		return (bool)$this->isSystem;
+	}
+
 	/****************************************************************************
 	 * Permissions.
 	 */
-	public function userCanEdit($user)
+	public function userCanEdit(?User $user): bool
 	{
-		if (!$user) {
-			return false;
+		try {
+			return $user->hasPermission("settings.edit");
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
-		return $user->hasPermission("settings.edit");
+		return false;
 	}
 
 	public function userCanDelete($user)
 	{
-		if (!$user) {
-			return false;
+		try {
+			return !$this->getIsSystem() && $user->hasPermission("settings.delete");
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
-		if ($this->isSystem) {
-			return false;
-		}
-
-		return $user->hasPermission("settings.delete");
+		return false;
 	}
 }
