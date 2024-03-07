@@ -21,7 +21,7 @@
 		"mischiefcollective/colorjizz": "@stable",
 		"monolog/monolog": "^1",
 		"mtdowling/cron-expression": "1.*",
-		"mustangostang/spyc": "@stable",
+		"mustangostang/spyc": "0.6.2",
 		"php-curl-class/php-curl-class": "@stable",
 		"ralouphie/mimey": "@stable",
 		"sendgrid/sendgrid": "^7",
@@ -30,7 +30,6 @@
 		"symfony/css-selector": "2.*",
 		"symfony/dom-crawler": "2.*",
 		"symfony/intl": "@stable",
-		"symfony/yaml": "@stable",
 		"twig/extensions": "@stable",
 		"twig/twig": "@stable",
 		"vlucas/phpdotenv" : "@stable"
