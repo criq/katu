@@ -19,30 +19,36 @@ class Version
 		$this->setQuality($quality);
 	}
 
-	public static function createFromConfig(string $name): Version
+	public static function createFromConfig(string $name): ?Version
 	{
-		$config = \Katu\Config\Config::get("images", "versions", $name);
+		try {
+			$config = \Katu\Config\Config::get("images", "versions", $name);
 
-		$version = new static($name);
+			$version = new static($name);
 
-		if (isset($config["filters"])) {
-			foreach ((array)$config["filters"] as $filterConfig) {
-				$filter = \Katu\Tools\Images\Filter::createByCode($filterConfig["filter"]);
-				unset($filterConfig["filter"]);
-				$filter->setParams($filterConfig);
-				$version->addFilter($filter);
+			if (isset($config["filters"])) {
+				foreach ((array)$config["filters"] as $filterConfig) {
+					$filter = \Katu\Tools\Images\Filter::createByCode($filterConfig["filter"]);
+					unset($filterConfig["filter"]);
+					$filter->setParams($filterConfig);
+					$version->addFilter($filter);
+				}
 			}
+
+			if (isset($config["quality"])) {
+				$version->setQuality($config["quality"]);
+			}
+
+			if (isset($config["extension"])) {
+				$version->setExtension($config["extension"]);
+			}
+
+			return $version;
+		} catch (\Throwable $e) {
+			// Nevermind.
 		}
 
-		if (isset($config["quality"])) {
-			$version->setQuality($config["quality"]);
-		}
-
-		if (isset($config["extension"])) {
-			$version->setExtension($config["extension"]);
-		}
-
-		return $version;
+		return null;
 	}
 
 	public function setName(?string $value): Version
