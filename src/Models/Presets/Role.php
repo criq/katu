@@ -6,6 +6,10 @@ abstract class Role extends \Katu\Models\Model
 {
 	const TABLE = "roles";
 
+	public $id;
+	public $name;
+	public $timeCreated;
+
 	public static function create($name)
 	{
 		if (!static::sanitizeName($name)) {
