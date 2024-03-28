@@ -20,7 +20,7 @@
 		"mischiefcollective/colorjizz": "@stable",
 		"monolog/monolog": "@stable",
 		"mtdowling/cron-expression": "@stable",
-		"mustangostang/spyc": "@stable",
+		"mustangostang/spyc": "0.6.2",
 		"oscarotero/psr7-middlewares": "@stable",
 		"php-curl-class/php-curl-class": "@stable",
 		"php-di/php-di": "^6",

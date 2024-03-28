@@ -2,9 +2,15 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Tools\Calendar\Time;
+
 abstract class Role extends \Katu\Models\Model
 {
 	const TABLE = "roles";
+
+	public $id;
+	public $name;
+	public $timeCreated;
 
 	public static function create($name)
 	{
@@ -16,6 +22,13 @@ abstract class Role extends \Katu\Models\Model
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
 			"name" => trim($name),
 		]);
+	}
+
+	public function setTimeCreated(Time $time): Role
+	{
+		$this->timeCreated = $time;
+
+		return $this;
 	}
 
 	public static function make($name)

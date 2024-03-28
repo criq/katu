@@ -8,12 +8,19 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Images extends \Katu\Controllers\Controller
 {
-	public function getVersion(ServerRequestInterface $request, ResponseInterface $response, string $imagePackage, string $versionCode)
+	public function getVersion(ServerRequestInterface $request, ResponseInterface $response, string $imagePackage, string $versionCode, string $extension)
 	{
 		\Katu\Tools\System\Memory::setLimit(\Katu\Types\TFileSize::createFromShorthand("2G"));
 
 		$image = \Katu\Tools\Images\Image::createFromPackage(Package::createFromPortableString($imagePackage));
+		if (!$image) {
+			throw new \Katu\Exceptions\NotFoundException;
+		}
+
 		$version = \Katu\Tools\Images\Version::createFromConfig($versionCode);
+		if (!$version) {
+			throw new \Katu\Exceptions\NotFoundException;
+		}
 
 		$imageVersion = $image->getImageVersion($version);
 		$imageVersion->getVersionImage();
