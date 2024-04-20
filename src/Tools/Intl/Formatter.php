@@ -54,6 +54,15 @@ class Formatter
 		return $numberFormatter->format($number);
 	}
 
+	public function getLocalDecimalNumber($number, int $digits = 0)
+	{
+		$numberFormatter = new \NumberFormatter($this->getLocale(), \NumberFormatter::DECIMAL);
+		$numberFormatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, $digits);
+		$numberFormatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, (bool)$digits);
+
+		return $numberFormatter->format($number);
+	}
+
 	public function getLocalPercent(float $number, int $decimals = 0)
 	{
 		$numberFormatter = new \NumberFormatter($this->getLocale(), \NumberFormatter::PERCENT);
