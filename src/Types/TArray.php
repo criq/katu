@@ -226,6 +226,11 @@ class TArray extends \ArrayObject
 		return $this->search($needle) !== false;
 	}
 
+	public function countValues(): TArray
+	{
+		return new TArray(array_count_values($this->getArray()));
+	}
+
 	public function getIntervals(): array
 	{
 		$numbers = $this->map(function ($i) {
