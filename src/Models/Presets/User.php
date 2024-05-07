@@ -14,6 +14,7 @@ abstract class User extends \Katu\Models\Model
 {
 	const TABLE = "users";
 
+	public $id;
 	public $name;
 	public $password;
 
