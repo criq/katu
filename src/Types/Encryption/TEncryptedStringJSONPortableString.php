@@ -23,6 +23,11 @@ class TEncryptedStringJSONPortableString
 		return new static(bin2hex(gzencode($json, 9)));
 	}
 
+	public function getString(): string
+	{
+		return $this->string;
+	}
+
 	public function getJSON(): TEncryptedStringJSON
 	{
 		return new TEncryptedStringJSON(new TJSON(gzdecode(hex2bin($this->string))));
