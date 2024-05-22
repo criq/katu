@@ -523,16 +523,22 @@ abstract class View extends Base
 
 	public static function cacheAndMaterializeAll()
 	{
-		foreach (static::getAllViewClasses() as $class) {
+		array_map(function (TClass $class) {
 			try {
+				$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
 				$class->getName()::cacheIfExpired();
 				if ($class->getName()::isMaterializable()) {
 					$class->getName()::materializeIfExpired();
 				}
+				$stopwatch->finish();
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->debug(\Katu\Files\Formats\JSON::encodeInline([
+					(string)$class,
+					(string)$stopwatch->getMilliDuration(),
+				]));
 			} catch (\Throwable $e) {
 				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 			}
-		}
+		}, static::getAllViewClasses());
 	}
 
 	public static function deleteOldCachedTables()
