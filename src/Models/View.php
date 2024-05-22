@@ -521,7 +521,7 @@ abstract class View extends Base
 		}, get_declared_classes())));
 	}
 
-	public static function cacheAndMaterializeAll()
+	public static function cacheAndMaterializeAll(int $limit = null)
 	{
 		array_map(function (TClass $class) {
 			try {
@@ -538,7 +538,7 @@ abstract class View extends Base
 			} catch (\Throwable $e) {
 				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 			}
-		}, static::getAllViewClasses());
+		}, array_slice(static::getAllViewClasses(), 0, $limit));
 	}
 
 	public static function deleteOldCachedTables()
