@@ -4,11 +4,9 @@ namespace Katu\Models;
 
 abstract class GeneralModel
 {
-	protected $_manager;
-
 	public static function getManager(): GeneralManager
 	{
-		return $this->_manager;
+		var_dump(get_called_class());die;
 	}
 
 	public static function getConnection(): \Katu\PDO\Connection
