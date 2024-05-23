@@ -8,7 +8,7 @@ use Katu\Tools\Options\OptionCollection;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 
-abstract class View extends Base
+abstract class View extends GeneralModel
 {
 	const AUTO_INDICES = true;
 	const CACHE = true;

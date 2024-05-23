@@ -5,12 +5,12 @@ namespace Katu\Models;
 use Katu\Types\TClass;
 use Sexy\Sexy as SX;
 
-abstract class Base
+abstract class GeneralModel
 {
 	const DATABASE = "app";
 	const TABLE = "";
 
-	public static function createFromArray(array $array): Base
+	public static function createFromArray(array $array): GeneralModel
 	{
 		$object = new static;
 		foreach ($array as $key => $value) {

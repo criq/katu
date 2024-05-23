@@ -8,7 +8,7 @@ use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
 use Sexy\Sexy as SX;
 
-class Model extends Base
+class Model extends GeneralModel
 {
 	protected $_storedId;
 
