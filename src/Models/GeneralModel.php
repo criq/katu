@@ -6,12 +6,25 @@ abstract class GeneralModel
 {
 	public static function getManager(): GeneralManager
 	{
-		var_dump(get_called_class());die;
+		$managerClassName = get_called_class() . "Manager";
+
+		return new $managerClassName;
 	}
 
 	public static function getConnection(): \Katu\PDO\Connection
 	{
 		return static::getManager()->getConnection();
+	}
+
+	public static function hasConnection(): bool
+	{
+		try {
+			return (bool)static::getConnection();
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
+		return false;
 	}
 
 	public static function getTable(): \Katu\PDO\Table

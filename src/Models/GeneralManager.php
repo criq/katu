@@ -59,8 +59,6 @@ abstract class GeneralManager
 			throw new \Katu\Exceptions\InputErrorException("Invalid arguments passed to query.");
 		}
 
-		// echo ($query->sql);die;
-
 		return $query;
 	}
 
