@@ -26,7 +26,15 @@ class View extends Table
 
 	public function generateCacheTableName(): Name
 	{
-		hash
+		// hash
+
+		// use Hidehalo\Nanoid\Client;
+		// use Hidehalo\Nanoid\GeneratorInterface;
+
+		// $client = new Client();
+
+		// # default random generator
+		// echo $client->generateId($size = 21);
 
 		$plain = implode("__", [
 			"_c",
