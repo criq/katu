@@ -6,7 +6,6 @@
 		"flynsarmy/slim-monolog": "@stable",
 		"gregwar/cache": "@stable",
 		"guzzlehttp/guzzle": "@stable",
-		"hidehalo/nanoid-php": "@stable",
 		"illuminate/support": "@stable",
 		"intervention/image": "^2",
 		"ircmaxell/random-lib": "@stable",

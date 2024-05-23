@@ -3,6 +3,7 @@
 namespace Katu\PDO;
 
 use Katu\Tools\Calendar\Timeout;
+use Katu\Tools\Options\OptionCollection;
 use Katu\Types\TIdentifier;
 
 class Table extends \Sexy\Expression
@@ -96,6 +97,11 @@ class Table extends \Sexy\Expression
 		});
 	}
 
+	public function getMaxTableNameLength(): int
+	{
+		return 64;
+	}
+
 	public function exists(): bool
 	{
 		return $this->getConnection()->tableExists($this->name);
@@ -121,8 +127,10 @@ class Table extends \Sexy\Expression
 		return $res;
 	}
 
-	public function copy($destinationTable, $options = [])
+	public function copy(Table $destinationTable, ?OptionCollection $options = null): bool
 	{
+		$options = (new OptionCollection)->getMergedWith($options);
+
 		// Delete the original table.
 		try {
 			$destinationTable->delete();
@@ -133,32 +141,28 @@ class Table extends \Sexy\Expression
 		$sql = $this->getCreateSyntax();
 		if (preg_match("/^CREATE ALGORITHM/", $sql)) {
 			// View.
-			$sql = " CREATE TABLE " . $destinationTable . " AS SELECT * FROM " . $this;
+			$sql = " CREATE TABLE {$destinationTable->getName()} AS SELECT * FROM {$this->getName()} ";
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 		} else {
 			// Table.
-			$sql = preg_replace_callback("/^CREATE TABLE `([a-z0-9_]+)`/", function ($i) use ($destinationTable) {
-				return " CREATE TABLE `" . $destinationTable->name->name . "` ";
+			$sql = preg_replace_callback("/^CREATE TABLE (`[a-z0-9_]+`)/", function () use ($destinationTable) {
+				return " CREATE TABLE {$destinationTable->getName()} ";
 			}, $sql);
 
-			if ($options["createSqlSanitizeCallback"] ?? null) {
-				$callback = $options["createSqlSanitizeCallback"];
+			if ($options->getValue("CREATE_SQL_SANITIZE_CALLBACK")) {
+				$callback = $options->getValue("CREATE_SQL_SANITIZE_CALLBACK");
 				$sql = $callback($sql);
 			}
 
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 
 			// Create table and copy the data.
-			$sql = " INSERT " . (($options["insertIgnore"] ?? null) ? " IGNORE " : null) . " INTO " . $destinationTable . " SELECT * FROM " . $this;
+			$sql = " INSERT " . ($options->getValue("INSERT_IGNORE") ? " IGNORE " : null) . " INTO {$destinationTable->getName()} SELECT * FROM {$this->getName()} ";
 			$destinationTable->getConnection()->createQuery($sql)->getResult();
 		}
 
-		// Disable NULL.
-		if ($options["disableNull"] ?? null) {
-		}
-
 		// Create automatic indices.
-		if ($options["autoIndices"] ?? null) {
+		if ($options->getValue("AUTO_INDICES")) {
 			$indexableColumns = [];
 
 			foreach ($destinationTable->getColumns() as $column) {
@@ -184,7 +188,7 @@ class Table extends \Sexy\Expression
 			}
 
 			// Composite index.
-			if ($indexableColumns && $options["compositeIndex"]) {
+			if ($indexableColumns && $options->getValue("COMPOSITE_INDEX")) {
 				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(", ", array_map(function ($i) {
 					return $i->name;
 				}, $indexableColumns)) . "); ";
@@ -199,7 +203,7 @@ class Table extends \Sexy\Expression
 			// Create separate indices.
 			foreach ($indexableColumns as $indexableColumn) {
 				try {
-					$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . $indexableColumn->name . ") ";
+					$sql = " ALTER TABLE {$destinationTable->getName()} ADD INDEX ({$indexableColumn->getName()}) ";
 					$destinationTable->getConnection()->createQuery($sql)->getResult();
 				} catch (\Throwable $e) {
 					// Nevermind.
@@ -210,7 +214,7 @@ class Table extends \Sexy\Expression
 		// Create custom indices.
 		foreach (($options["customIndices"] ?? []) as $customIndex) {
 			try {
-				$sql = " ALTER TABLE " . $destinationTable->name . " ADD INDEX (" . implode(", ", $customIndex) . ") ";
+				$sql = " ALTER TABLE {$destinationTable->getName()} ADD INDEX (" . implode(", ", $customIndex) . ") ";
 				$destinationTable->getConnection()->createQuery($sql)->getResult();
 			} catch (\Throwable $e) {
 				// Nevermind.

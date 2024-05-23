@@ -4,69 +4,99 @@ namespace Katu\PDO;
 
 use App\Classes\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
+use Katu\Tools\Options\OptionCollection;
+use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
 
 class View extends Table
 {
-	public function getCacheStatusFile(): \Katu\Files\File
+	protected function getCacheTableNameSeparator(): string
+	{
+		return "__";
+	}
+
+	protected function getCacheTableNamePrefix(): string
+	{
+		return "_c";
+	}
+
+	protected function generateCacheTableNameDate(): string
+	{
+		return (new Time)->format("YmdHis");
+	}
+
+	protected function getCacheTableNameDateRandomLength(): int
+	{
+		return 4;
+	}
+
+	protected function generateCacheTableNameDateRandom(): string
+	{
+		return \Katu\Tools\Random\Generator::getIdString($this->getCacheTableNameDateRandomLength());
+	}
+
+	protected function generateCacheTableNameSuffix(): string
+	{
+		return implode([
+			$this->generateCacheTableNameDate(),
+			$this->generateCacheTableNameDateRandom(),
+		]);
+	}
+
+	protected function getCacheTableNamePlainAvailableLength(): int
+	{
+		return $this->getMaxTableNameLength() - mb_strlen($this->composeCacheTableName());
+	}
+
+	protected function getCacheTableNamePlainFits(): bool
+	{
+		return mb_strlen($this->getName()->getPlain()) <= $this->getCacheTableNamePlainAvailableLength();
+	}
+
+	protected function getCacheTableNamePlainHash(): string
+	{
+		return hash("crc32", $this->getName()->getPlain());
+	}
+
+	protected function getCacheTableNamePlainHashLength(): int
+	{
+		return mb_strlen($this->getCacheTableNamePlainHash());
+	}
+
+	protected function composeCacheTableName(?string $plain = null, ?string $plainHash = null): string
+	{
+		return implode([
+			$this->getCacheTableNamePrefix(),
+			$this->getCacheTableNameSeparator(),
+			$plain,
+			$plainHash,
+			$this->getCacheTableNameSeparator(),
+			$this->generateCacheTableNameSuffix(),
+		]);
+	}
+
+	protected function generateCacheTableName(): Name
+	{
+		if ($this->getCacheTableNamePlainFits()) {
+			return new Name($this->composeCacheTableName($this->getName()->getPlain()));
+		} else {
+			return new Name($this->composeCacheTableName(substr($this->getName()->getPlain(), 0, $this->getCacheTableNamePlainAvailableLength() - $this->getCacheTableNamePlainHashLength()), $this->getCacheTableNamePlainHash()));
+		}
+	}
+
+	protected function getCacheStatusFile(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(\App\App::getTemporaryDir(), ...(new TIdentifier("databases", $this->getConnection()->getName(), "views", $this->getName(), "cache_status"))->getPathParts());
 	}
 
-	public function getIsBeingCached(): bool
-	{
-		foreach ($this->getConnection()->getProcesses() as $process) {
-			if (preg_match("/CREATE TABLE.+AS SELECT \* FROM.+{$this->getName()}/", $process->getInfo())) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public function generateCacheTableName(): Name
-	{
-		// hash
-
-		// use Hidehalo\Nanoid\Client;
-		// use Hidehalo\Nanoid\GeneratorInterface;
-
-		// $client = new Client();
-
-		// # default random generator
-		// echo $client->generateId($size = 21);
-
-		$plain = implode("__", [
-			"_c",
-			$this->getName()->getPlain(),
-			implode([
-				(new Time)->format("YmdHis"),
-				\Katu\Tools\Random\Generator::getIdString(4),
-			]),
-		]);
-
-		if (mb_strlen($plain) > 64) {
-			$plain = implode("__", [
-				"_c",
-				md5($this->getName()->getPlain()),
-				implode([
-					(new Time)->format("YmdHis"),
-					\Katu\Tools\Random\Generator::getIdString(4),
-				]),
-			]);
-		}
-
-		return new Name($plain);
-	}
-
-	public function setCacheStatus(CacheStatus $cacheStatus): View
+	protected function setCacheStatus(CacheStatus $cacheStatus): View
 	{
 		$this->getCacheStatusFile()->set(serialize($cacheStatus));
 
 		return $this;
 	}
 
-	public function getCacheStatus()
+	protected function getCacheStatus(): CacheStatus
 	{
 		$response = @unserialize($this->getCacheStatusFile()->get());
 		if ($response instanceof CacheStatus) {
@@ -74,11 +104,6 @@ class View extends Table
 		}
 
 		return new CacheStatus($this->getName());
-	}
-
-	public function getIsCached(): bool
-	{
-		return (bool)$this->getCacheTable();
 	}
 
 	public function getCacheTable(): ?Table
@@ -96,28 +121,52 @@ class View extends Table
 		return null;
 	}
 
-	public function cache(): bool
+	public function getOrCreateCacheTable(Timeout $timeout, ?OptionCollection $options = null): ?Table
 	{
-		if (!$this->getIsBeingCached()) {
-			$cacheTableName = $this->generateCacheTableName();
-			try {
-				if ($this->copy($this->getConnection()->getTable($cacheTableName))) {
-					$this->setCacheStatus($this->getCacheStatus()->setCacheTableName($cacheTableName)->setTimeCached(new Time));
-					return true;
-				}
-			} catch (\Throwable $e) {
-				var_dump($cacheTableName->getPlain());
-				// var_dump($e->getMessage());
-				// var_dump($e);
-				var_dump($this);
-				die;
+		$this->cacheIfIsExpired($timeout, $options);
+
+		return $this->getCacheTable();
+	}
+
+	public function getResolvedTable(Timeout $timeout, ?OptionCollection $options = null): Table
+	{
+		return $this->getOrCreateCacheTable($timeout, $options) ?: $this;
+	}
+
+	public function getIsCached(): bool
+	{
+		return (bool)$this->getCacheTable();
+	}
+
+	protected function getIsBeingCached(): bool
+	{
+		foreach ($this->getConnection()->getProcesses() as $process) {
+			if (preg_match("/CREATE TABLE.+AS SELECT \* FROM.+{$this->getName()}/", $process->getInfo())) {
+				return true;
 			}
 		}
 
 		return false;
 	}
 
-	public function cacheIfNotCached(): bool
+	public function cache(?OptionCollection $options = null): bool
+	{
+		if (!$this->getIsBeingCached()) {
+			$cacheTableName = $this->generateCacheTableName();
+			try {
+				if ($this->copy($this->getConnection()->getTable($cacheTableName), $options)) {
+					$this->setCacheStatus($this->getCacheStatus()->setCacheTableName($cacheTableName)->setTimeCached(new Time));
+					return true;
+				}
+			} catch (\Throwable $e) {
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+			}
+		}
+
+		return false;
+	}
+
+	public function cacheIfIsNotCached(): bool
 	{
 		if ($this->getIsCached()) {
 			return true;
@@ -126,7 +175,47 @@ class View extends Table
 		return $this->cache();
 	}
 
+	public function getIsCacheExpired(Timeout $timeout): bool
+	{
+		if (!$this->getCacheTable()) {
+			return true;
+		}
 
+		$timeCached = $this->getCacheStatus()->getTimeCached();
+		if (!$timeCached) {
+			return true;
+		}
+
+		return !$timeCached->fitsInTimeout($timeout);
+	}
+
+	public function getIsCacheFresh(Timeout $timeout): bool
+	{
+		return !$this->getIsCacheExpired($timeout);
+	}
+
+	public function cacheIfIsExpired(Timeout $timeout, ?OptionCollection $options = null): bool
+	{
+		if (!$this->getIsCacheExpired($timeout)) {
+			return true;
+		}
+
+		return $this->cache($options);
+	}
+
+	public function getModels(): array
+	{
+		return array_values(array_filter(array_map(function (TClass $class) {
+			if ($class->getName()::TABLE == $this->getName()->getPlain()) {
+				return $class;
+			}
+		}, \Katu\Models\View::getClasses())));
+	}
+
+	public function getTimeCached(): ?Time
+	{
+		return $this->getCacheStatus()->getTimeCached();
+	}
 
 	public function getCreateSyntax(): string
 	{
@@ -134,60 +223,5 @@ class View extends Table
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
 		return $res[0]["Create View"];
-	}
-
-	public function getSourceTables(): array
-	{
-		$tableNames = \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, __LINE__), new Timeout("1 day"), function ($table) {
-			$tableNames = [];
-
-			$sql = " EXPLAIN SELECT * FROM {$table} ";
-			$res = $table->getConnection()->createQuery($sql)->getResult()->getItems();
-			foreach ($res as $row) {
-				if (!preg_match("/^<.+>$/", $row["table"])) {
-					$tableNames[] = new \Katu\PDO\Name($row["table"]);
-				}
-			}
-
-			return array_values(array_filter(array_unique($tableNames)));
-		}, $this);
-
-		$tables = [];
-		foreach ($tableNames as $tableName) {
-			$tables[] = new Table($this->getConnection(), $tableName);
-		}
-
-		return $tables;
-	}
-
-	public function getSourceMaterializedViewNames(): array
-	{
-		if (preg_match_all("/`(mv_[a-z0-9_]+)`/", $this->getCreateSyntax(), $matches)) {
-			return array_values(array_unique($matches[1]));
-		}
-
-		return [];
-	}
-
-	public function getSourceViewsInMaterializedViews(): array
-	{
-		$views = [];
-		foreach (array_filter((array) $this->getSourceMaterializedViewNames()) as $tableName) {
-			$views[] = new static($this->getConnection(), new Name(preg_replace("/^mv_/", "view_", $tableName)));
-		}
-
-		return $views;
-	}
-
-	public function getModels(): array
-	{
-		$models = [];
-		foreach (\Katu\Models\View::getAllViewClasses() as $class) {
-			if ($class->getName()::TABLE == $this->getName()->getPlain()) {
-				$models[] = $class;
-			}
-		}
-
-		return $models;
 	}
 }
