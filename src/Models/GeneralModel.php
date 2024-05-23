@@ -6,32 +6,23 @@ abstract class GeneralModel
 {
 	protected $_manager;
 
-	public function setManager(GeneralManager $manager): GeneralModel
-	{
-		$this->_manager = $manager;
-
-		return $this;
-	}
-
-	public function getManager(): GeneralManager
+	public static function getManager(): GeneralManager
 	{
 		return $this->_manager;
 	}
 
-	public function getConnection(): \Katu\PDO\Connection
+	public static function getConnection(): \Katu\PDO\Connection
 	{
-		return $this->getManager()->getConnection();
+		return static::getManager()->getConnection();
 	}
 
-	public function getTable(): \Katu\PDO\Table
+	public static function getTable(): \Katu\PDO\Table
 	{
-		return $this->getManager()->getTable();
+		return static::getManager()->getTable();
 	}
 
-	public function getColumn($name): \Katu\PDO\Column
+	public static function getColumn($name): \Katu\PDO\Column
 	{
-		$columnClassName = $this->getManager()->getColumnClass()->getName();
-
-		return new $columnClassName($this->getTable(), new \Katu\PDO\Name($name));
+		return static::getTable()->getColumn($name);
 	}
 }
