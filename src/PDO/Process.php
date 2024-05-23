@@ -4,27 +4,37 @@ namespace Katu\PDO;
 
 class Process
 {
-	public $connection;
-	public $id;
-	public $user;
-	public $host;
-	public $database;
-	public $command;
-	public $time;
-	public $state;
-	public $info;
+	protected $command;
+	protected $connection;
+	protected $database;
+	protected $host;
+	protected $id;
+	protected $info;
+	protected $state;
+	protected $time;
+	protected $user;
 
 	public function __construct(Connection $connection, array $item)
 	{
-		$this->connection = $connection;
-		$this->id = (int)$item["Id"];
-		$this->user = $item["User"];
-		$this->host = $item["Host"];
-		$this->database = $item["db"];
 		$this->command = $item["Command"];
-		$this->time = (int)$item["Time"];
-		$this->state = $item["State"];
+		$this->connection = $connection;
+		$this->database = $item["db"];
+		$this->host = $item["Host"];
+		$this->id = (int)$item["Id"];
 		$this->info = $item["Info"];
+		$this->state = $item["State"];
+		$this->time = (int)$item["Time"];
+		$this->user = $item["User"];
+	}
+
+	public function getCommand(): ?string
+	{
+		return $this->command;
+	}
+
+	public function getInfo(): ?string
+	{
+		return $this->info;
 	}
 
 	public function kill(): Result

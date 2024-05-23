@@ -2,12 +2,12 @@
 
 namespace Katu\PDO;
 
-class Processlist extends \ArrayObject
+class ProcessCollection extends \ArrayObject
 {
-	public function filterQueries(): Processlist
+	public function filterQueries(): ProcessCollection
 	{
 		return new static(array_values(array_filter($this->getArrayCopy(), function (Process $process) {
-			return $process->command == "Query";
+			return $process->getCommand() == "Query";
 		})));
 	}
 }

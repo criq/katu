@@ -400,7 +400,7 @@ abstract class View extends Base
 
 	public static function cache(): bool
 	{
-		foreach (static::getConnection()->getProcesslist() as $process) {
+		foreach (static::getConnection()->getProcesses() as $process) {
 			if (preg_match("/CREATE TABLE.+AS SELECT \* FROM.+" . static::getViewName() . "/", $process->info)) {
 				return false;
 			}

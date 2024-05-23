@@ -136,24 +136,21 @@ class Connection
 		return new Table($this, $name);
 	}
 
-	public function getViewNames(): array
+	public function getViewNames(): NameCollection
 	{
 		$sql = " SHOW FULL TABLES IN {$this->getConfig()->getDatabase()} WHERE TABLE_TYPE LIKE 'VIEW' ";
 		$res = $this->createQuery($sql)->getResult()->getItems();
 
-		return array_map(function ($i) {
+		return new NameCollection(array_map(function ($i) {
 			return new Name(array_values($i)[0]);
-		}, $res);
+		}, $res));
 	}
 
-	public function getViews(): TableCollection
+	public function getViews(): ViewCollection
 	{
-		$res = new TableCollection;
-		foreach ($this->getViewNames() as $viewName) {
-			$res[] = new View($this, $viewName);
-		}
-
-		return $res;
+		return new ViewCollection(array_map(function (Name $name) {
+			return new View($this, $name);
+		}, $this->getViewNames()->getArrayCopy()));
 	}
 
 	public function getViewReport(): array
@@ -260,11 +257,11 @@ class Connection
 		return $result;
 	}
 
-	public function getProcesslist(): Processlist
+	public function getProcesses(): ProcessCollection
 	{
 		$sql = " SHOW FULL PROCESSLIST ";
 
-		return new Processlist(array_map(function (array $item) {
+		return new ProcessCollection(array_map(function (array $item) {
 			return new Process($this, $item);
 		}, $this->createQuery($sql)->getResult()->getItems()));
 	}

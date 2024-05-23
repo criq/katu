@@ -163,10 +163,21 @@ class Table extends \Sexy\Expression
 
 			foreach ($destinationTable->getColumns() as $column) {
 				if (in_array($column->getDescription()->type, [
-					"date", "datetime", "timestamp", "year",
-					"tinyint", "smallint", "mediumint", "int", "bigint",
-					"float", "double", "real", "decimal",
-					"char", "varchar",
+					"bigint",
+					"char",
+					"date",
+					"datetime",
+					"decimal",
+					"double",
+					"float",
+					"int",
+					"mediumint",
+					"real",
+					"smallint",
+					"timestamp",
+					"tinyint",
+					"varchar",
+					"year",
 				])) {
 					$indexableColumns[] = $column;
 				}
@@ -218,7 +229,7 @@ class Table extends \Sexy\Expression
 
 			foreach ($this->getConnection()->getViewNames() as $viewName) {
 				$view = new static($this->getConnection(), $viewName);
-				if (strpos($view->getCreateSyntax(), (string) $this->name) !== false && $viewName != $this->name->name) {
+				if (strpos($view->getCreateSyntax(), (string) $this->name) !== false && $viewName != $this->getName()->getPlain()) {
 					$views[] = $viewName;
 				}
 			}
