@@ -219,13 +219,10 @@ class Query
 
 			try {
 				if (\Katu\Config\Config::get("app", "profiler", "pdo")) {
-					$file = (\Katu\Files\File::createTemporaryWithFileName("{$this->getConnection()->getSessionId()}.csv"));
-					$csv = new \Katu\Files\Formats\CSV($file);
 					$sql = trim($this->getStatementDump()->getSentSQL() ?: $this->statement->queryString);
-					$csv->append([
-						preg_replace("/\./", ",", $this->getDuration()),
-						$sql,
-					]);
+					$file = (\Katu\Files\File::createTemporaryWithFileName("{$this->getConnection()->getSessionId()}.log"))->touch();
+					$duration = preg_replace("/\./", ",", $this->getDuration());
+					$file->append("{$duration}\t{$sql}\n");
 				}
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				// Nevermind.
