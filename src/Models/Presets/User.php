@@ -120,7 +120,7 @@ abstract class User extends \Katu\Models\Model
 		return true;
 	}
 
-	public function getEmailAddress()
+	public function getEmailAddress(): ?EmailAddress
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\EmailAddress::class);
 
