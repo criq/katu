@@ -405,7 +405,7 @@ abstract class User extends \Katu\Models\Model
 		]);
 	}
 
-	public function getUserSettingValue(string $name)
+	public function getUserSettingValue(string $name): ?string
 	{
 		$userSetting = $this->getUserSetting($name);
 
