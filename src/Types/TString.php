@@ -171,7 +171,7 @@ class TString implements \Stringable
 		return new static(mb_strtolower($this));
 	}
 
-	public function getIsWithoutDiacritics(): TString
+	public function getWithoutDiacritics(): TString
 	{
 		return new static((new UnicodeString((string)$this))->ascii()->toString());
 	}
