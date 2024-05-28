@@ -4,6 +4,7 @@ namespace Katu\Types;
 
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
+use Symfony\Component\String\UnicodeString;
 
 class TString implements \Stringable
 {
@@ -168,5 +169,10 @@ class TString implements \Stringable
 	public function getLowercase(): TString
 	{
 		return new static(mb_strtolower($this));
+	}
+
+	public function getIsWithoutDiacritics(): TString
+	{
+		return new static((new UnicodeString((string)$this))->ascii()->toString());
 	}
 }
