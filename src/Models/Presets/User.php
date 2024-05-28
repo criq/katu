@@ -14,6 +14,7 @@ abstract class User extends \Katu\Models\Model
 {
 	const TABLE = "users";
 
+	public $id;
 	public $name;
 	public $password;
 
@@ -119,7 +120,7 @@ abstract class User extends \Katu\Models\Model
 		return true;
 	}
 
-	public function getEmailAddress()
+	public function getEmailAddress(): ?EmailAddress
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\EmailAddress::class);
 
@@ -404,7 +405,7 @@ abstract class User extends \Katu\Models\Model
 		]);
 	}
 
-	public function getUserSettingValue(string $name)
+	public function getUserSettingValue(string $name): ?string
 	{
 		$userSetting = $this->getUserSetting($name);
 

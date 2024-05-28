@@ -188,6 +188,11 @@ abstract class Job implements PackagedInterface
 		return false;
 	}
 
+	public function isRunning(): bool
+	{
+		return $this->getTimeStarted() && (!$this->getTimeFinished() || $this->getTimeFinished() < $this->getTimeStarted());
+	}
+
 	public function run(): bool
 	{
 		// Check max load average.

@@ -51,26 +51,31 @@ class TArray extends \ArrayObject
 		return new static($res);
 	}
 
-	public function implodeInSentence($delimiter, $lastDelimiter)
+	public function implode($separator): string
+	{
+		return implode($separator, $this->getArray());
+	}
+
+	public function implodeInSentence($separator, $lastSeparator): string
 	{
 		$arrayList = (array)array_slice($this->getArray(), 0, -1);
 		$arrayLast = (array)array_slice($this->getArray(), -1, 1);
 
-		return implode($lastDelimiter, array_filter([implode($delimiter, $arrayList), $arrayLast[0]]));
+		return implode($lastSeparator, array_filter([implode($separator, $arrayList), $arrayLast[0]]));
 	}
 
-	public function implodeWithKeys($itemDelimiter, $keyValueDelimiter = null)
+	public function implodeWithKeys($itemSeparator, $keyValueSeparator = null): string
 	{
-		if (!$keyValueDelimiter) {
-			$keyValueDelimiter = $itemDelimiter;
+		if (!$keyValueSeparator) {
+			$keyValueSeparator = $itemSeparator;
 		}
 
 		$items = [];
 		foreach ($this as $key => $value) {
-			$items[] = implode($keyValueDelimiter, [$key, $value]);
+			$items[] = implode($keyValueSeparator, [$key, $value]);
 		}
 
-		return implode($itemDelimiter, $items);
+		return implode($itemSeparator, $items);
 	}
 
 	public function mapToValue($value, $default = null)
@@ -219,6 +224,11 @@ class TArray extends \ArrayObject
 	public function contains($needle)
 	{
 		return $this->search($needle) !== false;
+	}
+
+	public function countValues(): TArray
+	{
+		return new TArray(array_count_values($this->getArray()));
 	}
 
 	public function getIntervals(): array

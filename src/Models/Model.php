@@ -6,6 +6,7 @@ use App\Models\Users\User;
 use Katu\PDO\Column;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
+use Katu\Types\TIdentifier;
 use Sexy\Sexy as SX;
 
 class Model extends Base
@@ -331,9 +332,20 @@ class Model extends Base
 
 	public static function get(?string $id)
 	{
+		if (is_null($id)) {
+			return null;
+		}
+
 		return static::getOneBy([
 			static::getIdColumn()->getName()->getPlain() => $id,
 		]);
+	}
+
+	public static function getFromRuntime(?string $id)
+	{
+		return \Katu\Cache\Runtime::get(new TIdentifier(static::class, __FUNCTION__, $id), function () use ($id) {
+			return static::get($id);
+		});
 	}
 
 	public function exists(): bool

@@ -416,11 +416,13 @@ abstract class View extends Base
 		return true;
 	}
 
-	public static function cacheIfExpired()
+	public static function cacheIfExpired(): bool
 	{
 		if (static::isCacheExpiredAdvance()) {
 			return static::cache();
 		}
+
+		return false;
 	}
 
 	public static function materialize()
@@ -521,18 +523,30 @@ abstract class View extends Base
 		}, get_declared_classes())));
 	}
 
-	public static function cacheAndMaterializeAll()
+	public static function cacheAndMaterializeAll(int $limit = null)
 	{
-		foreach (static::getAllViewClasses() as $class) {
-			try {
-				$class->getName()::cacheIfExpired();
-				if ($class->getName()::isMaterializable()) {
-					$class->getName()::materializeIfExpired();
+		$processed = 0;
+
+		array_map(function (TClass $class) use ($limit, $processed) {
+			if ($processed < $limit) {
+				try {
+					$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
+					if ($class->getName()::cacheIfExpired()) {
+						$processed++;
+					}
+					if ($class->getName()::isMaterializable()) {
+						$class->getName()::materializeIfExpired();
+					}
+					$stopwatch->finish();
+					\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->debug(\Katu\Files\Formats\JSON::encodeInline([
+						(string)$class,
+						(string)$stopwatch->getMilliDuration(),
+					]));
+				} catch (\Throwable $e) {
+					\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 				}
-			} catch (\Throwable $e) {
-				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 			}
-		}
+		}, static::getAllViewClasses());
 	}
 
 	public static function deleteOldCachedTables()
