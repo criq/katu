@@ -31,7 +31,7 @@ class TJSON
 		return \Katu\Files\Formats\JSON::decodeAsArray($this);
 	}
 
-	public function getArray(): array
+	public function getArray(): ?array
 	{
 		return \Katu\Files\Formats\JSON::decodeAsArray($this);
 	}

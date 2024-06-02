@@ -36,6 +36,7 @@
 		"symfony/css-selector": "@stable",
 		"symfony/dom-crawler": "@stable",
 		"symfony/intl": "@stable",
+		"symfony/string": "@stable",
 		"twig/extensions": "@stable",
 		"twig/twig": "@stable",
 		"vlucas/phpdotenv" : "@stable"
