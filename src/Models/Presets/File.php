@@ -10,6 +10,7 @@ abstract class File extends \Katu\Models\Model
 	const DEFAULT_DIR = "files";
 	const TABLE = "files";
 
+	public $id;
 	public $name;
 	public $path;
 	public $secret;
@@ -90,7 +91,7 @@ abstract class File extends \Katu\Models\Model
 		$temporaryFile->delete();
 
 		$file->name = pathinfo($url->getParts()["path"])["basename"];
-		$file->save();
+		$file->persist();
 
 		return $file;
 	}
@@ -200,7 +201,7 @@ abstract class File extends \Katu\Models\Model
 		$path = ltrim($path, "/");
 
 		$this->path = $path;
-		$this->save();
+		$this->persist();
 
 		return true;
 	}
@@ -216,7 +217,7 @@ abstract class File extends \Katu\Models\Model
 	{
 		if (!$this->secret) {
 			$this->secret = Generator::generateString($this->getTable()->getColumn(new \Katu\PDO\Name("secret"))->getDescription()->length, Generator::ALNUM);
-			$this->save();
+			$this->persist();
 		}
 
 		return $this->secret;
