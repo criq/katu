@@ -15,7 +15,8 @@ class Config
 		try {
 			return call_user_func_array([new \Katu\Types\TArray(static::getAll()), "getValueByArgs"], $args);
 		} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
-			throw new \Katu\Exceptions\MissingConfigException("Missing config for '" . implode(".", $args) . "'.");
+			$path = implode(".", $args);
+			throw new \Katu\Exceptions\MissingConfigException("Missing config for $path.");
 		}
 	}
 
@@ -58,6 +59,12 @@ class Config
 			}
 
 			$config = array_merge_recursive($config, $_SERVER["CONFIG"] ?? []);
+
+			$envConfigFile = new \Katu\Files\File(\App\App::getBaseDir(), ".config.yaml");
+			if ($envConfigFile->exists()) {
+				$envConfig = \Katu\Files\Formats\YAML::decode($envConfigFile);
+				$config = array_merge_recursive($config, $envConfig ?? []);
+			}
 
 			if ($cacheConfigFile->exists()) {
 				$cacheFile->set(serialize($config));
