@@ -2,6 +2,7 @@
 
 namespace Katu\Config;
 
+use Katu\Files\File;
 use Katu\Types\TIdentifier;
 
 class Config
@@ -15,7 +16,8 @@ class Config
 		try {
 			return call_user_func_array([new \Katu\Types\TArray(static::getAll()), "getValueByArgs"], $args);
 		} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
-			throw new \Katu\Exceptions\MissingConfigException("Missing config for '" . implode(".", $args) . "'.");
+			$path = implode(".", $args);
+			throw new \Katu\Exceptions\MissingConfigException("Missing config for $path.");
 		}
 	}
 
@@ -35,9 +37,9 @@ class Config
 	public static function getAll()
 	{
 		return \Katu\Cache\Runtime::get(new TIdentifier("config"), function () {
-			$cacheConfigFile = new \Katu\Files\File(\App\App::getBaseDir(), ".cacheconfig");
+			$cacheConfigFile = new File(\App\App::getBaseDir(), ".cacheconfig");
 			if ($cacheConfigFile->exists()) {
-				$cacheFile = new \Katu\Files\File(\App\App::getTemporaryDir(), "config", \Katu\Config\Env::getVersion());
+				$cacheFile = new File(\App\App::getTemporaryDir(), "config", \Katu\Config\Env::getVersion());
 				if ($cacheFile->exists()) {
 					return unserialize($cacheFile->get());
 				}
@@ -59,6 +61,23 @@ class Config
 
 			$config = array_merge_recursive($config, $_SERVER["CONFIG"] ?? []);
 
+			$envConfigDir = new File(\App\App::getBaseDir(), ".config");
+			if ($envConfigDir->exists() && $envConfigDir->isDir()) {
+				$files = array_filter($envConfigDir->getFiles(), function (File $file) {
+					return $file->getExtension() == "yaml";
+				});
+				foreach ($files as $file) {
+					$key = $file->getPathInfo()["filename"];
+					$config[$key] = array_merge_recursive($config[$key] ?? [], (array)\Katu\Files\Formats\YAML::decode($file));
+				}
+			}
+
+			$envConfigFile = new File(\App\App::getBaseDir(), ".config.yaml");
+			if ($envConfigFile->exists()) {
+				$envConfig = \Katu\Files\Formats\YAML::decode($envConfigFile);
+				$config = array_merge_recursive($config, $envConfig ?? []);
+			}
+
 			if ($cacheConfigFile->exists()) {
 				$cacheFile->set(serialize($config));
 			}
@@ -69,12 +88,12 @@ class Config
 
 	public static function getFiles()
 	{
-		$dir = new \Katu\Files\File(\App\App::getBaseDir(), "app", "Config");
+		$dir = new File(\App\App::getBaseDir(), "app", "Config");
 		$files = [];
 
 		foreach (scandir($dir) as $file) {
 			if (preg_match(static::FILENAME_REGEXP, $file)) {
-				$files[] = new \Katu\Files\File($dir, $file);
+				$files[] = new File($dir, $file);
 			}
 		}
 

@@ -4,6 +4,7 @@ namespace Katu\Models;
 
 use App\Models\Users\User;
 use Katu\PDO\Column;
+use Katu\Tools\Calendar\Timeout;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Types\TIdentifier;
@@ -510,6 +511,15 @@ class Model extends Base
 		// echo $sql;die;
 
 		return $fileClass::getBySQL($sql)->getOne();
+	}
+
+	public function getCachedImageFile(?Timeout $timeout = null): ?\Katu\Models\Presets\File
+	{
+		$timeout = $timeout ?: new Timeout("1 day");
+
+		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, $this->getId()), $timeout, function () {
+			return $this->getImageFile();
+		});
 	}
 
 	public function refreshFileAttachmentsFromFileIds(User $user, ?array $fileIds)
