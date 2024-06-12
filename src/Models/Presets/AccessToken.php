@@ -93,12 +93,14 @@ abstract class AccessToken extends \Katu\Models\Model
 
 	public static function create(User $user): AccessToken
 	{
-		return static::insert([
-			"timeCreated" => new Time,
-			"timeExpires" => static::generateTimeExpires(),
-			"userId" => $user->getId(),
-			"token" => static::generateToken(),
-		]);
+		$accessToken = new static;
+		$accessToken->setTimeCreated(new Time);
+		$accessToken->setTimeExpires(static::generateTimeExpires());
+		$accessToken->setUser($user);
+		$accessToken->setToken(static::generateToken());
+		$accessToken->persist();
+
+		return $accessToken;
 	}
 
 	public static function getOrCreateSafe(User $user): AccessToken
