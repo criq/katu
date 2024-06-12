@@ -47,7 +47,7 @@ class Table extends \Sexy\Expression
 
 	public function getColumnDescriptions(): ColumnDescriptionCollection
 	{
-		return \Katu\Cache\Runtime::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "descriptions", $this->getName()->getPlain()), function () {
+		return \Katu\Cache\General::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "descriptions", $this->getName()->getPlain()), new Timeout("1 hour"), function () {
 			$res = new ColumnDescriptionCollection;
 			$sql = " DESCRIBE {$this->getName()} ";
 			foreach ($this->getConnection()->createQuery($sql)->getResult() as $description) {
@@ -85,7 +85,7 @@ class Table extends \Sexy\Expression
 
 	public function getPrimaryKeyColumn(): ?Column
 	{
-		return \Katu\Cache\Runtime::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getPlain()), function () {
+		return \Katu\Cache\General::get(new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getPlain()), new Timeout("1 hour"), function () {
 			foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
 				if (($row["Key"] ?? null) == "PRI") {
 					return new Column($this, new Name($row["Field"]));
