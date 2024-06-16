@@ -13,7 +13,7 @@ class Code
 
 	public function __toString()
 	{
-		return $this->code;
+		return $this->getConstantFormat();
 	}
 
 	public function getIsConstantFormat(): bool
