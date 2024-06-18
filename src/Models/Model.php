@@ -12,6 +12,8 @@ use Sexy\Sexy as SX;
 
 class Model extends Base
 {
+	static $persisting = [];
+
 	protected $_storedId;
 
 	public function __toString(): string
@@ -153,6 +155,20 @@ class Model extends Base
 		$this->afterAnyCallback();
 
 		return $this;
+	}
+
+	public static function avoidRecursiveRun(callable $callback)
+	{
+		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		$traces = array_filter($backtrace, function (array $trace) use ($backtrace) {
+			return $trace["class"] == $backtrace[1]["class"] && $trace["function"] == $backtrace[1]["function"];
+		});
+
+		if (count($traces) <= 1) {
+			return call_user_func($callback);
+		}
+
+		return null;
 	}
 
 	/**
