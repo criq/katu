@@ -16,6 +16,8 @@ abstract class AccessToken extends \Katu\Models\Model
 	const SAFE_TIMEOUT = 3600;
 	const TABLE = "access_tokens";
 
+	public $id;
+	public $timeCreated;
 	public $timeExpires;
 	public $token;
 	public $userId;
@@ -44,18 +46,11 @@ abstract class AccessToken extends \Katu\Models\Model
 		]);
 	}
 
-	public function setUser(User $user): AccessToken
+	public function setTimeCreated(Time $time): AccessToken
 	{
-		$this->userId = $user->getId();
+		$this->timeCreated = $time;
 
 		return $this;
-	}
-
-	public function getUser(): User
-	{
-		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
-
-		return $class::get($this->userId);
 	}
 
 	public static function generateTimeExpires(): Time
@@ -77,6 +72,20 @@ abstract class AccessToken extends \Katu\Models\Model
 		return new Time($this->timeExpires);
 	}
 
+	public function setUser(User $user): AccessToken
+	{
+		$this->userId = $user->getId();
+
+		return $this;
+	}
+
+	public function getUser(): User
+	{
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
+
+		return $class::get($this->userId);
+	}
+
 	public static function generateToken(): string
 	{
 		return \Katu\Tools\Random\Generator::getIdString(static::LENGTH);
@@ -84,12 +93,14 @@ abstract class AccessToken extends \Katu\Models\Model
 
 	public static function create(User $user): AccessToken
 	{
-		return static::insert([
-			"timeCreated" => new Time,
-			"timeExpires" => static::generateTimeExpires(),
-			"userId" => $user->getId(),
-			"token" => static::generateToken(),
-		]);
+		$accessToken = new static;
+		$accessToken->setTimeCreated(new Time);
+		$accessToken->setTimeExpires(static::generateTimeExpires());
+		$accessToken->setUser($user);
+		$accessToken->setToken(static::generateToken());
+		$accessToken->persist();
+
+		return $accessToken;
 	}
 
 	public static function getOrCreateSafe(User $user): AccessToken
