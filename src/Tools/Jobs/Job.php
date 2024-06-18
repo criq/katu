@@ -20,7 +20,9 @@ abstract class Job implements PackagedInterface
 
 	protected $args = [];
 	protected $interval;
+	protected $limit;
 	protected $maxLoadAverage = 1.5;
+	protected $processed = 0;
 	protected $schedules;
 	protected $timeout;
 
@@ -228,5 +230,27 @@ abstract class Job implements PackagedInterface
 		$this->getItemCountPickle()->set($count);
 
 		return $this;
+	}
+
+	public function getLimit(): ?int
+	{
+		return null;
+	}
+
+	public function incrementProcessed(): Job
+	{
+		$this->processed++;
+
+		return $this;
+	}
+
+	public function getProcessed(): int
+	{
+		return $this->processed;
+	}
+
+	public function canProcess(): bool
+	{
+		return is_null($this->getLimit()) || $this->getProcessed() < $this->getLimit();
 	}
 }
