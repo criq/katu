@@ -156,7 +156,7 @@ class TURL
 
 		$parts["query"][$name] = $value;
 
-		$this->value = static::build($parts);
+		$this->value = (string)static::build($parts);
 
 		return $this;
 	}
