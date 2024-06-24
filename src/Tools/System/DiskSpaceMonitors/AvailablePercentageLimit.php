@@ -15,7 +15,7 @@ class AvailablePercentageLimit extends DiskSpaceMonitor
 	public function getIsPassed(): ?bool
 	{
 		try {
-			return $this->getDiskSpace()->getAvailablePercentage() >= $this->getLimit();
+			return $this->getDiskSpace()->getAvailablePercentage() > $this->getLimit();
 		} catch (\Throwable $e) {
 			return null;
 		}

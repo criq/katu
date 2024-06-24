@@ -16,7 +16,7 @@ class AvailableLimit extends DiskSpaceMonitor
 	public function getIsPassed(): ?bool
 	{
 		try {
-			return $this->getDiskSpace()->getAvailable()->getInB()->getAmount() >= $this->getLimit()->getInB()->getAmount();
+			return $this->getDiskSpace()->getAvailable()->getInB()->getAmount() > $this->getLimit()->getInB()->getAmount();
 		} catch (\Throwable $e) {
 			return null;
 		}
