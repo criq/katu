@@ -67,23 +67,4 @@ class System
 
 		return true;
 	}
-
-	public static function getDiskSpace()
-	{
-		$res = [];
-		$output = shell_exec("df -kP | awk \"{printf \"%-32s\t%16d\t%16d\t%16d\t%16d\t%s\n\", $1, $2, $3, $4, $5, $6}\"");
-		foreach (array_values(array_filter(preg_split("/\v/", $output))) as $key => $row) {
-			if ($key > 0) {
-				$array = preg_split("/\t/", $row);
-				$res[trim($array[0])] = [
-					"filesystem" => trim($array[0]),
-					"mount" => trim($array[5]),
-					"capacity" => new \Katu\Types\TFileSize((int)trim($array[1]), "kB"),
-					"used" => new \Katu\Types\TFileSize((int)trim($array[2]), "kB"),
-				];
-			}
-		}
-
-		return $res;
-	}
 }
