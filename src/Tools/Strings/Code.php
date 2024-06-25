@@ -27,20 +27,33 @@ class Code
 			return $this->code;
 		}
 
-		return trim(mb_strtoupper(preg_replace_callback("/[A-Z]/", function (array $match) {
+		$code = preg_replace("/\./", "__", $this->code);
+		$code = trim(mb_strtoupper(preg_replace_callback("/[A-Z]/", function (array $match) {
 			return "_{$match[0]}";
-		}, $this->code)), "_");
+		}, $code)), "_");
+
+		return $code;
+	}
+
+	public function getIsCamelCaseFormat(): bool
+	{
+		return !$this->getIsConstantFormat();
 	}
 
 	public function getCamelCaseFormat(): string
 	{
-		if (!$this->getIsConstantFormat()) {
+		if ($this->getIsCamelCaseFormat()) {
 			return $this->code;
 		}
 
-		return preg_replace_callback("/_([a-z0-9])/", function (array $match) {
+		$code = preg_replace_callback("/_([a-z0-9])/", function (array $match) {
 			return mb_strtoupper($match[1]);
 		}, mb_strtolower($this->code));
+		$code = preg_replace_callback("/_([A-Z0-9])/", function (array $match) {
+			return "." . mb_strtolower($match[1]);
+		}, $code);
+
+		return $code;
 	}
 
 	public function getUpperCamelCaseFormat(): string
