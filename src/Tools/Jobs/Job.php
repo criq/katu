@@ -249,8 +249,13 @@ abstract class Job implements PackagedInterface
 		return $this->processed;
 	}
 
+	public function getRemaining(): ?int
+	{
+		return $this->getLimit() ? ($this->getLimit() - $this->getProcessed()) : null;
+	}
+
 	public function canProcess(): bool
 	{
-		return is_null($this->getLimit()) || $this->getProcessed() < $this->getLimit();
+		return is_null($this->getRemaining()) || $this->getRemaining();
 	}
 }
