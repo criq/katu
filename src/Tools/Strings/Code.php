@@ -87,4 +87,9 @@ class Code
 
 		return $code;
 	}
+
+	public function getIsEqualTo($code): bool
+	{
+		return $this->getCamelCaseFormat() === (new Code($code))->getCamelCaseFormat();
+	}
 }
