@@ -19,11 +19,14 @@ class URL
 		return new \Katu\Types\TURL(\Katu\Config\Config::get("app", "baseUrl"));
 	}
 
+	public static function getPathFor($route, ?array $args = []): string
+	{
+		return \App\App::get()->getRouteCollector()->getRouteParser()->urlFor($route, array_map("urlencode", (array)$args));
+	}
+
 	public static function getFor($route, ?array $args = [], ?array $params = []): \Katu\Types\TURL
 	{
-		$path = \App\App::get()->getRouteCollector()->getRouteParser()->urlFor($route, array_map("urlencode", (array)$args));
-
-		return \Katu\Types\TURL::make(static::joinPaths(static::getBase()->getHostWithScheme(), $path), $params);
+		return \Katu\Types\TURL::make(static::joinPaths(static::getBase()->getHostWithScheme(), static::getPathFor($route, $args)), $params);
 	}
 
 	public static function getDecodedFor($route, $args = [], $params = []): \Katu\Types\TURL
