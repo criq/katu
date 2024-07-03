@@ -36,7 +36,7 @@ class Model extends Base
 	 */
 	public function beforeInsertCallback(): Model
 	{
-		return $this;
+		return $this->beforePersistCallback();
 	}
 
 	/**
@@ -44,7 +44,7 @@ class Model extends Base
 	 */
 	public function afterInsertCallback(): Model
 	{
-		return $this;
+		return $this->afterPersistCallback();
 	}
 
 	/**
@@ -52,7 +52,7 @@ class Model extends Base
 	 */
 	public function beforeUpdateCallback(): Model
 	{
-		return $this;
+		return $this->beforePersistCallback();
 	}
 
 	/**
@@ -60,7 +60,7 @@ class Model extends Base
 	 */
 	public function afterUpdateCallback(): Model
 	{
-		return $this;
+		return $this->afterPersistCallback();
 	}
 
 	public function beforeDeleteCallback(): Model
