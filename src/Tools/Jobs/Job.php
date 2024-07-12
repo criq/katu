@@ -237,9 +237,16 @@ abstract class Job implements PackagedInterface
 		return null;
 	}
 
-	public function incrementProcessed(): Job
+	public function incrementProcessed(int $increment = 1): Job
 	{
-		$this->processed++;
+		$this->setProcessed($this->getProcessed() + $increment);
+
+		return $this;
+	}
+
+	public function setProcessed(int $processed): Job
+	{
+		$this->processed = $processed;
 
 		return $this;
 	}
@@ -256,6 +263,6 @@ abstract class Job implements PackagedInterface
 
 	public function canProcess(): bool
 	{
-		return is_null($this->getRemaining()) || $this->getRemaining();
+		return is_null($this->getRemaining()) || $this->getRemaining() > 0;
 	}
 }
