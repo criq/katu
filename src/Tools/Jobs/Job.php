@@ -10,6 +10,8 @@ use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Job implements PackagedInterface
 {
@@ -19,6 +21,8 @@ abstract class Job implements PackagedInterface
 	const DEFAULT_TIMEOUT = "1 hour";
 
 	protected $args = [];
+	protected $consoleInput;
+	protected $consoleOutput;
 	protected $interval;
 	protected $limit;
 	protected $maxLoadAverage = 1.5;
@@ -264,5 +268,40 @@ abstract class Job implements PackagedInterface
 	public function canProcess(): bool
 	{
 		return is_null($this->getRemaining()) || $this->getRemaining() > 0;
+	}
+
+	public function setConsoleInput(?InputInterface $input): Job
+	{
+		$this->consoleInput = $input;
+
+		return $this;
+	}
+
+	public function getConsoleInput(): ?InputInterface
+	{
+		return $this->consoleInput;
+	}
+
+	public function setConsoleOutput(?OutputInterface $output): Job
+	{
+		$this->consoleOutput = $output;
+
+		return $this;
+	}
+
+	public function getConsoleOutput(): ?OutputInterface
+	{
+		return $this->consoleOutput;
+	}
+
+	public function outputLine(string $string): bool
+	{
+		if ($this->getConsoleOutput()) {
+			$this->getConsoleOutput()->writeln($string);
+
+			return true;
+		}
+
+		return false;
 	}
 }
