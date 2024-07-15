@@ -30,7 +30,7 @@ class Redis implements \Katu\Cache\Adapter
 	{
 		if (static::isSupported()) {
 			$instance = static::getInstance();
-			$res = $instance->exists($identifier);
+			$res = $instance->exists($identifier->getNamespacedKey());
 			return (bool)$res;
 		}
 
@@ -41,7 +41,7 @@ class Redis implements \Katu\Cache\Adapter
 	{
 		if (static::isSupported()) {
 			$instance = static::getInstance();
-			$res = $instance->get($identifier);
+			$res = $instance->get($identifier->getNamespacedKey());
 			if (!is_null($res)) {
 				return unserialize($res);
 			}
@@ -56,7 +56,7 @@ class Redis implements \Katu\Cache\Adapter
 			$instance = static::getInstance();
 			try {
 				$args = [
-					$identifier,
+					$identifier->getNamespacedKey(),
 					serialize($value),
 				];
 				$seconds = abs($timeout->getSeconds()->getValue());
@@ -70,7 +70,7 @@ class Redis implements \Katu\Cache\Adapter
 			} catch (\Throwable $e) {
 				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 
-				$instance->del($identifier);
+				$instance->del($identifier->getNamespacedKey());
 			}
 		}
 
@@ -81,7 +81,7 @@ class Redis implements \Katu\Cache\Adapter
 	{
 		try {
 			if (static::isSupported()) {
-				static::getInstance()->del($identifier);
+				static::getInstance()->del($identifier->getNamespacedKey());
 
 				return true;
 			}

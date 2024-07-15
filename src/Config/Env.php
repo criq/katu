@@ -7,6 +7,9 @@ class Env
 	const ENV_DEV = 0;
 	const ENV_PROD = 1;
 
+	static $commit;
+	static $version;
+
 	public static function getPlatform(): string
 	{
 		$files = [
@@ -45,35 +48,41 @@ class Env
 
 	public static function getCommit(): ?string
 	{
-		try {
-			exec("git log --pretty=\"%H\" -n1 HEAD", $output);
-			if ($output[0] ?? null) {
-				return $output[0];
+		if (is_null(static::$commit)) {
+			try {
+				exec("git log --pretty=\"%H\" -n1 HEAD", $output);
+				if ($output[0] ?? null) {
+					static::$commit = $output[0];
+				}
+			} catch (\Throwable $e) {
+				// Nevermind.
 			}
-		} catch (\Throwable $e) {
-			// Nevermind.
+
+			try {
+				$file = new \Katu\Files\File(\App\App::getBaseDir(), ".git", "logs", "HEAD");
+				$lines = $file->getLines();
+				$line = trim($lines[count($lines)-1]);
+				preg_match("/^(?<commit>[0-9a-f]{40})/", $line, $match);
+				if ($match["commit"] ?? null) {
+					static::$commit = $match["commit"];
+				}
+			} catch (\Throwable $e) {
+				// Nevermind.
+			}
 		}
 
-		try {
-			$file = new \Katu\Files\File(\App\App::getBaseDir(), ".git", "logs", "HEAD");
-			$lines = $file->getLines();
-			$line = trim($lines[count($lines)-1]);
-			preg_match("/^(?<commit>[0-9a-f]{40})/", $line, $match);
-			if ($match["commit"] ?? null) {
-				return $match["commit"];
-			}
-		} catch (\Throwable $e) {
-			// Nevermind.
-		}
-
-		return null;
+		return static::$commit;
 	}
 
 	public static function getVersion(): string
 	{
-		return hash("adler32", implode("", [
-			static::getCommit(),
-			static::getHash(),
-		]));
+		if (is_null(static::$version)) {
+			static::$version = hash("adler32", implode("", [
+				static::getCommit(),
+				static::getHash(),
+			]));
+		}
+
+		return static::$version;
 	}
 }

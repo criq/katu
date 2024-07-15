@@ -134,26 +134,20 @@ class TIdentifier implements PackagedInterface
 	public function getPathParts(?string $extension = null): array
 	{
 		$parts = $this->getSanitizedParts();
-		// var_dump($parts);die;
 
 		try {
 			$filename = array_slice($parts, -1, 1)[0];
-			// var_dump($filename);die;
-
 			$pathinfo = pathinfo($filename);
-			// var_dump($pathinfo);die;
 
 			$hashedFilename = implode(".", array_filter([
 				$pathinfo["filename"],
 				$this->getChecksum(),
 				$extension ?: ($pathinfo["extension"] ?? null),
 			]));
-			// var_dump($hashedFilename);die;
 
 			$parts = array_merge(array_slice($parts, 0, -1), [
 				$hashedFilename,
 			]);
-			// var_dump($parts);die;
 		} catch (\Throwable $e) {
 			$parts[] = $this->getChecksum();
 		}
@@ -174,5 +168,14 @@ class TIdentifier implements PackagedInterface
 		}
 
 		return $key;
+	}
+
+	public function getNamespacedKey(): string
+	{
+		return implode(":", [
+			\Katu\Config\Env::getPlatform(),
+			\Katu\Config\Env::getVersion(),
+			$this->getKey(),
+		]);
 	}
 }
