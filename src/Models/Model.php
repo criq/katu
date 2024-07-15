@@ -302,14 +302,6 @@ class Model extends Base
 		return !$res->hasError();
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public static function getPrimaryKeyColumn(): ?Column
-	{
-		return static::getIdColumn();
-	}
-
 	public static function getIdColumn(): ?\Katu\PDO\Column
 	{
 		$columnClassName = static::getColumnClass()->getName();
