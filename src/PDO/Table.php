@@ -101,7 +101,19 @@ class Table extends \Sexy\Expression
 
 	public function getPrimaryKeyColumn(): ?Column
 	{
-		return static::getColumn("id");
+		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getPlain());
+
+		return \Katu\Cache\Runtime::get($identifier, function () use ($identifier) {
+			return \Katu\Cache\General::get($identifier, new Timeout("1 hour"), function () {
+				foreach ($this->getConnection()->createQuery(" DESCRIBE " . $this)->getResult() as $row) {
+					if (($row["Key"] ?? null) == "PRI") {
+						return new Column($this, new Name($row["Field"]));
+					}
+				}
+
+				return null;
+			});
+		});
 	}
 
 	public function exists(): bool
