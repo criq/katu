@@ -47,7 +47,7 @@ class Table extends \Sexy\Expression
 
 	public function getColumnDescriptions(): ColumnDescriptionCollection
 	{
-		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", "descriptions", $this->getName()->getPlain());
+		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", __FUNCTION__, $this->getName()->getPlain());
 
 		return \Katu\Cache\Runtime::get($identifier, function () use ($identifier) {
 			return \Katu\Cache\General::get($identifier, new Timeout("1 hour"), function () {
@@ -64,22 +64,34 @@ class Table extends \Sexy\Expression
 
 	public function getColumnNames(): NameCollection
 	{
-		$res = new NameCollection;
-		foreach ($this->getColumnDescriptions() as $columnDescription) {
-			$res[] = new Name($columnDescription->getName());
-		}
+		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", __FUNCTION__, $this->getName()->getPlain());
 
-		return $res;
+		return \Katu\Cache\Runtime::get($identifier, function () use ($identifier) {
+			return \Katu\Cache\General::get($identifier, new Timeout("1 hour"), function () {
+				$res = new NameCollection;
+				foreach ($this->getColumnDescriptions() as $columnDescription) {
+					$res[] = new Name($columnDescription->getName());
+				}
+
+				return $res;
+			});
+		});
  	}
 
 	public function getColumns(): ColumnCollection
 	{
-		$res = new ColumnCollection;
-		foreach ($this->getColumnNames() as $columnName) {
-			$res[] = new Column($this, $columnName);
-		}
+		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", __FUNCTION__, $this->getName()->getPlain());
 
-		return $res;
+		return \Katu\Cache\Runtime::get($identifier, function () use ($identifier) {
+			return \Katu\Cache\General::get($identifier, new Timeout("1 hour"), function () {
+				$res = new ColumnCollection;
+				foreach ($this->getColumnNames() as $columnName) {
+					$res[] = new Column($this, $columnName);
+				}
+
+				return $res;
+			});
+		});
 	}
 
 	public function getColumn($name): Column
