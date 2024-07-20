@@ -21,9 +21,7 @@ class Dump
 
 		$dirs = (new \Katu\Files\File(\App\App::getBaseDir(), "databases"))->getDirs();
 		foreach ($dirs as $dir) {
-			$files = $dir->getFiles([
-				"regexp" => "/[0-9]{12}\.sql\.gz$/",
-			]);
+			$files = $dir->getFiles()->filterByRegex("/[0-9]{12}\.sql\.gz$/");
 			foreach ($files as $file) {
 				if (preg_match("/(?<y>[0-9]{4})(?<m>[0-9]{2})(?<d>[0-9]{2})(?<h>[0-9]{2})(?<i>[0-9]{2})(?<s>[0-9]{2})/", $file->getBasename(), $match)) {
 					$dumps[] = new static($file, \Katu\Tools\Calendar\Time::createFromFormat("Y-m-d-H-i-s", implode("-", [
