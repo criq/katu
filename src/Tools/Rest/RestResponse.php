@@ -54,6 +54,11 @@ class RestResponse
 		return \Katu\Files\Formats\JSON::encode($this->getResponse());
 	}
 
+	public function getInlineJSON(): TJSON
+	{
+		return \Katu\Files\Formats\JSON::encodeInline($this->getResponse());
+	}
+
 	public function getStream(): StreamInterface
 	{
 		return \GuzzleHttp\Psr7\Utils::streamFor($this->getJSON());
