@@ -63,7 +63,7 @@ class Config
 
 			$envConfigDir = new File(\App\App::getBaseDir(), ".config");
 			if ($envConfigDir->exists() && $envConfigDir->isDir()) {
-				$files = array_filter($envConfigDir->getFiles(), function (File $file) {
+				$files = array_filter($envConfigDir->getFiles()->getArrayCopy(), function (File $file) {
 					return $file->getExtension() == "yaml";
 				});
 				foreach ($files as $file) {
