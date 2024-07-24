@@ -177,6 +177,15 @@ abstract class User extends \Katu\Models\Model
 		return $class::getOrCreateSafe($this);
 	}
 
+	public function getAccessTokens(): \Katu\PDO\Result
+	{
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
+
+		return $class::getBy([
+			"userId" => $this->getId(),
+		]);
+	}
+
 	public function addUserService($serviceName, $serviceUserId)
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserService::class);
