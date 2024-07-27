@@ -233,21 +233,15 @@ class File
 		return basename($this);
 	}
 
-	public function getFiles($filters = [])
+	public function getFiles(): FileCollection
 	{
-		$files = [];
+		$files = new FileCollection;
 
 		foreach (scandir($this) as $file) {
 			$file = new static($this, $file);
 			if ($file->isFile()) {
 				$files[] = $file;
 			}
-		}
-
-		if (isset($filters["regexp"])) {
-			$files = array_filter($files, function ($i) use ($filters) {
-				return preg_match($filters["regexp"], $i);
-			});
 		}
 
 		return $files;

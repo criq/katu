@@ -3,6 +3,7 @@
 namespace Katu\Config;
 
 use Katu\Files\File;
+use Katu\Files\FileCollection;
 use Katu\Types\TIdentifier;
 
 class Config
@@ -63,7 +64,7 @@ class Config
 
 			$envConfigDir = new File(\App\App::getBaseDir(), ".config");
 			if ($envConfigDir->exists() && $envConfigDir->isDir()) {
-				$files = array_filter($envConfigDir->getFiles(), function (File $file) {
+				$files = array_filter($envConfigDir->getFiles()->getArrayCopy(), function (File $file) {
 					return $file->getExtension() == "yaml";
 				});
 				foreach ($files as $file) {
@@ -86,10 +87,10 @@ class Config
 		});
 	}
 
-	public static function getFiles()
+	public static function getFiles(): FileCollection
 	{
 		$dir = new File(\App\App::getBaseDir(), "app", "Config");
-		$files = [];
+		$files = new FileCollection;
 
 		foreach (scandir($dir) as $file) {
 			if (preg_match(static::FILENAME_REGEXP, $file)) {
