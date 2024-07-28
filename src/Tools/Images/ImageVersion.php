@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Images;
 
-use Katu\Tools\Calendar\Timeout;
-use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
