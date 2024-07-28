@@ -120,19 +120,11 @@ class ImageVersion implements RestResponseInterface
 	 */
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		$options = (new OptionCollection([
-			new Option("IMAGE_VERSION_CACHE_TIMEOUT", new Timeout("1 month")),
-		]))->getMergedWith($options);
-
-		$cacheTimeout = $options->getValue("IMAGE_VERSION_CACHE_TIMEOUT");
-
-		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, $this), $cacheTimeout, function ($options) use ($request) {
-			return new RestResponse([
-				"url" => (string)$this->getURL(),
-				"extension" => $this->getVersion()->getExtension(),
-				"size" => $this->getFile()->getSize()->getInB()->getAmount(),
-				"dimensions" => $this->getVersionImage()->getImageSize()->getRestResponse($request, $options),
-			]);
-		}, $options);
+		return new RestResponse([
+			"url" => (string)$this->getURL(),
+			"extension" => $this->getVersion()->getExtension(),
+			"size" => $this->getFile()->getSize()->getInB()->getAmount(),
+			"dimensions" => $this->getVersionImage()->getImageSize()->getRestResponse($request, $options),
+		]);
 	}
 }
