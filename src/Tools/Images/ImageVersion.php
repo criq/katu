@@ -88,7 +88,9 @@ class ImageVersion implements RestResponseInterface
 
 			return new Image($this->getFile());
 		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error(serialize($this->getFile()));
+			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e, [
+				"file" => serialize($this->getFile()),
+			]);
 
 			return null;
 		}
