@@ -82,6 +82,7 @@ class ImageVersion implements RestResponseInterface
 				}
 
 				$this->getFile()->getDir()->makeDir();
+				$this->getFile()->getDir()->chmod(0777);
 				$this->getFile()->touch();
 
 				$interventionImage->save($this->getFile(), $this->getVersion()->getQuality());
