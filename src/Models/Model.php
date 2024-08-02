@@ -521,15 +521,6 @@ class Model extends Base
 		return $fileClass::getBySQL($sql)->getOne();
 	}
 
-	public function getCachedImageFile(?Timeout $timeout = null): ?\Katu\Models\Presets\File
-	{
-		$timeout = $timeout ?: new Timeout("1 day");
-
-		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, $this->getId()), $timeout, function () {
-			return $this->getImageFile();
-		});
-	}
-
 	public function refreshFileAttachmentsFromFileIds(User $user, ?array $fileIds)
 	{
 		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);

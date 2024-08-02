@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Images;
 
-use Katu\Tools\Calendar\Timeout;
-use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
@@ -84,13 +82,17 @@ class ImageVersion implements RestResponseInterface
 				}
 
 				$this->getFile()->getDir()->makeDir();
+				$this->getFile()->getDir()->chmod(0777);
+				$this->getFile()->touch();
 
 				$interventionImage->save($this->getFile(), $this->getVersion()->getQuality());
 			}
 
 			return new Image($this->getFile());
 		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error(serialize($this->getFile()));
+			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e, [
+				"file" => serialize($this->getFile()),
+			]);
 
 			return null;
 		}
@@ -120,19 +122,13 @@ class ImageVersion implements RestResponseInterface
 	 */
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		$options = (new OptionCollection([
-			new Option("IMAGE_VERSION_CACHE_TIMEOUT", new Timeout("1 month")),
-		]))->getMergedWith($options);
+		$versionImage = $this->getVersionImage();
 
-		$cacheTimeout = $options->getValue("IMAGE_VERSION_CACHE_TIMEOUT");
-
-		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, $this), $cacheTimeout, function ($options) use ($request) {
-			return new RestResponse([
-				"url" => (string)$this->getURL(),
-				"extension" => $this->getVersion()->getExtension(),
-				"size" => $this->getFile()->getSize()->getInB()->getAmount(),
-				"dimensions" => $this->getVersionImage()->getImageSize()->getRestResponse($request, $options),
-			]);
-		}, $options);
+		return new RestResponse([
+			"url" => (string)$this->getURL(),
+			"extension" => $this->getVersion()->getExtension(),
+			"size" => $this->getFile()->getSize()->getInB()->getAmount(),
+			"dimensions" => $versionImage ? $versionImage->getImageSize()->getRestResponse($request, $options) : null,
+		]);
 	}
 }

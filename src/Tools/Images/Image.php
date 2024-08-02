@@ -171,43 +171,16 @@ class Image implements RestResponseInterface, PackagedInterface
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		$defaultOptions = new OptionCollection([
-			new Option("IMAGE_SIZES", [400, 800, 1600, 2400]),
 			new Option("QUALITY", 80),
-			new Option("INCLUDE_SQUARE_IMAGE", false),
 		]);
 
 		$options = $defaultOptions->getMergedWith($options);
-
-		$sizes = $options->getValue("IMAGE_SIZES");
-		$quality = $options->getValue("QUALITY");
-
-		$versions = array_merge(
-			array_map(function (int $size) use ($quality) {
-				return new Version("{$size}", [
-					new Resize([
-						"width" => $size,
-						"height" => $size,
-					]),
-				], "jpg", $quality);
-			}, $sizes),
-			$options->getValue("INCLUDE_SQUARE_IMAGE") ? array_map(function (int $size) use ($quality) {
-				return new Version("{$size}_SQUARE", [
-					new Fit([
-						"width" => $size,
-						"height" => $size,
-					]),
-				], "jpg", $quality);
-			}, $sizes) : [],
-		);
-
-		$versions = array_combine(array_map(function (Version $version) {
-			return $version->getName();
-		}, $versions), $versions);
+		$versions = $options->getValue("IMAGE_VERSIONS");
 
 		return new RestResponse([
 			"versions" => array_map(function (Version $version) use ($request, $options) {
 				return (new ImageVersion($this, $version))->getRestResponse($request, $options);
-			}, $versions),
+			}, $versions->getAssoc()->getArrayCopy()),
 		]);
 	}
 }
