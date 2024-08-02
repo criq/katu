@@ -118,6 +118,11 @@ class Result extends \ArrayObject implements RestResponseInterface
 		return $this->getPagination()->getTotal();
 	}
 
+	public function getCount(): int
+	{
+		return count($this);
+	}
+
 	public function getSQL(): string
 	{
 		return $this->getQuery()->getStatementDump()->getSentSQL();
