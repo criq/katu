@@ -30,6 +30,7 @@ abstract class Job implements PackagedInterface
 	protected $processed = 0;
 	protected $schedules;
 	protected $timeout;
+	protected $total;
 
 	public function __construct(array $args = [])
 	{
@@ -233,23 +234,6 @@ abstract class Job implements PackagedInterface
 		return true;
 	}
 
-	public function getItemCountPickle()
-	{
-		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
-	}
-
-	public function getItemCount(): ?int
-	{
-		return $this->getItemCountPickle()->get();
-	}
-
-	public function setItemCount(?int $count): Job
-	{
-		$this->getItemCountPickle()->set($count);
-
-		return $this;
-	}
-
 	public function getLimit(): ?int
 	{
 		return null;
@@ -279,10 +263,44 @@ abstract class Job implements PackagedInterface
 		return $this->getLimit() ? ($this->getLimit() - $this->getProcessed()) : null;
 	}
 
+	public function setTotal(?int $total): Job
+	{
+		$this->total = $total;
+
+		return $this;
+	}
+
+	public function getTotal(): ?int
+	{
+		return $this->total;
+	}
+
+	public function getTotalPickle(): Pickle
+	{
+		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
+	}
+
+	public function getPickledTotal(): ?int
+	{
+		return $this->getTotalPickle()->get();
+	}
+
+	public function setPickledTotal(?int $total): Job
+	{
+		$this->getTotalPickle()->set($total);
+
+		return $this;
+	}
+
+	public function getResolvedTotal(): ?int
+	{
+		return $this->getTotal() ?: $this->getPickledTotal();
+	}
+
 	public function getProgress(): ?float
 	{
-		if ($this->getItemCount()) {
-			return $this->getProcessed() / $this->getItemCount();
+		if ($this->getResolvedTotal()) {
+			return $this->getProcessed() / $this->getResolvedTotal();
 		}
 
 		return null;
