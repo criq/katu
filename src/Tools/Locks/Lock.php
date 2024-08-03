@@ -9,18 +9,13 @@ class Lock
 {
 	const DIR_NAME = "locks";
 
-	private $args = [];
-	private $callback;
-	private $excludedPlatforms = [];
 	private $identifier;
 	private $timeout;
-	private $useLock = true;
 
-	public function __construct(TIdentifier $identifier, Timeout $timeout, ?callable $callback = null)
+	public function __construct(TIdentifier $identifier, Timeout $timeout)
 	{
 		$this->setIdentifier($identifier);
 		$this->setTimeout($timeout);
-		$this->setCallback($callback);
 	}
 
 	public function setIdentifier(TIdentifier $identifier): Lock
@@ -47,55 +42,12 @@ class Lock
 		return $this->timeout;
 	}
 
-	public function setCallback(?callable $callback): Lock
-	{
-		$this->callback = $callback;
-
-		return $this;
-	}
-
-	public function getCallback(): ?callable
-	{
-		return $this->callback;
-	}
-
-	public function setArgs(): Lock
-	{
-		$this->args = func_get_args();
-
-		return $this;
-	}
-
-	public function getArgs(): array
-	{
-		return $this->args;
-	}
-
-	public function setUseLock(bool $useLock): Lock
-	{
-		$this->useLock = $useLock;
-
-		return $this;
-	}
-
-	public function getUseLock(): bool
-	{
-		return (bool)($this->useLock && !in_array(\Katu\Config\Env::getPlatform(), $this->excludedPlatforms));
-	}
-
-	public function excludePlatform(string $platform): Lock
-	{
-		$this->excludedPlatforms[] = $platform;
-
-		return $this;
-	}
-
 	public function getFile(): \Katu\Files\File
 	{
 		return new \Katu\Files\File(\App\App::getTemporaryDir(), static::DIR_NAME, $this->getIdentifier()->getPath("lock"));
 	}
 
-	public function isLocked(): bool
+	public function getIsLocked(): bool
 	{
 		$file = $this->getFile();
 		if (!$file->exists()) {
@@ -111,7 +63,7 @@ class Lock
 
 	public function lock(): Lock
 	{
-		if ($this->isLocked()) {
+		if ($this->getIsLocked()) {
 			throw new \Katu\Exceptions\LockException;
 		}
 
@@ -128,21 +80,5 @@ class Lock
 		}
 
 		return $this;
-	}
-
-	public function run()
-	{
-		if ($this->getUseLock()) {
-			$this->lock();
-		}
-
-		@set_time_limit((string)$this->getTimeout()->getSeconds());
-		$res = call_user_func_array($this->getCallback(), $this->getArgs());
-
-		if ($this->getUseLock()) {
-			$this->unlock();
-		}
-
-		return $res;
 	}
 }
