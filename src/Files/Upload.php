@@ -143,6 +143,11 @@ class Upload
 		return $this->fileName;
 	}
 
+	public function getExtension(): ?string
+	{
+		return pathinfo($this->getFileName())["extension"] ?: null;
+	}
+
 	public function getFileSize(): TFileSize
 	{
 		return new TFileSize($this->fileSize);
