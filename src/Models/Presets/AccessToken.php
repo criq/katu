@@ -67,6 +67,15 @@ abstract class AccessToken extends \Katu\Models\Model
 		return $this;
 	}
 
+	public function extendTimeExpires(Time $time): AccessToken
+	{
+		if ($time > $this->getTimeExpires()) {
+			$this->setTimeExpires($time);
+		}
+
+		return $this;
+	}
+
 	public function getTimeExpires(): Time
 	{
 		return new Time($this->timeExpires);
