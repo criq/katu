@@ -9,9 +9,7 @@ class Procedure
 {
 	protected $callback;
 	protected $identifier;
-	protected $ignoreLoadAveragePlatforms;
-	protected $lockExcludedPlatforms;
-	protected $maxLoadAverage;
+	protected $isLockChecked = true;
 	protected $timeout;
 
 	public function __construct(TIdentifier $identifier, Timeout $timeout, callable $callback)
@@ -57,67 +55,60 @@ class Procedure
 		return $this->callback;
 	}
 
-	public function setMaxLoadAverage(?float $value): Procedure
+	public function getLock(): Lock
 	{
-		$this->maxLoadAverage = $value;
+		return new Lock($this->getIdentifier(), $this->getTimeout());
+	}
+
+	public function setIsLockChecked(bool $isLockChecked): Procedure
+	{
+		$this->isLockChecked = $isLockChecked;
 
 		return $this;
 	}
 
-	public function getMaxLoadAverage(): ?float
+	public function getIsLockChecked(): bool
 	{
-		return $this->maxLoadAverage;
+		return $this->isLockChecked;
 	}
 
-	public function setLockExcludedPlatforms(?array $platforms): Procedure
+	public function getIsExecutable(): bool
 	{
-		$this->lockExcludedPlatforms = $platforms;
+		if (!$this->getIsLockChecked()) {
+			return true;
+		}
 
-		return $this;
-	}
+		if ($this->getIsLockChecked() && !$this->getLock()->getIsLocked()) {
+			return true;
+		}
 
-	public function getLockExcludedPlatforms(): array
-	{
-		return $this->lockExcludedPlatforms ?: [];
-	}
-
-	public function setIgnoreLoadAveragePlatforms(?array $platforms): Procedure
-	{
-		$this->ignoreLoadAveragePlatforms = $platforms;
-
-		return $this;
-	}
-
-	public function getIgnoreLoadAveragePlatforms(): array
-	{
-		return $this->ignoreLoadAveragePlatforms ?: [];
+		return false;
 	}
 
 	public function run()
 	{
+		$lock = $this->getLock();
+
 		try {
-			if (!in_array(\Katu\Config\Env::getPlatform(), $this->getIgnoreLoadAveragePlatforms()) && $this->getMaxLoadAverage()) {
-				\Katu\Tools\System\System::assertMaxLoadAverage($this->getMaxLoadAverage());
+			if ($this->getIsExecutable()) {
+				if (!$this->getIsLockChecked()) {
+					if ($lock->getIsLocked()) {
+						$lock->unlock();
+					}
+				}
+				$lock->lock();
+
+				@set_time_limit((string)$this->getTimeout()->getSeconds());
+				$res = call_user_func($this->getCallback());
 			}
-
-			$lock = new \Katu\Tools\Locks\Lock($this->getIdentifier(), $this->getTimeout(), function () {
-				return call_user_func($this->getCallback());
-			});
-
-			foreach ($this->getLockExcludedPlatforms() as $platform) {
-				$lock->excludePlatform($platform);
-			}
-
-			return $lock->run();
 		} catch (\Katu\Exceptions\LockException $e) {
-			// Nevermind.
-		} catch (\Katu\Exceptions\LoadAverageExceededException $e) {
 			// Nevermind.
 		} catch (\Throwable $e) {
 			\App\App::getLogger($this->getIdentifier())->error($e);
-			if ($lock ?? null) {
-				$lock->unlock();
-			}
+		} finally {
+			$lock->unlock();
 		}
+
+		return $res ?? null;
 	}
 }

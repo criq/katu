@@ -24,11 +24,13 @@ abstract class Job implements PackagedInterface
 	protected $consoleInput;
 	protected $consoleOutput;
 	protected $interval;
+	protected $isLockChecked = true;
 	protected $limit;
 	protected $maxLoadAverage = 1.5;
 	protected $processed = 0;
 	protected $schedules;
 	protected $timeout;
+	protected $total;
 
 	public function __construct(array $args = [])
 	{
@@ -69,6 +71,18 @@ abstract class Job implements PackagedInterface
 	public function getArgs(): array
 	{
 		return $this->args;
+	}
+
+	public function setIsLockChecked(bool $isLockChecked): Job
+	{
+		$this->isLockChecked = $isLockChecked;
+
+		return $this;
+	}
+
+	public function getIsLockChecked(): bool
+	{
+		return $this->isLockChecked;
 	}
 
 	public function getTimeStartedPickle(): Pickle
@@ -161,7 +175,9 @@ abstract class Job implements PackagedInterface
 
 	public function getProcedure(): Procedure
 	{
-		return new Procedure($this->getIdentifier(), $this->getTimeout(), $this->getCallback());
+		return (new Procedure($this->getIdentifier(), $this->getTimeout(), $this->getCallback()))
+			->setIsLockChecked($this->getIsLockChecked())
+			;
 	}
 
 	public function setSchedules(ScheduleCollection $schedules)
@@ -202,38 +218,20 @@ abstract class Job implements PackagedInterface
 	public function run(): bool
 	{
 		// Check max load average.
-		if (\Katu\Config\Env::getPlatform() != "dev" && $this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAveragePerCpu()[0] >= $this->getMaxLoadAverage()) {
+		if ($this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAveragePerCpu()[0] >= $this->getMaxLoadAverage()) {
 			return false;
 		}
 
-		try {
-			$this->setTimeStarted(new Time);
-			$this->getProcedure()->run();
-			$this->setTimeFinished(new Time);
-
-			return true;
-		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(static::class, __FUNCTION__))->error($e);
-
+		// Check lock.
+		if (!$this->getProcedure()->getIsExecutable()) {
 			return false;
 		}
-	}
 
-	public function getItemCountPickle()
-	{
-		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
-	}
+		$this->setTimeStarted(new Time);
+		$this->getProcedure()->run();
+		$this->setTimeFinished(new Time);
 
-	public function getItemCount(): ?int
-	{
-		return $this->getItemCountPickle()->get();
-	}
-
-	public function setItemCount(?int $count): Job
-	{
-		$this->getItemCountPickle()->set($count);
-
-		return $this;
+		return true;
 	}
 
 	public function getLimit(): ?int
@@ -263,6 +261,49 @@ abstract class Job implements PackagedInterface
 	public function getRemaining(): ?int
 	{
 		return $this->getLimit() ? ($this->getLimit() - $this->getProcessed()) : null;
+	}
+
+	public function setTotal(?int $total): Job
+	{
+		$this->total = $total;
+
+		return $this;
+	}
+
+	public function getTotal(): ?int
+	{
+		return $this->total;
+	}
+
+	public function getTotalPickle(): Pickle
+	{
+		return new Pickle(new TIdentifier(static::class, __FUNCTION__));
+	}
+
+	public function getPickledTotal(): ?int
+	{
+		return $this->getTotalPickle()->get();
+	}
+
+	public function setPickledTotal(?int $total): Job
+	{
+		$this->getTotalPickle()->set($total);
+
+		return $this;
+	}
+
+	public function getResolvedTotal(): ?int
+	{
+		return $this->getTotal() ?: $this->getPickledTotal();
+	}
+
+	public function getProgress(): ?float
+	{
+		if ($this->getResolvedTotal()) {
+			return $this->getProcessed() / $this->getResolvedTotal();
+		}
+
+		return null;
 	}
 
 	public function canProcess(): bool

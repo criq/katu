@@ -35,4 +35,27 @@ class TimeCollection extends \ArrayObject
 			return $time->format("Y-m-d");
 		}, $this->getArrayCopy());
 	}
+
+	public function getInterval(): ?Interval
+	{
+		$times = $this->sortAscending();
+		$first = $times->getFirst();
+		$last = $times->getLast();
+
+		if ($first && $last) {
+			return new Interval($first, $last);
+		}
+
+		return null;
+	}
+
+	public function getFirst(): ?Time
+	{
+		return array_values($this->getArrayCopy())[0] ?? null;
+	}
+
+	public function getLast(): ?Time
+	{
+		return array_values($this->getArrayCopy())[count($this) - 1] ?? null;
+	}
 }
