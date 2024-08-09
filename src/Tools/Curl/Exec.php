@@ -34,6 +34,11 @@ class Exec
 		return $this;
 	}
 
+	public function getUser(): \Katu\Models\Presets\User
+	{
+		return $this->user;
+	}
+
 	public function getCommand()
 	{
 		$segments = [
@@ -47,7 +52,7 @@ class Exec
 		$segments[] = "--request " . $this->method;
 
 		if ($this->user) {
-			$segments[] = "--header \"Authorization: Bearer {$this->user->getSafeAccessToken()->getToken()}\"";
+			$segments[] = "--header \"Authorization: Bearer {$this->getUser()->getOrCreateSafeAccessToken()->getToken()}\"";
 		}
 
 		if ($this->method == "GET") {

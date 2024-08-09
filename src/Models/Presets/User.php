@@ -170,7 +170,7 @@ abstract class User extends \Katu\Models\Model
 		return $class::create($this);
 	}
 
-	public function getSafeAccessToken(): AccessToken
+	public function getOrCreateSafeAccessToken(): AccessToken
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
 
