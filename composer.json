@@ -3,6 +3,7 @@
 	"description": "katu",
 	"type": "library",
 	"require" : {
+		"endroid/qr-code": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
 		"gregwar/cache": "@stable",
 		"guzzlehttp/guzzle": "@stable",
