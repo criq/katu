@@ -408,8 +408,15 @@ abstract class View extends Base
 
 		$class = static::getClass()->getName();
 		$class::materializeSourceViews();
-		$class::copy($class::getView(), $class::generateCachedTable());
-		$class::updateLastCachedTime();
+
+		try {
+			$class::copy($class::getView(), $class::generateCachedTable());
+			$class::updateLastCachedTime();
+		} catch (\Throwable $e) {
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e, [
+				"class" => $class,
+			]);
+		}
 
 		\Katu\Cache\Runtime::clear();
 
