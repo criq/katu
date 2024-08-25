@@ -243,7 +243,7 @@ abstract class Job implements PackagedInterface
 
 	public function getLimit(): ?int
 	{
-		return null;
+		return $this->limit;
 	}
 
 	public function getDefaultLimit(): ?int
