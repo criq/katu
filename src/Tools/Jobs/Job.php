@@ -217,21 +217,27 @@ abstract class Job implements PackagedInterface
 
 	public function run(): bool
 	{
-		// Check max load average.
-		if ($this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAveragePerCpu()[0] >= $this->getMaxLoadAverage()) {
+		try {
+			// Check max load average.
+			if ($this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAveragePerCpu()[0] >= $this->getMaxLoadAverage()) {
+				return false;
+			}
+
+			// Check lock.
+			if (!$this->getProcedure()->getIsExecutable()) {
+				return false;
+			}
+
+			$this->setTimeStarted(new Time);
+			$this->getProcedure()->run();
+			$this->setTimeFinished(new Time);
+
+			return true;
+		} catch (\Throwable $e) {
+			$this->outputLine($e->getMessage());
+
 			return false;
 		}
-
-		// Check lock.
-		if (!$this->getProcedure()->getIsExecutable()) {
-			return false;
-		}
-
-		$this->setTimeStarted(new Time);
-		$this->getProcedure()->run();
-		$this->setTimeFinished(new Time);
-
-		return true;
 	}
 
 	public function setLimit(?int $limit): Job
