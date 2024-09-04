@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Validation\Params;
 
-class RequestParam extends \Katu\Tools\Validation\Param
+use Katu\Tools\Validation\Param;
+
+class RequestParam extends Param
 {
 }

@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Validation\Params;
 
-class GeneratedParam extends \Katu\Tools\Validation\Param
+use Katu\Tools\Validation\Param;
+
+class GeneratedParam extends Param
 {
 }

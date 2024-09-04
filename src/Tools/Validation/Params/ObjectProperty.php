@@ -2,7 +2,9 @@
 
 namespace Katu\Tools\Validation\Params;
 
-class ObjectProperty extends \Katu\Tools\Validation\Param
+use Katu\Tools\Validation\Param;
+
+class ObjectProperty extends Param
 {
 	protected $property;
 
