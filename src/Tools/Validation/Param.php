@@ -7,6 +7,8 @@ use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
+use Katu\Tools\Validation\Params\GeneratedParam;
+use Katu\Tools\Validation\Params\RequestParam;
 use Katu\Types\TClass;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -94,6 +96,16 @@ class Param implements PackagedInterface, RestResponseInterface
 	public function isNotNullInput(): bool
 	{
 		return !$this->isNullInput();
+	}
+
+	public function isRequestParam(): bool
+	{
+		return $this instanceof RequestParam;
+	}
+
+	public function isGeneratedParam(): bool
+	{
+		return $this instanceof GeneratedParam;
 	}
 
 	public function setOutput($value): Param
