@@ -219,12 +219,16 @@ abstract class Job implements PackagedInterface
 	{
 		try {
 			// Check max load average.
-			if ($this->getMaxLoadAverage() && \Katu\Tools\System\System::getLoadAveragePerCpu()[0] >= $this->getMaxLoadAverage()) {
+			$maxLoadAverage = $this->getMaxLoadAverage();
+			$loadAverage = \Katu\Tools\System\System::getLoadAveragePerCpu()[0];
+			if ($maxLoadAverage && $loadAverage >= $maxLoadAverage) {
+				$this->outputLine("Load average {$loadAverage} above {$maxLoadAverage}.");
 				return false;
 			}
 
 			// Check lock.
 			if (!$this->getProcedure()->getIsExecutable()) {
+				$this->outputLine("Job locked.");
 				return false;
 			}
 
