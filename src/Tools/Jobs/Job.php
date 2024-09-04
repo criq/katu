@@ -287,7 +287,7 @@ abstract class Job implements PackagedInterface
 
 	public function getRemaining(): ?int
 	{
-		return $this->getLimit() ? ($this->getLimit() - $this->getProcessed()) : null;
+		return $this->getResolvedLimit() ? ($this->getResolvedLimit() - $this->getProcessed()) : null;
 	}
 
 	public function setTotal(?int $total): Job
