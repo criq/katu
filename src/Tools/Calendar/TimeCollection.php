@@ -58,4 +58,16 @@ class TimeCollection extends \ArrayObject
 	{
 		return array_values($this->getArrayCopy())[count($this) - 1] ?? null;
 	}
+
+	public function getIntervals(Time $referenceTime): IntervalCollection
+	{
+		return new IntervalCollection(array_map(function (Time $time) use ($referenceTime) {
+			$times = [
+				$time,
+				$referenceTime,
+			];
+
+			return new Interval(min($times), max($times));
+		}, $this->getArrayCopy()));
+	}
 }

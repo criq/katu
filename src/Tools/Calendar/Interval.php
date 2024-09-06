@@ -20,6 +20,11 @@ class Interval
 		$this->setEnd($end);
 	}
 
+	public function __toString(): string
+	{
+		return $this->getSeconds()->getValue();
+	}
+
 	public static function validate(Param $startParam, Param $endParam): Validation
 	{
 		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);

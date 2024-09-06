@@ -16,7 +16,6 @@ class IntervalCollection extends \ArrayObject
 			}
 		}
 
-
 		die;
 	}
 }
