@@ -74,7 +74,10 @@ class Smartemailing extends Provider
 					"emailaddress" => $recipient->getEmailAddress(),
 				],
 				"replace" => [],
-				"template_variables" => $request->getEmail()->getRecipientVariables()->filterByRecipient($recipient)->getVariables()->getAssoc(),
+				"template_variables" => array_merge(
+					$request->getEmail()->getVariables()->getAssoc(),
+					$request->getEmail()->getRecipientVariables()->filterByRecipient($recipient)->getVariables()->getAssoc(),
+				),
 				"attachments" => array_map(function (Attachment $attachment) {
 					return [
 						"file_name" => $attachment->getResolvedName(),
