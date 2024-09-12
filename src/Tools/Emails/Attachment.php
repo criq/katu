@@ -50,4 +50,24 @@ class Attachment
 	{
 		return $this->contentId;
 	}
+
+	public function getResolvedName(): ?string
+	{
+		return $this->getName() ?: $this->getEntity()->getFileName();
+	}
+
+	public function getContentType(): ?string
+	{
+		return $this->getEntity()->getContentType();
+	}
+
+	public function getContents(): ?string
+	{
+		return $this->getEntity()->getContents();
+	}
+
+	public function getEncodedContents(): ?string
+	{
+		return base64_encode($this->getContents());
+	}
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace Katu\Tools\Http\Headers;
+namespace Katu\Tools\HTTP\Headers;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-class Accept extends \Katu\Tools\Http\HeaderCollection
+class Accept extends \Katu\Tools\HTTP\HeaderCollection
 {
 	public static function createFromRequest(ServerRequestInterface $request)
 	{

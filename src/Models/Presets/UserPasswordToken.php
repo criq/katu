@@ -9,6 +9,8 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 	const EXPIRES = "1 hour";
 	const TABLE = "user_password_tokens";
 
+	public $id;
+	public $timeCreated;
 	public $timeExpires;
 	public $timeUsed;
 	public $token;
@@ -16,24 +18,21 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 
 	public static function create(User $user): UserPasswordToken
 	{
-		return static::insert([
-			"timeCreated" => new Time,
-			"timeExpires" => new Time(static::EXPIRES),
-			"userId" => $user->getId(),
-			"token" => static::generateToken(),
-		]);
+		$userPasswordToken = new static;
+		$userPasswordToken->setTimeCreated(new Time);
+		$userPasswordToken->setTimeExpires(new Time(static::EXPIRES));
+		$userPasswordToken->setUser($user);
+		$userPasswordToken->setToken(static::generateToken());
+		$userPasswordToken->persist();
+
+		return $userPasswordToken;
 	}
 
-	public static function generateToken(): string
+	public function setTimeCreated(Time $time): UserPasswordToken
 	{
-		return \Katu\Tools\Random\Generator::getString(static::getColumn("token")->getDescription()->length);
-	}
+		$this->timeCreated = $time;
 
-	public function getUser(): User
-	{
-		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
-
-		return $class::get($this->userId);
+		return $this;
 	}
 
 	public function setTimeExpires(Time $time): UserPasswordToken
@@ -60,9 +59,35 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 		return $this->timeUsed ? new Time($this->timeUsed) : null;
 	}
 
+	public function setUser(User $user): UserPasswordToken
+	{
+		$this->userId = $user->getId();
+
+		return $this;
+	}
+
+	public function getUser(): User
+	{
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
+
+		return $class::get($this->userId);
+	}
+
+	public function setToken(string $token): UserPasswordToken
+	{
+		$this->token = $token;
+
+		return $this;
+	}
+
 	public function getToken(): string
 	{
 		return $this->token;
+	}
+
+	public static function generateToken(): string
+	{
+		return \Katu\Tools\Random\Generator::getString(static::getColumn("token")->getDescription()->length);
 	}
 
 	public function getIsExpired(): bool
@@ -78,7 +103,7 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 	public function expire(): UserPasswordToken
 	{
 		$this->setTimeUsed(new Time);
-		$this->save();
+		$this->persist();
 
 		return $this;
 	}

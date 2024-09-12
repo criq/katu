@@ -2,32 +2,123 @@
 
 namespace Katu\Tools\Emails;
 
+use Katu\Tools\HTTP\Header;
+use Katu\Tools\HTTP\HeaderCollection;
 use Katu\Types\TEmailAddress;
+use Katu\Types\TEmailAddressCollection;
 
-abstract class Email
+class Email
 {
 	protected $attachments;
-	protected $cc = [];
-	protected $headers = [];
-	protected $html = "";
-	protected $plain = "";
-	protected $recipients = [];
+	protected $ccs;
+	protected $headers;
+	protected $html;
+	protected $plain;
+	protected $providerConfigurations;
+	protected $recipients;
+	protected $recipientVariables;
 	protected $replyTo;
 	protected $sender;
 	protected $subject;
+	protected $template;
+	protected $variables;
 
-	abstract public function send();
-
-	public function __construct($subject = null)
+	public function __toString(): string
 	{
-		$this->setSubject($subject);
+		return (string)$this->getHTML() ?: (string)$this->getPlain();
+	}
+
+	public function setHeaders(?HeaderCollection $headers): Email
+	{
+		$this->headers = $headers;
 
 		return $this;
 	}
 
-	public function __toString(): string
+	public function getHeaders(): HeaderCollection
 	{
-		return (string)$this->getHTML();
+		if (is_null($this->headers)) {
+			$this->headers = new HeaderCollection;
+		}
+
+		return $this->headers;
+	}
+
+	public function addHeader(Header $header): Email
+	{
+		$this->getHeaders()[] = $header;
+
+		return $this;
+	}
+
+	public function setSender(?TEmailAddress $emailAddress): Email
+	{
+		$this->sender = $emailAddress;
+
+		return $this;
+	}
+
+	public function getSender(): ?TEmailAddress
+	{
+		return $this->sender;
+	}
+
+	public function setRecipients(?TEmailAddressCollection $recipients): Email
+	{
+		$this->recipients = $recipients;
+
+		return $this;
+	}
+
+	public function getRecipients(): TEmailAddressCollection
+	{
+		if (is_null($this->recipients)) {
+			$this->recipients = new TEmailAddressCollection;
+		}
+
+		return $this->recipients;
+	}
+
+	public function addRecipient(TEmailAddress $emailAddress): Email
+	{
+		$this->getRecipients()[] = $emailAddress;
+
+		return $this;
+	}
+
+	public function setCCs(?TEmailAddressCollection $ccs): Email
+	{
+		$this->ccs = $ccs;
+
+		return $this;
+	}
+
+	public function getCCs(): TEmailAddressCollection
+	{
+		if (is_null($this->ccs)) {
+			$this->ccs = new TEmailAddressCollection;
+		}
+
+		return $this->ccs;
+	}
+
+	public function addCC(TEmailAddress $emailAddress): Email
+	{
+		$this->getCCs()[] = $emailAddress;
+
+		return $this;
+	}
+
+	public function setReplyTo(?TEmailAddress $replyTo): Email
+	{
+		$this->replyTo = $replyTo;
+
+		return $this;
+	}
+
+	public function getReplyTo(): ?TEmailAddress
+	{
+		return $this->replyTo;
 	}
 
 	public function setSubject(?string $subject): Email
@@ -54,9 +145,9 @@ abstract class Email
 		return $this->html;
 	}
 
-	public function getDispatchedHTML(): ?string
+	public function getResolvedHTML(): ?string
 	{
-		return $this->getHTML();
+		return $this->getHTML() ?: nl2br($this->getPlain());
 	}
 
 	public function setPlain(?string $plain): Email
@@ -71,72 +162,14 @@ abstract class Email
 		return $this->plain;
 	}
 
-	public function getDispatchedPlain(): ?string
+	public function getResolvedPlain(): ?string
 	{
-		return $this->getPlain() ?: strip_tags($this->getDispatchedHTML());
+		return $this->getPlain() ?: strip_tags($this->getHTML());
 	}
 
-	public function setBody(string $html, ?string $plain = null): Email
+	public function setAttachments(?AttachmentCollection $attachments): Email
 	{
-		$this->setHTML($html);
-		$this->setPlain($plain ?: strip_tags($html));
-
-		return $this;
-	}
-
-	public function setSender(TEmailAddress $emailAddress): Email
-	{
-		$this->sender = $emailAddress;
-
-		return $this;
-	}
-
-	public function getSender(): ?TEmailAddress
-	{
-		return $this->sender;
-	}
-
-	public function setReplyTo(?TEmailAddress $emailAddress): Email
-	{
-		$this->replyTo = $emailAddress;
-
-		return $this;
-	}
-
-	public function getReplyTo(): ?TEmailAddress
-	{
-		return $this->replyTo;
-	}
-
-	public function addRecipient(TEmailAddress $emailAddress): Email
-	{
-		$this->recipients[] = $emailAddress;
-
-		return $this;
-	}
-
-	public function resetRecipients(): Email
-	{
-		$this->recipients = [];
-
-		return $this;
-	}
-
-	public function getRecipients(): array
-	{
-		return (array)$this->recipients;
-	}
-
-	public function addCc(TEmailAddress $emailAddress): Email
-	{
-		$this->cc[] = $emailAddress;
-
-		return $this;
-	}
-
-	public function addHeader($name, $value): Email
-	{
-		$this->headers[$name] = $value;
+		$this->attachments = $attachments;
 
 		return $this;
 	}
@@ -164,14 +197,82 @@ abstract class Email
 		return $this;
 	}
 
-	public function getDispatchedAttachments(): array
+	public function setTemplate(?string $template): Email
 	{
-		return array_map(function (Attachment $attachment) {
-			return [
-				"type" => $attachment->getEntity()->getContentType(),
-				"name" => $attachment->getName() ?: $attachment->getEntity()->getFileName(),
-				"content" => base64_encode($attachment->getEntity()->getContents()),
-			];
-		}, $this->getAttachments()->getArrayCopy());
+		$this->template = $template;
+
+		return $this;
+	}
+
+	public function getTemplate(): ?string
+	{
+		return $this->template;
+	}
+
+	public function setVariables(?VariableCollection $variables): Email
+	{
+		$this->variables = $variables;
+
+		return $this;
+	}
+
+	public function getVariables(): VariableCollection
+	{
+		if (is_null($this->variables)) {
+			$this->variables = new VariableCollection;
+		}
+
+		return $this->variables;
+	}
+
+	public function addVariable(Variable $variable): Email
+	{
+		$this->getVariables()[] = $variable;
+
+		return $this;
+	}
+
+	public function setRecipientVariables(?RecipientVariableCollection $recipientVariables): Email
+	{
+		$this->recipientVariables = $recipientVariables;
+
+		return $this;
+	}
+
+	public function getRecipientVariables(): RecipientVariableCollection
+	{
+		if (is_null($this->recipientVariables)) {
+			$this->recipientVariables = new RecipientVariableCollection;
+		}
+
+		return $this->recipientVariables;
+	}
+
+	public function addRecipientVariable(RecipientVariable $recipientVariable): Email
+	{
+		$this->getRecipientVariables()[] = $recipientVariable;
+
+		return $this;
+	}
+
+	public function getProviderConfigurations(): ProviderConfigurationCollection
+	{
+		if (is_null($this->providerConfigurations)) {
+			$this->providerConfigurations = new ProviderConfigurationCollection;
+		}
+
+		return $this->providerConfigurations;
+	}
+
+	public function addProviderConfiguration(ProviderConfiguration $providerConfiguration): Email
+	{
+		$this->getProviderConfigurations()[] = $providerConfiguration;
+
+		return $this;
+	}
+
+	public function dispatch(Provider $provider): Response
+	{
+		return $provider->createRequest($this)->createResponse();
 	}
 }

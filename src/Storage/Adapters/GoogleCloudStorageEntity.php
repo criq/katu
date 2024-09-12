@@ -19,9 +19,14 @@ class GoogleCloudStorageEntity extends Entity
 		$this->setStorageObject($storageObject);
 	}
 
-	public static function createFromPackage(Package $package): GoogleCloudStorageEntity
+	public static function createStorageFromPackage(Package $package): ?GoogleCloudStorage
 	{
-		$storage = Storage::createFromPackage(new Package($package->getPayload()["storage"]));
+		return Storage::createFromPackage(new Package($package->getPayload()["storage"]));
+	}
+
+	public static function createFromPackage(Package $package): ?GoogleCloudStorageEntity
+	{
+		$storage = static::createStorageFromPackage($package);
 		$storageObject = $storage->getBucket()->object($package->getPayload()["name"]);
 
 		return new static($storage, $storageObject);
@@ -30,10 +35,7 @@ class GoogleCloudStorageEntity extends Entity
 	public function getPackage(): Package
 	{
 		return new Package([
-			"storage" => [
-				"class" => (new TClass($this->getStorage()))->getPortableName(),
-				"bucket" => $this->getStorageObjectInfo()["bucket"],
-			],
+			"storage" => $this->getStorage()->getPackage()->getPayload(),
 			"class" => (new TClass($this))->getPortableName(),
 			"name" => $this->getStorageObjectInfo()["name"],
 		]);

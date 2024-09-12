@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Tools\Http\Headers;
+namespace Katu\Tools\HTTP\Headers;
 
 class AcceptMime
 {

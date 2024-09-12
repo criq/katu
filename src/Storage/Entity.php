@@ -18,7 +18,7 @@ abstract class Entity implements PackagedInterface
 	abstract public function getPath(): string;
 	abstract public function getURI(): string;
 
-	public static function createFromPackage(Package $package): Entity
+	public static function createFromPackage(Package $package): ?Entity
 	{
 		$className = TClass::createFromPortableName($package->getPayload()["class"])->getName();
 
