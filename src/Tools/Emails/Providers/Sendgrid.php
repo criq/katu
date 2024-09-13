@@ -31,18 +31,20 @@ class Sendgrid extends Provider
 
 	public function getPayload(Request $request): \SendGrid\Mail\Mail
 	{
-		$payload = new \SendGrid\Mail\Mail;
-		$payload->addHeaders($request->getEmail()->getHeaders());
-		$payload->setFrom($request->getEmail()->getSender()->getEmailAddress(), $request->getEmail()->getSender()->getName());
-		$payload->setSubject($request->getEmail()->getSubject());
-		$payload->addContent("text/html", $request->getEmail()->getResolvedHTML());
-		$payload->addContent("text/plain", $request->getEmail()->getResolvedPlain());
+		$email = $request->getEmail();
 
-		if ($request->getEmail()->getTemplate()) {
-			$payload->setTemplateId($request->getEmail()->getTemplate());
+		$payload = new \SendGrid\Mail\Mail;
+		$payload->addHeaders($email->getHeaders());
+		$payload->setFrom($email->getSender()->getEmailAddress(), $email->getSender()->getName());
+		$payload->setSubject($email->getSubject());
+		$payload->addContent("text/html", $email->getResolvedHTML());
+		$payload->addContent("text/plain", $email->getResolvedPlain());
+
+		if ($email->getTemplate()) {
+			$payload->setTemplateId($email->getTemplate());
 		}
 
-		array_walk($request->getEmail()->getRecipients()->getArrayCopy(), function (TEmailAddress $recipient) use (&$payload) {
+		array_walk($email->getRecipients()->getArrayCopy(), function (TEmailAddress $recipient) use (&$payload) {
 			$personalization = new \SendGrid\Mail\Personalization;
 			$personalization->addTo(new \SendGrid\Mail\To($recipient->getEmailAddress(), $recipient->getName()));
 			$payload->addPersonalization($personalization);
@@ -55,7 +57,7 @@ class Sendgrid extends Provider
 				$attachment->getResolvedName(),
 				$attachment->getContentId(),
 			);
-		}, $request->getEmail()->getAttachments()->getArrayCopy()));
+		}, $email->getAttachments()->getArrayCopy()));
 
 		return $payload;
 	}

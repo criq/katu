@@ -273,7 +273,7 @@ class Email
 		return $this;
 	}
 
-	private function setIsDispatchable(bool $isDispatchable): Email
+	protected function setIsDispatchable(bool $isDispatchable): Email
 	{
 		$this->isDispatchable = $isDispatchable;
 
@@ -298,11 +298,11 @@ class Email
 
 	protected function createDispatchable(): Email
 	{
-		return (clone $this)->setIsDispatchable(true);
+		return clone $this;
 	}
 
 	public function dispatch(Provider $provider): ?Response
 	{
-		return $provider->createRequest($this)->createResponse();
+		return $provider->createRequest($this->getDispatchable())->createResponse();
 	}
 }

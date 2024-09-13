@@ -34,19 +34,19 @@ class Ecomail extends Provider
 
 	public function getPayload(Request $request): array
 	{
-		$email = $request->getEmail()->getDispatchable();
+		$email = $request->getEmail();
 
 		$payload = [];
 
-		if ($request->getEmail()->getTemplate()) {
-			$payload["message"]["template_id"] = $request->getEmail()->getTemplate();
+		if ($email->getTemplate()) {
+			$payload["message"]["template_id"] = $email->getTemplate();
 		}
 
-		$payload["message"]["from_email"] = $request->getEmail()->getSender()->getEmailAddress();
-		$payload["message"]["from_name"] = $request->getEmail()->getSender()->getName();
+		$payload["message"]["from_email"] = $email->getSender()->getEmailAddress();
+		$payload["message"]["from_name"] = $email->getSender()->getName();
 
-		if ($request->getEmail()->getReplyTo()) {
-			$payload["message"]["reply_to"] = $request->getEmail()->getReplyTo()->getEmailAddress();
+		if ($email->getReplyTo()) {
+			$payload["message"]["reply_to"] = $email->getReplyTo()->getEmailAddress();
 		}
 
 		$payload["message"]["to"] = array_map(function (TEmailAddress $recipient) {
@@ -54,18 +54,18 @@ class Ecomail extends Provider
 				"email" => $recipient->getEmailAddress(),
 				"name" => $recipient->getName(),
 			];
-		}, $request->getEmail()->getRecipients()->getArrayCopy());
+		}, $email->getRecipients()->getArrayCopy());
 
-		$payload["message"]["subject"] = $request->getEmail()->getSubject();
-		$payload["message"]["html"] = $request->getEmail()->getResolvedHTML();
-		$payload["message"]["text"] = $request->getEmail()->getResolvedPlain();
+		$payload["message"]["subject"] = $email->getSubject();
+		$payload["message"]["html"] = $email->getResolvedHTML();
+		$payload["message"]["text"] = $email->getResolvedPlain();
 
 		$payload["message"]["global_merge_vars"] = array_map(function (Variable $variable) {
 			return [
 				"name" => $variable->getKey(),
 				"content" => $variable->getValue(),
 			];
-		}, $request->getEmail()->getVariables()->getArrayCopy());
+		}, $email->getVariables()->getArrayCopy());
 
 		$payload["message"]["attachments"] = array_map(function (Attachment $attachment) {
 			return [
@@ -73,7 +73,7 @@ class Ecomail extends Provider
 				"name" => $attachment->getResolvedName(),
 				"content" => $attachment->getEncodedContents(),
 			];
-		}, $request->getEmail()->getAttachments()->getArrayCopy());
+		}, $email->getAttachments()->getArrayCopy());
 
 		return $payload;
 	}

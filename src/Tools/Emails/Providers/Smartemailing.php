@@ -45,38 +45,42 @@ class Smartemailing extends Provider
 
 	public function getPayload(Request $request): array
 	{
-		$payload["sender_credentials"]["from"] = $request->getEmail()->getSender()->getEmailAddress();
-		$payload["sender_credentials"]["sender_name"] = $request->getEmail()->getSender()->getName();
+		$email = $request->getEmail();
 
-		if ($request->getEmail()->getReplyTo()) {
-			$payload["sender_credentials"]["reply_to"] = $request->getEmail()->getReplyTo()->getEmailAddress();
+		$payload["sender_credentials"]["from"] = $email->getSender()->getEmailAddress();
+		$payload["sender_credentials"]["sender_name"] = $email->getSender()->getName();
+
+		if ($email->getReplyTo()) {
+			$payload["sender_credentials"]["reply_to"] = $email->getReplyTo()->getEmailAddress();
 		} else {
-			$payload["sender_credentials"]["reply_to"] = $request->getEmail()->getSender()->getEmailAddress();
+			$payload["sender_credentials"]["reply_to"] = $email->getSender()->getEmailAddress();
 		}
 
 		$payload["tag"] = "";
 
-		$configuration = $request->getEmail()->getProviderConfigurations()->getSmartemailingConfiguration();
+		$configuration = $email->getProviderConfigurations()->getSmartemailingConfiguration();
 
-		if ($request->getEmail()->getTemplate()) {
-			$payload["email_id"] = $request->getEmail()->getTemplate();
+		if ($email->getTemplate()) {
+			$payload["email_id"] = $email->getTemplate();
 		} elseif ($configuration->getTemplate()) {
 			$payload["email_id"] = $configuration->getTemplate();
 		} else {
-			$payload["message_contents"]["subject"] = $request->getEmail()->getSubject();
-			$payload["message_contents"]["html_body"] = $request->getEmail()->getResolvedHTML();
-			$payload["message_contents"]["text_body"] = $request->getEmail()->getResolvedPlain();
+			$payload["message_contents"]["subject"] = $email->getSubject();
+			$payload["message_contents"]["html_body"] = $email->getResolvedHTML();
+			$payload["message_contents"]["text_body"] = $email->getResolvedPlain();
 		}
 
 		$payload["tasks"] = array_map(function (TEmailAddress $recipient) use ($request) {
+			$email = $request->getEmail();
+
 			return [
 				"recipient" => [
 					"emailaddress" => $recipient->getEmailAddress(),
 				],
 				"replace" => [],
 				"template_variables" => array_merge(
-					$request->getEmail()->getVariables()->getAssoc(),
-					$request->getEmail()->getRecipientVariables()->filterByRecipient($recipient)->getVariables()->getAssoc(),
+					$email->getVariables()->getAssoc(),
+					$email->getRecipientVariables()->filterByRecipient($recipient)->getVariables()->getAssoc(),
 				),
 				"attachments" => array_map(function (Attachment $attachment) {
 					return [
@@ -84,9 +88,9 @@ class Smartemailing extends Provider
 						"content_type" => $attachment->getContentType(),
 						"data_base64" => $attachment->getEncodedContents(),
 					];
-				}, $request->getEmail()->getAttachments()->getArrayCopy()),
+				}, $email->getAttachments()->getArrayCopy()),
 			];
-		}, $request->getEmail()->getRecipients()->getArrayCopy());
+		}, $email->getRecipients()->getArrayCopy());
 
 		return $payload;
 	}
