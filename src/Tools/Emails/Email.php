@@ -2,8 +2,8 @@
 
 namespace Katu\Tools\Emails;
 
-use Katu\Tools\HTTP\Header;
-use Katu\Tools\HTTP\HeaderCollection;
+use Katu\Tools\HTTPTools\Header;
+use Katu\Tools\HTTPTools\HeaderCollection;
 use Katu\Types\TEmailAddress;
 use Katu\Types\TEmailAddressCollection;
 

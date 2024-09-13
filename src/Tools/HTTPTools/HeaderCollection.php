@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Tools\HTTP;
+namespace Katu\Tools\HTTPTools;
 
 class HeaderCollection extends \ArrayObject
 {
