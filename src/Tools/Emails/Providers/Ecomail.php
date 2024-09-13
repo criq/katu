@@ -34,6 +34,8 @@ class Ecomail extends Provider
 
 	public function getPayload(Request $request): array
 	{
+		$email = $request->getEmail()->getDispatchable();
+
 		$payload = [];
 
 		if ($request->getEmail()->getTemplate()) {

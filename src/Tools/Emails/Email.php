@@ -11,8 +11,10 @@ class Email
 {
 	protected $attachments;
 	protected $ccs;
+	protected $dispatchable;
 	protected $headers;
 	protected $html;
+	protected $isDispatchable;
 	protected $plain;
 	protected $providerConfigurations;
 	protected $recipients;
@@ -271,7 +273,35 @@ class Email
 		return $this;
 	}
 
-	public function dispatch(Provider $provider): Response
+	private function setIsDispatchable(bool $isDispatchable): Email
+	{
+		$this->isDispatchable = $isDispatchable;
+
+		return $this;
+	}
+
+	public function getIsDispatchable(): bool
+	{
+		return $this->isDispatchable;
+	}
+
+	public function getDispatchable(): Email
+	{
+		if (is_null($this->dispatchable)) {
+			$this->dispatchable = $this->createDispatchable();
+		}
+
+		$this->dispatchable->setIsDispatchable(true);
+
+		return $this->dispatchable;
+	}
+
+	protected function createDispatchable(): Email
+	{
+		return (clone $this)->setIsDispatchable(true);
+	}
+
+	public function dispatch(Provider $provider): ?Response
 	{
 		return $provider->createRequest($this)->createResponse();
 	}
