@@ -4,6 +4,9 @@ namespace Katu\Tools\Calendar;
 
 class Time extends \DateTime
 {
+	const DAYS_IN_YEAR = 365.2425;
+	const SECONDS_IN_DAY = 86400;
+
 	public function __construct($time = null, \DateTimeZone $timezone = null)
 	{
 		if ($time instanceof \DateTime) {
