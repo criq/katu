@@ -23,6 +23,11 @@ class MonthCollection extends \ArrayObject
 		return null;
 	}
 
+	public function getReversed(): MonthCollection
+	{
+		return new static(array_reverse($this->getArrayCopy()));
+	}
+
 	public function getOrCreateMonth(Month $month): ?Month
 	{
 		if (!$this->getMonth($month)) {
