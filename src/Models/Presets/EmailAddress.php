@@ -104,4 +104,9 @@ abstract class EmailAddress extends \Katu\Models\Model
 	{
 		return $this->emailAddress;
 	}
+
+	public function getTitle(): string
+	{
+		return $this->getEmailAddress();
+	}
 }
