@@ -27,6 +27,10 @@ class Request
 
 	public function setEmail(Email $email): Request
 	{
+		if (!$email->getIsDispatchable()) {
+			throw new \Exception("Email is not dispatchable.");
+		}
+
 		$this->email = $email;
 
 		return $this;

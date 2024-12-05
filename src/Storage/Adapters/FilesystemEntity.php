@@ -83,4 +83,9 @@ class FilesystemEntity extends Entity
 
 		return new \Katu\Types\TFileSize(filesize($this->getPath()));
 	}
+
+	public function getBase64Encoded(): ?string
+	{
+		return base64_encode($this->getContents());
+	}
 }

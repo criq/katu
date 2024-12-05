@@ -76,6 +76,11 @@ abstract class Setting extends \Katu\Models\Model
 		return $this;
 	}
 
+	public function getName(): string
+	{
+		return $this->name;
+	}
+
 	public function setValue($value): Setting
 	{
 		$this->value = \Katu\Files\Formats\JSON::encodeStandard($value);
@@ -87,6 +92,18 @@ abstract class Setting extends \Katu\Models\Model
 	public function getValue()
 	{
 		return \Katu\Files\Formats\JSON::decodeAsArray($this->value);
+	}
+
+	public function setDescription(?string $description): Setting
+	{
+		$this->description = trim($description) ?: null;
+
+		return $this;
+	}
+
+	public function getDescription(): ?string
+	{
+		return $this->description;
 	}
 
 	public function setIsSystem(bool $isSystem): Setting
