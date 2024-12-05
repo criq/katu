@@ -93,31 +93,28 @@ abstract class User extends \Katu\Models\Model
 		return $this->name;
 	}
 
-	public function setEmailAddress($emailAddress)
+	public function setEmailAddress(?EmailAddress $emailAddress = null): User
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\EmailAddress::class);
 
-		if (!$emailAddress || !($emailAddress instanceof $class)) {
-			throw (new \Katu\Exceptions\InputErrorException("Invalid e-mail address."))
-				->setAbbr("invalidEmailAddress")
-				->addErrorName("emailAddress")
-				;
+		if ($emailAddress) {
+			// Look for another user with this e-mail address.
+			if (static::getBy([
+				static::$columnNames["emailAddressId"] => $emailAddress->getId(),
+				SX::cmpNotEq(static::getIdColumn(), $this->getId()),
+			])->getTotal()) {
+				throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
+					->setAbbr("emailAddressInUse")
+					->addErrorName("emailAddress")
+					;
+			}
+
+			$this->{static::$columnNames["emailAddressId"]} = $emailAddress->getId();
+		} else {
+			$this->{static::$columnNames["emailAddressId"]} = null;
 		}
 
-		// Look for another user with this e-mail address.
-		if (static::getBy([
-			static::$columnNames["emailAddressId"] => $emailAddress->getId(),
-			SX::cmpNotEq(static::getIdColumn(), $this->getId()),
-		])->getTotal()) {
-			throw (new \Katu\Exceptions\InputErrorException("E-mail address is used by another user."))
-				->setAbbr("emailAddressInUse")
-				->addErrorName("emailAddress")
-				;
-		}
-
-		$this->{static::$columnNames["emailAddressId"]} = $emailAddress->getId();
-
-		return true;
+		return $this;
 	}
 
 	public function getEmailAddress(): ?EmailAddress
