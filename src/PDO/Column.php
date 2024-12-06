@@ -59,4 +59,11 @@ class Column extends \Sexy\Expression
 	{
 		return in_array($this->getName(), $this->getTable()->getColumnNames()->getArrayCopy());
 	}
+
+	public function delete(): \Katu\PDO\Result
+	{
+		$sql = " ALTER TABLE {$this->getTable()} DROP {$this->getName()} ";
+
+		return $this->getTable()->getConnection()->createQuery($sql)->getResult();
+	}
 }
