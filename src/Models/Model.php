@@ -4,7 +4,6 @@ namespace Katu\Models;
 
 use App\Models\Users\User;
 use Katu\PDO\Column;
-use Katu\Tools\Calendar\Timeout;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Types\TIdentifier;
