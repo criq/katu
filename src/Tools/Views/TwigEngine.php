@@ -345,10 +345,16 @@ abstract class TwigEngine implements ViewEngineInterface
 
 	public function getTemplate(string $template, array $data = []): ?string
 	{
-		$twig = $this->getTwig();
-		$data = array_merge_recursive($this->getCommonData(), $data);
+		try {
+			$twig = $this->getTwig();
+			$data = array_merge_recursive($this->getCommonData(), $data);
 
-		return $twig->render($template, $data);
+			return $twig->render($template, $data);
+		} catch (\Throwable $e) {
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+		}
+
+		return null;
 	}
 
 	public function render(string $template, array $data = []): StreamInterface
