@@ -343,25 +343,17 @@ abstract class TwigEngine implements ViewEngineInterface
 		return $data;
 	}
 
-	public function getTemplate(string $template, array $data = []): ?string
+	public function render(string $template, array $data = []): StreamInterface
 	{
-		try {
-			$twig = $this->getTwig();
-			$data = array_merge_recursive($this->getCommonData(), $data);
+		$twig = $this->getTwig();
+		$data = array_merge_recursive($this->getCommonData(), $data);
 
-			return $twig->render($template, $data);
+		try {
+			return \GuzzleHttp\Psr7\Utils::streamFor(trim($twig->render($template, $data)));
 		} catch (\Throwable $e) {
-			var_dump($e);die;
 			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 
 			throw $e;
 		}
-
-		return null;
-	}
-
-	public function render(string $template, array $data = []): StreamInterface
-	{
-		return \GuzzleHttp\Psr7\Utils::streamFor($this->getTemplate($template, $data));
 	}
 }
