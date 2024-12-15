@@ -361,12 +361,6 @@ abstract class TwigEngine implements ViewEngineInterface
 
 	public function render(string $template, array $data = []): StreamInterface
 	{
-		try {
-			return \GuzzleHttp\Psr7\Utils::streamFor($this->getTemplate($template, $data));
-		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
-
-			throw $e;
-		}
+		return \GuzzleHttp\Psr7\Utils::streamFor($this->getTemplate($template, $data));
 	}
 }
