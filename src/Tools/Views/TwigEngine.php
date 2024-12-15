@@ -351,6 +351,7 @@ abstract class TwigEngine implements ViewEngineInterface
 
 			return $twig->render($template, $data);
 		} catch (\Throwable $e) {
+			var_dump($e);die;
 			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 
 			throw $e;
