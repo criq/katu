@@ -99,7 +99,8 @@ class TArray extends \ArrayObject
 	{
 		$res = [];
 
-		array_walk_recursive($this->getArray(), function($value) use (&$res) {
+		$array = $this->getArray();
+		array_walk_recursive($array, function ($value) use (&$res) {
 			$res[] = $value;
 		});
 
