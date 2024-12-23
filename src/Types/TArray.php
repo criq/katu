@@ -97,14 +97,14 @@ class TArray extends \ArrayObject
 
 	public function flatten(): TArray
 	{
-		$iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($this));
-		$values = [];
+		$res = [];
 
-		foreach ($iterator as $value) {
-			$values[] = $value;
-		}
+		$array = $this->getArray();
+		array_walk_recursive($array, function ($value) use (&$res) {
+			$res[] = $value;
+		});
 
-		return new static($values);
+		return new static($res);
 	}
 
 	public function reverse(): TArray
