@@ -77,6 +77,15 @@ class ElementNode extends Node
 		return $this;
 	}
 
+	public function addClasses(?array $classes): ElementNode
+	{
+		array_walk($classes, function (string $class) {
+			$this->addClass($class);
+		});
+
+		return $this;
+	}
+
 	public function getClasses(): array
 	{
 		return explode(" ", $this->getAttribute("class") ? $this->getAttribute("class")->getValue() : null);
