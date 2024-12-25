@@ -1,0 +1,38 @@
+<?php
+
+namespace Katu\Tools\HTML;
+
+class AttributeCollection extends \ArrayObject implements StringableInterface
+{
+	public function __toString(): string
+	{
+		return implode(" ", $this->sort()->getArrayCopy());
+	}
+
+	public function offsetSet($key, $value)
+	{
+		parent::offsetSet($value->getName(), $value);
+	}
+
+	public function addAttribute(Attribute $attribute): AttributeCollection
+	{
+		$this->append($attribute);
+
+		return $this;
+	}
+
+	public function getAttribute(string $name): ?Attribute
+	{
+		return $this[$name] ?? null;
+	}
+
+	public function sort(): AttributeCollection
+	{
+		$array = $this->getArrayCopy();
+		usort($array, function (Attribute $a, Attribute $b) {
+			return $a->getName() < $b->getName() ? -1 : 1;
+		});
+
+		return new static($array);
+	}
+}
