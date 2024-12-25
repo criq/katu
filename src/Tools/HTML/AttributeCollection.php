@@ -4,6 +4,12 @@ namespace Katu\Tools\HTML;
 
 class AttributeCollection extends \ArrayObject implements StringableInterface
 {
+	public static function createFromArray(array $array) {
+		return new static(array_map(function (string $value, string $key) {
+			return new Attribute($key, $value);
+		}, $array, array_keys($array)));
+	}
+
 	public function __toString(): string
 	{
 		return implode(" ", $this->sort()->getArrayCopy());
