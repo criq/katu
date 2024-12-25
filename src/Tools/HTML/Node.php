@@ -20,6 +20,15 @@ abstract class Node implements StringableInterface
 		return $this;
 	}
 
+	public function addNodes(NodeCollection $nodes): Node
+	{
+		array_walk($nodes->getArrayCopy(), function (Node $node) {
+			$this->addNode($node);
+		});
+
+		return $this;
+	}
+
 	public function getNodes(): NodeCollection
 	{
 		if (is_null($this->nodes)) {

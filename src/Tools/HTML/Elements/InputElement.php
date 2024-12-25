@@ -15,4 +15,11 @@ class InputElement extends ElementNode
 		$this->setAttribute(new Attribute("value", $value));
 		$this->setAttribute(new Attribute("id", $id));
 	}
+
+	public function setPlaceholder(?string $placeholder): InputElement
+	{
+		$this->setAttribute(new Attribute("placeholder", $placeholder));
+
+		return $this;
+	}
 }
