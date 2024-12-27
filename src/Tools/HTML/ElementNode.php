@@ -17,7 +17,10 @@ class ElementNode extends Node
 
 	public function __toString(): string
 	{
-		return $this->getIsPairElement() ? "<{$this->getName()} {$this->getAttributes()}>{$this->getNodes()}</{$this->getName()}>" : "<{$this->getName()} {$this->getAttributes()}>";
+		return $this->getIsPairElement()
+			? "<{$this->getName()} {$this->getAttributes()}>{$this->getNodes()}</{$this->getName()}>"
+			: "<{$this->getName()} {$this->getAttributes()}>"
+			;
 	}
 
 	public function getIsPairElement(): bool
