@@ -17,7 +17,27 @@ class ElementNode extends Node
 
 	public function __toString(): string
 	{
-		return "<{$this->getName()} {$this->getAttributes()}>{$this->getNodes()}</{$this->getName()}>";
+		return $this->getIsPairElement() ? "<{$this->getName()} {$this->getAttributes()}>{$this->getNodes()}</{$this->getName()}>" : "<{$this->getName()} {$this->getAttributes()}>";
+	}
+
+	public function getIsPairElement(): bool
+	{
+		return !in_array($this->getName(), [
+			"area",
+			"base",
+			"br",
+			"col",
+			"embed",
+			"hr",
+			"img",
+			"input",
+			"link",
+			"meta",
+			"param",
+			"source",
+			"track",
+			"wbr",
+		]);
 	}
 
 	public function setName(string $name): ElementNode
