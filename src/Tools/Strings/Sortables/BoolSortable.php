@@ -25,7 +25,7 @@ class BoolSortable extends Sortable
 
 	public function getPrecision(): int
 	{
-		return 10;
+		return 1;
 	}
 
 	public function getSortable(): string

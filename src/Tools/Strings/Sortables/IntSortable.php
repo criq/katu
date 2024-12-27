@@ -25,7 +25,7 @@ class IntSortable extends Sortable
 
 	public function getPrecision(): int
 	{
-		return 10;
+		return 20;
 	}
 
 	public function getSortable(): string
