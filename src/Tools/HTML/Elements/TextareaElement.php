@@ -17,4 +17,11 @@ class TextareaElement extends InputElement
 			new TextNode($value),
 		]));
 	}
+
+	public function setRows(?int $rows = null): TextareaElement
+	{
+		$this->setAttribute(new Attribute("rows", $rows));
+
+		return $this;
+	}
 }

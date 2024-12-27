@@ -37,4 +37,9 @@ abstract class Node implements StringableInterface
 
 		return $this->nodes;
 	}
+
+	public function getMarkup(): \Twig\Markup
+	{
+		return new \Twig\Markup((string)$this, "UTF-8");
+	}
 }
