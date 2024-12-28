@@ -22,4 +22,11 @@ class InputElement extends ElementNode
 
 		return $this;
 	}
+
+	public function setAutofocus(): InputElement
+	{
+		$this->setAttribute(new Attribute("autofocus"));
+
+		return $this;
+	}
 }
