@@ -4,11 +4,14 @@ namespace Katu\Tools\Strings\Sortables;
 
 use Katu\Tools\Strings\Sortable;
 
+use function PHPUnit\Framework\isInfinite;
+
 class FloatSortable extends Sortable
 {
-	public function __construct(float $source)
+	public function __construct(float $source, ?string $title = null)
 	{
 		$this->setSource($source);
+		$this->setTitle($title);
 	}
 
 	public function setSource(float $source)
@@ -30,6 +33,13 @@ class FloatSortable extends Sortable
 
 	public function getSortable(): string
 	{
+		if (is_infinite($this->getSource())) {
+			return implode(".", [
+				str_repeat(9, $this->getPrecision()),
+				str_repeat(9, $this->getPrecision()),
+			]);
+		}
+
 		list($a, $b) = array_pad(explode(".", $this->getSource()), 2, null);
 
 		return implode(".", [

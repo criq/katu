@@ -6,9 +6,10 @@ use Katu\Tools\Strings\Sortable;
 
 class BoolSortable extends Sortable
 {
-	public function __construct(bool $source)
+	public function __construct(bool $source, ?string $title = null)
 	{
 		$this->setSource($source);
+		$this->setTitle($title);
 	}
 
 	public function setSource(bool $source)

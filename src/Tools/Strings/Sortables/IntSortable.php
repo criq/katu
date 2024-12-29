@@ -6,9 +6,10 @@ use Katu\Tools\Strings\Sortable;
 
 class IntSortable extends Sortable
 {
-	public function __construct(int $source)
+	public function __construct(int $source, ?string $title = null)
 	{
 		$this->setSource($source);
+		$this->setTitle($title);
 	}
 
 	public function setSource(int $source)
@@ -30,6 +31,10 @@ class IntSortable extends Sortable
 
 	public function getSortable(): string
 	{
+		if (is_infinite($this->getSource())) {
+			return str_repeat(9, $this->getPrecision());
+		}
+
 		return str_pad($this->getSource(), $this->getPrecision(), 0, \STR_PAD_LEFT);
 	}
 }
