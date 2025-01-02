@@ -15,4 +15,11 @@ class SelectElement extends ElementNode
 		$this->setAttribute(new Attribute("id", $id));
 		$this->setNodes($nodes);
 	}
+
+	public function setAutofocus(): SelectElement
+	{
+		$this->setAttribute(new Attribute("autofocus"));
+
+		return $this;
+	}
 }
