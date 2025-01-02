@@ -71,6 +71,17 @@ class ElementNode extends Node
 		return $this;
 	}
 
+	public function addAttributes(?AttributeCollection $attributes): ElementNode
+	{
+		if ($attributes) {
+			array_map(function (Attribute $attribute) {
+				$this->getAttributes()->addAttribute($attribute);
+			}, $attributes->getArrayCopy());
+		}
+
+		return $this;
+	}
+
 	public function getAttributes(): AttributeCollection
 	{
 		if (is_null($this->attributes)) {
