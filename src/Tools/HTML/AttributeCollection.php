@@ -2,17 +2,24 @@
 
 namespace Katu\Tools\HTML;
 
-class AttributeCollection extends \ArrayObject implements StringableInterface
+class AttributeCollection extends \ArrayObject implements HTMLInterface
 {
+	public function __toString(): string
+	{
+		return (string)$this->getHTML();
+	}
+
 	public static function createFromArray(array $array) {
 		return new static(array_map(function (string $value, string $key) {
 			return new Attribute($key, $value);
 		}, $array, array_keys($array)));
 	}
 
-	public function __toString(): string
+	public function getHTML(): HTML
 	{
-		return implode(" ", $this->sort()->getArrayCopy());
+		return new HTML(implode(" ", array_map(function (Attribute $attribute) {
+			return $attribute->getHTML();
+		}, $this->sort()->getArrayCopy())));
 	}
 
 	public function offsetSet($key, $value)

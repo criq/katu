@@ -17,10 +17,12 @@ class ElementNode extends Node
 
 	public function __toString(): string
 	{
-		return $this->getIsPairElement()
-			? "<{$this->getName()} {$this->getAttributes()}>{$this->getNodes()}</{$this->getName()}>"
-			: "<{$this->getName()} {$this->getAttributes()}>"
-			;
+		return (string)$this->getHTML();
+	}
+
+	public function getHTML(): HTML
+	{
+		return new HTML($this->getIsPairElement() ? "<{$this->getName()} {$this->getAttributes()->getHTML()}>{$this->getNodes()->getHTML()}</{$this->getName()}>" : "<{$this->getName()} {$this->getAttributes()->getHTML()}>");
 	}
 
 	public function getIsPairElement(): bool

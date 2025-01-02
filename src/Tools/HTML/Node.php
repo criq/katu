@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\HTML;
 
-abstract class Node implements StringableInterface
+abstract class Node implements HTMLInterface
 {
 	protected $nodes;
 
@@ -20,7 +20,7 @@ abstract class Node implements StringableInterface
 		return $this;
 	}
 
-	public function addNodes(NodeCollection $nodes): Node
+	public function addNodes(?NodeCollection $nodes): Node
 	{
 		array_walk($nodes->getArrayCopy(), function (Node $node) {
 			$this->addNode($node);
@@ -36,10 +36,5 @@ abstract class Node implements StringableInterface
 		}
 
 		return $this->nodes;
-	}
-
-	public function getMarkup(): \Twig\Markup
-	{
-		return new \Twig\Markup((string)$this, "UTF-8");
 	}
 }

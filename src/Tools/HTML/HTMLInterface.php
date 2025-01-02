@@ -2,7 +2,8 @@
 
 namespace Katu\Tools\HTML;
 
-interface StringableInterface
+interface HTMLInterface
 {
+	public function getHTML(): HTML;
 	public function __toString(): string;
 }

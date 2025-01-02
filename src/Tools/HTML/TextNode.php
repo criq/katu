@@ -14,10 +14,15 @@ class TextNode extends Node
 
 	public function __toString(): string
 	{
-		return implode([
+		return (string)$this->getHTML();
+	}
+
+	public function getHTML(): HTML
+	{
+		return new HTML(implode([
 			$this->getText(),
 			...$this->getNodes()->getArrayCopy(),
-		]);
+		]));
 	}
 
 	public function setText(?string $text): TextNode
