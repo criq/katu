@@ -5,7 +5,6 @@ namespace Katu\Tools\HTML;
 class ElementNode extends Node
 {
 	protected $attributes;
-
 	protected $name;
 
 	public function __construct(string $name, ?AttributeCollection $attributes = null, ?NodeCollection $nodes = null)
