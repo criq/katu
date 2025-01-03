@@ -9,22 +9,10 @@ class SelectOption
 	protected $text;
 	protected $value;
 
-	public function __construct(string $text, ?string $value = null)
+	public function __construct(string $value, ?string $text = null)
 	{
-		$this->setText($text);
 		$this->setValue($value);
-	}
-
-	public function setText(string $text): SelectOption
-	{
-		$this->text = $text;
-
-		return $this;
-	}
-
-	public function getText(): string
-	{
-		return $this->text;
+		$this->setText($text);
 	}
 
 	public function setValue(?string $value = null): SelectOption
@@ -39,8 +27,20 @@ class SelectOption
 		return $this->value;
 	}
 
+	public function setText(?string $text): SelectOption
+	{
+		$this->text = $text;
+
+		return $this;
+	}
+
+	public function getText(): ?string
+	{
+		return $this->text;
+	}
+
 	public function getNode(): OptionElement
 	{
-		return new OptionElement($this->getValue(), $this->getText());
+		return new OptionElement($this->getValue(), $this->getText() ?: $this->getValue());
 	}
 }
