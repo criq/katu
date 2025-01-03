@@ -39,8 +39,10 @@ class SelectOption
 		return $this->text;
 	}
 
-	public function getNode(): OptionElement
+	public function getNode(?string $selectedValue = null): OptionElement
 	{
-		return new OptionElement($this->getValue(), $this->getText() ?: $this->getValue());
+		$resolvedValue = $this->getText() ?: $this->getValue();
+
+		return new OptionElement($this->getValue(), $resolvedValue, $resolvedValue == $selectedValue);
 	}
 }
