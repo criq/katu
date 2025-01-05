@@ -4,10 +4,10 @@ namespace Katu\Tools\Strings\Sortables;
 
 use Katu\Tools\Strings\Sortable;
 
-use function PHPUnit\Framework\isInfinite;
-
 class FloatSortable extends Sortable
 {
+	protected $precision;
+
 	public function __construct(float $source, ?string $title = null)
 	{
 		$this->setSource($source);
@@ -26,9 +26,16 @@ class FloatSortable extends Sortable
 		return $this->source;
 	}
 
+	public function setPrecision(int $precision): FloatSortable
+	{
+		$this->precision = $precision;
+
+		return $this;
+	}
+
 	public function getPrecision(): int
 	{
-		return 10;
+		return $this->precision ?: 10;
 	}
 
 	public function getSortable(): string
