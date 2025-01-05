@@ -41,8 +41,8 @@ class SelectOption
 
 	public function getNode(?string $selectedValue = null): OptionElement
 	{
-		$resolvedValue = $this->getText() ?: $this->getValue();
+		$resolvedText = $this->getText() ?: $this->getValue();
 
-		return new OptionElement($this->getValue(), $resolvedValue, $resolvedValue == $selectedValue);
+		return new OptionElement($this->getValue(), $resolvedText, $this->getValue() == $selectedValue);
 	}
 }
