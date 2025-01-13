@@ -40,6 +40,9 @@ class ReplacementCollection extends \ArrayObject implements RestResponseInterfac
 		}, $this->getArrayCopy()));
 	}
 
+	/****************************************************************************
+	 * REST.
+	 */
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		return new RestResponse($this->getArray());
