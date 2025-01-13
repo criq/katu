@@ -2,11 +2,10 @@
 
 namespace Katu\Tools\Strings;
 
-use App\Classes\Users\RepresentativeCollection;
+use App\Classes\Views\ArrayLoaderTwigEngine;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
-use Katu\Tools\Views\ArrayLoaderTwigEngine;
 use Psr\Http\Message\ServerRequestInterface;
 
 class ReplacementCollection extends \ArrayObject implements RestResponseInterface
@@ -20,13 +19,6 @@ class ReplacementCollection extends \ArrayObject implements RestResponseInterfac
 		}
 
 		return $replacements;
-	}
-
-	public static function createGlobal(): ReplacementCollection
-	{
-		return (new static)
-			->mergeWith(RepresentativeCollection::createFromConfig()->getReplacements())
-			;
 	}
 
 	public function mergeWith(ReplacementCollection $replacements): ReplacementCollection

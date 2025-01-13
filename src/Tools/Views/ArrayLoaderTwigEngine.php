@@ -2,7 +2,6 @@
 
 namespace Katu\Tools\Views;
 
-use Katu\Tools\Strings\ReplacementCollection;
 use Psr\Http\Message\ServerRequestInterface;
 use Twig\Loader\ArrayLoader;
 use Twig\Loader\LoaderInterface;
@@ -48,6 +47,6 @@ class ArrayLoaderTwigEngine extends TwigEngine
 
 	public static function renderString(?string $template, ?array $replacements = []): string
 	{
-		return static::renderStringWithoutGlobals($template, array_merge(ReplacementCollection::createGlobal()->getArray(), $replacements));
+		return static::renderStringWithoutGlobals($template, $replacements);
 	}
 }
