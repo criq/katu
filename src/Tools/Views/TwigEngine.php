@@ -346,9 +346,7 @@ abstract class TwigEngine implements ViewEngineInterface
 	public function getTemplate(string $template, array $data = []): ?string
 	{
 		try {
-			$data = array_merge_recursive($this->getCommonData(), $data);
-
-			return $this->getTwig()->render($template, $data);
+			return $this->getTwig()->render($template, array_merge_recursive($this->getCommonData(), $data));
 		} catch (\Throwable $e) {
 			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 		}
