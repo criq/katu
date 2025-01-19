@@ -17,4 +17,9 @@ class FileCollection extends \ArrayObject
 			return preg_match($regex, $file->getBasename());
 		})));
 	}
+
+	public function getFirst(): ?File
+	{
+		return array_values($this->getArrayCopy())[0] ?? null;
+	}
 }
