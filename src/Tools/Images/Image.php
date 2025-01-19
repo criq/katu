@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Images;
 
-use Katu\Tools\Images\Filters\Fit;
-use Katu\Tools\Images\Filters\Resize;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
@@ -177,10 +175,13 @@ class Image implements RestResponseInterface, PackagedInterface
 		$options = $defaultOptions->getMergedWith($options);
 		$versions = $options->getValue("IMAGE_VERSIONS");
 
-		return new RestResponse([
-			"versions" => array_map(function (Version $version) use ($request, $options) {
+		$data = [];
+		if ($versions) {
+			$data["versions"] = array_map(function (Version $version) use ($request, $options) {
 				return (new ImageVersion($this, $version))->getRestResponse($request, $options);
-			}, $versions->getAssoc()->getArrayCopy()),
-		]);
+			}, $versions->getAssoc()->getArrayCopy());
+		}
+
+		return new RestResponse($data);
 	}
 }
