@@ -2,8 +2,9 @@
 
 namespace Katu\Models\Presets;
 
-use Katu\Types\TClass;
-
+/**
+ * @deprecated
+ */
 abstract class FileAttachment extends \Katu\Models\Model
 {
 	const TABLE = "file_attachments";
