@@ -7,6 +7,28 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class UploadCollection extends \ArrayObject
 {
+	public static function createFromInput($input): UploadCollection
+	{
+		if ($input instanceof UploadedFileInterface) {
+			$array = [
+				$input,
+			];
+		}
+
+		if (is_array($input)) {
+			$array = array_map(function ($uploadedFile) {
+				if ($uploadedFile instanceof UploadedFileInterface) {
+					return new Upload($uploadedFile);
+				}
+			}, $input);
+		}
+
+		return new static(array_values(array_filter($array ?? [])));
+	}
+
+	/**
+	 * @deprecated
+	 */
 	public static function createFromRequest(ServerRequestInterface $request, string $key) : ?UploadCollection
 	{
 		$uploads = new static;
@@ -35,5 +57,12 @@ class UploadCollection extends \ArrayObject
 		}
 
 		return $uploads;
+	}
+
+	public function filterWithoutError(): UploadCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Upload $upload) {
+			return !$upload->isInError();
+		})));
 	}
 }
