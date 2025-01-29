@@ -11,7 +11,7 @@ class UploadCollection extends \ArrayObject
 	{
 		if ($input instanceof UploadedFileInterface) {
 			$array = [
-				$input,
+				new Upload($input),
 			];
 		}
 
