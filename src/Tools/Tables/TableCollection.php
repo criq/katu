@@ -27,7 +27,7 @@ class TableCollection extends \ArrayObject
 
 						foreach ($worksheet->getRowIterator() as $row) {
 							foreach ($worksheet->getColumnIterator() as $column) {
-								$cell = $worksheet->getCell($column->getColumnIndex() . $row->getRowIndex());
+								$cell = $worksheet->getCell("{$column->getColumnIndex()}{$row->getRowIndex()}");
 								if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($cell)) {
 									$timestamp = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cell->getValue());
 									$dateTime = new Time("@{$timestamp}", new \DateTimeZone("Europe/Prague"));
