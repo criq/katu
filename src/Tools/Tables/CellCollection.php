@@ -4,14 +4,14 @@ namespace Katu\Tools\Tables;
 
 class CellCollection extends \ArrayObject
 {
-	public function filterByColumnIndex(int $columnIndex): CellCollection
+	public function filterByColumnIndex(string $columnIndex): CellCollection
 	{
 		return new static(array_values(array_filter($this->getArrayCopy(), function (Cell $tableCell) use ($columnIndex) {
 			return $tableCell->getColumnIndex() == $columnIndex;
 		})));
 	}
 
-	public function filterByRowIndex(int $rowIndex): CellCollection
+	public function filterByRowIndex(string $rowIndex): CellCollection
 	{
 		return new static(array_values(array_filter($this->getArrayCopy(), function (Cell $tableCell) use ($rowIndex) {
 			return $tableCell->getRowIndex() == $rowIndex;

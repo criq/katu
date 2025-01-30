@@ -66,8 +66,9 @@ class TableCollection extends \ArrayObject
 						$csv->setDelimiter(";");
 					}
 
-					foreach ($csv->getRecords() as $record) {
-						$table[] = $record;
+					$records = iterator_to_array($csv->getRecords());
+					foreach ($records as $index => $record) {
+						$table[$index + 1] = $record;
 					}
 
 					$res[] = $table;

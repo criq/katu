@@ -9,33 +9,33 @@ class Cell
 	protected $rowIndex;
 	protected $value;
 
-	public function __construct(int $columnIndex, int $rowIndex, ?string $value)
+	public function __construct(string $columnIndex, string $rowIndex, ?string $value)
 	{
 		$this->setColumnIndex($columnIndex);
 		$this->setRowIndex($rowIndex);
 		$this->setValue($value);
 	}
 
-	public function setColumnIndex(int $columnIndex): Cell
+	public function setColumnIndex(string $columnIndex): Cell
 	{
 		$this->columnIndex = $columnIndex;
 
 		return $this;
 	}
 
-	public function getColumnIndex(): int
+	public function getColumnIndex(): string
 	{
 		return $this->columnIndex;
 	}
 
-	public function setRowIndex(int $rowIndex): Cell
+	public function setRowIndex(string $rowIndex): Cell
 	{
 		$this->rowIndex = $rowIndex;
 
 		return $this;
 	}
 
-	public function getRowIndex(): int
+	public function getRowIndex(): string
 	{
 		return $this->rowIndex;
 	}

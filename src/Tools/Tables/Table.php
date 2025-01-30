@@ -5,7 +5,7 @@ namespace Katu\Tools\Tables;
 class Table extends \ArrayObject
 {
 	protected $filename;
-	protected $headerRowIndex = 0;
+	protected $headerRowIndex = 1;
 	protected $title;
 
 	public function __construct(?string $title = null)
@@ -37,7 +37,7 @@ class Table extends \ArrayObject
 		return $this->filename;
 	}
 
-	public function getHeaderRowIndex(): ?int
+	public function getHeaderRowIndex(): ?string
 	{
 		return $this->headerRowIndex;
 	}
@@ -61,8 +61,8 @@ class Table extends \ArrayObject
 
 	public function getCells(): CellCollection
 	{
-		$cells = new CellCollection(array_merge(...array_map(function (array $row, int $rowIndex) {
-			return array_map(function (?string $value, int $columnIndex) use ($rowIndex) {
+		$cells = new CellCollection(array_merge(...array_map(function (array $row, string $rowIndex) {
+			return array_map(function (?string $value, string $columnIndex) use ($rowIndex) {
 				return new Cell($columnIndex, $rowIndex, $value);
 			}, $row, array_keys($row));
 		}, $this->getArrayCopy(), array_keys($this->getArrayCopy()))));

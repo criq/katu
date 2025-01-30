@@ -7,26 +7,21 @@ class Row
 	protected $cells;
 	protected $index;
 
-	public function __construct(int $index)
+	public function __construct(string $index)
 	{
 		$this->setIndex($index);
 	}
 
-	public function setIndex(int $index): Row
+	public function setIndex(string $index): Row
 	{
 		$this->index = $index;
 
 		return $this;
 	}
 
-	public function getIndex(): int
+	public function getIndex(): string
 	{
 		return $this->index;
-	}
-
-	public function getNumber(): int
-	{
-		return $this->getIndex() + 1;
 	}
 
 	public function getCells(): CellCollection
