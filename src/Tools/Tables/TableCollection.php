@@ -61,7 +61,7 @@ class TableCollection extends \ArrayObject
 
 					// Check column counts.
 					$counts = array_map("count", iterator_to_array($csv->getRecords()));
-					$averageCount = array_sum($counts) / count($counts);
+					$averageCount = count($counts) ? array_sum($counts) / count($counts) : 0;
 					if ($averageCount == 1 || !is_int($averageCount)) {
 						$csv->setDelimiter(";");
 					}
