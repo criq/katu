@@ -11,6 +11,13 @@ class HeaderCollection extends \ArrayObject
 		})));
 	}
 
+	public function filterByValueRegex(string $regex): HeaderCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Header $header) use ($regex) {
+			return preg_match($regex, $this->getValue());
+		})));
+	}
+
 	public function getFirst(): ?Header
 	{
 		return array_values($this->getArrayCopy())[0] ?? null;
