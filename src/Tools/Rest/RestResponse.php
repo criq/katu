@@ -40,6 +40,8 @@ class RestResponse
 					$value = $value->format("c");
 				} elseif ($value instanceof \Katu\Types\TURL) {
 					$value = (string)$value;
+				} elseif ($value instanceof \Katu\Tools\Strings\Code) {
+					$value = (string)$value;
 				} elseif ($value instanceof \Katu\Types\TClass) {
 					$value = $value->getPortableName();
 				}
