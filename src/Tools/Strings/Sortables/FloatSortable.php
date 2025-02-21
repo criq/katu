@@ -35,7 +35,7 @@ class FloatSortable extends Sortable
 
 	public function getPrecision(): int
 	{
-		return $this->precision ?: 10;
+		return $this->precision ?: 20;
 	}
 
 	public function getSortable(): string

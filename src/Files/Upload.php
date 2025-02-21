@@ -22,14 +22,54 @@ class Upload
 
 	public function __construct(UploadedFileInterface $uploadedFile)
 	{
-		$this->stream = $uploadedFile->getStream();
-		$this->fileName = (string)$uploadedFile->getClientFilename();
-		$this->fileType = (string)$uploadedFile->getClientMediaType();
-		$this->fileSize = (int)$uploadedFile->getSize();
-		$this->error = (int)$uploadedFile->getError();
+		try {
+			$this->setStream($uploadedFile->getStream());
+		} catch (\Throwable $e) {
+			// Nevermind.
+		}
+
+		$this->setFileName($uploadedFile->getClientFilename());
+		$this->setFileType($uploadedFile->getClientMediaType());
+		$this->setFileSize($uploadedFile->getSize());
+		$this->setError($uploadedFile->getError());
 	}
 
-	public function getError(): int
+	public function setStream(StreamInterface $stream): Upload
+	{
+		$this->stream = $stream;
+
+		return $this;
+	}
+
+	public function setFileName(?string $fileName): Upload
+	{
+		$this->fileName = trim($fileName) ?: null;
+
+		return $this;
+	}
+
+	public function setFileType(?string $fileType): Upload
+	{
+		$this->fileType = trim($fileType) ?: null;
+
+		return $this;
+	}
+
+	public function setFileSize(?int $fileSize): Upload
+	{
+		$this->fileSize = $fileSize;
+
+		return $this;
+	}
+
+	public function setError(?int $error): Upload
+	{
+		$this->error = $error;
+
+		return $this;
+	}
+
+	public function getError(): ?int
 	{
 		return $this->error;
 	}
