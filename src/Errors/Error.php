@@ -7,6 +7,7 @@ use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
+use Katu\Tools\Strings\Code;
 use Katu\Types\TClass;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -19,7 +20,7 @@ class Error implements PackagedInterface, RestResponseInterface
 	protected $options;
 	protected $versions;
 
-	public function __construct(?string $message = null, ?string $code = null, ?array $versions = [])
+	public function __construct(?string $message = null, ?Code $code = null, ?array $versions = [])
 	{
 		$this->setMessage($message);
 		$this->setCode($code);
@@ -44,7 +45,7 @@ class Error implements PackagedInterface, RestResponseInterface
 		return new Package([
 			"class" => (new TClass($this))->getPortableName(),
 			"message" => $this->getMessage(),
-			"code" => $this->getCode(),
+			"code" => $this->getCode() ? (string)$this->getCode() : null,
 		]);
 	}
 
@@ -65,14 +66,14 @@ class Error implements PackagedInterface, RestResponseInterface
 		return rtrim($this->getMessage(), ".");
 	}
 
-	public function setCode(?string $value): Error
+	public function setCode(?Code $code): Error
 	{
-		$this->code = $value;
+		$this->code = $code;
 
 		return $this;
 	}
 
-	public function getCode(): ?string
+	public function getCode(): ?Code
 	{
 		return $this->code;
 	}
@@ -143,6 +144,9 @@ class Error implements PackagedInterface, RestResponseInterface
 		return $this;
 	}
 
+	/****************************************************************************
+	 * REST.
+	 */
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
 		$array = [
@@ -150,7 +154,7 @@ class Error implements PackagedInterface, RestResponseInterface
 		];
 
 		if ($this->getCode()) {
-			$array["code"] = $this->getCode();
+			$array["code"] = (string)$this->getCode();
 		}
 		if ($this->getVersions()) {
 			$array["versions"] = $this->getVersions();
