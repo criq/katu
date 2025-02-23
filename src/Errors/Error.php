@@ -20,7 +20,7 @@ class Error implements PackagedInterface, RestResponseInterface
 	protected $options;
 	protected $versions;
 
-	public function __construct(?string $message = null, ?Code $code = null, ?array $versions = [])
+	public function __construct(?string $message = null, $code = null, ?array $versions = [])
 	{
 		$this->setMessage($message);
 		$this->setCode($code);
@@ -66,9 +66,9 @@ class Error implements PackagedInterface, RestResponseInterface
 		return rtrim($this->getMessage(), ".");
 	}
 
-	public function setCode(?Code $code): Error
+	public function setCode($code): Error
 	{
-		$this->code = $code;
+		$this->code = new Code($code);
 
 		return $this;
 	}
