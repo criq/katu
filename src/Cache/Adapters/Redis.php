@@ -9,16 +9,29 @@ class Redis implements \Katu\Cache\Adapter
 {
 	protected static $instance;
 
-	public static function isSupported(): bool
+	public static function createClient(): ?\Predis\Client
 	{
 		try {
-			$client = new \Predis\Client;
+			try {
+				$config = \Katu\Config\Config::get("redis", "config");
+			} catch (\Throwable $e) {
+				$config = null;
+			}
+
+			$client = new \Predis\Client($config ?: null);
 			$client->connect();
 
-			return $client->isConnected();
+			return $client;
 		} catch (\Throwable $e) {
-			return false;
+			return null;
 		}
+	}
+
+	public static function isSupported(): bool
+	{
+		$client = static::createClient();
+
+		return $client ? $client->isConnected() : false;
 	}
 
 	public static function isMemory(): bool
@@ -61,7 +74,7 @@ class Redis implements \Katu\Cache\Adapter
 				];
 				$seconds = abs($timeout->getSeconds()->getValue());
 				if ($seconds) {
-					$args[] = 'EX';
+					$args[] = "EX";
 					$args[] = $seconds;
 				}
 				$instance->set(...$args);
@@ -110,7 +123,7 @@ class Redis implements \Katu\Cache\Adapter
 	public static function getInstance()
 	{
 		if (!(static::$instance ?? null)) {
-			static::$instance = new \Predis\Client;
+			static::$instance = static::createClient();
 		}
 
 		return static::$instance;
