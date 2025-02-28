@@ -18,7 +18,7 @@ class TEmailAddress
 		return (string)$this->emailAddress;
 	}
 
-	public static function createFromEnvelope(?string $envelope = null)
+	public static function createFromEnvelope(?string $envelope = null): ?TEmailAddress
 	{
 		if (preg_match("/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U", $envelope, $match)) {
 			return new static($match["emailAddress"], $match["name"]);

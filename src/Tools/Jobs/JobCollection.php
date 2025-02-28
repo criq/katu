@@ -14,6 +14,7 @@ class JobCollection extends \ArrayObject
 	protected $cyclePause;
 	protected $cycles = 1;
 	protected $lockTimeout;
+	protected $maxLoadAverage = 2;
 	protected $maxRunningSeconds;
 
 	public function addJob(Job $job): JobCollection
@@ -141,8 +142,24 @@ class JobCollection extends \ArrayObject
 		return new Procedure($this->getIdentifier(), $this->getLockTimeout(), $this->getCallback());
 	}
 
+	public function setMaxLoadAverage(?float $maxLoadAverage): JobCollection
+	{
+		$this->maxLoadAverage = $maxLoadAverage;
+
+		return $this;
+	}
+
+	public function getMaxLoadAverage(): ?float
+	{
+		return $this->maxLoadAverage;
+	}
+
 	public function run()
 	{
+		if ($this->getMaxLoadAverage() && $this->getMaxLoadAverage() < \Katu\Tools\System\System::getLoadAveragePerCpu()[0]) {
+			return false;
+		}
+
 		for ($cycle = 1; $cycle <= $this->getCycles(); $cycle++) {
 			$this->getProcedure()->run();
 			if ($cycle < $this->getCycles()) {
