@@ -7,7 +7,7 @@ class Time extends \DateTime
 	const DAYS_IN_YEAR = 365.2425;
 	const SECONDS_IN_DAY = 86400;
 
-	public function __construct($time = null, \DateTimeZone $timezone = null)
+	public function __construct($time = null, ?\DateTimeZone $timezone = null)
 	{
 		if ($time instanceof \DateTime) {
 			$time = $time->format("r");
@@ -25,7 +25,7 @@ class Time extends \DateTime
 		return $this->getDbDateTimeFormat();
 	}
 
-	public static function createFromTimestamp(int $timestamp): Time
+	public static function createFromTimestamp(int|float $timestamp): static
 	{
 		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
 
@@ -206,7 +206,7 @@ class Time extends \DateTime
 		return (float)($timestamp + $micro);
 	}
 
-	public function getThisWeekday(string $weekday): Day
+	public function getThisWeekday(string $weekday): ?Day
 	{
 		$dayClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Day::class);
 
@@ -270,7 +270,7 @@ class Time extends \DateTime
 		return $this->setTime($this->format("H"), $this->format("i"), floor($n), ($n - floor($n)) * 1000000);
 	}
 
-	public function setMicrosecond(int $n)
+	public function setMicrosecond(int $n): static
 	{
 		return $this->setTime($this->format("H"), $this->format("i"), $this->format("s"), $n);
 	}
