@@ -25,7 +25,7 @@ class Time extends \DateTime
 		return $this->getDbDateTimeFormat();
 	}
 
-	public static function createFromTimestamp(int|float $timestamp): static
+	public static function createFromTimestamp($timestamp): Time
 	{
 		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
 
@@ -270,7 +270,7 @@ class Time extends \DateTime
 		return $this->setTime($this->format("H"), $this->format("i"), floor($n), ($n - floor($n)) * 1000000);
 	}
 
-	public function setMicrosecond(int $n): static
+	public function setMicrosecond(int $n): Time
 	{
 		return $this->setTime($this->format("H"), $this->format("i"), $this->format("s"), $n);
 	}
