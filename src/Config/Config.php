@@ -89,7 +89,7 @@ class Config
 
 	public static function getFiles(): FileCollection
 	{
-		$dir = new File(\App\App::getBaseDir(), "app", "Config");
+		$dir = new File(\App\App::getAppDir(), "Config");
 		$files = new FileCollection;
 
 		foreach (scandir($dir) as $file) {
