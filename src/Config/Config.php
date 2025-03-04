@@ -13,7 +13,7 @@ class Config
 	public static function get()
 	{
 		$args = func_get_args();
-
+		
 		try {
 			return call_user_func_array([new \Katu\Types\TArray(static::getAll()), "getValueByArgs"], $args);
 		} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
