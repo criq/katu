@@ -12,7 +12,7 @@ class Route
 	protected $name;
 	protected $pattern;
 
-	public function __construct(string $pattern, callable $callback, array $methods = null)
+	public function __construct(string $pattern, $callback, array $methods = null)
 	{
 		$this->setPattern($pattern);
 		$this->setCallback($callback);
@@ -54,14 +54,14 @@ class Route
 		return $this->pattern;
 	}
 
-	public function setCallback(callable $callback): Route
+	public function setCallback($callback): Route
 	{
 		$this->callback = $callback;
 
 		return $this;
 	}
 
-	public function getCallback(): callable
+	public function getCallback()
 	{
 		return $this->callback;
 	}
