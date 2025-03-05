@@ -153,18 +153,23 @@ class Error implements PackagedInterface, RestResponseInterface
 			"message" => $this->getMessage(),
 		];
 
-		if ($this->getCode()) {
-			$array["code"] = (string)$this->getCode();
+		$codeString = (string)$this->getCode();
+		if ($codeString) {
+			$array["code"] = $codeString;
 		}
+
 		if ($this->getVersions()) {
 			$array["versions"] = $this->getVersions();
 		}
+
 		if ($this->getHelp()) {
 			$array["help"] = $this->getHelp();
 		}
+
 		if ($this->getOptions()) {
 			$array["options"] = $this->getOptions();
 		}
+
 		if (count($this->getParams())) {
 			$array["params"] = $this->getParams()->getRestResponse($request, $options);
 		}
