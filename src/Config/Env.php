@@ -14,7 +14,7 @@ class Env
 	{
 		$files = [
 			new \Katu\Files\File(\App\App::getBaseDir(), ".platform"),
-			new \Katu\Files\File(\App\App::getBaseDir(), "app", ".platform"),
+			new \Katu\Files\File(\App\App::getAppDir(), ".platform"),
 		];
 
 		foreach ($files as $file) {

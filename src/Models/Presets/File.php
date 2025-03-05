@@ -7,7 +7,7 @@ use Katu\Types\TFileSize;
 
 abstract class File extends \Katu\Models\Model
 {
-	const DEFAULT_DIR = "files";
+	// const DEFAULT_DIR = "files";
 	const TABLE = "files";
 
 	public $id;
@@ -120,18 +120,9 @@ abstract class File extends \Katu\Models\Model
 		return new \Katu\Files\File($this->getPath());
 	}
 
-	public static function getDirName(): string
-	{
-		try {
-			return \Katu\Config\Config::get("app", "files", "dir");
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return static::DEFAULT_DIR;
-		}
-	}
-
 	public static function getDir(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\App\App::getBaseDir(), static::getDirName());
+		return \App\App::getFileDir();
 	}
 
 	public function getName(): string

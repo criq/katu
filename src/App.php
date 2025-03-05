@@ -26,23 +26,24 @@ class App
 		return new \Katu\Files\File(static::getBaseDir(), "app");
 	}
 
+	public static function getLogsDir(): \Katu\Files\File
+	{
+		return new \Katu\Files\File(static::getBaseDir(), "logs");
+	}
+
 	public static function getFileDir(): \Katu\Files\File
 	{
-		return \Katu\Models\Presets\File::getDir();
+		return new \Katu\Files\File(static::getBaseDir(), "files");
 	}
 
 	public static function getTemporaryDir(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_DIR);
+		return new \Katu\Files\File(static::getBaseDir(), "tmp");
 	}
 
 	public static function getPublicTemporaryDir(): \Katu\Files\File
 	{
-		try {
-			return new \Katu\Files\File(static::getBaseDir(), \Katu\Config\Config::get("app", "tmp", "publicDir"));
-		} catch (\Throwable $e) {
-			return new \Katu\Files\File(static::getBaseDir(), \Katu\Files\Temporary::DEFAULT_PUBLIC_DIR_NAME);
-		}
+		return new \Katu\Files\File(static::getBaseDir(), "public", "tmp");
 	}
 
 	/****************************************************************************
