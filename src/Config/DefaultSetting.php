@@ -2,6 +2,9 @@
 
 namespace Katu\Config;
 
+/**
+ * @deprecated
+ */
 class DefaultSetting
 {
 	public $description;
@@ -11,13 +14,13 @@ class DefaultSetting
 
 	public function __construct($name, $value, $isSystem = true, $description = null)
 	{
-		$this->name        = $name;
-		$this->value       = $value;
+		$this->name = $name;
+		$this->value = $value;
 		$this->description = $description;
-		$this->isSystem    = $isSystem;
+		$this->isSystem = $isSystem;
 	}
 
-	public function make($creator)
+	public function make($creator): \App\Models\Setting
 	{
 		try {
 			$setting = \App\Models\Setting::getOneByName($this->name);

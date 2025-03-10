@@ -325,7 +325,7 @@ abstract class TwigEngine implements ViewEngineInterface
 		}
 
 		$data["_platform"] = \Katu\Config\Env::getPlatform();
-		$data["_config"] = \Katu\Config\Config::get();
+		$data["_config"] = \Katu\Config\Config::getArray();
 		$data["_upload"] = [
 			"maxSize" => \Katu\Files\Upload::getMaxSize()->getInB(),
 		];

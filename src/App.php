@@ -2,6 +2,8 @@
 
 namespace Katu;
 
+use Katu\Files\File;
+use Katu\Files\FileCollection;
 use Katu\Tools\Session\Session;
 use Katu\Types\TIdentifier;
 use Psr\Container\ContainerInterface;
@@ -11,39 +13,59 @@ use Psr\Log\LoggerInterface;
 
 class App
 {
-	public static $app = null;
+	private static $instance = null;
+
+	private function __construct()
+	{
+	}
+
+	private function __clone()
+	{
+	}
 
 	/****************************************************************************
 	 * Paths.
 	 */
-	public static function getBaseDir(): \Katu\Files\File
+	public static function getBaseDir(): File
 	{
-		return new \Katu\Files\File(realpath(__DIR__ . "/../../../../"));
+		return new File(realpath(__DIR__ . "/../../../../"));
 	}
 
-	public static function getAppDir(): \Katu\Files\File
+	public static function getEnvFiles(): FileCollection
 	{
-		return new \Katu\Files\File(static::getBaseDir(), "app");
+		return new FileCollection([
+			new File(static::getBaseDir(), ".env"),
+		]);
 	}
 
-	public static function getLogsDir(): \Katu\Files\File
+	public static function getLogsDir(): File
 	{
-		return new \Katu\Files\File(static::getBaseDir(), "logs");
+		return new File(static::getBaseDir(), "logs");
 	}
 
-	public static function getFileDir(): \Katu\Files\File
+	public static function getFileDir(): File
 	{
-		return new \Katu\Files\File(static::getBaseDir(), "files");
+		return new File(static::getBaseDir(), "files");
 	}
 
-	public static function getTemporaryDir(): \Katu\Files\File
+	public static function getTemporaryDir(): File
 	{
-		return new \Katu\Files\File(static::getBaseDir(), "tmp");
+		return new File(static::getBaseDir(), "tmp");
 	}
 
-	public static function getPublicTemporaryDir(): \Katu\Files\File
+	public static function getPublicTemporaryDir(): File
 	{
-		return new \Katu\Files\File(static::getBaseDir(), "public", "tmp");
+		return new File(static::getBaseDir(), "public", "tmp");
+	}
+
+	public static function getAppDir(): File
+	{
+		return new File(static::getBaseDir(), "app");
+	}
+
+	public static function getConfigDir(): File
+	{
+		return new File(static::getAppDir(), "Config");
 	}
 
 	/****************************************************************************
@@ -61,7 +83,7 @@ class App
 			$logger = $logger ?: static::getLogger(new TIdentifier("error"));
 			$logger->error($exception);
 
-			$response = static::$app->getResponseFactory()->createResponse();
+			$response = static::$instance->getResponseFactory()->createResponse();
 
 			return $response->withStatus(500);
 		};
@@ -88,22 +110,7 @@ class App
 	 */
 	public static function get(): \Slim\App
 	{
-		if (!static::$app) {
-			// Timezone.
-			try {
-				date_default_timezone_set(\Katu\Config\Config::get("app", "timezone"));
-			} catch (\Throwable $e) {
-				// Just use default timezone.
-			}
-
-			// Autoload.
-			foreach (static::getAutoloadRegisterFunctions() as $registerFunction) {
-				spl_autoload_register($registerFunction);
-			}
-
-			// Session.
-			Session::setCookieParams();
-
+		if (!static::$instance) {
 			// Create the dependency injection container.
 			$builder = new \DI\ContainerBuilder;
 			$builder->addDefinitions(array_merge([
@@ -139,10 +146,35 @@ class App
 			], static::getDIDefinitions()));
 
 			// Create the app.
-			static::$app = \DI\Bridge\Slim\Bridge::create($builder->build());
+			static::$instance = \DI\Bridge\Slim\Bridge::create($builder->build());
+
+			// Load .env
+			try {
+				$dotenv = \Dotenv\Dotenv::createImmutable(array_map(function (File $file) {
+					return (string)$file->getDir();
+				}, static::getEnvFiles()->getArrayCopy()));
+				$dotenv->load();
+			} catch (\Throwable $e) {
+				// Nevermind.
+			}
+
+			// Setup timezone.
+			try {
+				date_default_timezone_set(\Katu\Config\Config::get("app", "timezone"));
+			} catch (\Throwable $e) {
+				// Just use default timezone.
+			}
+
+			// Setup autoload.
+			foreach (static::getAutoloadRegisterFunctions() as $registerFunction) {
+				spl_autoload_register($registerFunction);
+			}
+
+			// Setup session.
+			Session::setCookieParams();
 
 			// Add body parsing middleware.
-			static::$app->addBodyParsingMiddleware();
+			static::$instance->addBodyParsingMiddleware();
 
 			// Set up routes.
 			foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
@@ -156,7 +188,7 @@ class App
 					throw new \Katu\Exceptions\RouteException("Invalid callable for route \"{$name}\".");
 				}
 
-				$slimRoute = static::$app->map($route->getMethods(), $pattern, $callback);
+				$slimRoute = static::$instance->map($route->getMethods(), $pattern, $callback);
 				if (is_string($name) && trim($name)) {
 					$slimRoute->setName($name);
 				} elseif ($route->getName()) {
@@ -164,18 +196,18 @@ class App
 				}
 			}
 
-			// Add Error Middleware.
+			// Setup Error Middleware.
 			try {
 				$displayErrorDetails = \Katu\Config\Config::get("app", "slim", "settings", "displayErrorDetails");
 			} catch (\Katu\Exceptions\MissingConfigException $e) {
 				$displayErrorDetails = false;
 			}
 
-			$errorMiddleware = static::$app->addErrorMiddleware((bool)$displayErrorDetails, true, true);
+			$errorMiddleware = static::$instance->addErrorMiddleware((bool)$displayErrorDetails, true, true);
 			$errorMiddleware->setDefaultErrorHandler(static::getErrorHandler());
 		}
 
-		return static::$app;
+		return static::$instance;
 	}
 
 	public static function getContainer(): ContainerInterface

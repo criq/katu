@@ -4,100 +4,103 @@ namespace Katu\Config;
 
 use Katu\Files\File;
 use Katu\Files\FileCollection;
+use Katu\Types\TArray;
 use Katu\Types\TIdentifier;
 
 class Config
 {
-	const FILENAME_REGEXP = "/^(?<name>[a-z0-9]+)(\.(?<platform>[a-z0-9]+))?\.(?<type>php|yaml)$/i";
+	protected $title;
+	protected $config;
 
-	public static function get()
+	public function __construct(string $title, array $config)
 	{
-		$args = func_get_args();
-		
-		try {
-			return call_user_func_array([new \Katu\Types\TArray(static::getAll()), "getValueByArgs"], $args);
-		} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
-			$path = implode(".", $args);
-			throw new \Katu\Exceptions\MissingConfigException("Missing config for $path.");
-		}
+		$this->setTitle($title);
+		$this->setConfig($config);
 	}
 
-	public static function getWithDefault()
+	public static function createFromFile(\Katu\Files\File $file): ?Config
 	{
-		$args = func_get_args();
-		$argConfig = array_slice($args, 0, -1);
-		$argDefault = array_slice($args, -1, 1);
-
-		try {
-			return static::get(...$argConfig);
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return $argDefault[0] ?? null;
+		switch ($file->getExtension()) {
+			case "php":
+				return new static($file->getFilename(), (array)include $file);
+				break;
+			case "yml":
+			case "yaml":
+				return new static($file->getFilename(), (array)\Katu\Files\Formats\YAML::decode(preg_replace_callback("/\\$\{(?<title>[A-Z_][A-Z0-9_]*)\}/m", function ($match) {
+					return $_ENV[$match["title"]] ?? null;
+				}, $file->get())));
+				break;
 		}
+
+		return null;
 	}
 
-	public static function getAll()
+	public function setTitle(string $title): Config
 	{
-		return \Katu\Cache\Runtime::get(new TIdentifier("config"), function () {
-			$cacheConfigFile = new File(\App\App::getBaseDir(), ".cacheconfig");
-			if ($cacheConfigFile->exists()) {
-				$cacheFile = new File(\App\App::getTemporaryDir(), "config", \Katu\Config\Env::getVersion());
-				if ($cacheFile->exists()) {
-					return unserialize($cacheFile->get());
-				}
-			}
+		$this->title = $title;
 
-			$config = [];
+		return $this;
+	}
 
-			foreach (static::getFiles() as $file) {
-				if (preg_match(static::FILENAME_REGEXP, $file->getBasename(), $match)) {
-					if (!$match["platform"] || $match["platform"] == Env::getPlatform()) {
-						if ($match["type"] == "yaml") {
-							$config[$match["name"]] = array_merge_recursive($config[$match["name"]] ?? [], (array)\Katu\Files\Formats\YAML::decode($file));
-						} elseif ($match["type"] == "php") {
-							$config[$match["name"]] = array_merge_recursive($config[$match["name"]] ?? [], (array)include $file);
-						}
-					}
-				}
-			}
+	public function getTitle(): string
+	{
+		return $this->title;
+	}
 
-			$config = array_merge_recursive($config, $_SERVER["CONFIG"] ?? []);
+	public function setConfig(array $config): Config
+	{
+		$this->config = $config;
 
-			$envConfigDir = new File(\App\App::getBaseDir(), ".config");
-			if ($envConfigDir->exists() && $envConfigDir->isDir()) {
-				$files = array_filter($envConfigDir->getFiles()->getArrayCopy(), function (File $file) {
-					return $file->getExtension() == "yaml";
-				});
-				foreach ($files as $file) {
-					$key = $file->getPathInfo()["filename"];
-					$config[$key] = array_merge_recursive($config[$key] ?? [], (array)\Katu\Files\Formats\YAML::decode($file));
-				}
-			}
+		return $this;
+	}
 
-			$envConfigFile = new File(\App\App::getBaseDir(), ".config.yaml");
-			if ($envConfigFile->exists()) {
-				$envConfig = \Katu\Files\Formats\YAML::decode($envConfigFile);
-				$config = array_merge_recursive($config, $envConfig ?? []);
-			}
-
-			if ($cacheConfigFile->exists()) {
-				$cacheFile->set(serialize($config));
-			}
-
-			return $config;
-		});
+	public function getConfig(): array
+	{
+		return $this->config;
 	}
 
 	public static function getFiles(): FileCollection
 	{
-		$dir = new File(\App\App::getAppDir(), "Config");
-		$files = new FileCollection;
+		return new FileCollection(array_values(array_filter(array_map(function (string $filename) {
+			return new File(\App\App::getConfigDir(), $filename);
+		}, scandir(\App\App::getConfigDir())), function (\Katu\Files\File $file) {
+			return Config::getIsSupportedFile($file);
+		})));
+	}
 
-		foreach (scandir($dir) as $file) {
-			if (preg_match(static::FILENAME_REGEXP, $file)) {
-				$files[] = new File($dir, $file);
-			}
+	public static function getIsSupportedFile(\Katu\Files\File $file): bool
+	{
+		return in_array($file->getExtension(), [
+			"php",
+			"yaml",
+			"yml",
+		]);
+	}
+
+	public static function getArray(): array
+	{
+		return \Katu\Cache\Runtime::get(new TIdentifier(__CLASS__, __FUNCTION__), function () {
+			return ConfigCollection::createDefault()->getArray();
+		});
+	}
+
+	public static function getTArray(): TArray
+	{
+		return \Katu\Cache\Runtime::get(new TIdentifier(__CLASS__, __FUNCTION__), function () {
+			return new TArray(static::getArray());
+		});
+	}
+
+	public static function get()
+	{
+		$args = func_get_args();
+
+		try {
+			return call_user_func_array([static::getTArray(), "getValueByArgs"], $args);
+		} catch (\Katu\Exceptions\MissingArrayKeyException $e) {
+			$path = implode(".", $args);
+
+			throw new \Katu\Exceptions\MissingConfigException("Missing config for {$path}.");
 		}
-
-		return $files;
 	}
 }

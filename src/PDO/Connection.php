@@ -3,6 +3,7 @@
 namespace Katu\PDO;
 
 use Katu\Tools\Calendar\Timeout;
+use Katu\Types\TIdentifier;
 
 class Connection
 {
@@ -21,10 +22,20 @@ class Connection
 		]));
 
 		try {
-			$this->setConfig(Config::createFromConfig(\Katu\Config\Config::get("db", $name)));
+			$configArray = \Katu\Config\Config::get("db", $name);
 		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance '{$name}'.");
+			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance \"{$name}\".");
 		}
+
+		try {
+			$config = Config::createFromConfig($configArray);
+		} catch (\Throwable $e) {
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+
+			throw new \Katu\Exceptions\PDOConfigException("Cannot create config for instance \"{$name}\".");
+		}
+
+		$this->setConfig($config);
 
 		// Try to connect.
 		for ($i = 1; $i <= 3; $i++) {

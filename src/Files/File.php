@@ -168,7 +168,7 @@ class File
 		return file_put_contents($this, $data, LOCK_EX | FILE_APPEND);
 	}
 
-	public function getType()
+	public function getType(): ?string
 	{
 		clearstatcache();
 
@@ -182,7 +182,7 @@ class File
 			return static::TYPE_DIR;
 		}
 
-		return false;
+		return null;
 	}
 
 	public function getSize(): ?\Katu\Types\TFileSize
@@ -207,20 +207,19 @@ class File
 		return $mime;
 	}
 
-	public function getPathInfo()
+	public function getPathInfo(): array
 	{
 		return pathinfo($this->getPath());
 	}
 
-	public function getExtension()
+	public function getFilename(): ?string
 	{
-		$pathinfo = $this->getPathInfo();
+		return $this->getPathInfo()["filename"] ?? null;
+	}
 
-		if (isset($pathinfo["extension"])) {
-			return $pathinfo["extension"];
-		}
-
-		return false;
+	public function getExtension(): ?string
+	{
+		return $this->getPathInfo()["extension"] ?? null;
 	}
 
 	public function getDir()
