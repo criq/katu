@@ -2,6 +2,7 @@
 
 namespace Katu\Controllers\Presets;
 
+use App\Config\ImageConfig;
 use Katu\Tools\Package\Package;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,7 +18,7 @@ class Images extends \Katu\Controllers\Controller
 			throw new \Katu\Exceptions\NotFoundException;
 		}
 
-		$version = \Katu\Tools\Images\Version::createFromConfig($versionCode);
+		$version = (new ImageConfig)->getVersions()->filterByTitle($versionCode)->getFirst();
 		if (!$version) {
 			throw new \Katu\Exceptions\NotFoundException;
 		}
@@ -26,7 +27,7 @@ class Images extends \Katu\Controllers\Controller
 		$imageVersion->getVersionImage();
 
 		try {
-			$maxAge = (int)\Katu\Config\Config::get("images", "cache", "timeout");
+			$maxAge = (new ImageConfig)->getCacheTimeout();
 			$response = $response->withAddedHeader("Cache-Control", "max-age={$maxAge}");
 		} catch (\Throwable $e) {
 			// Nevermind.

@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Services\Google;
 
+use App\Config\ThirdParty\Google\GoogleCloudConfig;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 use Katu\Types\TURL;
@@ -10,7 +11,7 @@ class URLShortener
 {
 	public static function getAPIKey(): string
 	{
-		return \Katu\Config\Config::get("google", "api", "key");
+		return (new GoogleCloudConfig)->getAPIKey();
 	}
 
 	public static function shorten($url, Timeout $timeout): ?TURL

@@ -4,80 +4,29 @@ namespace Katu\Tools\Images;
 
 class Version
 {
-	const SEPARATOR = ".";
-
 	protected $extension;
 	protected $filters;
-	protected $name;
 	protected $quality;
+	protected $title;
 
-	public function __construct(?string $name = null, ?array $filters = [], ?string $extension = "jpg", ?int $quality = 100)
+	public function __construct(?string $title = null, ?string $extension = "jpg", ?int $quality = 100, ?FilterCollection $filters = null)
 	{
-		$this->setName($name);
-		$this->setFilters($filters);
 		$this->setExtension($extension);
+		$this->setFilters($filters);
 		$this->setQuality($quality);
+		$this->setTitle($title);
 	}
 
-	public static function createFromConfig(string $name): ?Version
+	public function setTitle(?string $title): Version
 	{
-		try {
-			$config = \Katu\Config\Config::get("images", "versions", $name);
-
-			$version = new static($name);
-
-			if (isset($config["filters"])) {
-				foreach ((array)$config["filters"] as $filterConfig) {
-					$filter = \Katu\Tools\Images\Filter::createByCode($filterConfig["filter"]);
-					unset($filterConfig["filter"]);
-					$filter->setParams($filterConfig);
-					$version->addFilter($filter);
-				}
-			}
-
-			if (isset($config["quality"])) {
-				$version->setQuality($config["quality"]);
-			}
-
-			if (isset($config["extension"])) {
-				$version->setExtension($config["extension"]);
-			}
-
-			return $version;
-		} catch (\Throwable $e) {
-			// Nevermind.
-		}
-
-		return null;
-	}
-
-	public function setName(?string $value): Version
-	{
-		$this->name = $value;
+		$this->title = $title;
 
 		return $this;
 	}
 
-	public function getName(): ?string
+	public function getTitle(): ?string
 	{
-		return $this->name;
-	}
-
-	public function getHash(): string
-	{
-		return sha1(\Katu\Files\Formats\JSON::encodeStandard($this->getArray()));
-	}
-
-	public function setQuality(int $quality): Version
-	{
-		$this->quality = $quality;
-
-		return $this;
-	}
-
-	public function getQuality(): int
-	{
-		return $this->quality;
+		return $this->title;
 	}
 
 	public function setExtension(string $extension): Version
@@ -92,9 +41,55 @@ class Version
 		return $this->extension;
 	}
 
+	public function setQuality(int $quality): Version
+	{
+		$this->quality = $quality;
+
+		return $this;
+	}
+
+	public function getQuality(): int
+	{
+		return $this->quality;
+	}
+
+	public function setFilters(?FilterCollection $filters): Version
+	{
+		$this->filters = $filters;
+
+		return $this;
+	}
+
+	public function getFilters(): ?FilterCollection
+	{
+		return $this->filters;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public function getHash(): string
+	{
+		return sha1(\Katu\Files\Formats\JSON::encodeStandard($this->getArray()));
+	}
+
+
+
+
+
+
 	public function getDir(): \Katu\Files\File
 	{
-		$dir = new \Katu\Files\File(\App\App::getPublicTemporaryDir(), "images", "versions", $this->getName(), $this->getHash());
+		$dir = new \Katu\Files\File(\App\App::getPublicTemporaryDir(), "images", "versions", $this->getTitle(), $this->getHash());
 		if (!$dir->isWritable()) {
 			try {
 				$dir->makeDir();
@@ -106,28 +101,10 @@ class Version
 		return $dir;
 	}
 
-	public function setFilters(?array $filters): Version
-	{
-		$this->filters = [];
 
-		foreach ((array)$filters as $filter) {
-			$this->addFilter($filter);
-		}
 
-		return $this;
-	}
 
-	public function addFilter(Filter $filter): Version
-	{
-		$this->filters[] = $filter;
 
-		return $this;
-	}
-
-	public function getFilters(): array
-	{
-		return $this->filters;
-	}
 
 	public function getArray(): array
 	{

@@ -47,7 +47,7 @@ class Table extends \Sexy\Expression
 
 	public function getColumnDescriptions(): ColumnDescriptionCollection
 	{
-		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", __FUNCTION__, $this->getName()->getPlain());
+		$identifier = new TIdentifier("databases", $this->getConnection()->getTitle(), "tables", __FUNCTION__, $this->getName()->getPlain());
 
 		return \Katu\Cache\Runtime::get($identifier, function () use ($identifier) {
 			return \Katu\Cache\General::get($identifier, new Timeout("1 hour"), function () {
@@ -64,7 +64,7 @@ class Table extends \Sexy\Expression
 
 	public function getColumnNames(): NameCollection
 	{
-		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", __FUNCTION__, $this->getName()->getPlain());
+		$identifier = new TIdentifier("databases", $this->getConnection()->getTitle(), "tables", __FUNCTION__, $this->getName()->getPlain());
 
 		return \Katu\Cache\Runtime::get($identifier, function () use ($identifier) {
 			return \Katu\Cache\General::get($identifier, new Timeout("1 hour"), function () {
@@ -80,7 +80,7 @@ class Table extends \Sexy\Expression
 
 	public function getColumns(): ColumnCollection
 	{
-		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", __FUNCTION__, $this->getName()->getPlain());
+		$identifier = new TIdentifier("databases", $this->getConnection()->getTitle(), "tables", __FUNCTION__, $this->getName()->getPlain());
 
 		return \Katu\Cache\Runtime::get($identifier, function () use ($identifier) {
 			return \Katu\Cache\General::get($identifier, new Timeout("1 hour"), function () {
@@ -101,7 +101,7 @@ class Table extends \Sexy\Expression
 
 	public function getPrimaryKeyColumn(): ?Column
 	{
-		$identifier = new TIdentifier("databases", $this->getConnection()->getName(), "tables", "idColumn", $this->getName()->getPlain());
+		$identifier = new TIdentifier("databases", $this->getConnection()->getTitle(), "tables", "idColumn", $this->getName()->getPlain());
 
 		return \Katu\Cache\Runtime::get($identifier, function () use ($identifier) {
 			return \Katu\Cache\General::get($identifier, new Timeout("1 hour"), function () {
@@ -249,7 +249,7 @@ class Table extends \Sexy\Expression
 
 	public function getUsedInViewsCacheIdentifier(): TIdentifier
 	{
-		return new TIdentifier("databases", $this->getConnection()->getName(), "tables", "usedInViews", $this->name);
+		return new TIdentifier("databases", $this->getConnection()->getTitle(), "tables", "usedInViews", $this->name);
 	}
 
 	public function getTotalUsage(Timeout $timeout)
@@ -269,12 +269,12 @@ class Table extends \Sexy\Expression
 
 	public function getTotalUsageCacheIdentifier(): TIdentifier
 	{
-		return new TIdentifier("databases", $this->getConnection()->getName(), "tables", "totalRows", $this->name);
+		return new TIdentifier("databases", $this->getConnection()->getTitle(), "tables", "totalRows", $this->name);
 	}
 
 	public function getLastUpdatedTemporaryFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\Temporary("databases", $this->getConnection()->getName(), "tables", "updated", $this->getName()->getPlain());
+		return new \Katu\Files\Temporary("databases", $this->getConnection()->getTitle(), "tables", "updated", $this->getName()->getPlain());
 	}
 
 	public function getSQL(&$context = []): string

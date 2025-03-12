@@ -2,6 +2,7 @@
 
 namespace Katu\Types;
 
+use App\Config\PaginationConfig;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
@@ -98,23 +99,15 @@ class TPagination implements RestResponseInterface
 
 	public static function getPageQueryParam(): string
 	{
-		try {
-			return \Katu\Config\Config::get("pagination", "queryParam");
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return static::DEFAULT_PAGE_QUERY_PARAM;
-		}
+		return (new PaginationConfig)->getQueryParam() ?: static::DEFAULT_PAGE_QUERY_PARAM;
 	}
 
 	public static function getResolvedPerPage(): int
 	{
-		try {
-			return \Katu\Config\Config::get("pagination", "perPage");
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			return static::DEFAULT_PER_PAGE;
-		}
+		return (new PaginationConfig)->getPerPage() ?: static::DEFAULT_PER_PAGE;
 	}
 
-	public static function getRequestPageExpression(ServerRequestInterface $request, int $perPage = null): \Sexy\Page
+	public static function getRequestPageExpression(ServerRequestInterface $request, ?int $perPage = null): \Sexy\Page
 	{
 		return new \Sexy\Page(static::getPageFromRequest($request), $perPage ?: static::getResolvedPerPage());
 	}
@@ -188,8 +181,8 @@ class TPagination implements RestResponseInterface
 	public function getCopy(): array
 	{
 		return [
-			"prev" => \Katu\Config\Config::getWithDefault("pagination", "copy", "prev", static::DEFAULT_COPY_PREV),
-			"next" => \Katu\Config\Config::getWithDefault("pagination", "copy", "next", static::DEFAULT_COPY_NEXT),
+			"prev" => (new PaginationConfig)->getPrevCopy(),
+			"next" => (new PaginationConfig)->getNextCopy(),
 		];
 	}
 

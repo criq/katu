@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Views;
 
+use App\Config\AppConfig;
+use App\Config\TimeConfig;
 use Katu\Tools\Cookies\CookieCollection;
 use Katu\Tools\Session\Session;
 use Katu\Types\TClass;
@@ -245,16 +247,16 @@ abstract class TwigEngine implements ViewEngineInterface
 	protected function getCommonData(): array
 	{
 		$data["_site"]["baseDir"] = \App\App::getBaseDir();
-		$data["_site"]["baseUrl"] = \Katu\Config\Config::get("app", "baseUrl");
+		$data["_site"]["baseUrl"] = (new AppConfig)->getBaseURL();
 
 		try {
-			$data["_site"]["apiUrl"] = \Katu\Config\Config::get("app", "apiUrl");
+			$data["_site"]["apiUrl"] = (new AppConfig)->getAPIURL();
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}
 
 		try {
-			$data["_site"]["timezone"] = \Katu\Config\Config::get("app", "timezone");
+			$data["_site"]["timezone"] = (new TimeConfig)->getTimezone()->getName();
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}
@@ -325,7 +327,6 @@ abstract class TwigEngine implements ViewEngineInterface
 		}
 
 		$data["_platform"] = \Katu\Config\Env::getPlatform();
-		$data["_config"] = \Katu\Config\Config::getArray();
 		$data["_upload"] = [
 			"maxSize" => \Katu\Files\Upload::getMaxSize()->getInB(),
 		];

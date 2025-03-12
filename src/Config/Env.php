@@ -2,6 +2,9 @@
 
 namespace Katu\Config;
 
+/**
+ * @deprecated
+ */
 class Env
 {
 	const ENV_DEV = 0;

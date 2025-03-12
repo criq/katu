@@ -40,7 +40,7 @@ class ImageVersion implements RestResponseInterface
 		try {
 			return \Katu\Tools\Routing\URL::getFor("images.getVersion", [
 				"imagePackage" => $this->getImage()->getPackage(),
-				"versionCode" => $this->getVersion()->getName(),
+				"versionCode" => $this->getVersion()->getTitle(),
 				"extension" => $this->getVersion()->getExtension(),
 			]);
 		} catch (\Throwable $e) {

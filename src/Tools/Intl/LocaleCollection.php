@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Intl;
 
+use App\Config\IntlConfig;
 use Psr\Http\Message\ServerRequestInterface;
 
 class LocaleCollection extends \ArrayObject
@@ -19,7 +20,7 @@ class LocaleCollection extends \ArrayObject
 
 	public function addSupported(): LocaleCollection
 	{
-		foreach (Locale::getSupportedLocales() as $locale) {
+		foreach ((new IntlConfig)->getSupportedLocales() as $locale) {
 			$this[] = $locale;
 		}
 

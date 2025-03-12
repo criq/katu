@@ -2,8 +2,12 @@
 
 namespace Katu;
 
+use App\Config\AppConfig;
+use App\Config\RouterConfig;
+use App\Config\ThirdParty\Brevo\BrevoConfig;
+use App\Config\ThirdParty\Google\SecretManagerConfig;
+use App\Config\TimeConfig;
 use Katu\Files\File;
-use Katu\Files\FileCollection;
 use Katu\Tools\Session\Session;
 use Katu\Types\TIdentifier;
 use Psr\Container\ContainerInterface;
@@ -31,13 +35,6 @@ class App
 		return new File(realpath(__DIR__ . "/../../../../"));
 	}
 
-	public static function getEnvFiles(): FileCollection
-	{
-		return new FileCollection([
-			new File(static::getBaseDir(), ".env"),
-		]);
-	}
-
 	public static function getLogsDir(): File
 	{
 		return new File(static::getBaseDir(), "logs");
@@ -53,9 +50,14 @@ class App
 		return new File(static::getBaseDir(), "tmp");
 	}
 
+	public static function getPublicDir(): File
+	{
+		return new File(static::getBaseDir(), "public");
+	}
+
 	public static function getPublicTemporaryDir(): File
 	{
-		return new File(static::getBaseDir(), "public", "tmp");
+		return new File(static::getPublicDir(), "tmp");
 	}
 
 	public static function getAppDir(): File
@@ -108,7 +110,7 @@ class App
 	/****************************************************************************
 	 * Run.
 	 */
-	public static function get(): \Slim\App
+	public static function getInstance(): \Slim\App
 	{
 		if (!static::$instance) {
 			// Create the dependency injection container.
@@ -148,19 +150,9 @@ class App
 			// Create the app.
 			static::$instance = \DI\Bridge\Slim\Bridge::create($builder->build());
 
-			// Load .env
-			try {
-				$dotenv = \Dotenv\Dotenv::createImmutable(array_map(function (File $file) {
-					return (string)$file->getDir();
-				}, static::getEnvFiles()->getArrayCopy()));
-				$dotenv->load();
-			} catch (\Throwable $e) {
-				// Nevermind.
-			}
-
 			// Setup timezone.
 			try {
-				date_default_timezone_set(\Katu\Config\Config::get("app", "timezone"));
+				date_default_timezone_set((new TimeConfig)->getTimezone()->getName());
 			} catch (\Throwable $e) {
 				// Just use default timezone.
 			}
@@ -177,7 +169,7 @@ class App
 			static::$instance->addBodyParsingMiddleware();
 
 			// Set up routes.
-			foreach ((array)\Katu\Config\Config::get("routes") as $name => $route) {
+			foreach ((new RouterConfig)->getRoutes() as $name => $route) {
 				$pattern = $route->getPattern();
 				if (!$pattern) {
 					throw new \Katu\Exceptions\RouteException("Invalid pattern for route \"{$name}\".");
@@ -196,14 +188,7 @@ class App
 				}
 			}
 
-			// Setup Error Middleware.
-			try {
-				$displayErrorDetails = \Katu\Config\Config::get("app", "slim", "settings", "displayErrorDetails");
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$displayErrorDetails = false;
-			}
-
-			$errorMiddleware = static::$instance->addErrorMiddleware((bool)$displayErrorDetails, true, true);
+			$errorMiddleware = static::$instance->addErrorMiddleware((bool)false, true, true);
 			$errorMiddleware->setDefaultErrorHandler(static::getErrorHandler());
 		}
 
@@ -212,6 +197,6 @@ class App
 
 	public static function getContainer(): ContainerInterface
 	{
-		return static::get()->getContainer();
+		return static::getInstance()->getContainer();
 	}
 }

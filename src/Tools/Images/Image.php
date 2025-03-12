@@ -2,12 +2,15 @@
 
 namespace Katu\Tools\Images;
 
+use App\Config\ImageConfig;
+use Katu\Tools\Images\Filters\FitFilter;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
+use Katu\Tools\Strings\Code;
 use Katu\Types\TArray;
 use Katu\Types\TIdentifier;
 use Katu\Types\TImageSize;
@@ -67,22 +70,23 @@ class Image implements RestResponseInterface, PackagedInterface
 		return $this->source;
 	}
 
-	public function getImageVersion(): ?ImageVersion
+	public function getImageVersion($version): ?ImageVersion
 	{
-		try {
-			$args = func_get_args();
-			if (isset($args[0]) && $args[0] instanceof Version) {
-				$version = $args[0];
-			} else {
-				$version = Version::createFromConfig(...$args);
-			}
+		if ($version instanceof Code) {
+			$version = $version->getConstantFormat();
+		}
 
-			return new ImageVersion($this, $version);
-		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e);
+		if ($version instanceof Version) {
+			$resolvedVersion = $version;
+		} elseif (is_string($version)) {
+			$resolvedVersion = (new ImageConfig)->getVersions()->filterByTitle($version)->getFirst();
+		}
 
+		if (!($resolvedVersion ?? null)) {
 			return null;
 		}
+
+		return new ImageVersion($this, $resolvedVersion);
 	}
 
 	public function getInterventionImage(): ?\Intervention\Image\Image
@@ -92,12 +96,12 @@ class Image implements RestResponseInterface, PackagedInterface
 
 	public function getPixel(): Image
 	{
-		$version = new Version("pixel", [
-			new Filters\Fit([
+		$version = new Version("pixel", "png", 100, new FilterCollection([
+			new FitFilter([
 				"width" => 1,
 				"height" => 1,
 			]),
-		], "png", 100);
+		]));
 
 		$imageVersion = new ImageVersion($this, $version);
 

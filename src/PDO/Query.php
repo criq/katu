@@ -217,15 +217,12 @@ class Query
 			$this->setStatementDump(new StatementDump(ob_get_contents()));
 			ob_end_clean();
 
-			try {
-				if (\Katu\Config\Config::get("app", "profiler", "pdo")) {
-					$sql = trim($this->getStatementDump()->getSentSQL() ?: $this->statement->queryString);
-					$file = (\Katu\Files\File::createTemporaryWithFileName("{$this->getConnection()->getSessionId()}.log"))->touch();
-					$duration = preg_replace("/\./", ",", $this->getDuration());
-					$file->append("{$duration}\t{$sql}\n");
-				}
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				// Nevermind.
+			// Profiler.
+			if ($this->getConnection()->getConfig()->getIsProfiled()) {
+				$sql = trim($this->getStatementDump()->getSentSQL() ?: $this->statement->queryString);
+				$file = (\Katu\Files\File::createTemporaryWithFileName("{$this->getConnection()->getSessionId()}.log"))->touch();
+				$duration = preg_replace("/\./", ",", $this->getDuration());
+				$file->append("{$duration}\t{$sql}\n");
 			}
 
 			// Found rows.

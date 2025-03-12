@@ -2,6 +2,7 @@
 
 namespace Katu\Files;
 
+use App\Config\AppConfig;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
@@ -104,18 +105,13 @@ class File
 	public function getURL(): ?TURL
 	{
 		try {
-			$publicRoot = \Katu\Config\Config::get("app", "publicRoot");
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			$publicRoot = "./public/";
-		}
-
-		try {
-			$publicPath = realpath(new static(\App\App::getBaseDir(), $publicRoot));
+			$publicDir = \App\App::getPublicDir();
+			$publicPath = realpath(new static(\App\App::getBaseDir(), $publicDir));
 			if (preg_match("/^" . preg_quote($publicPath, "/") . "(.*)$/", (string)$this->getPath(), $match)) {
 				return new TURL(implode("/", array_map(function ($i) {
 					return trim($i, "/");
 				}, array_filter([
-					\Katu\Config\Config::get("app", "baseUrl"),
+					(string)(new AppConfig)->getBaseURL(),
 					$match[1],
 				]))));
 			}

@@ -2,9 +2,11 @@
 
 namespace Katu\Tools\Images\Filters;
 
-class Fit extends \Katu\Tools\Images\Filter
+use Intervention\Image\Image;
+
+class FitFilter extends \Katu\Tools\Images\Filter
 {
-	public function apply($image)
+	public function apply(Image $image): bool
 	{
 		$image->fit($this->params["width"], $this->params["height"], function ($constraint) {
 			$constraint->aspectRatio();

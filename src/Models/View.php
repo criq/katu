@@ -173,7 +173,7 @@ abstract class View extends Base
 		$sql = static::getCachedTablesSql();
 
 		$query = static::getConnection()->createQuery($sql, [
-			"tableSchema" => static::getConnection()->getConfig()->database,
+			"tableSchema" => static::getConnection()->getConfig()->getDatabase(),
 			"tableRegexp" => strtr(static::getCachedTableNameRegexp(), [
 				"?<datetime>" => null,
 			]),

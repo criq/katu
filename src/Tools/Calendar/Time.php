@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Calendar;
 
+use App\Config\TimeConfig;
+
 class Time extends \DateTime
 {
 	const DAYS_IN_YEAR = 365.2425;
@@ -118,7 +120,7 @@ class Time extends \DateTime
 
 	public function getLocalTimeZone(): \DateTimeZone
 	{
-		return new \DateTimeZone(\Katu\Config\Config::get("app", "timezone"));
+		return (new TimeConfig)->getTimezone();
 	}
 
 	public function toLocalTimezone(): Time

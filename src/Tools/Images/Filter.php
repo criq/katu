@@ -6,36 +6,29 @@ abstract class Filter
 {
 	protected $params = [];
 
-	abstract public function apply($image);
+	abstract public function apply(\Intervention\Image\Image $image): bool;
 
-	public function __construct($params = [])
+	public function __construct(array $params = [])
 	{
-		$this->params = $params;
+		$this->setParams($params);
 	}
 
-	public static function createByCode($code)
-	{
-		$class = '\\Katu\\Tools\\Images\\Filters\\' . ucfirst($code);
-
-		return new $class;
-	}
-
-	public function getCode()
-	{
-		return lcfirst(array_slice(explode('\\', get_class($this)), -1)[0]);
-	}
-
-	public function setParams($params)
+	public function setParams(array $params): Filter
 	{
 		$this->params = $params;
 
 		return $this;
 	}
 
-	public function getArray()
+	public function getParams(): array
+	{
+		return $this->params;
+	}
+
+	public function getArray(): array
 	{
 		return array_merge([
-			'filter' => $this->getCode(),
-		], $this->params);
+			"filter" => static::class,
+		], $this->getParams());
 	}
 }

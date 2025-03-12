@@ -2,37 +2,29 @@
 
 namespace Katu\PDO;
 
+use App\Config\DatabaseConfig;
+use Katu\Config\DatabaseConnectionConfig;
 use Katu\Tools\Calendar\Timeout;
-use Katu\Types\TIdentifier;
 
 class Connection
 {
 	protected $config;
 	protected $pdo;
-	protected $name;
 	protected $sessionId;
+	protected $title;
 	protected static $connections = [];
 
-	public function __construct(string $name)
+	public function __construct(string $title)
 	{
-		$this->setName($name);
+		$this->setTitle($title);
 		$this->setSessionId(implode(".", [
-			$this->getName(),
+			$this->getTitle(),
 			\Katu\Tools\Random\Generator::getString(16),
 		]));
 
-		try {
-			$configArray = \Katu\Config\Config::get("db", $name);
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance \"{$name}\".");
-		}
-
-		try {
-			$config = Config::createFromConfig($configArray);
-		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
-
-			throw new \Katu\Exceptions\PDOConfigException("Cannot create config for instance \"{$name}\".");
+		$config = (new DatabaseConfig)->getDatabaseConnectionConfigs()->filterByTitle($this->getTitle())->getFirst();
+		if (!$config) {
+			throw new \Katu\Exceptions\PDOConfigException("Missing PDO config for instance \"{$title}\".");
 		}
 
 		$this->setConfig($config);
@@ -40,7 +32,7 @@ class Connection
 		// Try to connect.
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->setPdo(new \PDO($this->getConfig()->getPDODSN(), $this->getConfig()->getUser(), $this->getConfig()->getPassword()));
+				$this->setPdo(new \PDO($this->getConfig()->getPDODSN(), $this->getConfig()->getUser(), $this->getConfig()->getPlainPassword()));
 				break;
 			} catch (\Throwable $e) {
 				if (strpos($e->getMessage(), "driver does not support setting attributes.")) {
@@ -52,7 +44,7 @@ class Connection
 
 	public function __sleep()
 	{
-		return ["name", "config"];
+		return ["title", "config"];
 	}
 
 	public function setPdo(\PDO $value): Connection
@@ -67,28 +59,28 @@ class Connection
 		return $this->pdo;
 	}
 
-	public function setConfig(Config $value): Connection
+	public function setConfig(DatabaseConnectionConfig $config): Connection
 	{
-		$this->config = $value;
+		$this->config = $config;
 
 		return $this;
 	}
 
-	public function getConfig(): Config
+	public function getConfig(): DatabaseConnectionConfig
 	{
 		return $this->config;
 	}
 
-	public function setName(string $value): Connection
+	public function setTitle(string $title): Connection
 	{
-		$this->name = $value;
+		$this->title = $title;
 
 		return $this;
 	}
 
-	public function getName(): string
+	public function getTitle(): string
 	{
-		return (string)$this->name;
+		return (string)$this->title;
 	}
 
 	public function setSessionId(string $value): Connection
@@ -108,13 +100,13 @@ class Connection
 		return (string)$this->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
-	public static function getInstance(string $name): Connection
+	public static function getInstance(string $title): Connection
 	{
-		if (!(static::$connections[$name] ?? null)) {
-			static::$connections[$name] = new static($name);
+		if (!(static::$connections[$title] ?? null)) {
+			static::$connections[$title] = new static($title);
 		}
 
-		return static::$connections[$name];
+		return static::$connections[$title];
 	}
 
 	public function tableExists(Name $tableName): bool
@@ -142,9 +134,9 @@ class Connection
 		return $res;
 	}
 
-	public function getTable(Name $name): Table
+	public function getTable(Name $title): Table
 	{
-		return new Table($this, $name);
+		return new Table($this, $title);
 	}
 
 	public function getViewNames(): array

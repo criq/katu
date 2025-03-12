@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Intl;
 
+use App\Config\IntlConfig;
+
 class Locale
 {
 	protected $code;
@@ -60,23 +62,8 @@ class Locale
 		return $this->preference;
 	}
 
-	public static function getSupportedLocales(): LocaleCollection
-	{
-		$res = new LocaleCollection;
-
-		try {
-			foreach (\Katu\Config\Config::get("intl", "locales", "supported") as $code) {
-				$res[] = new static($code);
-			}
-		} catch (\Katu\Exceptions\MissingConfigException $e) {
-			// Nevermind.
-		}
-
-		return $res;
-	}
-
 	public function getIsSupported(): bool
 	{
-		return in_array($this->getCode(), static::getSupportedLocales()->getArrayCopy()) || in_array($this->getLanguageCode(), static::getSupportedLocales()->getArrayCopy());
+		return in_array($this->getCode(), (new IntlConfig)->getSupportedLocales()->getArrayCopy()) || in_array($this->getLanguageCode(), (new IntlConfig)->getSupportedLocales()->getArrayCopy());
 	}
 }
