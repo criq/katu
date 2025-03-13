@@ -2,59 +2,24 @@
 
 namespace Katu\Tools\Cookies;
 
+use App\Config\CookieConfig;
 use Katu\Tools\Calendar\Time;
-use Katu\Tools\Options\Option;
-use Katu\Tools\Options\OptionCollection;
 
 class Cookie
 {
-	const DEFAULT_IS_HTTP_ONLY = true;
-	const DEFAULT_IS_SECURE = false;
-	const DEFAULT_LIFETIME = "1 year";
-	const DEFAULT_PATH = "/";
-
-	protected $key;
-	protected $value;
-
 	protected $domain;
 	protected $isHttpOnly;
 	protected $isSecure;
+	protected $key;
+	protected $lifetime;
 	protected $path;
 	protected $timeExpires;
+	protected $value;
 
 	public function __construct(string $key, ?string $value = null)
 	{
 		$this->setKey($key);
 		$this->setValue($value);
-	}
-
-	public static function getDefaultOptions(): OptionCollection
-	{
-		$defaultLifetime = static::DEFAULT_LIFETIME;
-
-		return new OptionCollection([
-			new Option("DOMAIN", static::getDefautDomain()),
-			new Option("IS_HTTP_ONLY", static::DEFAULT_IS_HTTP_ONLY),
-			new Option("IS_SECURE", static::DEFAULT_IS_SECURE),
-			new Option("LIFETIME", abs((new Time("+ {$defaultLifetime}"))->getAge()->getValue())),
-			new Option("PATH", static::DEFAULT_PATH),
-		]);
-	}
-
-	public static function getOptions(): OptionCollection
-	{
-		try {
-			$config = \Katu\Config\Config::get("app", "cookie");
-		} catch (\Throwable $e) {
-			$config = [];
-		}
-
-		return static::getDefaultOptions()->getMergedWith(OptionCollection::createFromArray($config));
-	}
-
-	public static function getDefautDomain()
-	{
-		return "." . \Katu\Tools\Routing\URL::getBase()->get2ndLevelDomain();
 	}
 
 	public function setKey(string $key): Cookie
@@ -99,7 +64,7 @@ class Cookie
 			return $this->getTimeExpires()->getTimestamp();
 		}
 
-		$ttl = static::getOptions()->getValue("LIFETIME");
+		$ttl = (new CookieConfig)->getLifetime();
 		$time = new Time("+ {$ttl} seconds");
 
 		return $time->getTimestamp();
@@ -107,22 +72,22 @@ class Cookie
 
 	public function getPath(): string
 	{
-		return static::getOptions()->getValue("PATH");
+		return (new CookieConfig)->getPath();
 	}
 
 	public function getDomain(): string
 	{
-		return static::getOptions()->getValue("DOMAIN");
+		return (new CookieConfig)->getDomain();
 	}
 
 	public function getIsSecure(): bool
 	{
-		return static::getOptions()->getValue("IS_SECURE");
+		return (new CookieConfig)->getIsSecure();
 	}
 
 	public function getIsHttpOnly(): bool
 	{
-		return static::getOptions()->getValue("IS_HTTP_ONLY");
+		return (new CookieConfig)->getIsHTTPOnly();
 	}
 
 	public function persist(): bool
@@ -142,7 +107,7 @@ class Cookie
 	{
 		return setcookie(
 			$this->getKey(),
-			null,
+			"",
 			(new Time("- 1 year"))->getTimestamp(),
 			$this->getPath(),
 			$this->getDomain(),

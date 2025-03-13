@@ -157,10 +157,6 @@ abstract class TwigEngine implements ViewEngineInterface
 			return (string) call_user_func_array(["\Katu\Types\TURL", "make"], func_get_args());
 		}));
 
-		$twig->addFunction(new \Twig\TwigFunction("getConfig", function () {
-			return call_user_func_array(["\Katu\Config", "get"], func_get_args());
-		}));
-
 		$twig->addFunction(new \Twig\TwigFunction("getSession", function () {
 			return new Session;
 		}));

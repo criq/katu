@@ -2,6 +2,7 @@
 
 namespace Katu\Cache\Adapters;
 
+use App\Config\RedisConfig;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 
@@ -12,13 +13,13 @@ class Redis implements \Katu\Cache\Adapter
 	public static function createClient(): ?\Predis\Client
 	{
 		try {
-			try {
-				$config = \Katu\Config\Config::get("redis", "config");
-			} catch (\Throwable $e) {
-				$config = null;
-			}
+			$config = new RedisConfig;
 
-			$client = new \Predis\Client($config ?: null);
+			$client = new \Predis\Client([
+				"scheme" => "tcp",
+				"host" => $config->getHost(),
+				"port" => $config->getPort(),
+			]);
 			$client->connect();
 
 			return $client;

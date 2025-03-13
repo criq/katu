@@ -2,106 +2,44 @@
 
 namespace Katu\Tools\Session;
 
-use Katu\Tools\Calendar\Time;
-use Katu\Tools\Cookies\Cookie;
-use Katu\Tools\Options\Option;
-use Katu\Tools\Options\OptionCollection;
+use App\Config\CookieConfig;
 
 class Session
 {
-	const DEFAULT_COOKIE_LIFETIME = "1 year";
-	const DEFAULT_NAME = "session";
-
 	public function __construct()
 	{
-		static::initialize();
-	}
-
-	/****************************************************************************
-	 * General cookie methods.
-	 */
-	public static function getCookieOptions(): OptionCollection
-	{
-		try {
-			$config = \Katu\Config\Config::get("app", "cookie");
-		} catch (\Throwable $e) {
-			$config = [];
+		if (!session_id()) {
+			session_start($this->getOptions());
 		}
-
-		return Cookie::getDefaultOptions()->getMergedWith(OptionCollection::createFromArray($config));
 	}
 
-	public static function setCookieParams(): bool
+	public function getOptions(): array
 	{
-		$options = static::getCookieOptions();
+		$config = new CookieConfig;
 
-		return session_set_cookie_params(
-			$options->getValue("LIFETIME"),
-			$options->getValue("PATH"),
-			$options->getValue("DOMAIN"),
-			$options->getValue("SECURE"),
-			$options->getValue("HTTP_ONLY"),
-		);
+		return [
+			"cookie_domain" => $config->getDomain(),
+			"cookie_httponly" => $config->getIsHTTPOnly(),
+			"cookie_lifetime" => $config->getLifetime(),
+			"cookie_path" => $config->getPath(),
+			"cookie_secure" => $config->getIsSecure(),
+			"gc_maxlifetime" => $config->getLifetime(),
+			"save_path" => (string)static::getStorage()->getPath(),
+			"use_cookies" => true,
+			"use_only_cookies" => true,
+			"use_strict_mode" => true,
+		];
 	}
 
 	/****************************************************************************
 	 * Session cookie methods.
 	 */
-	public static function getPath(): \Katu\Files\File
+	public function getStorage(): \Katu\Files\File
 	{
-		return new \Katu\Files\File(\App\App::getTemporaryDir(), "session");
-	}
+		$storage = new \Katu\Files\File(\App\App::getTemporaryDir(), "session");
+		$storage->makeDir();
 
-	public static function makePath(): bool
-	{
-		try {
-			return static::getPath()->makeDir();
-		} catch (\Throwable $e) {
-			return false;
-		}
-	}
-
-	public static function getDefaultOptions(): OptionCollection
-	{
-		$defaultCookieLifetime = static::DEFAULT_COOKIE_LIFETIME;
-
-		return new OptionCollection([
-			new Option("COOKIE_LIFETIME", abs((string)(new Time("+ {$defaultCookieLifetime}"))->getAge())),
-			new Option("NAME", static::DEFAULT_NAME),
-			new Option("SAVE_PATH", (string)static::getPath()),
-		]);
-	}
-
-	public static function getOptions(): OptionCollection
-	{
-		try {
-			$config = \Katu\Config\Config::get("app", "session");
-		} catch (\Throwable $e) {
-			$config = [];
-		}
-
-		return static::getDefaultOptions()->getMergedWith(OptionCollection::createFromArray($config));
-	}
-
-	public static function getConfig(): array
-	{
-		$res = [];
-		foreach (static::getOptions() as $option) {
-			$res[mb_strtolower($option->getCode()->getConstantFormat())] = $option->getValue();
-		}
-
-		return $res;
-	}
-
-	public static function initialize(): bool
-	{
-		if (!session_id()) {
-			static::setCookieParams();
-			static::makePath();
-			session_start(static::getConfig());
-		}
-
-		return true;
+		return $storage;
 	}
 
 	/****************************************************************************

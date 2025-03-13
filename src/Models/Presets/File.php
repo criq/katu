@@ -133,23 +133,9 @@ abstract class File extends \Katu\Models\Model
 	public static function generatePath($srcName = null)
 	{
 		while (true) {
-			try {
-				$subDirs = \Katu\Config\Config::get("app", "files", "subDirs");
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$subDirs = 3;
-			}
-
-			try {
-				$fileNameLength = \Katu\Config\Config::get("app", "files", "fileNameLength");
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$fileNameLength = 32;
-			}
-
-			try {
-				$fileNameChars = \Katu\Config\Config::get("app", "files", "fileNameChars");
-			} catch (\Katu\Exceptions\MissingConfigException $e) {
-				$fileNameChars = "abcdefghjkmnpqrstuvwxyz123456789";
-			}
+			$subDirs = 3;
+			$fileNameLength = 32;
+			$fileNameChars = "abcdefghjkmnpqrstuvwxyz123456789";
 
 			$subDirNames = [];
 			for ($i = 0; $i < $subDirs; $i++) {

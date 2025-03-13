@@ -162,9 +162,6 @@ class App
 				spl_autoload_register($registerFunction);
 			}
 
-			// Setup session.
-			Session::setCookieParams();
-
 			// Add body parsing middleware.
 			static::$instance->addBodyParsingMiddleware();
 
