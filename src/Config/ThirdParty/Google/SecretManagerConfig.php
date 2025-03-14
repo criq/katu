@@ -2,13 +2,17 @@
 
 namespace Katu\Config\ThirdParty\Google;
 
+use App\Config\EnvConfig;
 use Katu\Files\File;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
 
 abstract class SecretManagerConfig extends \Katu\Config\Config
 {
-	abstract public function getServiceAccountFile(): File;
+	public function getServiceAccountFile(): File
+	{
+		return new File(\App\App::getBaseDir(), (new EnvConfig)->getVariable("SECRET_MANAGER_SERVICE_ACCCOUNT_PATH"));
+	}
 
 	public function getProjectId(): string
 	{
