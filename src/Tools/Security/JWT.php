@@ -3,7 +3,6 @@
 namespace Katu\Tools\Security;
 
 use App\Config\AppConfig;
-use App\Config\EncryptionConfig;
 use App\Config\TimeConfig;
 use Lcobucci\JWT\Configuration;
 
@@ -15,7 +14,7 @@ class JWT
 	{
 		$this->setConfig(Configuration::forSymmetricSigner(
 			new \Lcobucci\JWT\Signer\Hmac\Sha256,
-			\Lcobucci\JWT\Signer\Key\InMemory::plainText((new EncryptionConfig)->getKey()),
+			\Lcobucci\JWT\Signer\Key\InMemory::plainText(\App\App::getEncryptionConfig()->getKey()),
 		));
 		$this->getConfig()->setValidationConstraints(
 			new \Lcobucci\JWT\Validation\Constraint\SignedWith($this->getConfig()->signer(), $this->getConfig()->signingKey()),

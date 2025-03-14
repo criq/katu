@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Session;
 
-use App\Config\CookieConfig;
-
 class Session
 {
 	public function __construct()
@@ -15,7 +13,8 @@ class Session
 
 	public function getOptions(): array
 	{
-		$config = new CookieConfig;
+		$class = \App\App::getContainer()->get(\Katu\Config\CookieConfig::class);
+		$config = new $class;
 
 		return [
 			"cookie_domain" => $config->getDomain(),

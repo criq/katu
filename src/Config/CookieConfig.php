@@ -2,13 +2,11 @@
 
 namespace Katu\Config;
 
-use App\Config\EnvConfig;
-
-abstract class CookieConfig extends \Katu\Config\Config
+class CookieConfig extends \Katu\Config\Config
 {
 	public function getDomain(): string
 	{
-		return (new EnvConfig)->getVariable("APP_HOST");
+		return \App\App::getEnvConfig()->getVariable("APP_HOST");
 	}
 
 	public function getIsHTTPOnly(): bool

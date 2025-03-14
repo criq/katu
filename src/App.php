@@ -4,11 +4,8 @@ namespace Katu;
 
 use App\Config\AppConfig;
 use App\Config\RouterConfig;
-use App\Config\ThirdParty\Brevo\BrevoConfig;
-use App\Config\ThirdParty\Google\SecretManagerConfig;
 use App\Config\TimeConfig;
 use Katu\Files\File;
-use Katu\Tools\Session\Session;
 use Katu\Types\TIdentifier;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -100,14 +97,6 @@ class App
 	}
 
 	/****************************************************************************
-	 * DI.
-	 */
-	public static function getDIDefinitions(): array
-	{
-		return [];
-	}
-
-	/****************************************************************************
 	 * Run.
 	 */
 	public static function getInstance(): \Slim\App
@@ -119,6 +108,12 @@ class App
 				\Psr\Log\LoggerInterface::class => \DI\factory(function (TIdentifier $identifier) {
 					return static::getLogger($identifier);
 				}),
+
+				\Katu\Config\CookieConfig::class => \Katu\Config\CookieConfig::class,
+				\Katu\Config\EncryptionConfig::class => \Katu\Config\EncryptionConfig::class,
+				\Katu\Config\EnvConfig::class => \Katu\Config\EnvConfig::class,
+				\Katu\Config\RedisConfig::class => \Katu\Config\RedisConfig::class,
+				\Katu\Config\ThirdParty\Google\SecretManagerConfig::class => \Katu\Config\ThirdParty\Google\SecretManagerConfig::class,
 				\Katu\Models\Presets\AccessToken::class => \Katu\Models\Presets\AccessToken::class,
 				\Katu\Models\Presets\EmailAddress::class => \Katu\Models\Presets\EmailAddress::class,
 				\Katu\Models\Presets\File::class => \Katu\Models\Presets\File::class,
@@ -145,7 +140,7 @@ class App
 				\Katu\Tools\Calendar\Week::class => \Katu\Tools\Calendar\Week::class,
 				\Katu\Tools\Calendar\WeekCollection::class => \Katu\Tools\Calendar\WeekCollection::class,
 				\Katu\Tools\Calendar\Year::class => \Katu\Tools\Calendar\Year::class,
-			], static::getDIDefinitions()));
+			], (new AppConfig)->getDIDefinitions()));
 
 			// Create the app.
 			static::$instance = \DI\Bridge\Slim\Bridge::create($builder->build());
@@ -195,5 +190,40 @@ class App
 	public static function getContainer(): ContainerInterface
 	{
 		return static::getInstance()->getContainer();
+	}
+
+	public static function getCookieConfig(): \Katu\Config\CookieConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\CookieConfig::class);
+
+		return new $class;
+	}
+
+	public static function getEncryptionConfig(): \Katu\Config\EncryptionConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\EncryptionConfig::class);
+
+		return new $class;
+	}
+
+	public static function getEnvConfig(): \Katu\Config\EnvConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\EnvConfig::class);
+
+		return new $class;
+	}
+
+	public static function getSecretManagerConfig(): \Katu\Config\ThirdParty\Google\SecretManagerConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\ThirdParty\Google\SecretManagerConfig::class);
+
+		return new $class;
+	}
+
+	public static function getRedisConfig(): \Katu\Config\RedisConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\RedisConfig::class);
+
+		return new $class;
 	}
 }

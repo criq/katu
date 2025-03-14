@@ -2,7 +2,6 @@
 
 namespace Katu\Tools\Cookies;
 
-use App\Config\CookieConfig;
 use Katu\Tools\Calendar\Time;
 
 class Cookie
@@ -64,7 +63,7 @@ class Cookie
 			return $this->getTimeExpires()->getTimestamp();
 		}
 
-		$ttl = (new CookieConfig)->getLifetime();
+		$ttl = \App\App::getCookieConfig()->getLifetime();
 		$time = new Time("+ {$ttl} seconds");
 
 		return $time->getTimestamp();
@@ -72,22 +71,22 @@ class Cookie
 
 	public function getPath(): string
 	{
-		return (new CookieConfig)->getPath();
+		return \App\App::getCookieConfig()->getPath();
 	}
 
 	public function getDomain(): string
 	{
-		return (new CookieConfig)->getDomain();
+		return \App\App::getCookieConfig()->getDomain();
 	}
 
 	public function getIsSecure(): bool
 	{
-		return (new CookieConfig)->getIsSecure();
+		return \App\App::getCookieConfig()->getIsSecure();
 	}
 
 	public function getIsHttpOnly(): bool
 	{
-		return (new CookieConfig)->getIsHTTPOnly();
+		return \App\App::getCookieConfig()->getIsHTTPOnly();
 	}
 
 	public function persist(): bool

@@ -2,15 +2,15 @@
 
 namespace Katu\Config;
 
-abstract class EncryptionConfig extends Config
+class EncryptionConfig extends Config
 {
 	public function getKey(): string
 	{
-		return (new \App\Config\EnvConfig)->getVariable("ENCRYPTION_KEY");
+		return \App\App::getEnvConfig()->getVariable("ENCRYPTION_KEY");
 	}
 
 	public function getSalt(): string
 	{
-		return (new \App\Config\EnvConfig)->getVariable("ENCRYPTION_SALT");
+		return \App\App::getEnvConfig()->getVariable("ENCRYPTION_SALT");
 	}
 }

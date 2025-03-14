@@ -2,7 +2,6 @@
 
 namespace Katu\Types\Encryption;
 
-use App\Config\EncryptionConfig;
 use Katu\Types\TJSON;
 
 class TEncryptedString
@@ -27,7 +26,7 @@ class TEncryptedString
 
 	public static function generateIv(string $original): string
 	{
-		$salt = (new EncryptionConfig)->getSalt();
+		$salt = \App\App::getEncryptionConfig()->getSalt();
 
 		return hex2bin(substr(sha1(sha1(implode([
 			$salt,
@@ -38,7 +37,7 @@ class TEncryptedString
 	public static function encrypt(string $original, ?string $iv = null): TEncryptedString
 	{
 		$method = static::getDefaultMethod();
-		$key = (new EncryptionConfig)->getKey();
+		$key = \App\App::getEncryptionConfig()->getKey();
 		$iv = $iv ?: static::generateIv($original);
 
 		$result = openssl_encrypt($original, $method, $key, 0, $iv);
@@ -62,7 +61,7 @@ class TEncryptedString
 
 	public function getOriginal(): string
 	{
-		$key = (new EncryptionConfig)->getKey();
+		$key = \App\App::getEncryptionConfig()->getKey();
 
 		return openssl_decrypt($this->encrypted, $this->method, $key, 0, $this->iv);
 	}

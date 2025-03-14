@@ -5,7 +5,7 @@ namespace Katu\Config;
 use Katu\Files\File;
 use Katu\Files\FileCollection;
 
-abstract class EnvConfig extends \Katu\Config\Config
+class EnvConfig extends \Katu\Config\Config
 {
 	public static $variables = null;
 
