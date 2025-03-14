@@ -2,6 +2,8 @@
 
 namespace Katu\Models\Presets;
 
+use App\Config\UserPermissionConfig;
+
 abstract class UserPermission extends \Katu\Models\Model
 {
 	const TABLE = "user_permissions";
@@ -39,19 +41,7 @@ abstract class UserPermission extends \Katu\Models\Model
 
 	public static function getAvailable(): array
 	{
-		$file = new \Katu\Files\File(\App\App::getBaseDir(), "app", "Config", ["userPermissions", "yaml"]);
-		if (!$file->exists()) {
-			throw new \Katu\Exceptions\ErrorException("Permission file doesn't exist.");
-		}
-
-		$permissions = array_unique(array_filter(array_map("trim", \Katu\Files\Formats\YAML::decode($file->get()))));
-		if (!$permissions) {
-			throw new \Katu\Exceptions\ErrorException("No permissions found.");
-		}
-
-		natsort($permissions);
-
-		return $permissions;
+		return (new UserPermissionConfig)->getPermissions();
 	}
 
 	public static function isValidPermission(string $permission): bool
