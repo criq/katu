@@ -56,6 +56,11 @@ abstract class Job implements PackagedInterface
 		}
 	}
 
+	public function getTitle(): string
+	{
+		return $this->getClass()->getPortableName();
+	}
+
 	public function getClass(): TClass
 	{
 		return new TClass($this);
