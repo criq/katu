@@ -66,7 +66,7 @@ class ImageVersion implements RestResponseInterface
 
 			return new \Katu\Files\File($this->getVersion()->getDir(), implode("/", $pathSegments));
 		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+			\App\App::getLogger(new TIdentifier(__CLASS__))->error($e);
 
 			return null;
 		}

@@ -24,7 +24,7 @@ class Route
 		try {
 			return $request->getAttribute("__route__")->getName();
 		} catch (\Throwable $e) {
-			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+			\App\App::getLogger(new TIdentifier(__CLASS__))->error($e);
 
 			return null;
 		}

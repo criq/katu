@@ -249,7 +249,7 @@ class Query
 			}
 
 			if ($result->hasError()) {
-				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($result->getError(), [
+				\App\App::getLogger(new TIdentifier(__CLASS__))->error($result->getError(), [
 					"sql" => $result->getSQL(),
 				]);
 			}

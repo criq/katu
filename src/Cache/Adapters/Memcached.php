@@ -61,7 +61,7 @@ class Memcached implements \Katu\Cache\Adapter
 
 				return true;
 			} catch (\Throwable $e) {
-				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+				\App\App::getLogger(new TIdentifier(__CLASS__))->error($e);
 
 				$instance->delete($identifier);
 			}
