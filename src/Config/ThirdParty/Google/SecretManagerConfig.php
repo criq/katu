@@ -20,7 +20,7 @@ class SecretManagerConfig extends \Katu\Config\Config
 
 	public function getSecret(string $secret, string $version = "latest"): string
 	{
-		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__, $secret, $version), new Timeout("1 day"), function () use ($secret, $version) {
+		return (new \Katu\Cache\General(new TIdentifier(__CLASS__, __FUNCTION__, $secret, $version), new Timeout("1 day"), function () use ($secret, $version) {
 			try {
 				$client = new \Google\Cloud\SecretManager\V1\SecretManagerServiceClient([
 					"credentials" => $this->getServiceAccountFile()->getPath(),
@@ -36,6 +36,6 @@ class SecretManagerConfig extends \Katu\Config\Config
 
 				return null;
 			}
-		});
+		}))->getResult();
 	}
 }
