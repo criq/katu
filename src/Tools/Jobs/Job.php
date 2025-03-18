@@ -230,6 +230,8 @@ abstract class Job implements PackagedInterface
 
 			// Check lock.
 			if (!$this->getProcedure()->getIsExecutable()) {
+				$logger->notice("Job {$this->getTitle()} locked.", array_merge($loggerContext));
+
 				$this->outputLine("Job locked.");
 				return false;
 			}
