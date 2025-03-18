@@ -56,6 +56,11 @@ abstract class Job implements PackagedInterface
 		}
 	}
 
+	public function getTitle(): string
+	{
+		return $this->getClass()->getPortableName();
+	}
+
 	public function getClass(): TClass
 	{
 		return new TClass($this);
@@ -218,6 +223,11 @@ abstract class Job implements PackagedInterface
 	public function run(): bool
 	{
 		try {
+			$logger = \App\App::getLogger(new TIdentifier(__CLASS__));
+			$loggerContext = [
+				"job" => $this->getTitle(),
+			];
+
 			// Check lock.
 			if (!$this->getProcedure()->getIsExecutable()) {
 				$this->outputLine("Job locked.");
@@ -233,8 +243,16 @@ abstract class Job implements PackagedInterface
 			}
 
 			$this->setTimeStarted(new Time);
+			$logger->info("Job {$this->getTitle()} started.", array_merge($loggerContext, [
+				"event" => "job.start",
+			]));
+
 			$this->getProcedure()->run();
+
 			$this->setTimeFinished(new Time);
+			$logger->info("Job {$this->getTitle()} finished.", array_merge($loggerContext, [
+				"event" => "job.end",
+			]));
 
 			return true;
 		} catch (\Throwable $e) {
