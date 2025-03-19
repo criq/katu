@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Jobs;
 
+use App\Config\AppConfig;
 use Katu\Cache\Pickle;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
@@ -222,42 +223,51 @@ abstract class Job implements PackagedInterface
 
 	public function run(): bool
 	{
-		try {
-			$logger = \App\App::getLogger(new TIdentifier(__CLASS__));
-			$loggerContext = [
-				"job" => $this->getTitle(),
-			];
+		$logger = \App\App::getLogger(new TIdentifier(__CLASS__));
+		$loggerContext = [
+			"job" => $this->getTitle(),
+		];
 
+		try {
 			// Check lock.
 			if (!$this->getProcedure()->getIsExecutable()) {
-				$logger->notice("Job {$this->getTitle()} locked.", array_merge($loggerContext));
+				$message = "Job {$this->getTitle()} locked.";
+				$logger->notice($message, array_merge($loggerContext));
+				$this->outputLine($message);
 
-				$this->outputLine("Job locked.");
 				return false;
 			}
 
 			// Check max load average.
 			$maxLoadAverage = $this->getMaxLoadAverage();
 			$loadAverage = \Katu\Tools\System\System::getLoadAveragePerCpu()[0];
-			if ($maxLoadAverage && $loadAverage >= $maxLoadAverage) {
-				$this->outputLine("Load average {$loadAverage} above {$maxLoadAverage}.");
+			if (!(new AppConfig)->getIsEnvironment("DEVELOPMENT") && $maxLoadAverage && $loadAverage >= $maxLoadAverage) {
+				$message = "Load average {$loadAverage} above {$maxLoadAverage}.";
+				$logger->warning($message);
+				$this->outputLine($message);
+
 				return false;
 			}
 
 			$this->setTimeStarted(new Time);
-			$logger->info("Job {$this->getTitle()} started.", array_merge($loggerContext, [
+			$message = "Job {$this->getTitle()} started.";
+			$logger->info($message, array_merge($loggerContext, [
 				"event" => "job.start",
 			]));
+			$this->outputLine($message);
 
 			$this->getProcedure()->run();
 
 			$this->setTimeFinished(new Time);
-			$logger->info("Job {$this->getTitle()} finished.", array_merge($loggerContext, [
+			$message = "Job {$this->getTitle()} finished.";
+			$logger->info($message, array_merge($loggerContext, [
 				"event" => "job.end",
 			]));
+			$this->outputLine($message);
 
 			return true;
 		} catch (\Throwable $e) {
+			$logger->error($e);
 			$this->outputLine($e->getMessage());
 
 			return false;
