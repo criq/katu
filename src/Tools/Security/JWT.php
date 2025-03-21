@@ -24,7 +24,7 @@ class JWT
 
 	public function getTimezone(): \DateTimeZone
 	{
-		return (new TimeConfig)->getTimezone();
+		return \App\App::getTimeConfig()->getTimezone();
 	}
 
 	public function setConfig(Configuration $config): JWT
@@ -42,7 +42,7 @@ class JWT
 	public function createToken(\DateTimeImmutable $expiresAt, array $claims): \Lcobucci\JWT\Token\Plain
 	{
 		$builder = $this->getConfig()->builder()
-			->issuedBy((string)(new AppConfig)->getBaseURL())
+			->issuedBy(\App\App::getAppConfig()->getBaseURL())
 			->issuedAt(new \DateTimeImmutable("now", $this->getTimezone()))
 			->expiresAt($expiresAt)
 			;

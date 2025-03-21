@@ -111,7 +111,7 @@ class File
 				return new TURL(implode("/", array_map(function ($i) {
 					return trim($i, "/");
 				}, array_filter([
-					(string)(new AppConfig)->getBaseURL(),
+					\App\App::getAppConfig()->getBaseURL(),
 					$match[1],
 				]))));
 			}

@@ -2,9 +2,6 @@
 
 namespace Katu;
 
-use App\Config\AppConfig;
-use App\Config\RouterConfig;
-use App\Config\TimeConfig;
 use Katu\Files\File;
 use Katu\Types\TIdentifier;
 use Psr\Container\ContainerInterface;
@@ -104,11 +101,19 @@ class App
 		if (!static::$instance) {
 			// Create the dependency injection container.
 			$builder = new \DI\ContainerBuilder;
+
+			if (class_exists("\App\Config\AppConfig")) {
+				$appDefinitions = (new \App\Config\AppConfig)->getDIDefinitions();
+			} else {
+				$appDefinitions = [];
+			}
+
 			$builder->addDefinitions(array_merge([
 				\Psr\Log\LoggerInterface::class => \DI\factory(function (TIdentifier $identifier) {
 					return static::getLogger($identifier);
 				}),
 
+				\Katu\Config\AppConfig::class => \Katu\Config\AppConfig::class,
 				\Katu\Config\CookieConfig::class => \Katu\Config\CookieConfig::class,
 				\Katu\Config\EncryptionConfig::class => \Katu\Config\EncryptionConfig::class,
 				\Katu\Config\EnvConfig::class => \Katu\Config\EnvConfig::class,
@@ -140,14 +145,15 @@ class App
 				\Katu\Tools\Calendar\Week::class => \Katu\Tools\Calendar\Week::class,
 				\Katu\Tools\Calendar\WeekCollection::class => \Katu\Tools\Calendar\WeekCollection::class,
 				\Katu\Tools\Calendar\Year::class => \Katu\Tools\Calendar\Year::class,
-			], (new AppConfig)->getDIDefinitions()));
+			], $appDefinitions));
 
 			// Create the app.
 			static::$instance = \DI\Bridge\Slim\Bridge::create($builder->build());
 
 			// Setup timezone.
 			try {
-				date_default_timezone_set((new TimeConfig)->getTimezone()->getName());
+				$class = static::getContainer()->get(\Katu\Tools\Calendar\Time::class);
+				date_default_timezone_set((new $class)->getTimezone()->getName());
 			} catch (\Throwable $e) {
 				// Just use default timezone.
 			}
@@ -161,7 +167,7 @@ class App
 			static::$instance->addBodyParsingMiddleware();
 
 			// Set up routes.
-			foreach ((new RouterConfig)->getRoutes() as $name => $route) {
+			foreach ((new \App\Config\RouterConfig)->getRoutes() as $name => $route) {
 				$pattern = $route->getPattern();
 				if (!$pattern) {
 					throw new \Katu\Exceptions\RouteException("Invalid pattern for route \"{$name}\".");
@@ -192,6 +198,27 @@ class App
 		return static::getInstance()->getContainer();
 	}
 
+	public static function getAppConfig(): \Katu\Config\AppConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\AppConfig::class);
+
+		return new $class;
+	}
+
+	public static function getEnvConfig(): \Katu\Config\EnvConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\EnvConfig::class);
+
+		return new $class;
+	}
+
+	public static function getTimeConfig(): \Katu\Config\TimeConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\TimeConfig::class);
+
+		return new $class;
+	}
+
 	public static function getCookieConfig(): \Katu\Config\CookieConfig
 	{
 		$class = static::getContainer()->get(\Katu\Config\CookieConfig::class);
@@ -202,13 +229,6 @@ class App
 	public static function getEncryptionConfig(): \Katu\Config\EncryptionConfig
 	{
 		$class = static::getContainer()->get(\Katu\Config\EncryptionConfig::class);
-
-		return new $class;
-	}
-
-	public static function getEnvConfig(): \Katu\Config\EnvConfig
-	{
-		$class = static::getContainer()->get(\Katu\Config\EnvConfig::class);
 
 		return new $class;
 	}
