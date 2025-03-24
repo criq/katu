@@ -98,19 +98,13 @@ class Procedure
 				}
 
 				$lock->lock();
-				var_dump("A");
-
 
 				@set_time_limit((string)$this->getTimeout()->getSeconds());
 				$res = call_user_func($this->getCallback());
-
-				var_dump($res);
 			}
 		} catch (\Katu\Exceptions\LockException $e) {
 			// Nevermind.
 		} catch (\Throwable $e) {
-			var_dump($e);
-
 			\App\App::getLogger($this->getIdentifier())->error($e);
 		} finally {
 			$lock->unlock();

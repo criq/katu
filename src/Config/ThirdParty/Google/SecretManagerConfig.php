@@ -10,7 +10,7 @@ class SecretManagerConfig extends \Katu\Config\Config
 {
 	public function getServiceAccountFile(): File
 	{
-		return new File(\App\App::getBaseDir(), \App\App::getEnvConfig()->getVariable("SECRET_MANAGER_SA_PATH"));
+		return new File(\App\App::getBaseDir(), \App\App::getEnvConfig()->getVariable("SECRET_MANAGER_KEY_FILE"));
 	}
 
 	public function getProjectId(): string
