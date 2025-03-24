@@ -243,16 +243,16 @@ abstract class TwigEngine implements ViewEngineInterface
 	protected function getCommonData(): array
 	{
 		$data["_site"]["baseDir"] = \App\App::getBaseDir();
-		$data["_site"]["baseUrl"] = (new AppConfig)->getBaseURL();
+		$data["_site"]["baseUrl"] = \App\App::getAppConfig()->getBaseURL();
 
 		try {
-			$data["_site"]["apiUrl"] = (new AppConfig)->getAPIURL();
+			$data["_site"]["apiUrl"] = \App\App::getAppConfig()->getAPIURL();
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}
 
 		try {
-			$data["_site"]["timezone"] = (new TimeConfig)->getTimezone()->getName();
+			$data["_site"]["timezone"] = \App\App::getTimeConfig()->getTimezone()->getName();
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}

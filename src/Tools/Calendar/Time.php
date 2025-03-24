@@ -120,7 +120,7 @@ class Time extends \DateTime
 
 	public function getLocalTimeZone(): \DateTimeZone
 	{
-		return (new TimeConfig)->getTimezone();
+		return \App\App::getTimeConfig()->getTimezone();
 	}
 
 	public function toLocalTimezone(): Time

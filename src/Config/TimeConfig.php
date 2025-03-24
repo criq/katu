@@ -2,7 +2,10 @@
 
 namespace Katu\Config;
 
-abstract class TimeConfig extends \Katu\Config\Config
+class TimeConfig extends \Katu\Config\Config
 {
-	abstract public function getTimezone(): \DateTimeZone;
+	public function getTimezone(): \DateTimeZone
+	{
+		return new \DateTimeZone("UTC");
+	}
 }

@@ -19,7 +19,7 @@ class URL
 
 	public static function getBase(): TURL
 	{
-		return (new AppConfig)->getBaseURL();
+		return \App\App::getAppConfig()->getBaseURL();
 	}
 
 	public static function getPathFor($route, ?array $args = []): string

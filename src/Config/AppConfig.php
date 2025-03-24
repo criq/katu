@@ -4,7 +4,7 @@ namespace Katu\Config;
 
 use Katu\Types\TURL;
 
-abstract class AppConfig extends \Katu\Config\Config
+class AppConfig extends \Katu\Config\Config
 {
 	public function getIsEnvironment(string $environment): bool
 	{
