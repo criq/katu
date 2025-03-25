@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Views;
 
-use App\Config\AppConfig;
-use App\Config\TimeConfig;
 use Katu\Tools\Cookies\CookieCollection;
 use Katu\Tools\Session\Session;
 use Katu\Types\TClass;
@@ -122,6 +120,16 @@ abstract class TwigEngine implements ViewEngineInterface
 			foreach ((array) func_get_args() as $arg) {
 				var_dump($arg);
 			}
+		}));
+
+		$twig->addFunction(new \Twig\TwigFunction("getConfig", function ($config) {
+			$class = new TClass("App/Config/{$config}");
+			if ($class->exists()) {
+				$className = $class->getName();
+				return new $className;
+			}
+
+			return null;
 		}));
 
 		$twig->addFunction(new \Twig\TwigFunction("getTimeout", function ($timeout) {
