@@ -97,7 +97,7 @@ class ElementNode extends Node
 
 	public function setClasses(?array $classes = null): ElementNode
 	{
-		$this->setAttribute(new Attribute("class", implode(" ", array_filter(array_unique($classes)))));
+		$this->setAttribute(new Attribute("class", implode(" ", array_filter(array_unique((array)$classes)))));
 
 		return $this;
 	}
