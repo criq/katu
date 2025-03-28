@@ -117,6 +117,8 @@ class App
 				\Katu\Config\CookieConfig::class => \Katu\Config\CookieConfig::class,
 				\Katu\Config\EncryptionConfig::class => \Katu\Config\EncryptionConfig::class,
 				\Katu\Config\EnvConfig::class => \Katu\Config\EnvConfig::class,
+				\Katu\Config\IntlConfig::class => \Katu\Config\IntlConfig::class,
+				\Katu\Config\PaginationConfig::class => \Katu\Config\PaginationConfig::class,
 				\Katu\Config\RedisConfig::class => \Katu\Config\RedisConfig::class,
 				\Katu\Config\ThirdParty\Google\SecretManagerConfig::class => \Katu\Config\ThirdParty\Google\SecretManagerConfig::class,
 				\Katu\Models\Presets\AccessToken::class => \Katu\Models\Presets\AccessToken::class,
@@ -205,20 +207,6 @@ class App
 		return new $class;
 	}
 
-	public static function getEnvConfig(): \Katu\Config\EnvConfig
-	{
-		$class = static::getContainer()->get(\Katu\Config\EnvConfig::class);
-
-		return new $class;
-	}
-
-	public static function getTimeConfig(): \Katu\Config\TimeConfig
-	{
-		$class = static::getContainer()->get(\Katu\Config\TimeConfig::class);
-
-		return new $class;
-	}
-
 	public static function getCookieConfig(): \Katu\Config\CookieConfig
 	{
 		$class = static::getContainer()->get(\Katu\Config\CookieConfig::class);
@@ -233,9 +221,23 @@ class App
 		return new $class;
 	}
 
-	public static function getSecretManagerConfig(): \Katu\Config\ThirdParty\Google\SecretManagerConfig
+	public static function getEnvConfig(): \Katu\Config\EnvConfig
 	{
-		$class = static::getContainer()->get(\Katu\Config\ThirdParty\Google\SecretManagerConfig::class);
+		$class = static::getContainer()->get(\Katu\Config\EnvConfig::class);
+
+		return new $class;
+	}
+
+	public static function getIntlConfig(): \Katu\Config\IntlConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\IntlConfig::class);
+
+		return new $class;
+	}
+
+	public static function getPagninationConfig(): \Katu\Config\PaginationConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\PaginationConfig::class);
 
 		return new $class;
 	}
@@ -243,6 +245,20 @@ class App
 	public static function getRedisConfig(): \Katu\Config\RedisConfig
 	{
 		$class = static::getContainer()->get(\Katu\Config\RedisConfig::class);
+
+		return new $class;
+	}
+
+	public static function getSecretManagerConfig(): \Katu\Config\ThirdParty\Google\SecretManagerConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\ThirdParty\Google\SecretManagerConfig::class);
+
+		return new $class;
+	}
+
+	public static function getTimeConfig(): \Katu\Config\TimeConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\TimeConfig::class);
 
 		return new $class;
 	}
