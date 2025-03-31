@@ -24,6 +24,7 @@ abstract class Job implements PackagedInterface
 	protected $args = [];
 	protected $consoleInput;
 	protected $consoleOutput;
+	protected $id;
 	protected $interval;
 	protected $isLockChecked = true;
 	protected $limit;
@@ -221,11 +222,22 @@ abstract class Job implements PackagedInterface
 		return $this->getTimeStarted() && (!$this->getTimeFinished() || $this->getTimeFinished() < $this->getTimeStarted());
 	}
 
+	public function getId(): string
+	{
+		if (is_null($this->id)) {
+			$this->id = uniqid();
+		}
+
+		return $this->id;
+	}
+
 	public function run(): bool
 	{
+
 		$logger = \App\App::getLogger(new TIdentifier(__CLASS__));
 		$loggerContext = [
 			"job" => $this->getTitle(),
+			"id" => $this->getId(),
 		];
 
 		try {
