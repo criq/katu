@@ -233,11 +233,11 @@ abstract class Job implements PackagedInterface
 
 	public function run(): bool
 	{
-
 		$logger = \App\App::getLogger(new TIdentifier(__CLASS__));
 		$loggerContext = [
 			"job" => $this->getTitle(),
 			"id" => $this->getId(),
+			"args" => serialize($this->getArgs()),
 		];
 
 		try {
