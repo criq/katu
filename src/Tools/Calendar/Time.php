@@ -272,7 +272,7 @@ class Time extends \DateTime
 		return $this->setTime($this->format("H"), $this->format("i"), floor($n), ($n - floor($n)) * 1000000);
 	}
 
-	public function setMicrosecond(int $microsecond): static
+	public function setMicrosecond(int $microsecond): Time
 	{
 		return $this->setTime($this->format("H"), $this->format("i"), $this->format("s"), $microsecond);
 	}
