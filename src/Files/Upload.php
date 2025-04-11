@@ -79,7 +79,7 @@ class Upload
 		return (bool)$this->getErrorId();
 	}
 
-	public function getErrorMessage(): string
+	public function getErrorMessage(): ?string
 	{
 		switch ($this->getError()) {
 			// 0
@@ -122,9 +122,11 @@ class Upload
 				return "A PHP extension stopped the file upload.";
 				break;
 		}
+
+		return null;
 	}
 
-	public function getErrorId(): int
+	public function getErrorId(): ?int
 	{
 		switch ($this->getError()) {
 			// 0
@@ -167,6 +169,8 @@ class Upload
 				return static::ERROR_SERVER;
 				break;
 		}
+
+		return null;
 	}
 
 	public function getException(): ?\Throwable

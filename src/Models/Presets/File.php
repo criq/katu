@@ -7,7 +7,6 @@ use Katu\Types\TFileSize;
 
 abstract class File extends \Katu\Models\Model
 {
-	// const DEFAULT_DIR = "files";
 	const TABLE = "files";
 
 	public $id;

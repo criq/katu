@@ -4,7 +4,7 @@ namespace Katu\Config;
 
 use Katu\Tools\Images\VersionCollection;
 
-abstract class ImageConfig extends \Katu\Config\Config
+class ImageConfig extends \Katu\Config\Config
 {
 	public function getVersions(): VersionCollection
 	{

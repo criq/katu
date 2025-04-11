@@ -2,7 +2,6 @@
 
 namespace Katu\Tools\Routing;
 
-use App\Config\AppConfig;
 use Katu\Types\TURL;
 
 class URL

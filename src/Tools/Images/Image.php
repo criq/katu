@@ -2,7 +2,6 @@
 
 namespace Katu\Tools\Images;
 
-use App\Config\ImageConfig;
 use Katu\Tools\Images\Filters\FitFilter;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
@@ -12,7 +11,6 @@ use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Tools\Strings\Code;
 use Katu\Types\TArray;
-use Katu\Types\TIdentifier;
 use Katu\Types\TImageSize;
 use Katu\Types\TURL;
 use Psr\Http\Message\ServerRequestInterface;
@@ -79,7 +77,7 @@ class Image implements RestResponseInterface, PackagedInterface
 		if ($version instanceof Version) {
 			$resolvedVersion = $version;
 		} elseif (is_string($version)) {
-			$resolvedVersion = (new ImageConfig)->getVersions()->filterByTitle($version)->getFirst();
+			$resolvedVersion = \App\App::getImageConfig()->getVersions()->filterByTitle($version)->getFirst();
 		}
 
 		if (!($resolvedVersion ?? null)) {

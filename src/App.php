@@ -117,6 +117,7 @@ class App
 				\Katu\Config\CookieConfig::class => \Katu\Config\CookieConfig::class,
 				\Katu\Config\EncryptionConfig::class => \Katu\Config\EncryptionConfig::class,
 				\Katu\Config\EnvConfig::class => \Katu\Config\EnvConfig::class,
+				\Katu\Config\ImageConfig::class => \Katu\Config\ImageConfig::class,
 				\Katu\Config\IntlConfig::class => \Katu\Config\IntlConfig::class,
 				\Katu\Config\PaginationConfig::class => \Katu\Config\PaginationConfig::class,
 				\Katu\Config\RedisConfig::class => \Katu\Config\RedisConfig::class,
@@ -259,6 +260,13 @@ class App
 	public static function getTimeConfig(): \Katu\Config\TimeConfig
 	{
 		$class = static::getContainer()->get(\Katu\Config\TimeConfig::class);
+
+		return new $class;
+	}
+
+	public static function getImageConfig(): \Katu\Config\ImageConfig
+	{
+		$class = static::getContainer()->get(\Katu\Config\ImageConfig::class);
 
 		return new $class;
 	}
