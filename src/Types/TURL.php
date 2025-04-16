@@ -258,4 +258,11 @@ class TURL
 	{
 		return $this->getPingExec($method, $user)->exec();
 	}
+
+	public static function joinPaths(array $paths): string
+	{
+		return implode("/", array_map(function (string $path) {
+			return trim($path, "/");
+		}, $paths));
+	}
 }
