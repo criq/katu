@@ -2,6 +2,8 @@
 
 namespace Katu\Config\ThirdParty\Google;
 
+use Google\Cloud\SecretManager\V1\SecretManagerServiceClient;
+use Google\Cloud\SecretManager\V1\SecretPayload;
 use Katu\Files\File;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
@@ -18,15 +20,20 @@ class SecretManagerConfig extends \Katu\Config\Config
 		return \Katu\Files\Formats\JSON::decodeAsArray($this->getServiceAccountFile()->get())["project_id"];
 	}
 
-	public function getSecret(string $secret, string $version = "latest"): string
+	public function getClient(): SecretManagerServiceClient
 	{
-		return (new \Katu\Cache\General(new TIdentifier(__CLASS__, __FUNCTION__, $secret, $version), new Timeout("1 day"), function () use ($secret, $version) {
-			try {
-				$client = new \Google\Cloud\SecretManager\V1\SecretManagerServiceClient([
-					"credentials" => $this->getServiceAccountFile()->getPath(),
-				]);
+		return new SecretManagerServiceClient([
+			"credentials" => $this->getServiceAccountFile()->getPath(),
+		]);
+	}
 
-				$name = $client->secretVersionName($this->getProjectId(), $secret, $version);
+	public function getSecret(string $name, string $version = "latest"): string
+	{
+		return (new \Katu\Cache\General(new TIdentifier(__CLASS__, __FUNCTION__, $name, $version), new Timeout("1 day"), function () use ($name, $version) {
+			try {
+				$client = $this->getClient();
+
+				$name = $client->secretVersionName($this->getProjectId(), $name, $version);
 				$response = $client->accessSecretVersion($name);
 				$data = $response->getPayload()->getData();
 
@@ -37,5 +44,14 @@ class SecretManagerConfig extends \Katu\Config\Config
 				return null;
 			}
 		}))->getResult();
+	}
+
+	public function setSecret(string $name, string $value): string
+	{
+		$cloudName = $this->getClient()->secretName($this->getProjectId(), $name);
+
+		return $this->getClient()->addSecretVersion($cloudName, new SecretPayload([
+			"data" => $value,
+		]))->getName();
 	}
 }
