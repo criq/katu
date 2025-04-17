@@ -27,7 +27,7 @@ class Time extends \DateTime
 		return $this->getDbDateTimeFormat();
 	}
 
-	public static function createFromTimestamp($timestamp): Time
+	public static function createFromTimestamp(int $timestamp): Time
 	{
 		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
 
@@ -242,39 +242,39 @@ class Time extends \DateTime
 		return $date->modify($weekday);
 	}
 
-	public function setYear(int $n)
+	public function setYear(int $n): Time
 	{
 		return $this->setDate($n, $this->format("n"), $this->format("j"));
 	}
 
-	public function setMonth(int $n)
+	public function setMonth(int $n): Time
 	{
 		return $this->setDate($this->format("Y"), $n, $this->format("j"));
 	}
 
-	public function setDay(int $n)
+	public function setDay(int $n): Time
 	{
 		return $this->setDate($this->format("Y"), $this->format("n"), $n);
 	}
 
-	public function setHour(int $n)
+	public function setHour(int $n): Time
 	{
 		return $this->setTime($n, $this->format("i"), $this->format("s"), $this->format("u"));
 	}
 
-	public function setMinute(int $n)
+	public function setMinute(int $n): Time
 	{
 		return $this->setTime($this->format("H"), $n, $this->format("s"), $this->format("u"));
 	}
 
-	public function setSecond(float $n)
+	public function setSecond(float $n): Time
 	{
 		return $this->setTime($this->format("H"), $this->format("i"), floor($n), ($n - floor($n)) * 1000000);
 	}
 
 	public function setMicrosecond(int $microsecond): Time
 	{
-		return $this->setTime($this->format("H"), $this->format("i"), $this->format("s"), $microsecond);
+		return parent::setMicrosecond($microsecond);
 	}
 
 	public function getDiff($dateTime = null)
