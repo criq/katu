@@ -9,9 +9,13 @@ class TEmailAddressCollection extends \ArrayObject
 		$regex = "/(?:[\"\']?(?<name>[^\"\']+)?[\"\']?\s*)?<(?<email_in_brackets>[^>]+)>|(?<email_standalone>[^,\s]+)/";
 		preg_match_all($regex, $string, $matches, \PREG_SET_ORDER);
 
-		return new static(array_map(function (array $match) {
-			return new TEmailAddress($match["email_in_brackets"] ?: $match["email_standalone"], $match["name"]);
-		}, $matches));
+		return new static(array_values(array_filter(array_map(function (array $match) {
+			try {
+				return new TEmailAddress($match["email_in_brackets"] ?: $match["email_standalone"], $match["name"]);
+			} catch (\Throwable $e) {
+				// Nevermind.
+			}
+		}, $matches))));
 	}
 
 	public function getEmailAddresses(): array
