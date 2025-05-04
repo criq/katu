@@ -31,6 +31,16 @@ class ReplacementCollection extends \ArrayObject implements RestResponseInterfac
 		return (string)ArrayLoaderTwigEngine::renderString($template, $this->getArray());
 	}
 
+	public function sortByCode(): ReplacementCollection
+	{
+		$array = $this->getArrayCopy();
+		usort($array, function (Replacement $a, Replacement $b) {
+			return $a->getCode() < $b->getCode() ? -1 : 1;
+		});
+
+		return new static($array);
+	}
+
 	public function getArray(): array
 	{
 		return array_combine(array_map(function (Replacement $replacement) {
