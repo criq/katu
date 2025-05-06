@@ -240,9 +240,9 @@ abstract class TwigEngine implements ViewEngineInterface
 	protected function getTwigConfig(): array
 	{
 		return [
-			"auto_reload" => \App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
-			"cache" => !\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
-			"debug" => \App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
+			"auto_reload" => (bool)\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
+			"cache" => (bool)!\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
+			"debug" => (bool)\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
 			"strict_variables" => false,
 		];
 	}
