@@ -239,12 +239,15 @@ abstract class TwigEngine implements ViewEngineInterface
 
 	protected function getTwigConfig(): array
 	{
-		return [
-			"auto_reload" => (bool)\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
-			"cache" => (bool)!\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
-			"debug" => (bool)\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
-			"strict_variables" => false,
-		];
+		$config["auto_reload"] = (bool)\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT");
+		$config["debug"] = (bool)\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT");
+		$config["strict_variables"] = false;
+
+		if (\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT")) {
+			$config["cache"] = false;
+		}
+
+		return $config;
 	}
 
 	protected function getCommonData(): array
