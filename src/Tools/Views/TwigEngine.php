@@ -232,7 +232,7 @@ abstract class TwigEngine implements ViewEngineInterface
 		return $this;
 	}
 
-	protected function getTwig(): \Twig\Environment
+	public function getTwig(): \Twig\Environment
 	{
 		return $this->twig;
 	}
@@ -240,10 +240,9 @@ abstract class TwigEngine implements ViewEngineInterface
 	protected function getTwigConfig(): array
 	{
 		return [
-			"auto_reload" => false,
-			"cache" => (string)\Katu\Files\File::joinPaths(\App\App::getTemporaryDir(), "twig", \Katu\Config\Env::getVersion()),
-			"debug" => false,
-			"optimizations" => -1,
+			"auto_reload" => \App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
+			"cache" => !\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
+			"debug" => \App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT"),
 			"strict_variables" => false,
 		];
 	}
@@ -266,7 +265,9 @@ abstract class TwigEngine implements ViewEngineInterface
 		}
 
 		try {
-			$data["_request"]["uri"] = (string)$this->getRequest()->getUri();
+			if ($this->getRequest()) {
+				$data["_request"]["uri"] = (string)$this->getRequest()->getUri();
+			}
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}
@@ -278,34 +279,42 @@ abstract class TwigEngine implements ViewEngineInterface
 		}
 
 		try {
-			$data["_request"]["ip"] = (string)$this->getRequest()->getServerParams()["REMOTE_ADDR"];
+			if ($this->getRequest()) {
+				$data["_request"]["ip"] = (string)$this->getRequest()->getServerParams()["REMOTE_ADDR"];
+			}
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}
 
 		try {
-			$data["_request"]["params"] = array_merge(
-				(array)$this->getRequest()->getQueryParams(),
-				(array)$this->getRequest()->getParsedBody(),
-			);
+			if ($this->getRequest()) {
+				$data["_request"]["params"] = array_merge(
+					(array)$this->getRequest()->getQueryParams(),
+					(array)$this->getRequest()->getParsedBody(),
+				);
+			}
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}
 
 		try {
-			$data["_request"]["queryParams"] = $this->getRequest()->getQueryParams();
+			if ($this->getRequest()) {
+				$data["_request"]["queryParams"] = $this->getRequest()->getQueryParams();
+			}
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}
 
 		try {
-			$data["_request"]["parsedBody"] = $this->getRequest()->getParsedBody();
+			if ($this->getRequest()) {
+				$data["_request"]["parsedBody"] = $this->getRequest()->getParsedBody();
+			}
 		} catch (\Throwable $e) {
 			// Doesn't exist.
 		}
 
 		try {
-			if ($this->getRequest()->getAttribute("__route__")) {
+			if ($this->getRequest() && $this->getRequest()->getAttribute("__route__")) {
 				$data["_request"]["route"] = [
 					"pattern" => $this->getRequest()->getAttribute("__route__")->getPattern(),
 					"name" => $this->getRequest()->getAttribute("__route__")->getName(),
@@ -351,7 +360,9 @@ abstract class TwigEngine implements ViewEngineInterface
 	public function getTemplate(string $template, array $data = []): ?string
 	{
 		try {
-			return $this->getTwig()->render($template, array_merge_recursive($this->getCommonData(), $data));
+			$data = array_merge_recursive($this->getCommonData(), $data);
+
+			return $this->getTwig()->render($template, $data);
 		} catch (\Throwable $e) {
 			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 		}
