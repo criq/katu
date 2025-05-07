@@ -31,8 +31,7 @@ class Time extends \DateTime
 	 * @param int|float $timestamp
 	 * @return static
 	 */
-	#[\ReturnTypeWillChange]
-	public static function createFromTimestamp($timestamp): static
+	public static function createFromTimestamp($timestamp): \DateTime
 	{
 		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
 
