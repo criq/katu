@@ -6,7 +6,7 @@ class TEmailAddressCollection extends \ArrayObject
 {
 	public static function createFromString(?string $string): ?TEmailAddressCollection
 	{
-		$emailRegex = '/\s*(?:"([^"]*)"\s*)?(?:<?([^>]+)>?)\s*(?:,|$)/';
+		$emailRegex = '/\s*(?:"([^"]*)"\s*)?(?:<?([^>,\s]+@[^>,\s]+)>?)\s*(?:,|$)/';
 		preg_match_all($emailRegex, $string, $matches, PREG_SET_ORDER);
 
 		return new static(array_values(array_filter(array_map(function (array $match) {
