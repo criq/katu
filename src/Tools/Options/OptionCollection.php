@@ -72,10 +72,11 @@ class OptionCollection extends \ArrayObject
 
 	public function getValue(string $code)
 	{
-		try {
-			return $this->getByCode(new Code($code))->getValue();
-		} catch (\Throwable $e) {
-			return null;
+		$option = $this->getByCode(new Code($code));
+		if ($option) {
+			return $option->getValue();
 		}
+
+		return null;
 	}
 }
