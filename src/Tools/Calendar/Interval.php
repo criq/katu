@@ -146,11 +146,11 @@ class Interval
 		$start = max($this->getStart(), $interval->getStart());
 		$end = min($this->getEnd(), $interval->getEnd());
 
-		try {
+		if ($start <= $end) {
 			return new $intervalClass($start, $end);
-		} catch (\Throwable $e) {
-			return null;
 		}
+
+		return null;
 	}
 
 	public function subtract(Interval $subtract): IntervalCollection
