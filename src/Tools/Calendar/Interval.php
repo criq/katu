@@ -165,6 +165,5 @@ class Interval
 	public function fitsTime(Time $time, bool $includeEnd = true): bool
 	{
 		return $this->getStart() <= $time && (($includeEnd && $this->getEnd() >= $time) || $this->getEnd() > $time);
-
 	}
 }
