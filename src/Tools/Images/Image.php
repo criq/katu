@@ -87,6 +87,13 @@ class Image implements RestResponseInterface, PackagedInterface
 		return new ImageVersion($this, $resolvedVersion);
 	}
 
+	public function getImageVersions(VersionCollection $versions): ImageVersionCollection
+	{
+		return new ImageVersionCollection(array_values(array_filter(array_map(function (Version $version) {
+			return $this->getImageVersion($version);
+		}, $versions->getArrayCopy()))));
+	}
+
 	public function getInterventionImage(): ?\Intervention\Image\Image
 	{
 		return \Intervention\Image\ImageManagerStatic::make((string)$this->getSource()->getLocalFile());

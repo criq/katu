@@ -85,7 +85,7 @@ abstract class GoogleCloudStorage extends Storage
 
 	public function deleteByPath(string $path): bool
 	{
-		return $this->getBucket()->object($path)->delete();
+		$this->getBucket()->object($path)->delete();
 
 		return true;
 	}
