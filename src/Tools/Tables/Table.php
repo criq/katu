@@ -4,6 +4,9 @@ namespace Katu\Tools\Tables;
 
 class Table extends \ArrayObject
 {
+	private $cells;
+	private $rows;
+	private $valueRows;
 	protected $filename;
 	protected $headerRowIndex = 1;
 	protected $title;
@@ -61,37 +64,49 @@ class Table extends \ArrayObject
 
 	public function getCells(): CellCollection
 	{
-		$cells = new CellCollection(array_merge(...array_map(function (array $row, string $rowIndex) {
-			return array_map(function (?string $value, string $columnIndex) use ($rowIndex) {
-				return new Cell($columnIndex, $rowIndex, $value);
-			}, $row, array_keys($row));
-		}, $this->getArrayCopy(), array_keys($this->getArrayCopy()))));
+		if (is_null($this->cells)) {
+			$cells = new CellCollection(array_merge(...array_map(function (array $row, string $rowIndex) {
+				return array_map(function (?string $value, string $columnIndex) use ($rowIndex) {
+					return new Cell($columnIndex, $rowIndex, $value);
+				}, $row, array_keys($row));
+			}, $this->getArrayCopy(), array_keys($this->getArrayCopy()))));
 
-		$headerCells = $cells->filterByRowIndex($this->getHeaderRowIndex());
+			$headerCells = $cells->filterByRowIndex($this->getHeaderRowIndex());
 
-		return new CellCollection(array_map(function (Cell $cell) use ($headerCells) {
-			return $cell->setHeaderCell($headerCells->filterByColumnIndex($cell->getColumnIndex())->getFirst());
-		}, $cells->getArrayCopy()));
+			$cells = new CellCollection(array_map(function (Cell $cell) use ($headerCells) {
+				return $cell->setHeaderCell($headerCells->filterByColumnIndex($cell->getColumnIndex())->getFirst());
+			}, $cells->getArrayCopy()));
+
+			$this->cells = $cells;
+		}
+
+		return $this->cells;
 	}
 
 	public function getRows(): RowCollection
 	{
-		$rows = new RowCollection;
+		if (is_null($this->rows)) {
+			$this->rows = new RowCollection;
 
-		array_map(function (Cell $cell) use (&$rows) {
-			$rows->getOrCreateRowByIndex($cell->getRowIndex())->addCell($cell);
-		}, $this->getCells()->getArrayCopy());
+			array_map(function (Cell $cell) {
+				$this->rows->getOrCreateRowByIndex($cell->getRowIndex())->addCell($cell);
+			}, $this->getCells()->getArrayCopy());
+		}
 
-		return $rows;
+		return $this->rows;
 	}
 
 	public function getValueRows(): RowCollection
 	{
-		$rows = $this->getRows();
-		if (!is_null($this->getHeaderRowIndex())) {
-			$rows = $rows->excludeRowIndex($this->getHeaderRowIndex());
+		if (is_null($this->valueRows)) {
+			$rows = $this->getRows();
+			if (!is_null($this->getHeaderRowIndex())) {
+				$rows = $rows->excludeRowIndex($this->getHeaderRowIndex());
+			}
+
+			$this->valueRows = $rows;
 		}
 
-		return $rows;
+		return $this->valueRows;
 	}
 }

@@ -255,7 +255,7 @@ abstract class Job implements PackagedInterface
 			$loadAverage = \Katu\Tools\System\System::getLoadAveragePerCpu()[0];
 			if (!(new AppConfig)->getIsEnvironment("DEVELOPMENT") && $maxLoadAverage && $loadAverage >= $maxLoadAverage) {
 				$message = "Load average {$loadAverage} above {$maxLoadAverage}.";
-				$logger->warning($message);
+				$logger->notice($message);
 				$this->outputLine($message);
 
 				return false;

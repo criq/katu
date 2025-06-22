@@ -54,6 +54,6 @@ class CellCollection extends \ArrayObject
 
 	public function getValue(): ?string
 	{
-		return $this->getFirst()->getValue();
+		return $this->getFirst() ? $this->getFirst()->getValue() : null;
 	}
 }

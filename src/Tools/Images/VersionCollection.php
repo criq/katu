@@ -4,6 +4,13 @@ namespace Katu\Tools\Images;
 
 class VersionCollection extends \ArrayObject
 {
+	public static function createFromCodes(array $codes): VersionCollection
+	{
+		return new static(array_values(array_filter(array_map(function ($code) {
+			return Version::createFromCode($code);
+		}, $codes))));
+	}
+
 	public function filterByTitle(string $title): VersionCollection
 	{
 		return new static(array_values(array_filter($this->getArrayCopy(), function (Version $version) use ($title) {

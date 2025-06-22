@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Images;
 
+use App\Config\ImageConfig;
+
 class Version
 {
 	protected $extension;
@@ -15,6 +17,11 @@ class Version
 		$this->setFilters($filters);
 		$this->setQuality($quality);
 		$this->setTitle($title);
+	}
+
+	public static function createFromCode($code): ?Version
+	{
+		return (new ImageConfig)->getVersions()->filterByTitle($code)->getFirst();
 	}
 
 	public function setTitle(?string $title): Version

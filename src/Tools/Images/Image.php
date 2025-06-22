@@ -21,7 +21,9 @@ class Image implements RestResponseInterface, PackagedInterface
 
 	public function __construct($input)
 	{
-		$this->setSource(Source::createFromInput($input));
+		$source = Source::createFromInput($input);
+
+		$this->setSource($source);
 	}
 
 	public function __toString(): string
@@ -41,29 +43,24 @@ class Image implements RestResponseInterface, PackagedInterface
 		return new static(Source::createFromPackage(new Package($package->getPayload()["source"])));
 	}
 
-	public function getURI(): string
+	public function getURI(): ?string
 	{
-		return $this->getSource()->getURI();
+		return $this->getSource() ? $this->getSource()->getURI() : null;
 	}
 
 	public function getURL(): ?TURL
 	{
-		$source = $this->getSource();
-		if ($source) {
-			return $source->getURL();
-		}
-
-		return null;
+		return $this->getSource() ? $this->getSource()->getURL() : null;
 	}
 
-	public function setSource(Source $source): Image
+	public function setSource(?Source $source): Image
 	{
 		$this->source = $source;
 
 		return $this;
 	}
 
-	public function getSource(): Source
+	public function getSource(): ?Source
 	{
 		return $this->source;
 	}
@@ -85,6 +82,13 @@ class Image implements RestResponseInterface, PackagedInterface
 		}
 
 		return new ImageVersion($this, $resolvedVersion);
+	}
+
+	public function getImageVersions(VersionCollection $versions): ImageVersionCollection
+	{
+		return new ImageVersionCollection(array_values(array_filter(array_map(function (Version $version) {
+			return $this->getImageVersion($version);
+		}, $versions->getArrayCopy()))));
 	}
 
 	public function getInterventionImage(): ?\Intervention\Image\Image

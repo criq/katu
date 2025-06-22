@@ -45,6 +45,7 @@ abstract class TwigEngine implements ViewEngineInterface
 			try {
 				return new \Katu\Tools\Images\Image($source);
 			} catch (\Throwable $e) {
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 				// Nevermind.
 			}
 
@@ -368,6 +369,11 @@ abstract class TwigEngine implements ViewEngineInterface
 			return $this->getTwig()->render($template, $data);
 		} catch (\Throwable $e) {
 			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+
+			// Re-throw errors in development mode
+			if (\App\App::getAppConfig()->getIsEnvironment("DEVELOPMENT")) {
+				throw $e;
+			}
 		}
 
 		return null;
