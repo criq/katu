@@ -4,11 +4,14 @@ namespace Katu\Tools\Tables;
 
 class RowCollection extends \ArrayObject
 {
-	public function filterByRowIndex(int $index): RowCollection
+	public function offsetSet(mixed $key, mixed $value): void
 	{
-		return new static(array_values(array_filter($this->getArrayCopy(), function (Row $row) use ($index) {
-			return $row->getIndex() == $index;
-		})));
+		parent::offsetSet($value->getIndex(), $value);
+	}
+
+	public function getByRowIndex(int $index): ?Row
+	{
+		return $this[$index] ?? null;
 	}
 
 	public function excludeRowIndex(int $rowIndex): RowCollection
@@ -20,7 +23,7 @@ class RowCollection extends \ArrayObject
 
 	public function getOrCreateRowByIndex(int $index): Row
 	{
-		$row = $this->filterByRowIndex($index)->getFirst();
+		$row = $this->getByRowIndex($index);
 		if (!$row) {
 			$row = new Row($index);
 			$this->addRow($row);

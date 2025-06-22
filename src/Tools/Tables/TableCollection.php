@@ -79,4 +79,9 @@ class TableCollection extends \ArrayObject
 
 		return $res;
 	}
+
+	public function getFirst(): ?Table
+	{
+		return array_values($this->getArrayCopy())[0] ?? null;
+	}
 }
