@@ -51,7 +51,7 @@ class File implements \Katu\Cache\Adapter
 				$file->set(serialize($value));
 
 				try {
-					$file->chmod(777);
+					$file->chmod(0777);
 				} catch (\Throwable $e) {
 					// Nevermind.
 				}
