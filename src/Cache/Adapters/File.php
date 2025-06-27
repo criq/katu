@@ -47,7 +47,14 @@ class File implements \Katu\Cache\Adapter
 	{
 		if (static::isSupported()) {
 			try {
-				$this->getFile($identifier)->set(serialize($value));
+				$file = $this->getFile($identifier);
+				$file->set(serialize($value));
+
+				try {
+					$file->chmod(777);
+				} catch (\Throwable $e) {
+					// Nevermind.
+				}
 
 				return true;
 			} catch (\Throwable $e) {
