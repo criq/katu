@@ -53,7 +53,10 @@ abstract class Source implements PackagedInterface
 		// String.
 		} elseif (is_string($input)) {
 			try {
-				return new Sources\URL(new \Katu\Types\TURL($input));
+				$url = new \Katu\Types\TURL($input);
+				if ($url) {
+					return new Sources\URL($url);
+				}
 			} catch (\Throwable $e) {
 				// Nevermind.
 			}
@@ -63,8 +66,6 @@ abstract class Source implements PackagedInterface
 				if ($file->exists()) {
 					return new Sources\File($file);
 				}
-
-				throw new \Exception;
 			} catch (\Throwable $e) {
 				// Nevermind.
 			}

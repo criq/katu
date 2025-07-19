@@ -9,7 +9,7 @@ class SelectOption
 	protected $text;
 	protected $value;
 
-	public function __construct(string $value, ?string $text = null)
+	public function __construct(?string $value = null, ?string $text = null)
 	{
 		$this->setValue($value);
 		$this->setText($text);

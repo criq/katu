@@ -48,9 +48,27 @@ class SecretManagerConfig extends \Katu\Config\Config
 
 	public function setSecret(string $name, string $value): string
 	{
-		$cloudName = $this->getClient()->secretName($this->getProjectId(), $name);
+		$secretName = $this->getClient()->secretName($this->getProjectId(), $name);
 
-		return $this->getClient()->addSecretVersion($cloudName, new SecretPayload([
+		try {
+			$this->getClient()->getSecret($secretName);
+		} catch (\Google\ApiCore\ApiException $e) {
+			if ((\Katu\Files\Formats\JSON::decodeAsArray($e->getMessage())["status"] ?? null) == "NOT_FOUND") {
+				$parent = "projects/{$this->getProjectId()}";
+				$secretId = $name;
+
+				$secret = new \Google\Cloud\SecretManager\V1\Secret;
+				$secret->setReplication(new \Google\Cloud\SecretManager\V1\Replication([
+					"automatic" => new \Google\Cloud\SecretManager\V1\Replication\Automatic(),
+				]));
+
+				$this->getClient()->createSecret($parent, $secretId, $secret);
+			} else {
+				throw $e;
+			}
+		}
+
+		return $this->getClient()->addSecretVersion($secretName, new SecretPayload([
 			"data" => $value,
 		]))->getName();
 	}
