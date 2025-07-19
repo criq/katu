@@ -69,9 +69,9 @@ class TClass implements PackagedInterface
 		return array_slice(explode("\\", $this->name), -1, 1)[0];
 	}
 
-	public function getPortableName(): string
+	public function getPortableName(?string $delimiter = null): string
 	{
-		return strtr($this->getName(), "\\", static::PORTABLE_NAME_DELIMITER);
+		return strtr($this->getName(), "\\", $delimiter ?: static::PORTABLE_NAME_DELIMITER);
 	}
 
 	public static function getStandardString(string $string): string
