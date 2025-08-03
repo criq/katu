@@ -21,6 +21,13 @@ class ReplacementCollection extends \ArrayObject implements RestResponseInterfac
 		return $replacements;
 	}
 
+	public function filterByCode($code): ReplacementCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Replacement $replacement) use ($code) {
+			return $replacement->getCode()->getConstantFormat() == (new Code($code))->getConstantFormat();
+		})));
+	}
+
 	public function mergeWith(ReplacementCollection $replacements): ReplacementCollection
 	{
 		return new static(array_merge($this->getArrayCopy(), $replacements->getArrayCopy()));
@@ -48,6 +55,16 @@ class ReplacementCollection extends \ArrayObject implements RestResponseInterfac
 		}, $this->getArrayCopy()), array_map(function (Replacement $replacement) {
 			return $replacement->getValue();
 		}, $this->getArrayCopy()));
+	}
+
+	public function getFirst(): ?Replacement
+	{
+		return array_values($this->getArrayCopy())[0] ?? null;
+	}
+
+	public function getValue(): ?string
+	{
+		return $this->getFirst() ? $this->getFirst()->getValue() : null;
 	}
 
 	/****************************************************************************

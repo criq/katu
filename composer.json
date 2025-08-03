@@ -2,9 +2,11 @@
 	"name": "criq/katu",
 	"description": "katu",
 	"type": "library",
-	"require" : {
+	"require": {
 		"endroid/qr-code": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
+		"google/apiclient": "@stable",
+		"google/cloud": "@stable",
 		"gregwar/cache": "@stable",
 		"guzzlehttp/guzzle": "@stable",
 		"illuminate/support": "@stable",
@@ -41,7 +43,7 @@
 		"symfony/string": "@stable",
 		"twig/extensions": "@stable",
 		"twig/twig": "@stable",
-		"vlucas/phpdotenv" : "@stable"
+		"vlucas/phpdotenv": "@stable"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
