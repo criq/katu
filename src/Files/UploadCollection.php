@@ -65,4 +65,9 @@ class UploadCollection extends \ArrayObject
 			return !$upload->isInError();
 		})));
 	}
+
+	public function getFirst(): ?Upload
+	{
+		return array_values($this->getArrayCopy())[0] ?? null;
+	}
 }
