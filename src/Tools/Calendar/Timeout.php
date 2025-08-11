@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Calendar;
 
+use Google\Cloud\Security\PrivateCA\V1beta1\ReusableConfig;
+
 class Timeout
 {
 	protected $timeout;
@@ -56,6 +58,15 @@ class Timeout
 	public function getTime(): Time
 	{
 		return (clone $this->getReferenceTime())->modify("{$this->getSeconds()->getValue()} seconds");
+	}
+
+	public function getInterval(): ?Interval
+	{
+		try {
+			return new Interval($this->getTime(), $this->getReferenceTime());
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public function fits(\DateTime $datetime): bool
