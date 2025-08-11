@@ -162,6 +162,34 @@ class Interval
 		die;
 	}
 
+	public function split(int $seconds): IntervalCollection
+	{
+		$intervalCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\IntervalCollection::class);
+		$intervalClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Interval::class);
+
+		$res = new $intervalCollectionClass;
+
+		$currentStart = clone $this->getStart();
+		$endTime = $this->getEnd();
+
+		while ($currentStart < $endTime) {
+			$currentEnd = clone $currentStart;
+			$currentEnd = $currentEnd->modify("+ {$seconds} seconds");
+
+			// Ensure we don't exceed the original interval end
+			if ($currentEnd > $endTime) {
+				$currentEnd = clone $endTime;
+			}
+
+			$res[] = new $intervalClass($currentStart, $currentEnd);
+
+			// Move to next segment
+			$currentStart = clone $currentEnd;
+		}
+
+		return $res;
+	}
+
 	public function fitsTime(Time $time, bool $includeEnd = true): bool
 	{
 		return $this->getStart() <= $time && (($includeEnd && $this->getEnd() >= $time) || $this->getEnd() > $time);
