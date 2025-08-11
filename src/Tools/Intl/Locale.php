@@ -2,8 +2,6 @@
 
 namespace Katu\Tools\Intl;
 
-use App\Config\IntlConfig;
-
 class Locale
 {
 	protected $code;
@@ -64,6 +62,9 @@ class Locale
 
 	public function getIsSupported(): bool
 	{
-		return in_array($this->getCode(), (new IntlConfig)->getSupportedLocales()->getArrayCopy()) || in_array($this->getLanguageCode(), (new IntlConfig)->getSupportedLocales()->getArrayCopy());
+		$configClass = \App\App::getContainer()->get(\Katu\Config\IntlConfig::class);
+		$config = new $configClass;
+
+		return in_array($this->getCode(), $config->getSupportedLocales()->getArrayCopy()) || in_array($this->getLanguageCode(), $config->getSupportedLocales()->getArrayCopy());
 	}
 }

@@ -23,6 +23,16 @@ class MonthCollection extends \ArrayObject
 		return null;
 	}
 
+	public function sort(): MonthCollection
+	{
+		$array = $this->getArrayCopy();
+		usort($array, function (Month $a, Month $b) {
+			return $a->getTime() < $b->getTime() ? -1 : 1;
+		});
+
+		return new static($array);
+	}
+
 	public function getReversed(): MonthCollection
 	{
 		return new static(array_reverse($this->getArrayCopy()));
