@@ -70,4 +70,18 @@ class TimeCollection extends \ArrayObject
 			return new Interval(min($times), max($times));
 		}, $this->getArrayCopy()));
 	}
+
+	public function getDifferenceIntervals(): IntervalCollection
+	{
+		$res = new IntervalCollection;
+
+		if (count($this) >= 2) {
+			$array = $this->sortAscending()->getArrayCopy();
+			for ($i = 0; $i < count($array) - 2; $i++) {
+				$res[] = new Interval($array[$i], $array[$i + 1]);
+			}
+		}
+
+		return $res;
+	}
 }
