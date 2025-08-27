@@ -2,8 +2,8 @@
 
 namespace Katu\Tools\Tables;
 
-use App\Classes\Time;
 use Katu\Files\UploadCollection;
+use Katu\Tools\Calendar\Time;
 
 class TableCollection extends \ArrayObject
 {
