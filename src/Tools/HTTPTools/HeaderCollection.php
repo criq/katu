@@ -18,6 +18,13 @@ class HeaderCollection extends \ArrayObject
 		})));
 	}
 
+	public function filterNotNull(): HeaderCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (Header $header) {
+			return !is_null($header->getValue());
+		})));
+	}
+
 	public function getFirst(): ?Header
 	{
 		return array_values($this->getArrayCopy())[0] ?? null;
@@ -26,5 +33,12 @@ class HeaderCollection extends \ArrayObject
 	public function getValue(): ?string
 	{
 		return $this->getFirst() ? $this->getFirst()->getValue() : null;
+	}
+
+	public function setHeader(Header $header): HeaderCollection
+	{
+		$this[] = $header;
+
+		return $this;
 	}
 }
