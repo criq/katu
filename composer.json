@@ -3,6 +3,7 @@
 	"description": "katu",
 	"type": "library",
 	"require": {
+		"aws/aws-sdk-php": "^3.0",
 		"endroid/qr-code": "@stable",
 		"flynsarmy/slim-monolog": "@stable",
 		"google/apiclient": "@stable",
