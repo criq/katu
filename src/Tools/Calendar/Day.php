@@ -32,6 +32,13 @@ class Day extends Time
 			;
 	}
 
+	public function getInterval(): Interval
+	{
+		$intervalClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Interval::class);
+
+		return new $intervalClass($this->getStart(), $this->getEnd());
+	}
+
 	public function getIndex(): int
 	{
 		return (int)$this->getMonth()->getStart()->format("N");
