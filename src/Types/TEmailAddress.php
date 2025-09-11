@@ -20,8 +20,9 @@ class TEmailAddress
 
 	public static function createFromEnvelope(?string $envelope = null): ?TEmailAddress
 	{
-		if (preg_match("/^(?<name>.*)\s*<(?<emailAddress>.+)>$/U", $envelope, $match)) {
-			return new static($match["emailAddress"], $match["name"]);
+		if (preg_match("/^(\"(?<quoted_name>[^\"]*)\"|(?<unquoted_name>[^<]*?))\s*<(?<emailAddress>.+)>$/U", $envelope, $match)) {
+			$name = $match["quoted_name"] ?? $match["unquoted_name"] ?? null;
+			return new static($match["emailAddress"], $name);
 		} else {
 			return new static($envelope);
 		}
@@ -31,7 +32,7 @@ class TEmailAddress
 	{
 		if ($this->getName() && $this->getEmailAddress()) {
 			return implode(" ", array_filter([
-				$this->getName(),
+				"\"{$this->getName()}\"",
 				"<{$this->getEmailAddress()}>",
 			]));
 		}
@@ -46,7 +47,7 @@ class TEmailAddress
 
 	public function setEmailAddress($emailAddress): TEmailAddress
 	{
-		if ($emailAddress instanceof \App\Models\EmailAddress) {
+		if ($emailAddress instanceof \Katu\Models\Presets\EmailAddress) {
 			$emailAddress = $emailAddress->getEmailAddress();
 		}
 

@@ -68,16 +68,16 @@ class QRCode
 
 	public function getImageString(\Endroid\QrCode\Writer\WriterInterface $writer): string
 	{
-		return \Endroid\QrCode\Builder\Builder::create()
-			->writer($writer)
-			->data($this->getString())
-			->encoding(new \Endroid\QrCode\Encoding\Encoding("UTF-8"))
-			->size($this->getResolvedSize())
-			->margin($this->getResolvedMargin())
-			->roundBlockSizeMode(new \Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin)
-			->build()
-			->getString()
-			;
+		$qrCode = new \Endroid\QrCode\QrCode(
+			$this->getString(),
+			new \Endroid\QrCode\Encoding\Encoding("UTF-8"),
+			new \Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow,
+			$this->getResolvedSize(),
+			$this->getResolvedMargin(),
+			new \Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin
+		);
+
+		return $writer->write($qrCode)->getString();
 	}
 
 	public function getPNG(): string
