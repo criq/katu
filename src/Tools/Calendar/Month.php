@@ -42,6 +42,13 @@ class Month extends Time
 		return $this->getEndDay()->getEnd();
 	}
 
+	public function getInterval(): Interval
+	{
+		$intervalClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Interval::class);
+
+		return new $intervalClass($this->getStart(), $this->getEnd());
+	}
+
 	public function getWeeks(): WeekCollection
 	{
 		$weekCollectionClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\WeekCollection::class);
