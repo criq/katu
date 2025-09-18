@@ -71,10 +71,10 @@ class QRCode
 		$qrCode = new \Endroid\QrCode\QrCode(
 			$this->getString(),
 			new \Endroid\QrCode\Encoding\Encoding("UTF-8"),
-			new \Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow,
+			\Endroid\QrCode\ErrorCorrectionLevel::Low,
 			$this->getResolvedSize(),
 			$this->getResolvedMargin(),
-			new \Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin
+			\Endroid\QrCode\RoundBlockSizeMode::Margin
 		);
 
 		return $writer->write($qrCode)->getString();
