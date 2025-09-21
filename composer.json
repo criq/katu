@@ -4,7 +4,7 @@
 	"type": "library",
 	"require": {
 		"aws/aws-sdk-php": "^3.0",
-		"endroid/qr-code": "4.8.0",
+		"endroid/qr-code": "4.6.1",
 		"flynsarmy/slim-monolog": "@stable",
 		"google/apiclient": "@stable",
 		"google/cloud": "@stable",
