@@ -2,10 +2,14 @@
 
 namespace Katu\Tools\Calendar;
 
+use Katu\Tools\Options\OptionCollection;
+use Katu\Tools\Rest\RestResponse;
+use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Tools\Validation\Param;
 use Katu\Tools\Validation\Validation;
+use Psr\Http\Message\ServerRequestInterface;
 
-class Interval
+class Interval implements RestResponseInterface
 {
 	protected $start;
 	protected $end;
@@ -193,5 +197,16 @@ class Interval
 	public function fitsTime(Time $time, bool $includeEnd = true): bool
 	{
 		return $this->getStart() <= $time && (($includeEnd && $this->getEnd() >= $time) || $this->getEnd() > $time);
+	}
+
+	/****************************************************************************
+	 * REST.
+	 */
+	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
+	{
+		return new RestResponse([
+			"start" => $this->getStart(),
+			"end" => $this->getEnd(),
+		]);
 	}
 }
