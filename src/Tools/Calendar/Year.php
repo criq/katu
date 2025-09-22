@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Calendar;
 
-class Year extends Time
+class Year extends Time implements TimeUnitInterface
 {
 	protected $time;
 
@@ -40,5 +40,12 @@ class Year extends Time
 	public function getEnd(): Time
 	{
 		return $this->getEndDay()->getEnd();
+	}
+
+	public function getInterval(): Interval
+	{
+		$intervalClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Interval::class);
+
+		return new $intervalClass($this->getStart(), $this->getEnd());
 	}
 }

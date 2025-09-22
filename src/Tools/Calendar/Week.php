@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Calendar;
 
-class Week extends Time
+class Week extends Time implements TimeUnitInterface
 {
 	protected $time;
 

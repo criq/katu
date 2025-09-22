@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Calendar;
 
-class Day extends Time
+class Day extends Time implements TimeUnitInterface
 {
 	public function __toString(): string
 	{

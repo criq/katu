@@ -2,7 +2,7 @@
 
 namespace Katu\Tools\Calendar;
 
-class Month extends Time
+class Month extends Time implements TimeUnitInterface
 {
 	protected $time;
 
