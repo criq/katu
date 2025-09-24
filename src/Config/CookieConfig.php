@@ -6,7 +6,7 @@ class CookieConfig extends \Katu\Config\Config
 {
 	public function getDomain(): string
 	{
-		return \App\App::getEnvConfig()->getVariable("APP_HOST");
+		return \App\App::getEnvConfig()->getVariable("COOKIE_DOMAIN") ?: \App\App::getEnvConfig()->getVariable("APP_HOST");
 	}
 
 	public function getIsHTTPOnly(): bool
