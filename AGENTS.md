@@ -12,17 +12,19 @@ This document provides comprehensive technical documentation for the `criq/katu`
 ### 1.1. Basic Information
 - **Name:** `criq/katu`
 - **Type:** Custom PHP framework library
-- **Version:** 4.x (latest: 4.20251002.1)
+- **Version:** 4.x (latest: 4.20251007.1)
 - **Location:** `vendor/criq/katu/`
 - **Namespace:** `Katu\`
-- **Dependencies:** 30+ packages including Slim, Twig, Guzzle, Monolog, etc.
+- **Dependencies:** 30+ packages including Slim 4, Twig, Guzzle, Monolog, PHP-DI, etc.
+- **Recent Updates:** Enhanced security with improved JWT handling and password encoding, optimized database connection pooling, latest dependency versions, and various stability improvements
 
 ### 1.2. Core Architecture
 - **MVC Pattern:** Models, Controllers, Views with custom routing
-- **Dependency Injection:** PHP-DI container integration
+- **Dependency Injection:** PHP-DI container integration (PHP-DI 6)
 - **Database ORM:** Custom ORM with Sexy query builder
 - **PSR Compliance:** PSR-4 autoloading, PSR-7 HTTP messages, PSR-3 logging
 - **Framework Integration:** Built on Slim 4 with Twig templating
+- **Modern PHP:** Optimized for PHP 7.4+ features with enhanced PSR compliance
 
 ---
 
@@ -158,6 +160,7 @@ public function getTables(): TableCollection
 - SQL mode management
 - Process monitoring
 - Query result caching with pickle system
+- Optimized connection pooling for improved performance
 
 ### 4.2. Model Base (`Katu\Models\Base`)
 **Location:** `src/Models/Base.php`
@@ -278,6 +281,31 @@ public function forwardInput(): Param
 - Chainable validation
 - REST response integration
 
+#### Validation Rules (`Katu\Tools\Validation\Rules\*`)
+**Location:** `src/Tools/Validation/Rules/`
+
+Built-in validation rules:
+
+- `IsDateInPast` - Date validation
+- `IsInteger` - Integer validation
+- `IsNotEmpty` - Non-empty validation
+- `IsOneOf` - Value in list validation
+- `IsPositiveFloat` - Positive float validation
+- `IsPositiveInt` - Positive integer validation
+- `IsTruthy` - Truthy value validation
+
+#### Specialized Params (`Katu\Tools\Validation\Params\*`)
+**Location:** `src/Tools/Validation/Params/`
+
+Specialized parameter types:
+
+- `GeneratedParam` - Auto-generated parameters
+- `ObjectId` - Object ID parameters
+- `ObjectProperty` - Object property parameters
+- `ObjectSelf` - Self-referencing parameters
+- `RequestParam` - HTTP request parameters
+- `UserInput` - User input parameters
+
 ### 6.3. Type System (`Katu\Types\*`)
 
 #### TString (`Katu\Types\TString`)
@@ -305,6 +333,26 @@ public function getNumberOfWords(): int
 - `TURL`, `TEmailAddress` - Specialized string types
 - `TArray`, `TClass` - Object type wrappers
 - `TJSON`, `TPayload` - Data serialization types
+- `TColor` - Color manipulation
+- `TCoordsRectangle` - Coordinate rectangle handling
+- `TFileSize` - File size representation
+- `TIdentifier` - Unique identifier generation
+- `TImageSize` - Image dimension handling
+- `TInterval` - Time interval representation
+- `TPagination` - Pagination data
+- `TEmailAddressCollection` - Email address collections
+- `TURLCollection` - URL collections
+- `TPayloadCollection` - Payload collections
+
+#### Encryption Types (`Katu\Types\Encryption\*`)
+**Location:** `src/Types/Encryption/`
+
+Encryption-related type classes for secure data handling.
+
+#### Geo Types (`Katu\Types\Geo\*`)
+**Location:** `src/Types/Geo/`
+
+Geographic and location-related type classes.
 
 ### 6.4. REST API Support (`Katu\Tools\Rest\*`)
 
@@ -367,12 +415,12 @@ Email provider abstraction.
 #### PlainPassword (`Katu\Tools\Security\PlainPassword`)
 **Location:** `src/Tools/Security/PlainPassword.php`
 
-Password handling and hashing.
+Password handling and hashing with improved encoding algorithms and security measures.
 
 #### JWT (`Katu\Tools\Security\JWT`)
 **Location:** `src/Tools/Security/JWT.php`
 
-JSON Web Token handling.
+JSON Web Token handling with enhanced security features and improved token validation.
 
 ### 6.9. Session Management (`Katu\Tools\Session\*`)
 
@@ -397,6 +445,198 @@ General-purpose caching system.
 **Location:** `src/Cache/Runtime.php`
 
 Runtime memory caching.
+
+### 6.11. Storage System (`Katu\Storage\*`)
+
+#### Storage (`Katu\Storage\Storage`)
+**Location:** `src/Storage/Storage.php`
+
+Abstract storage system for file and data management:
+
+```php
+// Key methods:
+abstract public function deleteByPath(string $path): bool
+abstract public function readPath(string $path)
+abstract public function writeToPath(string $path, $contents): Entity
+abstract public function listEntities(): iterable
+```
+
+**Key Features:**
+- Abstract storage interface
+- Path-based operations
+- Entity management
+- Package serialization support
+- Multiple storage adapters
+
+### 6.12. Job System (`Katu\Tools\Jobs\*`)
+
+#### Job (`Katu\Tools\Jobs\Job`)
+**Location:** `src/Tools/Jobs/Job.php`
+
+Abstract job system for background processing:
+
+```php
+// Key methods:
+abstract public function getCallback(): callable
+public function getInterval(): string
+public function getTimeout(): string
+public function run(): bool
+```
+
+**Key Features:**
+- Abstract job definition
+- Configurable intervals and timeouts
+- Lock checking and management
+- Console integration
+- Package serialization
+- Default intervals and timeouts
+
+### 6.13. Event System (`Katu\Tools\Events\*`)
+
+#### Dispatcher (`Katu\Tools\Events\Dispatcher`)
+**Location:** `src/Tools/Events/Dispatcher.php`
+
+Event dispatching and listener management:
+
+```php
+// Key methods:
+public function addListener(Listener $listener): Dispatcher
+public function dispatch(Event $event): Dispatcher
+public function getListeners(): ListenerCollection
+```
+
+**Key Features:**
+- Event dispatching
+- Listener management
+- Pattern-based event matching
+- Collection-based listener storage
+
+### 6.14. HTML Generation (`Katu\Tools\HTML\*`)
+
+#### HTML (`Katu\Tools\HTML\HTML`)
+**Location:** `src/Tools/HTML/HTML.php`
+
+HTML generation and manipulation:
+
+```php
+// Key methods:
+public function setHTML(string $html): HTML
+public function getHTML(): string
+public function getStream(): StreamInterface
+```
+
+**Key Features:**
+- HTML string manipulation
+- Stream interface support
+- Element node management
+- Attribute and class handling
+- Pre-built HTML elements (A, Div, Form, Input, etc.)
+
+### 6.15. Random Generation (`Katu\Tools\Random\*`)
+
+#### Generator (`Katu\Tools\Random\Generator`)
+**Location:** `src/Tools/Random/Generator.php`
+
+Secure random string and data generation:
+
+```php
+// Key methods:
+public static function getFromChars(string $chars, int $length = 32): string
+public static function getAlnum(int $length = 32): string
+public static function getAlpha(int $length = 32): string
+public static function getNumeric(int $length = 32): string
+```
+
+**Key Features:**
+- Multiple character sets (alphanumeric, alpha, numeric, special)
+- Secure random generation using RandomLib
+- Fallback generation methods
+- Configurable length and character sets
+
+### 6.16. System Monitoring (`Katu\Tools\System\*`)
+
+#### System (`Katu\Tools\System\System`)
+**Location:** `src/Tools/System/System.php`
+
+System information and monitoring:
+
+```php
+// Key methods:
+public static function getNumberOfCpus(): int
+public static function getLoadAverage(): array
+public static function getMemoryUsage(): int
+```
+
+**Key Features:**
+- CPU count detection
+- Load average monitoring
+- Memory usage tracking
+- Cross-platform compatibility
+- Caching for performance
+
+### 6.17. Profiling (`Katu\Tools\Profiler\*`)
+
+#### Profiler (`Katu\Tools\Profiler\Profiler`)
+**Location:** `src/Tools/Profiler/Profiler.php`
+
+Application profiling and performance monitoring:
+
+```php
+// Key methods:
+public static function isOn(): bool
+public static function add(Query $query): bool
+public function addQuery(Query $query): Profiler
+```
+
+**Key Features:**
+- Query profiling
+- Stopwatch timing
+- Performance monitoring
+- Development debugging tools
+
+### 6.18. SQL Utilities (`Katu\Tools\SQL\*`)
+**Location:** `src/Tools/SQL/`
+
+SQL utility files and database schema definitions:
+
+- **Schema Files:** 15 SQL files for common database tables
+- **Table Definitions:** Users, roles, permissions, settings, etc.
+- **Database Setup:** Standard table creation scripts
+
+### 6.19. String Utilities (`Katu\Tools\Strings\*`)
+**Location:** `src/Tools/Strings/`
+
+Advanced string manipulation utilities:
+
+- `Code` - Code generation and validation
+- `Enclosure` - String enclosure handling
+- `Replacement` - String replacement operations
+- `Sortable` - Sortable string generation
+- `Sortables` - Collection of sortable utilities
+
+### 6.20. Table Generation (`Katu\Tools\Tables\*`)
+**Location:** `src/Tools/Tables/`
+
+Table generation and manipulation:
+
+- `Table` - Table data structure
+- `Row` - Table row handling
+- `Cell` - Individual cell management
+- Collection classes for table components
+
+### 6.21. View System (`Katu\Tools\Views\*`)
+**Location:** `src/Tools/Views/`
+
+View-related utilities and helpers for template rendering.
+
+### 6.22. Twig Extensions (`Katu\Views\*`)
+**Location:** `src/Views/Katu/`
+
+Custom Twig extensions and templates:
+
+- **8 Twig files** - Custom template extensions
+- **Template Helpers** - Katu-specific template functions
+- **Custom Filters** - Additional Twig filters
 
 ---
 
@@ -470,11 +710,11 @@ class ExampleModel extends \App\Models\Model
 {
     const DATABASE = "app";
     const TABLE = "examples";
-    
+
     public $id;
     public $name;
     public $timeCreated;
-    
+
     public static function getIdColumn(): Column
     {
         return static::getColumn("id");
@@ -510,11 +750,13 @@ class ExampleConfig extends \Katu\Config\Config
 ## 11. Key Dependencies
 
 ### 11.1. Core Dependencies
-- `slim/slim` - HTTP framework
+- `slim/slim` ^4 - HTTP framework
 - `twig/twig` - Template engine
-- `php-di/php-di` - Dependency injection
+- `php-di/php-di` ^6 - Dependency injection
+- `php-di/slim-bridge` - Slim-PHP-DI integration
 - `guzzlehttp/guzzle` - HTTP client
 - `monolog/monolog` - Logging
+- `flynsarmy/slim-monolog` - Slim-Monolog integration
 
 ### 11.2. Database Dependencies
 - `sexytool/sexytool` - Query builder (referenced as Sexy\Sexy)
@@ -522,8 +764,48 @@ class ExampleConfig extends \Katu\Config\Config
 ### 11.3. Utility Dependencies
 - `symfony/string` - String manipulation
 - `symfony/intl` - Internationalization
-- `intervention/image` - Image processing
-- `endroid/qr-code` - QR code generation
+- `symfony/console` ^5.4 - Console commands
+- `symfony/css-selector` - CSS selector parsing
+- `symfony/dom-crawler` - DOM crawling
+- `symfony/cache` - Caching abstraction
+- `intervention/image` ^2 - Image processing
+- `endroid/qr-code` 4.6.1 - QR code generation
+
+### 11.4. Cloud & External Services
+- `aws/aws-sdk-php` ^3.0 - AWS SDK
+- `google/apiclient` - Google API client
+- `google/cloud` - Google Cloud services
+- `sendgrid/sendgrid` - SendGrid email service
+- `mandrill/mandrill` - Mandrill email service
+
+### 11.5. Security & Authentication
+- `lcobucci/jwt` - JSON Web Tokens
+- `defuse/php-encryption` - Encryption library
+- `d4h/pkce` - PKCE OAuth2 extension
+- `league/oauth2-server` - OAuth2 server implementation
+
+### 11.6. Data Processing
+- `league/csv` - CSV processing
+- `jwage/easy-csv` - Easy CSV handling
+- `league/color-extractor` - Color extraction
+- `mischiefcollective/colorjizz` - Color manipulation
+- `michelf/php-markdown` - Markdown processing
+- `ralouphie/mimey` - MIME type detection
+
+### 11.7. Development & Testing
+- `squizlabs/php_codesniffer` - Code style checking
+- `phpunit/phpunit` - Unit testing
+- `gregwar/cache` - Cache library
+- `oscarotero/psr7-middlewares` - PSR-7 middlewares
+
+### 11.8. System & Performance
+- `predis/predis` - Redis client
+- `cache/apcu-adapter` - APCu cache adapter
+- `mtdowling/cron-expression` - Cron expression parsing
+- `ircmaxell/random-lib` - Secure random generation
+- `php-curl-class/php-curl-class` - cURL wrapper
+- `phpseclib/bcmath_compat` - Big number math
+- `vlucas/phpdotenv` - Environment variables
 
 ---
 
