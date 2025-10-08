@@ -26,7 +26,7 @@ This document provides comprehensive technical documentation for the Security sy
 
 ---
 
-## 2. Core Classes
+## 2. Core Security Classes
 
 ### 2.1. PlainPassword (`Katu\Tools\Security\PlainPassword`)
 **Location:** `PlainPassword.php`
@@ -543,15 +543,68 @@ class AuthMiddleware
 
 ---
 
-## 8. Troubleshooting
+## 8. Common Patterns
 
-### 8.1. Common Issues
+### 8.1. Authentication Flow
+```php
+// User login with password verification
+$user = User::getByEmail($email);
+if ($user && $user->getPassword()->verify($password)) {
+    $token = JWT::create([
+        "user_id" => $user->id,
+        "email" => $user->email,
+        "exp" => time() + 3600
+    ]);
+
+    $this->setAuthToken($token);
+    return $this->redirect("/dashboard");
+}
+```
+
+### 8.2. Password Management
+```php
+// Password creation and verification
+$password = new PlainPassword($userInput);
+$hashedPassword = $password->getHash();
+
+// Store in database
+$user->password_hash = $hashedPassword;
+$user->persist();
+
+// Later verification
+$storedPassword = new PlainPassword($user->password_hash);
+if ($storedPassword->verify($loginPassword)) {
+    // Login successful
+}
+```
+
+### 8.3. Token Management
+```php
+// Create and verify JWT tokens
+$token = JWT::create([
+    "user_id" => $user->id,
+    "role" => $user->role,
+    "exp" => time() + 3600
+]);
+
+// Verify token
+$payload = JWT::verify($token);
+if ($payload && $payload["user_id"]) {
+    $user = User::get($payload["user_id"]);
+}
+```
+
+---
+
+## 9. Troubleshooting
+
+### 9.1. Common Issues
 - **Token Verification Fails:** Check secret key and algorithm
 - **Password Verification Fails:** Verify hash format and algorithm
 - **Token Expiration:** Check token expiration settings
 - **Algorithm Mismatch:** Ensure consistent algorithm usage
 
-### 8.2. Debugging
+### 9.2. Debugging
 - Enable security logging
 - Check token payload
 - Verify password hashes

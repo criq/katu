@@ -26,7 +26,7 @@ This document provides comprehensive technical documentation for the Session Man
 
 ---
 
-## 2. Core Classes
+## 2. Core Session Classes
 
 ### 2.1. Session (`Katu\Tools\Session\Session`)
 **Location:** `Session.php`
@@ -595,15 +595,69 @@ class SessionController extends Controller
 
 ---
 
-## 10. Troubleshooting
+## 10. Common Patterns
 
-### 10.1. Common Issues
+### 10.1. User Authentication Pattern
+```php
+// User login with session management
+$user = User::authenticate($email, $password);
+if ($user) {
+    $session = new Session();
+    $session->set("user_id", $user->id);
+    $session->set("user_role", $user->role);
+
+    $session->getFlashes()->addSuccess("Welcome back!");
+    return $this->redirect("/dashboard");
+}
+```
+
+### 10.2. Flash Message Pattern
+```php
+// Controller action with flash messages
+public function createUser(ServerRequestInterface $request): ResponseInterface
+{
+    try {
+        $user = new User($request->getParsedBody());
+        $user->persist();
+
+        $session = new Session();
+        $session->getFlashes()->addSuccess("User created successfully!");
+
+        return $this->redirect("/users");
+    } catch (Exception $e) {
+        $session = new Session();
+        $session->getFlashes()->addError("Failed to create user: " . $e->getMessage());
+
+        return $this->redirect("/users/create");
+    }
+}
+```
+
+### 10.3. Session Data Management
+```php
+// Session data with expiration
+$session = new Session();
+$session->set("cart", $cartData);
+$session->set("last_activity", time());
+
+// Check session timeout
+if ($session->get("last_activity") < time() - 3600) {
+    $session->destroy();
+    return $this->redirect("/login");
+}
+```
+
+---
+
+## 11. Troubleshooting
+
+### 11.1. Common Issues
 - **Session Not Starting:** Check PHP session configuration
 - **Flash Messages Not Displaying:** Ensure messages are cleared after display
 - **Data Not Persisting:** Check session storage permissions
 - **Security Issues:** Verify cookie settings and session regeneration
 
-### 10.2. Debugging
+### 11.2. Debugging
 - Enable session debugging in PHP
 - Check session storage directory permissions
 - Verify cookie configuration

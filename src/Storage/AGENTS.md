@@ -26,7 +26,7 @@ This document provides comprehensive technical documentation for the Storage sys
 
 ---
 
-## 2. Core Classes
+## 2. Core Storage Classes
 
 ### 2.1. Storage (`Katu\Storage\Storage`)
 **Location:** `Storage.php`
@@ -630,15 +630,66 @@ class FileController extends Controller
 
 ---
 
-## 9. Troubleshooting
+## 9. Common Patterns
 
-### 9.1. Common Issues
+### 9.1. File Upload Pattern
+```php
+// Complete file upload with storage
+$upload = new Upload($_FILES["file"]);
+if ($upload->isValid()) {
+    $storage = new FilesystemStorage("/uploads");
+    $entity = $storage->writeToPath($upload->getName(), $upload->getContents());
+
+    // Store entity reference in database
+    $file = new File();
+    $file->path = $entity->getPath();
+    $file->size = $entity->getSize();
+    $file->persist();
+}
+```
+
+### 9.2. Cloud Storage Pattern
+```php
+// Google Cloud Storage integration
+$storage = new GoogleCloudStorage([
+    "project_id" => "my-project",
+    "bucket" => "my-bucket"
+]);
+
+$entity = $storage->writeToPath("documents/file.pdf", $content);
+$url = $entity->getURL();
+```
+
+### 9.3. Storage Abstraction
+```php
+// Storage abstraction for different adapters
+class FileManager
+{
+    private $storage;
+
+    public function __construct(Storage $storage)
+    {
+        $this->storage = $storage;
+    }
+
+    public function storeFile(string $path, $content): Entity
+    {
+        return $this->storage->writeToPath($path, $content);
+    }
+}
+```
+
+---
+
+## 10. Troubleshooting
+
+### 10.1. Common Issues
 - **Permission Errors:** Check file system permissions
 - **Path Issues:** Verify path format and existence
 - **Storage Failures:** Check adapter configuration
 - **Memory Issues:** Monitor file sizes and memory usage
 
-### 9.2. Debugging
+### 10.2. Debugging
 - Enable storage logging
 - Check adapter status
 - Verify file operations

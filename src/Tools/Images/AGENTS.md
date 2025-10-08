@@ -26,7 +26,7 @@ This document provides comprehensive technical documentation for the Image Proce
 
 ---
 
-## 2. Core Classes
+## 2. Core Image Classes
 
 ### 2.1. Image (`Katu\Tools\Images\Image`)
 **Location:** `Image.php`
@@ -559,15 +559,60 @@ class ImageController extends Controller
 
 ---
 
-## 13. Troubleshooting
+## 13. Common Patterns
 
-### 13.1. Common Issues
+### 13.1. Image Upload Pattern
+```php
+// Complete image upload with processing
+$upload = new Upload($_FILES["image"]);
+if ($upload->isValid()) {
+    $image = new Image($upload->getPath());
+
+    // Create versions
+    $image->createVersion("thumbnail", 150, 150);
+    $image->createVersion("medium", 500, 500);
+
+    // Store in database
+    $imageRecord = new ImageRecord();
+    $imageRecord->path = $image->getPath();
+    $imageRecord->persist();
+}
+```
+
+### 13.2. Image Processing Pattern
+```php
+// Image processing with filters
+$image = new Image("uploads/photo.jpg");
+$image->applyFilter(new ResizeFilter(800, 600))
+      ->applyFilter(new QualityFilter(85))
+      ->applyFilter(new WatermarkFilter("watermark.png"));
+
+$processedImage = $image->save("processed/photo.jpg");
+```
+
+### 13.3. QR Code Generation Pattern
+```php
+// QR code generation for different purposes
+$qrCode = new QRCode("https://example.com/user/123");
+$qrCode->setSize(200)
+       ->setMargin(10)
+       ->setErrorCorrectionLevel("M");
+
+$image = $qrCode->getImage();
+$image->save("qr_codes/user_123.png");
+```
+
+---
+
+## 14. Troubleshooting
+
+### 14.1. Common Issues
 - **Memory Errors:** Reduce image size or use streaming
 - **File Permission Errors:** Check file system permissions
 - **Filter Not Applied:** Verify filter parameters and order
 - **URL Generation Fails:** Check routing configuration
 
-### 13.2. Debugging
+### 14.2. Debugging
 - Enable Intervention Image logging
 - Check file paths and permissions
 - Verify filter parameters

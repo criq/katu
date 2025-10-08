@@ -25,7 +25,7 @@ This document provides comprehensive technical documentation for the Validation 
 
 ---
 
-## 2. Core Classes
+## 2. Core Validation Classes
 
 ### 2.1. Param (`Katu\Tools\Validation\Param`)
 **Location:** `Param.php`
@@ -450,15 +450,69 @@ class User extends Model
 
 ---
 
-## 10. Troubleshooting
+## 10. Common Patterns
 
-### 10.1. Common Issues
+### 10.1. Form Validation
+```php
+// Complete form validation
+$validation = new Validation();
+$validation->addParam(new Param("name", $request->getParsedBody()["name"]))
+    ->addRule(new IsNotEmpty())
+    ->addRule(new IsString());
+
+$validation->addParam(new Param("email", $request->getParsedBody()["email"]))
+    ->addRule(new IsNotEmpty())
+    ->addRule(new IsEmail());
+
+if ($validation->hasErrors()) {
+    return $validation->getErrors()->getRestResponse($request);
+}
+```
+
+### 10.2. API Parameter Validation
+```php
+// REST API parameter validation
+$validation = new Validation();
+$validation->addParam(new RequestParam("id", $request))
+    ->addRule(new IsPositiveInt());
+
+$validation->addParam(new RequestParam("limit", $request))
+    ->addRule(new IsPositiveInt())
+    ->setDefault(10);
+
+$id = $validation->getParam("id")->getOutput();
+$limit = $validation->getParam("limit")->getOutput();
+```
+
+### 10.3. Custom Validation Rules
+```php
+// Custom validation rule
+class IsValidAge extends Rule
+{
+    public function validate(Param $param): bool
+    {
+        $value = $param->getInput();
+        return is_numeric($value) && $value >= 18 && $value <= 120;
+    }
+
+    public function getError(): Error
+    {
+        return new Error("Age must be between 18 and 120", "INVALID_AGE");
+    }
+}
+```
+
+---
+
+## 11. Troubleshooting
+
+### 11.1. Common Issues
 - **Empty Validation Results:** Check if rules are properly added to validator
 - **Parameter Not Found:** Verify parameter key matches input data
 - **Error Messages Missing:** Ensure rules have proper error message methods
 - **REST Response Issues:** Check if request object is properly passed
 
-### 10.2. Debugging
+### 11.2. Debugging
 - Use `var_dump()` on validation objects to inspect state
 - Check error collection for detailed error information
 - Verify parameter input/output values

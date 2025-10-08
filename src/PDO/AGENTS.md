@@ -27,7 +27,7 @@ This document provides comprehensive technical documentation for the PDO/Databas
 
 ---
 
-## 2. Core Classes
+## 2. Core PDO Classes
 
 ### 2.1. Connection (`Katu\PDO\Connection`)
 **Location:** `Connection.php`
@@ -634,15 +634,52 @@ class UserController extends Controller
 
 ---
 
-## 8. Troubleshooting
+## 8. Common Patterns
 
-### 8.1. Common Issues
+### 8.1. Database Connection Pattern
+```php
+// Standard database connection usage
+$connection = Connection::getInstance("app");
+$users = User::getBy(["active" => true]);
+
+// With custom connection
+$connection = Connection::getInstance("custom");
+$connection->setDatabase("custom_db");
+```
+
+### 8.2. Query Building Pattern
+```php
+// Using Sexy ORM for complex queries
+$sql = SX::select()
+    ->from(User::getTable())
+    ->where(SX::eq(User::getColumn("active"), true))
+    ->orderBy(SX::orderBy(User::getColumn("name")));
+
+$users = User::getBySQL($sql);
+```
+
+### 8.3. Transaction Pattern
+```php
+// Database transaction handling
+$connection->transaction(function() use ($user, $profile) {
+    $user->persist();
+    $profile->persist();
+
+    // Both operations succeed or both fail
+});
+```
+
+---
+
+## 9. Troubleshooting
+
+### 9.1. Common Issues
 - **Connection Failures:** Check database configuration and connectivity
 - **Query Errors:** Verify SQL syntax and table/column names
 - **Performance Issues:** Monitor query execution times and optimize
 - **Memory Issues:** Check result set sizes and implement pagination
 
-### 8.2. Debugging
+### 9.2. Debugging
 - Enable query logging
 - Monitor connection status
 - Check database processes

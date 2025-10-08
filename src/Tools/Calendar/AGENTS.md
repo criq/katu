@@ -26,7 +26,7 @@ This document provides comprehensive technical documentation for the Calendar sy
 
 ---
 
-## 2. Core Classes
+## 2. Core Calendar Classes
 
 ### 2.1. Time (`Katu\Tools\Calendar\Time`)
 **Location:** `Time.php`
@@ -725,15 +725,53 @@ class Event extends Model
 
 ---
 
-## 9. Troubleshooting
+## 9. Common Patterns
 
-### 9.1. Common Issues
+### 9.1. Date Range Pattern
+```php
+// Date range calculations
+$start = new Time("2024-01-01");
+$end = new Time("2024-12-31");
+$interval = new Interval($start, $end);
+
+$days = $interval->getDays();
+$weeks = $interval->getWeeks();
+$months = $interval->getMonths();
+```
+
+### 9.2. Time Period Pattern
+```php
+// Time period calculations
+$period = new Day("2024-06-15");
+$week = $period->getWeek();
+$month = $period->getMonth();
+$year = $period->getYear();
+
+$nextDay = $period->getNext();
+$previousDay = $period->getPrevious();
+```
+
+### 9.3. Duration Pattern
+```php
+// Duration calculations
+$duration = new Seconds(3600); // 1 hour
+$timeout = new Timeout("2 hours");
+
+$total = $duration->add($timeout);
+$remaining = $timeout->subtract($duration);
+```
+
+---
+
+## 10. Troubleshooting
+
+### 10.1. Common Issues
 - **Invalid Date Format:** Use proper date format strings
 - **Timezone Issues:** Ensure consistent timezone usage
 - **Interval Validation:** Check start/end time order
 - **Collection Sorting:** Use getSorted() for ordered collections
 
-### 9.2. Debugging
+### 10.2. Debugging
 - Use `var_dump()` to inspect time objects
 - Check timezone settings
 - Validate interval parameters

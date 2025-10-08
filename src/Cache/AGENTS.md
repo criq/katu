@@ -25,7 +25,7 @@ This document provides comprehensive technical documentation for the Cache syste
 
 ---
 
-## 2. Core Classes
+## 2. Core Cache Classes
 
 ### 2.1. General (`Katu\Cache\General`)
 **Location:** `General.php`
@@ -510,15 +510,58 @@ class UserController extends Controller
 
 ---
 
-## 9. Troubleshooting
+## 9. Common Patterns
 
-### 9.1. Common Issues
+### 9.1. Cache-Aside Pattern
+```php
+// Standard cache-aside pattern
+$cache = new General();
+$key = "user_" . $userId;
+
+$user = $cache->get($key);
+if (!$user) {
+    $user = User::get($userId);
+    $cache->set($key, $user, new Timeout("1 hour"));
+}
+```
+
+### 9.2. Cache with Fallback
+```php
+// Cache with fallback to database
+$cache = new General();
+$key = "expensive_calculation_" . $params;
+
+$result = $cache->get($key);
+if (!$result) {
+    $result = $this->performExpensiveCalculation($params);
+    $cache->set($key, $result, new Timeout("30 minutes"));
+}
+```
+
+### 9.3. Cache Invalidation
+```php
+// Cache invalidation on data changes
+$user = User::get($userId);
+$user->name = "New Name";
+$user->persist();
+
+// Invalidate related cache entries
+$cache = new General();
+$cache->delete("user_" . $userId);
+$cache->delete("user_profile_" . $userId);
+```
+
+---
+
+## 10. Troubleshooting
+
+### 10.1. Common Issues
 - **Cache Misses:** Check key naming and TTL settings
 - **Memory Issues:** Monitor memory usage and implement limits
 - **Serialization Errors:** Ensure objects are serializable
 - **Adapter Failures:** Check adapter configuration and connectivity
 
-### 9.2. Debugging
+### 10.2. Debugging
 - Enable cache logging
 - Monitor cache hit rates
 - Check adapter status

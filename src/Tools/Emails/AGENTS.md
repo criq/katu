@@ -26,7 +26,7 @@ This document provides comprehensive technical documentation for the Email syste
 
 ---
 
-## 2. Core Classes
+## 2. Core Email Classes
 
 ### 2.1. Email (`Katu\Tools\Emails\Email`)
 **Location:** `Email.php`
@@ -478,15 +478,69 @@ class SendEmailJob extends Job
 
 ---
 
-## 11. Troubleshooting
+## 11. Common Patterns
 
-### 11.1. Common Issues
+### 11.1. Email Sending Pattern
+```php
+// Complete email sending with template
+$email = new Email();
+$email->setTo("user@example.com")
+      ->setFrom("noreply@example.com")
+      ->setSubject("Welcome to our service")
+      ->setTemplate("welcome.twig", [
+          "name" => "John Doe",
+          "activation_url" => "https://example.com/activate/123"
+      ]);
+
+$provider = new SendGridProvider($apiKey);
+$provider->send($email);
+```
+
+### 11.2. Bulk Email Pattern
+```php
+// Bulk email sending with rate limiting
+$users = User::getBy(["newsletter" => true]);
+$provider = new SendGridProvider($apiKey);
+
+foreach ($users as $user) {
+    $email = new Email();
+    $email->setTo($user->email)
+          ->setTemplate("newsletter.twig", ["user" => $user]);
+
+    $provider->send($email);
+
+    // Rate limiting
+    usleep(100000); // 100ms delay
+}
+```
+
+### 11.3. Email with Attachments Pattern
+```php
+// Email with file attachments
+$email = new Email();
+$email->setTo("client@example.com")
+      ->setSubject("Invoice #12345")
+      ->setTemplate("invoice.twig", ["invoice" => $invoice]);
+
+// Add attachment
+$file = new File("invoices/invoice_12345.pdf");
+$attachment = new Attachment($file);
+$email->addAttachment($attachment);
+
+$provider->send($email);
+```
+
+---
+
+## 12. Troubleshooting
+
+### 12.1. Common Issues
 - **Authentication Errors:** Check provider credentials and permissions
 - **Attachment Issues:** Verify file paths and storage entity setup
 - **Template Variables:** Ensure variable names match template placeholders
 - **Provider Limits:** Check sending quotas and rate limits
 
-### 11.2. Debugging
+### 12.2. Debugging
 - Enable provider-specific logging
 - Check response messages for detailed error information
 - Verify email content and recipient addresses

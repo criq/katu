@@ -26,7 +26,7 @@ This document provides comprehensive technical documentation for the HTML Genera
 
 ---
 
-## 2. Core Classes
+## 2. Core HTML Classes
 
 ### 2.1. HTML (`Katu\Tools\HTML\HTML`)
 **Location:** `HTML.php`
@@ -592,15 +592,73 @@ class HTMLController extends Controller
 
 ---
 
-## 9. Troubleshooting
+## 9. Common Patterns
 
-### 9.1. Common Issues
+### 9.1. Form Generation Pattern
+```php
+// Complete form generation
+$form = new Form();
+$form->setMethod("POST")
+     ->setAction("/users/create")
+     ->addAttribute("class", "user-form");
+
+$form->addChild(new Input("name", "text", "Name"))
+     ->addChild(new Input("email", "email", "Email"))
+     ->addChild(new Input("password", "password", "Password"))
+     ->addChild(new Button("Submit", "submit"));
+
+$html = $form->getHTML();
+```
+
+### 9.2. Navigation Generation Pattern
+```php
+// Navigation menu generation
+$nav = new Nav();
+$nav->addAttribute("class", "main-navigation");
+
+$homeLink = new A("Home", "/");
+$aboutLink = new A("About", "/about");
+$contactLink = new A("Contact", "/contact");
+
+$nav->addChild($homeLink)
+    ->addChild($aboutLink)
+    ->addChild($contactLink);
+```
+
+### 9.3. Table Generation Pattern
+```php
+// Data table generation
+$table = new Table();
+$table->addAttribute("class", "data-table");
+
+$header = new Tr();
+$header->addChild(new Th("Name"))
+       ->addChild(new Th("Email"))
+       ->addChild(new Th("Actions"));
+
+$table->addChild($header);
+
+foreach ($users as $user) {
+    $row = new Tr();
+    $row->addChild(new Td($user->name))
+        ->addChild(new Td($user->email))
+        ->addChild(new Td(new A("Edit", "/users/{$user->id}/edit")));
+
+    $table->addChild($row);
+}
+```
+
+---
+
+## 10. Troubleshooting
+
+### 10.1. Common Issues
 - **Empty Elements:** Check if nodes are properly added
 - **Missing Attributes:** Verify attribute collection setup
 - **Invalid HTML:** Check element nesting and structure
 - **Stream Issues:** Ensure proper PSR-7 stream usage
 
-### 9.2. Debugging
+### 10.2. Debugging
 - Use `var_dump()` to inspect element structure
 - Check attribute and node collections
 - Validate HTML output manually
