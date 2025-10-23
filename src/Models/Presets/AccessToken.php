@@ -29,7 +29,7 @@ abstract class AccessToken extends \Katu\Models\Model
 		}, [
 			$request->getHeaderLine("Authorization"),
 			$request->getHeaderLine("X-Auth"),
-			CookieCollection::createFromRequest($request)->getCookieValue("accessToken"),
+			CookieCollection::createFromRequest($request)->getCookieValue(static::getCookieName()),
 		])), function (AccessToken $accessToken) {
 			return $accessToken->getIsValid();
 		}));
@@ -153,9 +153,14 @@ abstract class AccessToken extends \Katu\Models\Model
 		return (new Time($this->timeExpires))->getAge();
 	}
 
+	public static function getCookieName(): string
+	{
+		return "accessToken";
+	}
+
 	public function getCookie(): Cookie
 	{
-		return (new Cookie("accessToken", $this->getToken()))
+		return (new Cookie($this->getCookieName(), $this->getToken()))
 			->setTimeExpires($this->getTTL()->getTime())
 			;
 	}

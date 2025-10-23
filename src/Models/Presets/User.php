@@ -229,7 +229,7 @@ abstract class User extends \Katu\Models\Model
 
 	public static function logout(): bool
 	{
-		(new Cookie("accessToken"))->expire();
+		(new Cookie("AUTH_TOKEN"))->expire();
 
 		return true;
 	}
