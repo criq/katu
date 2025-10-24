@@ -14,15 +14,19 @@ class Session
 	public function getOptions(): array
 	{
 		$class = \App\App::getContainer()->get(\Katu\Config\CookieConfig::class);
-		$config = new $class;
+		$cookieConfig = new $class;
+
+		$class = \App\App::getContainer()->get(\Katu\Config\SessionConfig::class);
+		$sessionConfig = new $class;
 
 		return [
-			"cookie_domain" => $config->getDomain(),
-			"cookie_httponly" => $config->getIsHTTPOnly(),
-			"cookie_lifetime" => $config->getLifetime(),
-			"cookie_path" => $config->getPath(),
-			"cookie_secure" => $config->getIsSecure(),
-			"gc_maxlifetime" => $config->getLifetime(),
+			"cookie_domain" => $cookieConfig->getDomain(),
+			"cookie_httponly" => $cookieConfig->getIsHTTPOnly(),
+			"cookie_lifetime" => $cookieConfig->getLifetime(),
+			"cookie_path" => $cookieConfig->getPath(),
+			"cookie_secure" => $cookieConfig->getIsSecure(),
+			"gc_maxlifetime" => $cookieConfig->getLifetime(),
+			"name" => $sessionConfig->getName(),
 			"save_path" => (string)static::getStorage()->getPath(),
 			"use_cookies" => true,
 			"use_only_cookies" => true,
