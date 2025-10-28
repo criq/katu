@@ -59,7 +59,7 @@ class File
 
 	public static function createTemporaryWithFileName(string $fileName): File
 	{
-		return new static(\App\App::getTemporaryDir(), "files", static::prepareFileName($fileName));
+		return new static(\App\App::getTemporaryDir(), "files", \Katu\Tools\Random\Generator::getFileName(), static::prepareFileName($fileName));
 	}
 
 	public static function createTemporaryWithExtension(string $extension): File
