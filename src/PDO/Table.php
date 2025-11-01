@@ -238,7 +238,7 @@ class Table extends \Sexy\Expression
 
 			foreach ($this->getConnection()->getViewNames() as $viewName) {
 				$view = new static($this->getConnection(), $viewName);
-				if (strpos($view->getCreateSyntax(), (string) $this->name) !== false && $viewName != $this->name->name) {
+				if (strpos($view->getCreateSyntax(), (string) $this->name) !== false && $viewName != $this->getName()->getPlain()) {
 					$views[] = $viewName;
 				}
 			}
@@ -274,7 +274,7 @@ class Table extends \Sexy\Expression
 
 	public function getLastUpdatedTemporaryFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\Temporary("databases", $this->getConnection()->getTitle(), "tables", "updated", $this->getName()->getPlain());
+		return new \Katu\Files\File(\App\App::getTemporaryDir(), "databases", $this->getConnection()->getTitle(), "tables", "updated", $this->getName()->getPlain());
 	}
 
 	public function getSQL(&$context = []): string

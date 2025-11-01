@@ -2,7 +2,7 @@
 
 namespace Katu\Files;
 
-use App\Config\AppConfig;
+use Katu\Storage\FileInterface;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Calendar\Timeout;
 use Katu\Types\TIdentifier;
@@ -80,13 +80,16 @@ class File
 		return $file;
 	}
 
-	public static function createTemporaryFromURL($url, string $extension = null): ?File
+	public static function createTemporaryFromURL($url, ?string $extension = null, int $timeout = 30): ?File
 	{
 		$url = new \Katu\Types\TURL($url);
 
 		$curl = new \Curl\Curl;
 		$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
 		$curl->setOpt(CURLOPT_RETURNTRANSFER, true);
+		$curl->setOpt(CURLOPT_TIMEOUT, $timeout);
+		$curl->setOpt(CURLOPT_CONNECTTIMEOUT, 10);
+		$curl->setOpt(CURLOPT_MAXREDIRS, 5);
 
 		$src = $curl->get($url);
 
@@ -96,7 +99,7 @@ class File
 		}
 
 		if (!$extension && ($url->getParts()["path"] ?? null)) {
-			$extension = pathinfo($url->getParts()["path"])["extension"];
+			$extension = pathinfo($url->getParts()["path"])["extension"] ?? null;
 		}
 
 		return static::createTemporaryFromSrc($src, $extension);
@@ -129,8 +132,15 @@ class File
 		return file_exists($this->getPath());
 	}
 
+	/**
+	 * @return string|false
+	 */
 	public function get()
 	{
+		if (!$this->exists()) {
+			return false;
+		}
+
 		try {
 			return @file_get_contents($this);
 		} catch (\Throwable $e) {
@@ -138,30 +148,43 @@ class File
 		}
 	}
 
+	/**
+	 * @return array|false
+	 */
 	public function getLines()
 	{
+		if (!$this->exists()) {
+			return false;
+		}
+
 		try {
-			return file($this);
+			return @file($this);
 		} catch (\Throwable $e) {
 			return false;
 		}
 	}
 
+	/**
+	 * @return int|false
+	 */
 	public function set($data)
 	{
 		try {
 			$this->getDir()->makeDir();
-			return file_put_contents($this, $data, LOCK_EX);
+			return @file_put_contents($this, $data, LOCK_EX);
 		} catch (\Throwable $e) {
 			return false;
 		}
 	}
 
+	/**
+	 * @return int|false
+	 */
 	public function append($data)
 	{
 		$this->touch();
 
-		return file_put_contents($this, $data, LOCK_EX | FILE_APPEND);
+		return @file_put_contents($this, $data, LOCK_EX | FILE_APPEND);
 	}
 
 	public function getType(): ?string
@@ -196,11 +219,23 @@ class File
 	{
 		clearstatcache();
 
-		$finfo = finfo_open(FILEINFO_MIME_TYPE);
-		$mime = finfo_file($finfo, $this->getPath());
+		if (!$this->exists()) {
+			return null;
+		}
+
+		if (!function_exists("finfo_open")) {
+			return null;
+		}
+
+		$finfo = @finfo_open(FILEINFO_MIME_TYPE);
+		if ($finfo === false) {
+			return null;
+		}
+
+		$mime = @finfo_file($finfo, $this->getPath());
 		finfo_close($finfo);
 
-		return $mime;
+		return $mime ?: null;
 	}
 
 	public function getPathInfo(): array
@@ -218,12 +253,12 @@ class File
 		return $this->getPathInfo()["extension"] ?? null;
 	}
 
-	public function getDir()
+	public function getDir(): self
 	{
 		return new self(dirname($this));
 	}
 
-	public function getBasename()
+	public function getBasename(): string
 	{
 		return basename($this);
 	}
@@ -242,8 +277,12 @@ class File
 		return $files;
 	}
 
-	public function getDirs()
+	public function getDirs(): array
 	{
+		if (!$this->isDir()) {
+			return [];
+		}
+
 		$files = [];
 
 		foreach (scandir($this) as $file) {
@@ -258,33 +297,65 @@ class File
 		return $files;
 	}
 
-	public function isFile()
+	public function isFile(): bool
 	{
-		return $this->getType() == static::TYPE_FILE;
+		if (!$this->exists()) {
+			return false;
+		}
+
+		try {
+			return $this->getType() == static::TYPE_FILE;
+		} catch (\Throwable $e) {
+			return false;
+		}
 	}
 
-	public function isDir()
+	public function isDir(): bool
 	{
-		return $this->getType() == static::TYPE_DIR;
+		if (!$this->exists()) {
+			return false;
+		}
+
+		try {
+			return $this->getType() == static::TYPE_DIR;
+		} catch (\Throwable $e) {
+			return false;
+		}
 	}
 
-	public function isPhpFile()
+	public function isPhpFile(): bool
 	{
-		return $this->isFile() && ($this->getMime() == "text/x-c++" || $this->getExtension() == "php");
+		if (!$this->isFile()) {
+			return false;
+		}
+
+		$mime = $this->getMime();
+		$extension = $this->getExtension();
+
+		return ($mime == "text/x-php" || $mime == "text/x-c++") || strtolower($extension ?? "") == "php";
 	}
 
-	public function isReadable()
+	public function isReadable(): bool
 	{
-		return is_readable($this);
+		return $this->exists() && is_readable($this);
 	}
 
-	public function isWritable()
+	public function isWritable(): bool
 	{
-		return is_writable($this);
+		if ($this->exists()) {
+			return is_writable($this);
+		}
+
+		// If file doesn't exist, check if parent directory is writable
+		return $this->getDir()->isWritable();
 	}
 
-	public function makeDir($mode = 0777, $recursive = true)
+	public function makeDir(int $mode = 0777, bool $recursive = true): bool
 	{
+		if ($this->exists() && $this->isDir()) {
+			return true;
+		}
+
 		try {
 			return @mkdir($this, $mode, $recursive);
 		} catch (\Throwable $e) {
@@ -302,16 +373,26 @@ class File
 		return $this;
 	}
 
-	public function chmod($mode)
+	public function chmod(int $mode): bool
 	{
-		return chmod($this, $mode);
+		if (!$this->exists()) {
+			return false;
+		}
+
+		return @chmod($this, $mode);
 	}
 
-	public function copy(File $destination)
+	public function copy(File $destination): File
 	{
 		if (!$this->exists()) {
 			throw (new \Katu\Exceptions\ErrorException("Source file doesn't exist."))
 				->setAbbr("sourceFileUnavailable")
+				;
+		}
+
+		if ($this->isDir()) {
+			throw (new \Katu\Exceptions\ErrorException("Cannot copy directory using copy() method. Use recursive copy instead."))
+				->setAbbr("directoryCopyNotSupported")
 				;
 		}
 
@@ -325,16 +406,29 @@ class File
 		return $destination;
 	}
 
-	public function move(File $destination)
+	public function move(File $destination): bool
 	{
 		$this->copy($destination);
-		$this->delete();
+
+		if (!$this->delete()) {
+			// If delete fails after copy, attempt to remove the copied file
+			try {
+				$destination->delete();
+			} catch (\Throwable $e) {
+				// Log but don't throw - the original delete failure is the main issue
+			}
+			throw new \Katu\Exceptions\ErrorException("Could not delete source file after copy: " . $this->getPath());
+		}
 
 		return true;
 	}
 
-	public function delete()
+	public function delete(): bool
 	{
+		if (!$this->exists()) {
+			return true;
+		}
+
 		clearstatcache();
 
 		if ($this->isDir()) {
@@ -343,15 +437,15 @@ class File
 
 			foreach ($files as $file) {
 				if ($file->isDir()) {
-					rmdir($file->getRealPath());
+					@rmdir($file->getRealPath());
 				} else {
-					unlink($file->getRealPath());
+					@unlink($file->getRealPath());
 				}
 			}
 
-			return rmdir((string) $this);
+			return @rmdir((string) $this);
 		} else {
-			return unlink((string) $this);
+			return @unlink((string) $this);
 		}
 	}
 
@@ -368,8 +462,12 @@ class File
 		return null;
 	}
 
-	public function eachRecursive($callback)
+	public function eachRecursive(callable $callback): void
 	{
+		if (!$this->isDir()) {
+			return;
+		}
+
 		$iterator = new \RecursiveDirectoryIterator($this, \RecursiveDirectoryIterator::SKIP_DOTS);
 		$files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 
@@ -422,23 +520,53 @@ class File
 		return array_slice($matchedFiles, 0, 1);
 	}
 
-	public function getHash($function = "sha1")
+	public function getHash(string $function = "sha1"): string
 	{
-		return hash($function, $this->get());
+		if (!in_array($function, hash_algos(), true)) {
+			throw new \Katu\Exceptions\ErrorException("Invalid hash algorithm: " . $function);
+		}
+
+		// For large files, use incremental hashing to avoid memory issues
+		if ($this->exists() && $this->getSize() && $this->getSize()->getInB()->getAmount() > 10 * 1024 * 1024) {
+			$handle = fopen((string)$this, "rb");
+			if ($handle === false) {
+				throw new \Katu\Exceptions\ErrorException("Could not open file for hashing: " . $this->getPath());
+			}
+
+			$hash = hash_init($function);
+			while (!feof($handle)) {
+				hash_update($hash, fread($handle, 8192));
+			}
+			fclose($handle);
+
+			return hash_final($hash);
+		}
+
+		$content = $this->get();
+		if ($content === false) {
+			throw new \Katu\Exceptions\ErrorException("Could not read file for hashing: " . $this->getPath());
+		}
+
+		return hash($function, $content);
 	}
 
-	public function getHashedURL(?string $algo = "sha1", ?string $paramName = "hash")
+	public function getHashedURL(?string $algo = "sha1", ?string $paramName = "hash"): ?TURL
 	{
+		$url = $this->getURL();
+		if (!$url) {
+			return null;
+		}
+
 		if (!$algo) {
 			$algo = "sha1";
 		}
 
-		return (new \Katu\Types\TURL($this->getURL()))
+		return (new \Katu\Types\TURL($url))
 			->addQueryParam($paramName, $this->getHash($algo))
 			;
 	}
 
-	public function getCachedHashedURL(Timeout $timeout = null, ?string $algo = "sha1", ?string $paramName = "hash")
+	public function getCachedHashedURL(?Timeout $timeout = null, ?string $algo = "sha1", ?string $paramName = "hash"): ?TURL
 	{
 		return \Katu\Cache\General::get(new TIdentifier(__CLASS__, __FUNCTION__), $timeout, function ($file, $algo, $paramName) {
 			return $file->getHashedURL($algo, $paramName);
@@ -457,11 +585,21 @@ class File
 
 	public function getIsSupportedImage(): bool
 	{
-		return in_array($this->getMime(), static::getSupportedImageTypes());
+		$mime = $this->getMime();
+		return $mime !== null && in_array($mime, static::getSupportedImageTypes(), true);
 	}
 
-	public function getStream(): StreamInterface
+	public function getStream(string $mode = "r"): StreamInterface
 	{
-		return \GuzzleHttp\Psr7\Utils::streamFor(fopen((string)$this, "a+"));
+		if (!$this->exists()) {
+			throw new \Katu\Exceptions\FileNotFoundException("File does not exist: " . $this->getPath());
+		}
+
+		$handle = fopen((string)$this, $mode);
+		if ($handle === false) {
+			throw new \Katu\Exceptions\ErrorException("Could not open file: " . $this->getPath());
+		}
+
+		return \GuzzleHttp\Psr7\Utils::streamFor($handle);
 	}
 }

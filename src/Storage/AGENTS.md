@@ -3,697 +3,617 @@
 > **Agent Protocol: Keep This Document Updated**
 > All agents are required to update this document with any new, relevant information discovered during their work. This includes, but is not limited to, changes in architecture, new dependencies, updated build processes, or newly established coding conventions. A well-maintained document ensures efficiency and prevents repeated discovery work.
 
-This document provides comprehensive technical documentation for the Storage system in the KATU framework. The storage system provides abstract file storage with multiple adapters, entity management, and seamless integration with the application.
+This document provides comprehensive technical documentation for the Storage system in the KATU framework. The storage system provides a unified abstraction for file storage across multiple backends (local filesystem, Google Cloud Storage, etc.) with consistent APIs, URI-based access, and efficient caching.
 
 ---
 
 ## 1. System Overview
 
 ### 1.1. Purpose
-- **Abstract Storage:** Unified interface for different storage backends
-- **File Management:** File operations (read, write, delete, list)
-- **Entity System:** Storage entities with metadata
-- **Adapter Support:** Multiple storage adapters (Local, S3, etc.)
-- **Path Management:** Hierarchical path organization
-- **Package Support:** Serialization and deserialization
+- **Abstract Storage:** Unified interface for different storage backends (local, GCS, etc.)
+- **File Operations:** Read, write, delete, and list files consistently
+- **URI-Based Access:** Objects can be created from URIs (`local://`, `gcs://`)
+- **Efficient Caching:** Lazy loading and caching of metadata and file contents
+- **Streaming Support:** PSR-7 StreamInterface for memory-efficient processing
+- **Path Abstraction:** Flat prefix-based paths (consistent across hierarchical and flat storage)
 
 ### 1.2. Architecture
-- **Core Classes:** `Storage`, `Entity`, `FileInterface`
-- **Adapters:** Local, S3, and other storage adapters
-- **Entity Management:** File entities with metadata
-- **Path Operations:** Path-based file operations
-- **Package System:** Entity serialization
+- **Core Classes:** `StorageService` (manages storage backend), `StorageObject` (represents individual files)
+- **Service Pattern:** Service manages listing and path operations; Objects handle individual file operations
+- **Collections:** `StorageServiceCollection` (multiple services), `StorageObjectCollection` (multiple objects)
+- **Implementations:** `LocalStorageService`/`LocalStorageObject` (filesystem), `GoogleCloudStorageService`/`GoogleCloudStorageObject` (GCS)
 
 ---
 
 ## 2. Core Storage Classes
 
-### 2.1. Storage (`Katu\Storage\Storage`)
-**Location:** `Storage.php`
+### 2.1. StorageService (`Katu\Storage\StorageService`)
+**Location:** `StorageService.php`
 
-Abstract storage interface:
+Abstract base class for storage services:
 
 ```php
-// Key methods:
+// Abstract methods:
 abstract public function deleteByPath(string $path): bool
-abstract public function readPath(string $path)
-abstract public function writeToPath(string $path, $contents): Entity
-abstract public function listEntities(): iterable
-public function getEntity(string $path): ?Entity
-public function hasEntity(string $path): bool
-public function deleteEntity(Entity $entity): bool
-public function writeEntity(Entity $entity, $contents): Entity
-public function readEntity(Entity $entity)
+abstract public function getIsCompatibleWithURI(string $uri): bool
+abstract public function getObjectByURI(string $uri): StorageObject
+abstract public function getObjectIterator(?string $prefix = null): iterable
+abstract public function readPath(string $path): string
+abstract public function writePath(string $path, string $contents): void
+
+// Concrete methods:
+public function getObjects(?string $prefix = null): StorageObjectCollection
 ```
 
 **Key Features:**
-- Abstract storage interface
-- Path-based operations
-- Entity management
-- Package serialization support
-- Multiple storage adapters
+- Manages storage backend connection
+- Provides iterator for listing objects (with optional prefix filter)
+- Path-based operations (read, write, delete)
+- URI compatibility checking and object creation
+- Flat prefix-based iteration (treats paths as prefixes, not hierarchical)
 
-### 2.2. Entity (`Katu\Storage\Entity`)
-**Location:** `Entity.php`
+### 2.2. StorageObject (`Katu\Storage\StorageObject`)
+**Location:** `StorageObject.php`
 
-Storage entity representation:
+Abstract base class for storage objects (individual files):
 
 ```php
-// Key methods:
-public function __construct(string $path)
+// Abstract methods:
+abstract public function delete(): bool
+abstract public function exists(): bool
+abstract public function getFile(): \Katu\Files\File
+abstract public function getSize(): \Katu\Types\TFileSize
+abstract public function getStream(): \Psr\Http\Message\StreamInterface
+abstract public function getType(): ?string  // MIME type
+abstract public function getURI(): string
+abstract public function isReadable(): bool
+abstract public function isWritable(): bool
+abstract public function read(): string
+abstract public function write(string $contents): StorageObject
+
+// Concrete methods:
+public function getName(): string  // basename of path
 public function getPath(): string
-public function getName(): string
-public function getExtension(): string
-public function getDirectory(): string
-public function getSize(): int
-public function getModifiedTime(): int
-public function getCreatedTime(): int
-public function isDirectory(): bool
-public function isFile(): bool
-public function exists(): bool
-public function getPackage(): Package
+public function getService(): StorageService
 ```
 
 **Key Features:**
-- Path management
-- File metadata
-- Directory detection
-- Package serialization
-- Existence checking
-
-### 2.3. FileInterface (`Katu\Storage\FileInterface`)
-**Location:** `FileInterface.php`
-
-File interface for storage operations:
-
-```php
-// Key methods:
-public function getPath(): string
-public function getContents(): string
-public function setContents(string $contents): FileInterface
-public function exists(): bool
-public function delete(): bool
-public function getSize(): int
-public function getModifiedTime(): int
-```
+- Represents individual files/objects
+- URI generation (scheme://path format)
+- File operations (read, write, delete)
+- Metadata access (size, type, permissions)
+- Local file caching and streaming support
+- MIME type detection
 
 ---
 
-## 3. Storage Adapters
+## 3. Storage Service Implementations
 
-### 3.1. Local Adapter (`Adapters/Local.php`)
-**Location:** `Adapters/Local.php`
+### 3.1. LocalStorageService (`Katu\Storage\Services\LocalStorageService`)
+**Location:** `Services/LocalStorageService.php`
 
-Local file system storage:
+Local filesystem storage service:
 
 ```php
-use Katu\Storage\Adapters\Local;
+use Katu\Storage\Services\LocalStorageService;
 
-// Create local storage
-$storage = new Local("/path/to/storage/directory");
+// Create service
+$service = new LocalStorageService("/var/storage");
 
-// Basic operations
-$storage->writeToPath("file.txt", "Hello World");
-$content = $storage->readPath("file.txt");
-$storage->deleteByPath("file.txt");
+// List objects
+foreach ($service->getObjectIterator("prefix/") as $object) {
+    echo $object->getPath();
+}
 
-// Entity operations
-$entity = $storage->getEntity("file.txt");
-if ($entity && $entity->exists()) {
-    $content = $storage->readEntity($entity);
+// Get objects as collection
+$objects = $service->getObjects("prefix/");
+
+// Path operations
+$service->writePath("file.txt", "content");
+$content = $service->readPath("file.txt");
+$service->deleteByPath("file.txt");
+
+// URI operations
+if ($service->getIsCompatibleWithURI("local://path/to/file.txt")) {
+    $object = $service->getObjectByURI("local://path/to/file.txt");
 }
 ```
 
 **Key Features:**
-- Local file system storage
-- Directory creation
-- File permissions
-- Path validation
-- Cross-platform support
+- Manages a root directory
+- Recursive iteration with prefix filtering
+- Path normalization (handles both `/` and `\`)
+- Automatic directory creation on write
+- Relative paths (paths are relative to service root)
 
-### 3.2. S3 Adapter (`Adapters/S3.php`)
-**Location:** `Adapters/S3.php`
+### 3.2. GoogleCloudStorageService (`Katu\Storage\Services\GoogleCloudStorageService`)
+**Location:** `Services/GoogleCloudStorageService.php`
 
-Amazon S3 storage:
+Google Cloud Storage service (single bucket):
 
 ```php
-use Katu\Storage\Adapters\S3;
+use Katu\Storage\Services\GoogleCloudStorageService;
+use Google\Cloud\Storage\Bucket;
 
-// Create S3 storage
-$storage = new S3("bucket-name", "region", "access-key", "secret-key");
+// Create service
+$bucket = (new \App\Classes\ThirdParty\Google\Storage)->getBucket("bucket-name");
+$service = new GoogleCloudStorageService($bucket);
 
-// Basic operations
-$storage->writeToPath("folder/file.txt", "Hello World");
-$content = $storage->readPath("folder/file.txt");
-$storage->deleteByPath("folder/file.txt");
+// List objects
+foreach ($service->getObjectIterator("prefix/") as $object) {
+    echo $object->getPath();
+}
+
+// Path operations
+$service->writePath("path/to/file.txt", "content");
+$content = $service->readPath("path/to/file.txt");
+$service->deleteByPath("path/to/file.txt");
+
+// URI operations
+if ($service->getIsCompatibleWithURI("gcs://bucket-name/path/to/file.txt")) {
+    $object = $service->getObjectByURI("gcs://bucket-name/path/to/file.txt");
+}
 ```
 
 **Key Features:**
-- Amazon S3 integration
-- Bucket management
-- Region support
-- Credential management
-- Cloud storage
+- Single bucket per service instance
+- Efficient API calls (uses `fields` parameter to fetch only needed metadata)
+- Flat prefix-based listing (no delimiter, treats paths as prefixes)
+- Preloads metadata during iteration (name, contentType, size, bucket)
+- Lazy loading for underlying GCS StorageObject
 
-### 3.3. Custom Adapter
-**Location:** `Adapters/`
+---
 
-Creating custom storage adapters:
+## 4. Storage Object Implementations
+
+### 4.1. LocalStorageObject (`Katu\Storage\Services\LocalStorageObject`)
+**Location:** `Services/LocalStorageObject.php`
+
+Local filesystem file representation:
 
 ```php
-class CustomAdapter extends Storage
-{
-    public function deleteByPath(string $path): bool
-    {
-        // Custom deletion logic
-        return $this->customDelete($path);
-    }
+// Created via service
+$object = $service->getObjectByURI("local://path/to/file.txt");
 
-    public function readPath(string $path)
-    {
-        // Custom reading logic
-        return $this->customRead($path);
-    }
+// Or during iteration
+foreach ($service->getObjectIterator() as $object) {
+    // Access methods
+    $uri = $object->getURI();           // "local://path/to/file.txt"
+    $type = $object->getType();         // MIME type (e.g., "image/jpeg")
+    $size = $object->getSize();         // TFileSize object
+    $name = $object->getName();         // "file.txt"
+    $path = $object->getPath();         // "path/to/file.txt"
 
-    public function writeToPath(string $path, $contents): Entity
-    {
-        // Custom writing logic
-        $this->customWrite($path, $contents);
-        return new Entity($path);
-    }
+    // Operations
+    $exists = $object->exists();
+    $isReadable = $object->isReadable();
+    $isWritable = $object->isWritable();
 
-    public function listEntities(): iterable
-    {
-        // Custom listing logic
-        return $this->customList();
-    }
+    // Content
+    $content = $object->read();
+    $object->write("new content");
+    $object->delete();
+
+    // File/Stream access
+    $file = $object->getFile();         // \Katu\Files\File instance
+    $stream = $object->getStream();     // PSR-7 StreamInterface
 }
+```
+
+**Key Features:**
+- Direct filesystem access (no caching needed)
+- MIME type detection using `finfo`
+- Standard file operations with permission checking
+
+### 4.2. GoogleCloudStorageObject (`Katu\Storage\Services\GoogleCloudStorageObject`)
+**Location:** `Services/GoogleCloudStorageObject.php`
+
+Google Cloud Storage object representation:
+
+```php
+// Created via service
+$object = $service->getObjectByURI("gcs://bucket-name/path/to/file.jpg");
+
+// Or during iteration (with preloaded metadata)
+foreach ($service->getObjectIterator() as $object) {
+    // Access methods
+    $uri = $object->getURI();           // "gcs://bucket-name/path/to/file.jpg"
+    $type = $object->getType();         // MIME type from metadata
+    $size = $object->getSize();         // TFileSize object
+    $name = $object->getName();         // "file.jpg"
+    $path = $object->getPath();         // "path/to/file.jpg"
+
+    // Operations
+    $exists = $object->exists();
+    $isReadable = $object->isReadable();
+    $isWritable = $object->isWritable();
+
+    // Content
+    $content = $object->read();         // Downloads content
+    $object->write("new content");      // Uploads content, invalidates cache
+    $object->delete();                  // Deletes object, invalidates cache
+
+    // File/Stream access
+    $file = $object->getFile();         // Downloads and caches locally
+    $stream = $object->getStream();     // Streams from GCS or cached file
+
+    // GCS-specific
+    $isPublic = $object->getIsPublic(); // Checks ACL
+    $publicURL = $object->getPublicURL(); // Returns TURL if public
+}
+```
+
+**Key Features:**
+- Lazy loading: Metadata loaded on first access (cached after)
+- Efficient iteration: Metadata preloaded during `getObjectIterator()`
+- Local file caching: `getFile()` downloads and caches to temp directory
+- Streaming: `getStream()` streams directly from GCS or uses cached file
+- Cache invalidation: Cache cleared on write/delete operations
+- ACL support: `getIsPublic()` checks object ACL (cached after first check)
+- Public URL: Generates public URL if object is publicly accessible
+
+---
+
+## 4. URI System
+
+### 4.1. URI Formats
+- **Local:** `local://path/to/file.txt`
+- **GCS:** `gcs://bucket-name/path/to/file.jpg`
+
+### 4.2. URI Operations
+```php
+// Check compatibility
+$isCompatible = $service->getIsCompatibleWithURI("gcs://bucket-name/file.txt");
+
+// Create object from URI
+$object = $service->getObjectByURI("gcs://bucket-name/file.txt");
+
+// Using collection (automatically finds compatible service)
+$services = new StorageServiceCollection([
+    new LocalStorageService("/var/storage"),
+    new GoogleCloudStorageService($bucket),
+]);
+$object = $services->getObjectFromURI("gcs://bucket-name/file.txt");
 ```
 
 ---
 
-## 4. Usage Patterns
+## 5. Usage Patterns
 
-### 4.1. Basic File Operations
+### 5.1. Basic File Operations
 ```php
-use Katu\Storage\Storage;
-use Katu\Storage\Adapters\Local;
+use Katu\Storage\Services\LocalStorageService;
+use Katu\Storage\StorageServiceCollection;
 
-// Create storage
-$storage = new Local("/var/storage");
+// Create service
+$service = new LocalStorageService("/var/storage");
 
 // Write file
-$entity = $storage->writeToPath("documents/file.txt", "File content");
-echo "File written to: " . $entity->getPath();
+$service->writePath("documents/file.txt", "File content");
 
 // Read file
-$content = $storage->readPath("documents/file.txt");
-echo "File content: " . $content;
+$content = $service->readPath("documents/file.txt");
 
-// Check if file exists
-if ($storage->hasEntity("documents/file.txt")) {
-    echo "File exists";
+// Get object and operate on it
+$object = $service->getObjectByURI("local://documents/file.txt");
+if ($object->exists()) {
+    $size = $object->getSize();
+    $type = $object->getType();
+    $content = $object->read();
 }
 
 // Delete file
-$storage->deleteByPath("documents/file.txt");
+$object->delete();
+// Or: $service->deleteByPath("documents/file.txt");
 ```
 
-### 4.2. Entity Management
+### 5.2. Listing Objects
 ```php
-// Get entity
-$entity = $storage->getEntity("documents/file.txt");
-if ($entity && $entity->exists()) {
-    echo "File name: " . $entity->getName();
-    echo "File extension: " . $entity->getExtension();
-    echo "File size: " . $entity->getSize() . " bytes";
-    echo "Modified: " . date("Y-m-d H:i:s", $entity->getModifiedTime());
-    echo "Is directory: " . ($entity->isDirectory() ? "Yes" : "No");
+// List all objects
+foreach ($service->getObjectIterator() as $object) {
+    echo "Path: " . $object->getPath() . "\n";
+    echo "Size: " . $object->getSize() . "\n";
+    echo "Type: " . $object->getType() . "\n";
 }
 
-// Read entity content
-$content = $storage->readEntity($entity);
-echo "Content: " . $content;
-
-// Write to entity
-$storage->writeEntity($entity, "New content");
-
-// Delete entity
-$storage->deleteEntity($entity);
-```
-
-### 4.3. Directory Operations
-```php
-// List all entities
-$entities = $storage->listEntities();
-foreach ($entities as $entity) {
-    echo "Path: " . $entity->getPath();
-    echo "Type: " . ($entity->isDirectory() ? "Directory" : "File");
-    echo "Size: " . $entity->getSize();
+// List with prefix filter
+foreach ($service->getObjectIterator("images/") as $object) {
+    // Only objects with paths starting with "images/"
+    echo $object->getPath() . "\n";
 }
 
-// Create directory structure
-$storage->writeToPath("folder/subfolder/file.txt", "Content");
-$storage->writeToPath("folder/another-file.txt", "Another content");
-
-// List directory contents
-$folderEntities = array_filter($entities, function($entity) {
-    return strpos($entity->getPath(), "folder/") === 0;
-});
+// Get as collection
+$objects = $service->getObjects("prefix/");
+foreach ($objects as $object) {
+    // Process object
+}
 ```
 
-### 4.4. File Upload Handling
+### 5.3. URI-Based Object Creation
 ```php
-class FileUploadHandler
+use Katu\Storage\StorageServiceCollection;
+
+// Create collection of services
+$services = new StorageServiceCollection([
+    new LocalStorageService(\App\App::getFileDir()),
+    new GoogleCloudStorageService($gcsBucket),
+]);
+
+// Get object from URI (automatically finds compatible service)
+$object = $services->getObjectFromURI("gcs://jidelniplan/PRODUCTION/RECIPE_VERSION_FILES/2025/08/08/file.png");
+
+if ($object) {
+    echo "Size: " . $object->getSize();
+    echo "URI: " . $object->getURI();
+}
+```
+
+### 5.4. Streaming Large Files
+```php
+// Memory-efficient streaming
+$stream = $object->getStream();
+
+// Option 1: Read all at once
+$content = $stream->getContents();
+
+// Option 2: Process in chunks
+while (!$stream->eof()) {
+    $chunk = $stream->read(8192); // 8KB chunks
+    // Process chunk...
+}
+
+$stream->close();
+
+// Stream directly to HTTP response
+$response->getBody()->write($stream->getContents());
+```
+
+### 5.5. Local File Access
+```php
+// Get local file (for GCS, downloads and caches)
+$file = $object->getFile();
+
+// Use with other KATU file utilities
+$image = new \Katu\Tools\Images\Image($file);
+$content = $file->get();
+```
+
+### 5.6. GCS-Specific Features
+```php
+// Check if object is public
+if ($object->getIsPublic()) {
+    $publicURL = $object->getPublicURL();
+    echo "Public URL: " . $publicURL;
+}
+
+// Access preloaded metadata (if created from iterator)
+$info = $object->getStorageObjectInfo(); // Returns full GCS metadata array
+```
+
+---
+
+## 6. Performance Considerations
+
+### 6.1. Lazy Loading
+- **Metadata:** Loaded on first access, cached for subsequent calls
+- **Local File:** GCS objects download and cache on first `getFile()` call
+- **ACL:** GCS `getIsPublic()` checks ACL on first call, cached after
+
+### 6.2. Efficient Iteration
+- **GCS:** Uses `fields` parameter to fetch only needed metadata (name, contentType, size, bucket)
+- **Preloading:** Objects created during iteration have metadata preloaded
+- **No Recursion:** Both services use flat prefix-based iteration
+
+### 6.3. Streaming vs Caching
+- **`getStream()`:** Streams directly from source (memory efficient, good for large files)
+- **`getFile()`:** Downloads and caches locally (good for multiple operations on same file)
+- **Smart Caching:** `getStream()` uses cached file if available, otherwise streams from source
+
+### 6.4. Cache Invalidation
+- **Write Operations:** Cache invalidated (metadata and local file)
+- **Delete Operations:** Cache invalidated
+- **Read Operations:** Uses cached data when available
+
+---
+
+## 7. Advanced Features
+
+### 7.1. Service Collection Usage
+```php
+use Katu\Storage\StorageServiceCollection;
+
+$services = new StorageServiceCollection([
+    new LocalStorageService("/var/storage"),
+    new GoogleCloudStorageService($gcsBucket),
+]);
+
+// Automatically finds compatible service for URI
+$object = $services->getObjectFromURI("gcs://bucket/file.txt");
+if ($object) {
+    // Object from appropriate service
+}
+```
+
+### 7.2. Custom Storage Service
+```php
+class CustomStorageService extends StorageService
 {
-    private $storage;
-
-    public function __construct(Storage $storage)
+    public function getObjectIterator(?string $prefix = null): iterable
     {
-        $this->storage = $storage;
+        // Yield StorageObject instances
     }
 
-    public function handleUpload(array $file, string $targetPath): ?Entity
+    public function readPath(string $path): string
     {
-        // Validate file
-        if (!$this->validateFile($file)) {
-            return null;
-        }
-
-        // Generate unique filename
-        $filename = $this->generateUniqueFilename($file["name"]);
-        $path = $targetPath . "/" . $filename;
-
-        // Read uploaded file
-        $content = file_get_contents($file["tmp_name"]);
-
-        // Write to storage
-        $entity = $this->storage->writeToPath($path, $content);
-
-        return $entity;
+        // Read logic
     }
 
-    private function validateFile(array $file): bool
+    public function writePath(string $path, string $contents): void
     {
-        // Check for upload errors
-        if ($file["error"] !== UPLOAD_ERR_OK) {
-            return false;
-        }
-
-        // Check file size
-        if ($file["size"] > 10 * 1024 * 1024) { // 10MB limit
-            return false;
-        }
-
-        // Check file type
-        $allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
-        if (!in_array($file["type"], $allowedTypes)) {
-            return false;
-        }
-
-        return true;
+        // Write logic
     }
 
-    private function generateUniqueFilename(string $originalName): string
+    public function deleteByPath(string $path): bool
     {
-        $extension = pathinfo($originalName, PATHINFO_EXTENSION);
-        $name = pathinfo($originalName, PATHINFO_FILENAME);
-        $uniqueId = uniqid();
-
-        return $name . "_" . $uniqueId . "." . $extension;
-    }
-}
-```
-
-### 4.5. File Management System
-```php
-class FileManager
-{
-    private $storage;
-
-    public function __construct(Storage $storage)
-    {
-        $this->storage = $storage;
+        // Delete logic
     }
 
-    public function createDirectory(string $path): bool
+    public function getIsCompatibleWithURI(string $uri): bool
     {
-        try {
-            $this->storage->writeToPath($path . "/.gitkeep", "");
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
+        // Check if this service can handle the URI
     }
 
-    public function copyFile(string $sourcePath, string $targetPath): bool
+    public function getObjectByURI(string $uri): StorageObject
     {
-        try {
-            $content = $this->storage->readPath($sourcePath);
-            $this->storage->writeToPath($targetPath, $content);
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    public function moveFile(string $sourcePath, string $targetPath): bool
-    {
-        try {
-            // Copy file
-            if (!$this->copyFile($sourcePath, $targetPath)) {
-                return false;
-            }
-
-            // Delete original
-            $this->storage->deleteByPath($sourcePath);
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    public function getFileInfo(string $path): ?array
-    {
-        $entity = $this->storage->getEntity($path);
-        if (!$entity || !$entity->exists()) {
-            return null;
-        }
-
-        return [
-            "path" => $entity->getPath(),
-            "name" => $entity->getName(),
-            "extension" => $entity->getExtension(),
-            "size" => $entity->getSize(),
-            "modified" => $entity->getModifiedTime(),
-            "created" => $entity->getCreatedTime(),
-            "is_directory" => $entity->isDirectory()
-        ];
+        // Create and return StorageObject instance
     }
 }
 ```
 
 ---
 
-## 5. Advanced Features
+## 8. Path and URI Conventions
 
-### 5.1. Package Serialization
-```php
-// Serialize entity to package
-$entity = $storage->getEntity("file.txt");
-$package = $entity->getPackage();
+### 8.1. Path Format
+- **Relative:** Paths are relative to service root (not absolute)
+- **Separators:** Forward slashes (`/`) normalized across platforms
+- **Prefix-Based:** Paths treated as flat prefixes (no true directory hierarchy in GCS)
 
-// Store package in database
-$packageData = $package->getData();
-$database->store("file_packages", $packageData);
+### 8.2. URI Format
+- **Scheme:** `local://` or `gcs://`
+- **Path:** Relative path from service root
+- **GCS:** Includes bucket name: `gcs://bucket-name/path/to/file.txt`
+- **Local:** Direct path: `local://path/to/file.txt`
 
-// Restore entity from package
-$restoredPackage = new Package($packageData);
-$restoredEntity = Entity::createFromPackage($restoredPackage);
+### 8.3. Examples
 ```
+# Local URIs
+local://r/r/9/1u5v8pcxs6mrxg16hvy2radj6bu27uud.jpg
+local://documents/report.pdf
 
-### 5.2. Storage Adapter Switching
-```php
-class StorageManager
-{
-    private $adapters = [];
-    private $defaultAdapter;
-
-    public function addAdapter(string $name, Storage $adapter): void
-    {
-        $this->adapters[$name] = $adapter;
-    }
-
-    public function setDefaultAdapter(string $name): void
-    {
-        $this->defaultAdapter = $this->adapters[$name];
-    }
-
-    public function getAdapter(string $name = null): Storage
-    {
-        if ($name && isset($this->adapters[$name])) {
-            return $this->adapters[$name];
-        }
-        return $this->defaultAdapter;
-    }
-
-    public function writeToAdapter(string $adapterName, string $path, $content): Entity
-    {
-        $adapter = $this->getAdapter($adapterName);
-        return $adapter->writeToPath($path, $content);
-    }
-}
-
-// Usage
-$manager = new StorageManager();
-$manager->addAdapter("local", new Local("/var/storage"));
-$manager->addAdapter("s3", new S3("bucket", "region", "key", "secret"));
-$manager->setDefaultAdapter("local");
-
-// Write to specific adapter
-$entity = $manager->writeToAdapter("s3", "file.txt", "content");
-```
-
-### 5.3. File Synchronization
-```php
-class FileSynchronizer
-{
-    private $sourceStorage;
-    private $targetStorage;
-
-    public function __construct(Storage $source, Storage $target)
-    {
-        $this->sourceStorage = $source;
-        $this->targetStorage = $target;
-    }
-
-    public function synchronizeDirectory(string $path): array
-    {
-        $results = [];
-        $entities = $this->sourceStorage->listEntities();
-
-        foreach ($entities as $entity) {
-            if (strpos($entity->getPath(), $path) === 0) {
-                $result = $this->synchronizeFile($entity);
-                $results[] = $result;
-            }
-        }
-
-        return $results;
-    }
-
-    private function synchronizeFile(Entity $entity): array
-    {
-        $sourcePath = $entity->getPath();
-        $targetPath = $sourcePath; // Same path in target
-
-        try {
-            // Check if target exists
-            $targetEntity = $this->targetStorage->getEntity($targetPath);
-
-            if (!$targetEntity || !$targetEntity->exists()) {
-                // Copy file
-                $content = $this->sourceStorage->readEntity($entity);
-                $this->targetStorage->writeToPath($targetPath, $content);
-                return ["action" => "copied", "path" => $sourcePath];
-            } else {
-                // Check if source is newer
-                if ($entity->getModifiedTime() > $targetEntity->getModifiedTime()) {
-                    $content = $this->sourceStorage->readEntity($entity);
-                    $this->targetStorage->writeToPath($targetPath, $content);
-                    return ["action" => "updated", "path" => $sourcePath];
-                } else {
-                    return ["action" => "skipped", "path" => $sourcePath];
-                }
-            }
-        } catch (Exception $e) {
-            return ["action" => "error", "path" => $sourcePath, "error" => $e->getMessage()];
-        }
-    }
-}
+# GCS URIs
+gcs://jidelniplan/PRODUCTION/RECIPE_VERSION_FILES/2025/08/08/file.png
+gcs://bucket-name/folder/subfolder/file.jpg
 ```
 
 ---
 
-## 6. Configuration
+## 9. Best Practices
 
-### 6.1. Local Storage Configuration
-```php
-// Local storage with custom directory
-$storage = new Local("/var/app/storage", 0755);
+### 9.1. Service vs Object
+- **Use Service:** For listing, path-based operations, URI checking
+- **Use Object:** For individual file operations (read, write, delete, metadata)
 
-// With custom permissions
-$storage->setPermissions(0644);
-$storage->setDirectoryPermissions(0755);
-```
+### 9.2. Performance
+- **Iteration:** Use `getObjectIterator()` for large datasets (memory efficient)
+- **Streaming:** Use `getStream()` for large files to avoid loading into memory
+- **Caching:** Use `getFile()` when you need multiple operations on the same file
+- **Prefixes:** Use prefix filtering to limit iteration scope
 
-### 6.2. S3 Storage Configuration
-```php
-// S3 storage with custom settings
-$storage = new S3("my-bucket", "us-east-1", "access-key", "secret-key");
-$storage->setPrefix("app-files/");
-$storage->setRegion("us-west-2");
-```
+### 9.3. Error Handling
+- **Exceptions:** Service methods throw exceptions on errors
+- **Return Values:** Object methods return appropriate types (bool, string, etc.)
+- **Validation:** Objects validate service type in their methods
 
----
-
-## 7. Best Practices
-
-### 7.1. Path Management
-- Use consistent path separators
-- Implement path validation
-- Avoid path traversal attacks
-- Use hierarchical organization
-
-### 7.2. Error Handling
-- Handle storage exceptions
-- Implement fallback mechanisms
-- Log storage operations
-- Validate file operations
-
-### 7.3. Performance
-- Use appropriate storage adapters
-- Implement caching for frequently accessed files
-- Optimize file operations
-- Monitor storage usage
-
-### 7.4. Security
-- Validate file types and sizes
-- Implement access controls
-- Use secure file permissions
-- Sanitize file paths
+### 9.4. Path Management
+- **Consistency:** Always use relative paths (normalized to forward slashes)
+- **Prefix Matching:** Treat paths as flat prefixes, not hierarchical directories
+- **URI Parsing:** Use service methods (`extractPathFromURI()`) for URI parsing
 
 ---
 
-## 8. Integration Examples
+## 10. Integration Examples
 
-### 8.1. Model Integration
+### 10.1. Model Integration
 ```php
 class Document extends Model
 {
-    public function getFileEntity(): ?Entity
+    public function getStorageObject(): ?StorageObject
     {
-        if (!$this->filePath) {
+        if (!$this->uri) {
             return null;
         }
 
-        $storage = $this->getStorage();
-        return $storage->getEntity($this->filePath);
+        $services = new StorageServiceCollection([
+            new LocalStorageService(\App\App::getFileDir()),
+            new GoogleCloudStorageService($this->getGCSBucket()),
+        ]);
+
+        return $services->getObjectFromURI($this->uri);
     }
 
     public function getFileContent(): ?string
     {
-        $entity = $this->getFileEntity();
-        if (!$entity) {
-            return null;
-        }
-
-        $storage = $this->getStorage();
-        return $storage->readEntity($entity);
+        $object = $this->getStorageObject();
+        return $object ? $object->read() : null;
     }
 
     public function setFileContent(string $content): void
     {
-        $storage = $this->getStorage();
-        $entity = $storage->writeToPath($this->filePath, $content);
-        $this->filePath = $entity->getPath();
+        $service = new LocalStorageService(\App\App::getFileDir());
+        $object = $service->getObjectByURI($this->uri);
+        $object->write($content);
     }
 }
 ```
 
-### 8.2. Controller Integration
+### 10.2. Controller Integration
 ```php
 class FileController extends Controller
 {
-    public function uploadFile(ServerRequestInterface $request): ResponseInterface
+    public function downloadFile(ServerRequestInterface $request): ResponseInterface
     {
-        $uploadedFile = $request->getUploadedFiles()["file"] ?? null;
-        if (!$uploadedFile) {
-            return $this->errorResponse("No file uploaded");
+        $uri = $request->getQueryParams()["uri"] ?? null;
+        if (!$uri) {
+            throw new \Katu\Exceptions\NotFoundException;
         }
 
-        $handler = new FileUploadHandler($this->getStorage());
-        $entity = $handler->handleUpload($uploadedFile->toArray(), "uploads");
-
-        if (!$entity) {
-            return $this->errorResponse("File upload failed");
-        }
-
-        return $this->jsonResponse([
-            "success" => true,
-            "file_path" => $entity->getPath(),
-            "file_size" => $entity->getSize()
+        $services = new StorageServiceCollection([
+            new LocalStorageService(\App\App::getFileDir()),
+            new GoogleCloudStorageService($this->getGCSBucket()),
         ]);
+
+        $object = $services->getObjectFromURI($uri);
+        if (!$object || !$object->exists()) {
+            throw new \Katu\Exceptions\NotFoundException;
+        }
+
+        // Stream file to response
+        $stream = $object->getStream();
+        return $response
+            ->withHeader("Content-Type", $object->getType() ?: "application/octet-stream")
+            ->withHeader("Content-Length", (string)$object->getSize())
+            ->withBody($stream);
     }
 }
+```
+
+### 10.3. Image Processing
+```php
+// Get file for image processing
+$object = $services->getObjectFromURI("gcs://bucket/image.jpg");
+$file = $object->getFile();  // Downloads and caches
+
+// Use with image utilities
+$image = new \Katu\Tools\Images\Image($file);
+$thumbnail = $image->getImageVersion("THUMBNAIL");
 ```
 
 ---
 
-## 9. Common Patterns
+## 11. Troubleshooting
 
-### 9.1. File Upload Pattern
-```php
-// Complete file upload with storage
-$upload = new Upload($_FILES["file"]);
-if ($upload->isValid()) {
-    $storage = new FilesystemStorage("/uploads");
-    $entity = $storage->writeToPath($upload->getName(), $upload->getContents());
+### 11.1. Common Issues
+- **Path Not Found:** Check that paths are relative to service root
+- **Permission Errors:** Verify filesystem permissions for local storage
+- **GCS Errors:** Check bucket permissions and credentials
+- **Cache Issues:** Clear cache by recreating object or invalidating manually
 
-    // Store entity reference in database
-    $file = new File();
-    $file->path = $entity->getPath();
-    $file->size = $entity->getSize();
-    $file->persist();
-}
-```
-
-### 9.2. Cloud Storage Pattern
-```php
-// Google Cloud Storage integration
-$storage = new GoogleCloudStorage([
-    "project_id" => "my-project",
-    "bucket" => "my-bucket"
-]);
-
-$entity = $storage->writeToPath("documents/file.pdf", $content);
-$url = $entity->getURL();
-```
-
-### 9.3. Storage Abstraction
-```php
-// Storage abstraction for different adapters
-class FileManager
-{
-    private $storage;
-
-    public function __construct(Storage $storage)
-    {
-        $this->storage = $storage;
-    }
-
-    public function storeFile(string $path, $content): Entity
-    {
-        return $this->storage->writeToPath($path, $content);
-    }
-}
-```
-
----
-
-## 10. Troubleshooting
-
-### 10.1. Common Issues
-- **Permission Errors:** Check file system permissions
-- **Path Issues:** Verify path format and existence
-- **Storage Failures:** Check adapter configuration
-- **Memory Issues:** Monitor file sizes and memory usage
-
-### 10.2. Debugging
-- Enable storage logging
-- Check adapter status
-- Verify file operations
-- Monitor storage performance
+### 11.2. Debugging
+- **Check URI:** Verify URI format matches expected scheme
+- **Service Compatibility:** Use `getIsCompatibleWithURI()` to verify service can handle URI
+- **Object Existence:** Always check `exists()` before operations
+- **Metadata Loading:** Check if metadata is preloaded (during iteration) or lazy-loaded
 
 ---
 

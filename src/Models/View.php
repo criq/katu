@@ -477,7 +477,7 @@ abstract class View extends Base
 
 	public static function getLastCachedTemporaryFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\Temporary("databases", static::getConnection()->getConfig()->getDatabase(), "views", "cached", static::TABLE);
+		return new \Katu\Files\File(\App\App::getTemporaryDir(), "databases", static::getConnection()->getConfig()->getDatabase(), "views", "cached", static::TABLE);
 	}
 
 	public static function updateLastCachedTime()
@@ -500,7 +500,7 @@ abstract class View extends Base
 
 	public static function getLastMaterializedTemporaryFile(): \Katu\Files\File
 	{
-		return new \Katu\Files\Temporary("databases", static::getConnection()->getConfig()->getDatabase(), "views", "materialized", static::TABLE);
+		return new \Katu\Files\File(\App\App::getTemporaryDir(), "databases", static::getConnection()->getConfig()->getDatabase(), "views", "materialized", static::TABLE);
 	}
 
 	public static function updateLastMaterializedTime()
