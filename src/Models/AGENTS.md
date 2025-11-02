@@ -193,6 +193,8 @@ File model for file management.
 ### 4.5. FileAttachment (`Katu\Models\Presets\FileAttachment`)
 **Location:** `Presets/FileAttachment.php`
 
+> **Deprecated:** This class is deprecated. Use application-specific file attachment models instead.
+
 File attachment model for model-file relationships.
 
 ### 4.6. Role (`Katu\Models\Presets\Role`)

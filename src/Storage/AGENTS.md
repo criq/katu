@@ -20,7 +20,7 @@ This document provides comprehensive technical documentation for the Storage sys
 ### 1.2. Architecture
 - **Core Classes:** `StorageService` (manages storage backend), `StorageObject` (represents individual files)
 - **Service Pattern:** Service manages listing and path operations; Objects handle individual file operations
-- **Collections:** `StorageServiceCollection` (multiple services), `StorageObjectCollection` (multiple objects)
+- **Collections:** `StorageServiceCollection` (multiple services with filtering), `StorageObjectCollection` (multiple objects)
 - **Implementations:** `LocalStorageService`/`LocalStorageObject` (filesystem), `GoogleCloudStorageService`/`GoogleCloudStorageObject` (GCS)
 
 ---
@@ -35,14 +35,18 @@ Abstract base class for storage services:
 ```php
 // Abstract methods:
 abstract public function deleteByPath(string $path): bool
+abstract public function getIsCloud(): bool
 abstract public function getIsCompatibleWithURI(string $uri): bool
+abstract public function getIsLocal(): bool
 abstract public function getObjectByURI(string $uri): StorageObject
 abstract public function getObjectIterator(?string $prefix = null): iterable
 abstract public function readPath(string $path): string
-abstract public function writePath(string $path, string $contents): void
+abstract public function writePath(string $path, string $contents): StorageObject
 
 // Concrete methods:
 public function getObjects(?string $prefix = null): StorageObjectCollection
+public function setIsWritable(bool $isWritable): StorageService
+public function getIsWritable(): bool
 ```
 
 **Key Features:**
@@ -51,6 +55,8 @@ public function getObjects(?string $prefix = null): StorageObjectCollection
 - Path-based operations (read, write, delete)
 - URI compatibility checking and object creation
 - Flat prefix-based iteration (treats paths as prefixes, not hierarchical)
+- Writable flag management (can disable write operations)
+- Service type identification (local vs cloud)
 
 ### 2.2. StorageObject (`Katu\Storage\StorageObject`)
 **Location:** `StorageObject.php`
@@ -59,31 +65,42 @@ Abstract base class for storage objects (individual files):
 
 ```php
 // Abstract methods:
+abstract public function copyTo(StorageService $destinationService, string $destinationPath): StorageObject
 abstract public function delete(): bool
 abstract public function exists(): bool
 abstract public function getFile(): \Katu\Files\File
 abstract public function getSize(): \Katu\Types\TFileSize
 abstract public function getStream(): \Psr\Http\Message\StreamInterface
+abstract public function getTimeCreated(): ?\Katu\Tools\Calendar\Time
+abstract public function getTimeModified(): ?\Katu\Tools\Calendar\Time
 abstract public function getType(): ?string  // MIME type
 abstract public function getURI(): string
 abstract public function isReadable(): bool
 abstract public function isWritable(): bool
+abstract public function moveTo(StorageService $destinationService, string $destinationPath): StorageObject
 abstract public function read(): string
 abstract public function write(string $contents): StorageObject
 
 // Concrete methods:
+public function __construct(StorageService $service, string $path)
 public function getName(): string  // basename of path
 public function getPath(): string
+public function getExtension(): string  // lowercase file extension
+public function getDirectory(): string  // directory path (empty string if root)
 public function getService(): StorageService
+public function setService(StorageService $service): StorageObject
+public function setPath(string $path): StorageObject
 ```
 
 **Key Features:**
 - Represents individual files/objects
 - URI generation (scheme://path format)
-- File operations (read, write, delete)
-- Metadata access (size, type, permissions)
+- File operations (read, write, delete, copy, move)
+- Metadata access (size, type, permissions, timestamps)
 - Local file caching and streaming support
 - MIME type detection
+- Path and directory utilities
+- Cross-service copy/move operations
 
 ---
 
@@ -125,6 +142,12 @@ if ($service->getIsCompatibleWithURI("local://path/to/file.txt")) {
 - Path normalization (handles both `/` and `\`)
 - Automatic directory creation on write
 - Relative paths (paths are relative to service root)
+- URI extraction and path conversion utilities
+- Full path resolution with `getFullPath()`
+
+**Additional Methods:**
+- `getFullPath(string $path): string` - Resolves relative path to absolute filesystem path
+- `extractPathFromURI(string $uri): string` - Extracts relative path from `local://` URI
 
 ### 3.2. GoogleCloudStorageService (`Katu\Storage\Services\GoogleCloudStorageService`)
 **Location:** `Services/GoogleCloudStorageService.php`
@@ -159,8 +182,14 @@ if ($service->getIsCompatibleWithURI("gcs://bucket-name/path/to/file.txt")) {
 - Single bucket per service instance
 - Efficient API calls (uses `fields` parameter to fetch only needed metadata)
 - Flat prefix-based listing (no delimiter, treats paths as prefixes)
-- Preloads metadata during iteration (name, contentType, size, bucket)
+- Preloads metadata during iteration (name, contentType, size, bucket, timeCreated, updated)
 - Lazy loading for underlying GCS StorageObject
+- URI extraction and path conversion utilities
+
+**Additional Methods:**
+- `getName(): string` - Returns bucket name
+- `getBucket(): \Google\Cloud\Storage\Bucket` - Returns underlying GCS bucket instance
+- `extractPathFromURI(string $uri): string` - Extracts relative path from `gcs://bucket-name/path` URI
 
 ---
 
@@ -197,6 +226,15 @@ foreach ($service->getObjectIterator() as $object) {
     // File/Stream access
     $file = $object->getFile();         // \Katu\Files\File instance
     $stream = $object->getStream();     // PSR-7 StreamInterface
+
+    // Path utilities
+    $name = $object->getName();         // "file.txt"
+    $extension = $object->getExtension(); // "txt" (lowercase)
+    $directory = $object->getDirectory(); // "path/to" (empty string if root)
+
+    // Timestamps
+    $created = $object->getTimeCreated();  // Time object or null
+    $modified = $object->getTimeModified(); // Time object or null
 }
 ```
 
@@ -204,11 +242,25 @@ foreach ($service->getObjectIterator() as $object) {
 - Direct filesystem access (no caching needed)
 - MIME type detection using `finfo`
 - Standard file operations with permission checking
+- Timestamp access (creation and modification times from filesystem)
+- Cross-service copy and move operations
+- Path and directory utilities (name, extension, directory)
 
 ### 4.2. GoogleCloudStorageObject (`Katu\Storage\Services\GoogleCloudStorageObject`)
 **Location:** `Services/GoogleCloudStorageObject.php`
 
 Google Cloud Storage object representation:
+
+**Constructor:**
+```php
+// Standard constructor (lazy-loads metadata)
+$object = new GoogleCloudStorageObject($service, $path);
+
+// With preloaded metadata (used during iteration for efficiency)
+$object = new GoogleCloudStorageObject($service, $path, $info);
+```
+
+When created with preloaded metadata (via iterator), subsequent calls to `getStorageObjectInfo()`, `getType()`, `getSize()`, etc. will use the cached metadata instead of making API calls.
 
 ```php
 // Created via service
@@ -235,22 +287,33 @@ foreach ($service->getObjectIterator() as $object) {
 
     // File/Stream access
     $file = $object->getFile();         // Downloads and caches locally
-    $stream = $object->getStream();     // Streams from GCS or cached file
+    $stream = $object->getStream();     // Streams from GCS or cached file (smart fallback)
+
+    // Path utilities
+    $name = $object->getName();         // "file.jpg"
+    $extension = $object->getExtension(); // "jpg" (lowercase)
+    $directory = $object->getDirectory(); // "path/to" (empty string if root)
+
+    // Timestamps
+    $created = $object->getTimeCreated();  // Time object or null (from timeCreated)
+    $modified = $object->getTimeModified(); // Time object or null (from updated)
 
     // GCS-specific
-    $isPublic = $object->getIsPublic(); // Checks ACL
-    $publicURL = $object->getPublicURL(); // Returns TURL if public
+    $isPublic = $object->getIsPublic(); // Checks ACL (cached after first check)
+    $publicURL = $object->getPublicURL(); // Returns TURL if public, null otherwise
 }
 ```
 
 **Key Features:**
 - Lazy loading: Metadata loaded on first access (cached after)
-- Efficient iteration: Metadata preloaded during `getObjectIterator()`
+- Efficient iteration: Metadata preloaded during `getObjectIterator()` (includes timeCreated, updated)
 - Local file caching: `getFile()` downloads and caches to temp directory
-- Streaming: `getStream()` streams directly from GCS or uses cached file
+- Streaming: `getStream()` streams directly from GCS or uses cached file (smart fallback)
 - Cache invalidation: Cache cleared on write/delete operations
-- ACL support: `getIsPublic()` checks object ACL (cached after first check)
+- ACL support: `getIsPublic()` checks object ACL (cached after first check, can be preloaded from metadata)
 - Public URL: Generates public URL if object is publicly accessible
+- Timestamp access: Creation and modification times from GCS metadata (RFC 3339 format)
+- Cross-service copy and move operations (preserves content type for GCS destinations)
 
 ---
 
@@ -388,6 +451,26 @@ if ($object->getIsPublic()) {
 
 // Access preloaded metadata (if created from iterator)
 $info = $object->getStorageObjectInfo(); // Returns full GCS metadata array
+
+// Get timestamps
+$created = $object->getTimeCreated();  // Returns Time object or null
+$modified = $object->getTimeModified();  // Returns Time object or null
+```
+
+### 5.7. Copy and Move Operations
+```php
+// Copy object to another service
+$localService = new LocalStorageService("/var/storage");
+$gcsService = new GoogleCloudStorageService($bucket);
+
+$sourceObject = $localService->getObjectByURI("local://source/file.jpg");
+$destinationObject = $sourceObject->copyTo($gcsService, "destination/file.jpg");
+
+// Move object (copy + delete source)
+$movedObject = $sourceObject->moveTo($gcsService, "destination/file.jpg");
+// Source object is deleted, destination object is returned
+
+// Cross-service operations preserve metadata (e.g., content type for GCS)
 ```
 
 ---
@@ -400,9 +483,10 @@ $info = $object->getStorageObjectInfo(); // Returns full GCS metadata array
 - **ACL:** GCS `getIsPublic()` checks ACL on first call, cached after
 
 ### 6.2. Efficient Iteration
-- **GCS:** Uses `fields` parameter to fetch only needed metadata (name, contentType, size, bucket)
-- **Preloading:** Objects created during iteration have metadata preloaded
+- **GCS:** Uses `fields` parameter to fetch only needed metadata (name, contentType, size, bucket, timeCreated, updated)
+- **Preloading:** Objects created during iteration have metadata preloaded (including timestamps and ACL info)
 - **No Recursion:** Both services use flat prefix-based iteration
+- **Local:** Recursive directory iteration with prefix filtering
 
 ### 6.3. Streaming vs Caching
 - **`getStream()`:** Streams directly from source (memory efficient, good for large files)
@@ -432,40 +516,76 @@ $object = $services->getObjectFromURI("gcs://bucket/file.txt");
 if ($object) {
     // Object from appropriate service
 }
+
+// Filter services by type
+$localServices = $services->filterLocal();
+$cloudServices = $services->filterCloud();
+$writableServices = $services->filterWritable();
+
+// Get primary services
+$primaryLocal = $services->getPrimaryLocal();  // Returns ?StorageService (check instanceof LocalStorageService)
+$primaryCloud = $services->getPrimaryCloud();  // Returns ?StorageService (check instanceof GoogleCloudStorageService)
+$firstService = $services->getFirst();  // Returns ?StorageService
 ```
 
 ### 7.2. Custom Storage Service
 ```php
 class CustomStorageService extends StorageService
 {
+    public function getIsLocal(): bool
+    {
+        // Return true for local filesystem-based services
+        return false;
+    }
+
+    public function getIsCloud(): bool
+    {
+        // Return true for cloud-based services
+        return true;
+    }
+
     public function getObjectIterator(?string $prefix = null): iterable
     {
         // Yield StorageObject instances
+        foreach ($this->listObjects($prefix) as $path) {
+            yield new CustomStorageObject($this, $path);
+        }
     }
 
     public function readPath(string $path): string
     {
-        // Read logic
+        // Read logic - return file contents as string
+        return $this->readFromBackend($path);
     }
 
-    public function writePath(string $path, string $contents): void
+    public function writePath(string $path, string $contents): StorageObject
     {
-        // Write logic
+        // Write logic - must return StorageObject instance
+        $this->writeToBackend($path, $contents);
+        return new CustomStorageObject($this, $path);
     }
 
     public function deleteByPath(string $path): bool
     {
-        // Delete logic
+        // Delete logic - return true on success, false on failure
+        return $this->deleteFromBackend($path);
     }
 
     public function getIsCompatibleWithURI(string $uri): bool
     {
-        // Check if this service can handle the URI
+        // Check if this service can handle the URI scheme
+        return strpos($uri, "custom://") === 0;
     }
 
     public function getObjectByURI(string $uri): StorageObject
     {
         // Create and return StorageObject instance
+        if (!$this->getIsCompatibleWithURI($uri)) {
+            throw new \InvalidArgumentException("This service cannot handle the given URI: {$uri}");
+        }
+
+        $path = $this->extractPathFromURI($uri);
+        return new CustomStorageObject($this, $path);
     }
 }
 ```
@@ -501,8 +621,9 @@ gcs://bucket-name/folder/subfolder/file.jpg
 ## 9. Best Practices
 
 ### 9.1. Service vs Object
-- **Use Service:** For listing, path-based operations, URI checking
-- **Use Object:** For individual file operations (read, write, delete, metadata)
+- **Use Service:** For listing, path-based operations, URI checking, service management
+- **Use Object:** For individual file operations (read, write, delete, metadata, copy, move)
+- **Use Collection:** For managing multiple services, filtering by type/writable status, URI resolution
 
 ### 9.2. Performance
 - **Iteration:** Use `getObjectIterator()` for large datasets (memory efficient)
@@ -614,6 +735,54 @@ $thumbnail = $image->getImageVersion("THUMBNAIL");
 - **Service Compatibility:** Use `getIsCompatibleWithURI()` to verify service can handle URI
 - **Object Existence:** Always check `exists()` before operations
 - **Metadata Loading:** Check if metadata is preloaded (during iteration) or lazy-loaded
+
+---
+
+## 12. Collection Classes
+
+### 12.1. StorageServiceCollection (`Katu\Storage\StorageServiceCollection`)
+**Location:** `StorageServiceCollection.php`
+
+Collection of storage services with filtering and selection capabilities:
+
+```php
+// Filtering methods:
+public function filterLocal(): StorageServiceCollection
+public function filterCloud(): StorageServiceCollection
+public function filterWritable(): StorageServiceCollection
+
+// Selection methods:
+public function getFirst(): ?StorageService
+public function getPrimaryLocal(): ?StorageService  // Returns first writable local service (may be LocalStorageService, check instanceof)
+public function getPrimaryCloud(): ?StorageService  // Returns first writable cloud service (may be GoogleCloudStorageService, check instanceof)
+
+// URI resolution:
+public function getObjectFromURI(string $uri): ?StorageObject
+```
+
+**Key Features:**
+- Extends `ArrayObject` for array-like access
+- Automatic service selection based on URI compatibility
+- Filtering by service type (local/cloud) and writable status
+- Primary service selection for common operations
+
+### 12.2. StorageObjectCollection (`Katu\Storage\StorageObjectCollection`)
+**Location:** `StorageObjectCollection.php`
+
+Collection of storage objects:
+
+```php
+// Simple ArrayObject extension
+$collection = new StorageObjectCollection([$object1, $object2, $object3]);
+foreach ($collection as $object) {
+    // Process object
+}
+```
+
+**Key Features:**
+- Extends `ArrayObject` for array-like access
+- Used by `StorageService::getObjects()` to return collections from iterators
+- Standard array operations (iteration, counting, etc.)
 
 ---
 

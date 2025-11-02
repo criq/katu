@@ -70,7 +70,7 @@ public function getModifiedTime(): ?\Katu\Tools\Calendar\Time
 public function getHash($function = "sha1"): string
 public function getURL(): ?\Katu\Types\TURL
 public function getHashedURL(?string $algo = "sha1", ?string $paramName = "hash"): \Katu\Types\TURL
-public function getStream(): \Psr\Http\Message\StreamInterface
+public function getStream(string $mode = "r"): \Psr\Http\Message\StreamInterface
 ```
 
 **Key Features:**
@@ -411,8 +411,11 @@ if ($file->isPhpFile()) {
 
 ### 9.1. PSR-7 Stream Support
 ```php
-// Get file stream
+// Get file stream (default mode is "r" for read)
 $stream = $file->getStream();
+
+// Get stream with specific mode
+$writeStream = $file->getStream("w");
 
 // Use with PSR-7 response
 $response = $response->withBody($stream);

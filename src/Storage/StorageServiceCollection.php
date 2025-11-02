@@ -47,12 +47,12 @@ class StorageServiceCollection extends \ArrayObject
 		return array_values($this->getArrayCopy())[0] ?? null;
 	}
 
-	public function getPrimaryLocal(): ?LocalStorageService
+	public function getPrimaryLocal(): ?StorageService
 	{
 		return $this->filterLocal()->filterWritable()->getFirst();
 	}
 
-	public function getPrimaryCloud(): ?LocalStorageService
+	public function getPrimaryCloud(): ?StorageService
 	{
 		return $this->filterCloud()->filterWritable()->getFirst();
 	}
