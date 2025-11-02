@@ -2,6 +2,8 @@
 
 namespace Katu\Storage;
 
+use Katu\Storage\Services\LocalStorageService;
+
 class StorageServiceCollection extends \ArrayObject
 {
 	public function filterLocal(): StorageServiceCollection
@@ -43,5 +45,15 @@ class StorageServiceCollection extends \ArrayObject
 	public function getFirst(): ?StorageService
 	{
 		return array_values($this->getArrayCopy())[0] ?? null;
+	}
+
+	public function getPrimaryLocal(): ?LocalStorageService
+	{
+		return $this->filterLocal()->filterWritable()->getFirst();
+	}
+
+	public function getPrimaryCloud(): ?LocalStorageService
+	{
+		return $this->filterCloud()->filterWritable()->getFirst();
 	}
 }
