@@ -98,6 +98,25 @@ class ImageVersion implements RestResponseInterface
 		}
 	}
 
+	public function getMime(): ?string
+	{
+		try {
+			$file = $this->getFile();
+			if (!$file) {
+				return null;
+			}
+
+			// Ensure version image exists to get accurate MIME type
+			$this->getVersionImage();
+
+			return $file->getMime();
+		} catch (\Throwable $e) {
+			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
+
+			return null;
+		}
+	}
+
 	public function getEmbedSrc(): ?string
 	{
 		try {
@@ -126,6 +145,7 @@ class ImageVersion implements RestResponseInterface
 
 		return new RestResponse([
 			"url" => (string)$this->getURL(),
+			"type" => $this->getMime(),
 			"extension" => $this->getVersion()->getExtension(),
 			"size" => $this->getFile()->getSize()->getInB()->getAmount(),
 			"dimensions" => $versionImage ? $versionImage->getImageSize()->getRestResponse($request, $options) : null,
