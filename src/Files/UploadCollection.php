@@ -70,4 +70,14 @@ class UploadCollection extends \ArrayObject
 	{
 		return array_values($this->getArrayCopy())[0] ?? null;
 	}
+
+	public function getFiles(): FileCollection
+	{
+		return new FileCollection(array_map(function (Upload $upload) {
+			$file = File::createTemporaryWithFileName($upload->getFileName());
+			$file->set($upload->getStream()->getContents());
+
+			return $file;
+		}, $this->filterWithoutError()->getArrayCopy()));
+	}
 }
