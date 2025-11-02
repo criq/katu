@@ -2,8 +2,6 @@
 
 namespace Katu\Storage;
 
-use Katu\Storage\Services\LocalStorageService;
-
 class StorageServiceCollection extends \ArrayObject
 {
 	public function filterLocal(): StorageServiceCollection
