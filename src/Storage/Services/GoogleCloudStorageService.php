@@ -90,12 +90,12 @@ class GoogleCloudStorageService extends StorageService
 
 	public function getIsCompatibleWithURI(string $uri): bool
 	{
-		if (strpos($uri, "gcs://") !== 0) {
+		if (strpos($uri, "gcs://") !== 0 && strpos($uri, "gs://") !== 0) {
 			return false;
 		}
 
-		// Extract bucket name from URI: gcs://bucket/path/to/file
-		$pathAfterScheme = substr($uri, 6); // Remove "gcs://" prefix
+		// Extract bucket name from URI: gcs://bucket/path/to/file or gs://bucket/path/to/file
+		$pathAfterScheme = $this->removeSchemeFromURI($uri);
 		$firstSlashPos = strpos($pathAfterScheme, "/");
 
 		if ($firstSlashPos === false) {
@@ -110,12 +110,12 @@ class GoogleCloudStorageService extends StorageService
 
 	public function extractPathFromURI(string $uri): string
 	{
-		if (strpos($uri, "gcs://") !== 0) {
-			throw new \InvalidArgumentException("URI must start with 'gcs://'");
+		if (strpos($uri, "gcs://") !== 0 && strpos($uri, "gs://") !== 0) {
+			throw new \InvalidArgumentException("URI must start with 'gcs://' or 'gs://'");
 		}
 
-		// Extract path from URI: gcs://bucket/path/to/file
-		$pathAfterScheme = substr($uri, 6); // Remove "gcs://" prefix
+		// Extract path from URI: gcs://bucket/path/to/file or gs://bucket/path/to/file
+		$pathAfterScheme = $this->removeSchemeFromURI($uri);
 		$firstSlashPos = strpos($pathAfterScheme, "/");
 
 		if ($firstSlashPos === false) {
@@ -123,6 +123,18 @@ class GoogleCloudStorageService extends StorageService
 		}
 
 		return substr($pathAfterScheme, $firstSlashPos + 1);
+	}
+
+	private function removeSchemeFromURI(string $uri): string
+	{
+		if (strpos($uri, "gcs://") === 0) {
+			return substr($uri, 6); // Remove "gcs://" prefix
+		}
+		if (strpos($uri, "gs://") === 0) {
+			return substr($uri, 5); // Remove "gs://" prefix
+		}
+
+		return $uri;
 	}
 
 	public function getObjectByURI(string $uri): GoogleCloudStorageObject
