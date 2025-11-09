@@ -24,7 +24,7 @@ class GoogleCloudStorageObject extends StorageObject
 		}
 	}
 
-	private function getStorageObject(): \Google\Cloud\Storage\StorageObject
+	public function getStorageObject(): \Google\Cloud\Storage\StorageObject
 	{
 		if ($this->storageObject === null) {
 			$service = $this->getService();

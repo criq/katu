@@ -4,6 +4,7 @@ namespace Katu\Storage;
 
 use Katu\Tools\Calendar\Time;
 use Katu\Types\TFileSize;
+use Katu\Types\TURL;
 use Psr\Http\Message\StreamInterface;
 
 abstract class StorageObject
@@ -74,5 +75,20 @@ abstract class StorageObject
 		$directory = dirname($this->getPath());
 
 		return $directory === "." ? "" : $directory;
+	}
+
+	public function getPublicURL(): ?TURL
+	{
+		return null;
+	}
+
+	public function getIsImage(): bool
+	{
+		return strpos($this->getType(), "image/") === 0;
+	}
+
+	public function getPortableURI(): string
+	{
+		return base64_encode($this->getURI());
 	}
 }

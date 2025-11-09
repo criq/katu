@@ -4,6 +4,13 @@ namespace Katu\Storage;
 
 class StorageServiceCollection extends \ArrayObject
 {
+	public function filterByFingerprint(string $fingerprint): StorageServiceCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (StorageService $storageService) use ($fingerprint) {
+			return $storageService->getFingerprint() == $fingerprint;
+		})));
+	}
+
 	public function filterLocal(): StorageServiceCollection
 	{
 		return new static(array_values(array_filter($this->getArrayCopy(), function (StorageService $service) {
@@ -43,6 +50,11 @@ class StorageServiceCollection extends \ArrayObject
 	public function getFirst(): ?StorageService
 	{
 		return array_values($this->getArrayCopy())[0] ?? null;
+	}
+
+	public function getPrimary(): ?StorageService
+	{
+		return $this->filterWritable()->getFirst();
 	}
 
 	public function getPrimaryLocal(): ?StorageService

@@ -13,6 +13,19 @@ class LocalStorageService extends StorageService
 		$this->setPath($path);
 	}
 
+	public function getFingerprintArray(): array
+	{
+		return [
+			static::class,
+			$this->getPath(),
+		];
+	}
+
+	public function getName(): string
+	{
+		return $this->getPath();
+	}
+
 	public function getIsLocal(): bool
 	{
 		return true;

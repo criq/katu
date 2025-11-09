@@ -13,6 +13,14 @@ class GoogleCloudStorageService extends StorageService
 		$this->setBucket($bucket);
 	}
 
+	public function getFingerprintArray(): array
+	{
+		return [
+			static::class,
+			$this->getBucket()->name(),
+		];
+	}
+
 	public function getIsLocal(): bool
 	{
 		return false;
@@ -90,39 +98,52 @@ class GoogleCloudStorageService extends StorageService
 
 	public function getIsCompatibleWithURI(string $uri): bool
 	{
-		if (strpos($uri, "gcs://") !== 0 && strpos($uri, "gs://") !== 0) {
-			return false;
+		// Check for gcs:// or gs:// URIs
+		if (strpos($uri, "gcs://") === 0 || strpos($uri, "gs://") === 0) {
+			// Extract bucket name from URI: gcs://bucket/path/to/file or gs://bucket/path/to/file
+			$pathAfterScheme = $this->removeSchemeFromURI($uri);
+			$firstSlashPos = strpos($pathAfterScheme, "/");
+
+			if ($firstSlashPos === false) {
+				// No path, just bucket name
+				$bucketName = $pathAfterScheme;
+			} else {
+				$bucketName = substr($pathAfterScheme, 0, $firstSlashPos);
+			}
+
+			return $bucketName === $this->getName();
 		}
 
-		// Extract bucket name from URI: gcs://bucket/path/to/file or gs://bucket/path/to/file
-		$pathAfterScheme = $this->removeSchemeFromURI($uri);
-		$firstSlashPos = strpos($pathAfterScheme, "/");
-
-		if ($firstSlashPos === false) {
-			// No path, just bucket name
-			$bucketName = $pathAfterScheme;
-		} else {
-			$bucketName = substr($pathAfterScheme, 0, $firstSlashPos);
+		// Check for Google Cloud Storage REST API URLs
+		if ($this->isRestAPIURL($uri)) {
+			$bucketName = $this->extractBucketFromRestAPIURL($uri);
+			return $bucketName === $this->getName();
 		}
 
-		return $bucketName === $this->getName();
+		return false;
 	}
 
 	public function extractPathFromURI(string $uri): string
 	{
-		if (strpos($uri, "gcs://") !== 0 && strpos($uri, "gs://") !== 0) {
-			throw new \InvalidArgumentException("URI must start with 'gcs://' or 'gs://'");
+		// Handle gcs:// or gs:// URIs
+		if (strpos($uri, "gcs://") === 0 || strpos($uri, "gs://") === 0) {
+			// Extract path from URI: gcs://bucket/path/to/file or gs://bucket/path/to/file
+			$pathAfterScheme = $this->removeSchemeFromURI($uri);
+			$firstSlashPos = strpos($pathAfterScheme, "/");
+
+			if ($firstSlashPos === false) {
+				throw new \InvalidArgumentException("URI must include a path after bucket name");
+			}
+
+			return substr($pathAfterScheme, $firstSlashPos + 1);
 		}
 
-		// Extract path from URI: gcs://bucket/path/to/file or gs://bucket/path/to/file
-		$pathAfterScheme = $this->removeSchemeFromURI($uri);
-		$firstSlashPos = strpos($pathAfterScheme, "/");
-
-		if ($firstSlashPos === false) {
-			throw new \InvalidArgumentException("URI must include a path after bucket name");
+		// Handle Google Cloud Storage REST API URLs
+		if ($this->isRestAPIURL($uri)) {
+			return $this->extractPathFromRestAPIURL($uri);
 		}
 
-		return substr($pathAfterScheme, $firstSlashPos + 1);
+		throw new \InvalidArgumentException("URI must start with 'gcs://', 'gs://', or be a valid Google Cloud Storage REST API URL");
 	}
 
 	private function removeSchemeFromURI(string $uri): string
@@ -135,6 +156,32 @@ class GoogleCloudStorageService extends StorageService
 		}
 
 		return $uri;
+	}
+
+	private function isRestAPIURL(string $uri): bool
+	{
+		// Check for Google Cloud Storage REST API URL format:
+		// https://www.googleapis.com/storage/v1/b/{bucket}/o/{object}
+		return (bool)preg_match("/^https:\/\/www\.googleapis\.com\/storage\/v1\/b\/[^\/]+\/o\/.+/", $uri);
+	}
+
+	private function extractBucketFromRestAPIURL(string $uri): ?string
+	{
+		if (!preg_match("/^https:\/\/www\.googleapis\.com\/storage\/v1\/b\/(?<bucket>[^\/]+)\/o\//", $uri, $matches)) {
+			return null;
+		}
+
+		return $matches["bucket"];
+	}
+
+	private function extractPathFromRestAPIURL(string $uri): string
+	{
+		if (!preg_match("/^https:\/\/www\.googleapis\.com\/storage\/v1\/b\/[^\/]+\/o\/(?<object>.+)/", $uri, $matches)) {
+			throw new \InvalidArgumentException("Invalid Google Cloud Storage REST API URL format");
+		}
+
+		// The object path is URL-encoded, so we need to decode it
+		return rawurldecode($matches["object"]);
 	}
 
 	public function getObjectByURI(string $uri): GoogleCloudStorageObject
