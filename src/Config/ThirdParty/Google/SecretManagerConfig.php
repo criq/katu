@@ -10,21 +10,37 @@ use Katu\Types\TIdentifier;
 
 class SecretManagerConfig extends \Katu\Config\Config
 {
+	protected $serviceAccountFile;
+	protected $projectId;
+	protected $client;
+
 	public function getServiceAccountFile(): File
 	{
-		return new File(\App\App::getBaseDir(), \App\App::getEnvConfig()->getVariable("SECRET_MANAGER_KEY_FILE"));
+		if (!$this->serviceAccountFile) {
+			$this->serviceAccountFile = new File(\App\App::getBaseDir(), \App\App::getEnvConfig()->getVariable("SECRET_MANAGER_KEY_FILE"));
+		}
+
+		return $this->serviceAccountFile;
 	}
 
 	public function getProjectId(): string
 	{
-		return \Katu\Files\Formats\JSON::decodeAsArray($this->getServiceAccountFile()->get())["project_id"];
+		if (!$this->projectId) {
+			$this->projectId = \Katu\Files\Formats\JSON::decodeAsArray($this->getServiceAccountFile()->get())["project_id"];
+		}
+
+		return $this->projectId;
 	}
 
 	public function getClient(): SecretManagerServiceClient
 	{
-		return new SecretManagerServiceClient([
-			"credentials" => $this->getServiceAccountFile()->getPath(),
-		]);
+		if (!$this->client) {
+			$this->client = new SecretManagerServiceClient([
+				"credentials" => $this->getServiceAccountFile()->getPath(),
+			]);
+		}
+
+		return $this->client;
 	}
 
 	public function getSecret(string $name, string $version = "latest"): string
