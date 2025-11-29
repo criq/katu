@@ -2,25 +2,28 @@
 
 namespace Katu\Errors;
 
+use Katu\Tools\Intl\Locale;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Package\Package;
 use Katu\Tools\Package\PackagedInterface;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
 use Katu\Tools\Strings\Code;
+use Katu\Tools\Validation\Param;
+use Katu\Tools\Validation\ParamCollection;
 use Katu\Types\TClass;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Error implements PackagedInterface, RestResponseInterface
 {
-	protected $code;
-	protected $help;
-	protected $message;
-	protected $params;
-	protected $options;
-	protected $versions;
+	protected ?array $options;
+	protected ?ErrorVersionCollection $versions;
+	protected ?ParamCollection $params;
+	protected ?string $code;
+	protected ?string $help;
+	protected ?string $message;
 
-	public function __construct(?string $message = null, $code = null, ?array $versions = [])
+	public function __construct(?string $message = null, $code = null, ?ErrorVersionCollection $versions = null)
 	{
 		$this->setMessage($message);
 		$this->setCode($code);
@@ -78,23 +81,30 @@ class Error implements PackagedInterface, RestResponseInterface
 		return $this->code;
 	}
 
-	public function setVersions(?array $value): Error
+	public function setVersions(?ErrorVersionCollection $versions): Error
 	{
-		$this->versions = $value;
+		$this->versions = $versions;
 
 		return $this;
 	}
 
-	public function addVersion(string $locale, string $message): Error
+	public function getVersions(): ErrorVersionCollection
 	{
-		$this->versions[$locale] = $message;
+		if (is_null($this->versions)) {
+			$this->versions = new ErrorVersionCollection;
+		}
 
-		return $this;
+		return $this->versions;
 	}
 
-	public function getVersions(): array
+	/**
+	 * @deprecated
+	 */
+	public function addVersion(Locale $locale, string $message): Error
 	{
-		return $this->versions ?: [];
+		$this->getVersions()[] = new ErrorVersion($locale, $message);
+
+		return $this;
 	}
 
 	public function setHelp(?string $value): Error
@@ -121,23 +131,23 @@ class Error implements PackagedInterface, RestResponseInterface
 		return $this->options;
 	}
 
-	public function setParams(\Katu\Tools\Validation\ParamCollection $params): Error
+	public function setParams(ParamCollection $params): Error
 	{
 		$this->params = $params;
 
 		return $this;
 	}
 
-	public function getParams(): \Katu\Tools\Validation\ParamCollection
+	public function getParams(): ParamCollection
 	{
 		if (!$this->params) {
-			$this->params = new \Katu\Tools\Validation\ParamCollection;
+			$this->params = new ParamCollection;
 		}
 
 		return $this->params;
 	}
 
-	public function addParam(\Katu\Tools\Validation\Param $param): Error
+	public function addParam(Param $param): Error
 	{
 		$this->getParams()->append($param);
 
@@ -159,7 +169,7 @@ class Error implements PackagedInterface, RestResponseInterface
 		}
 
 		if ($this->getVersions()) {
-			$array["versions"] = $this->getVersions();
+			$array["versions"] = $this->getVersions()->getRestResponse($request, $options);
 		}
 
 		if ($this->getHelp()) {
