@@ -22,8 +22,13 @@ class ErrorVersionCollection extends \ArrayObject implements RestResponseInterfa
 
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		return new RestResponse(array_map(function (ErrorVersion $errorVersion) use ($request, $options) {
-			return $errorVersion->getRestResponse($request, $options);
-		}, $this->getArrayCopy()));
+		return new RestResponse(array_combine(
+			array_map(function (ErrorVersion $errorVersion) use ($request, $options) {
+				return $errorVersion->getLocale();
+			}, $this->getArrayCopy()),
+			array_map(function (ErrorVersion $errorVersion) use ($request, $options) {
+				return $errorVersion->getMessage();
+			}, $this->getArrayCopy()),
+		));
 	}
 }
