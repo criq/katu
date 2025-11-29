@@ -4,27 +4,35 @@ namespace Katu\Tools\Emails;
 
 class Attachment
 {
-	protected $entity;
+	protected $storageObject;
 	protected $name;
 	protected $contentId;
 
-	public function __construct(\Katu\Storage\Entity $entity, ?string $name = null, ?string $contentId = null)
+	public function __construct(\Katu\Storage\StorageObject $storageObject, ?string $name = null, ?string $contentId = null)
 	{
-		$this->setEntity($entity);
+		$this->setStorageObject($storageObject);
 		$this->setName($name);
 		$this->setContentId($contentId);
 	}
 
-	public function setEntity(\Katu\Storage\Entity $entity): Attachment
+	public function setStorageObject(\Katu\Storage\StorageObject $storageObject): Attachment
 	{
-		$this->entity = $entity;
+		$this->storageObject = $storageObject;
 
 		return $this;
 	}
 
-	public function getEntity(): \Katu\Storage\Entity
+	public function getStorageObject(): \Katu\Storage\StorageObject
 	{
-		return $this->entity;
+		return $this->storageObject;
+	}
+
+	/**
+	 * @deprecated Use getStorageObject() instead
+	 */
+	public function getEntity(): \Katu\Storage\StorageObject
+	{
+		return $this->getStorageObject();
 	}
 
 	public function setName(?string $name): Attachment
@@ -53,17 +61,21 @@ class Attachment
 
 	public function getResolvedName(): ?string
 	{
-		return $this->getName() ?: $this->getEntity()->getFileName();
+		return $this->getName() ?: $this->getStorageObject()->getName();
 	}
 
 	public function getContentType(): ?string
 	{
-		return $this->getEntity()->getContentType();
+		return $this->getStorageObject()->getType();
 	}
 
 	public function getContents(): ?string
 	{
-		return $this->getEntity()->getContents();
+		try {
+			return $this->getStorageObject()->read();
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public function getEncodedContents(): ?string
