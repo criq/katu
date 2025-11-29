@@ -19,12 +19,19 @@ class Error implements PackagedInterface, RestResponseInterface
 	protected ?array $options;
 	protected ?ErrorVersionCollection $versions;
 	protected ?ParamCollection $params;
-	protected ?string $code;
+	protected ?Code $code;
 	protected ?string $help;
 	protected ?string $message;
 
 	public function __construct(?string $message = null, $code = null, ?ErrorVersionCollection $versions = null)
 	{
+		$this->options = null;
+		$this->versions = null;
+		$this->params = null;
+		$this->code = null;
+		$this->help = null;
+		$this->message = null;
+
 		$this->setMessage($message);
 		$this->setCode($code);
 		$this->setVersions($versions);
@@ -71,7 +78,7 @@ class Error implements PackagedInterface, RestResponseInterface
 
 	public function setCode($code): Error
 	{
-		$this->code = new Code($code);
+		$this->code = $code !== null ? new Code($code) : null;
 
 		return $this;
 	}
@@ -140,7 +147,7 @@ class Error implements PackagedInterface, RestResponseInterface
 
 	public function getParams(): ParamCollection
 	{
-		if (!$this->params) {
+		if (!isset($this->params) || !$this->params) {
 			$this->params = new ParamCollection;
 		}
 
