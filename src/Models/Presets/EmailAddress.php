@@ -3,6 +3,7 @@
 namespace Katu\Models\Presets;
 
 use Katu\Errors\Error;
+use Katu\Errors\ErrorVersionCollection;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Validation\Param;
 use Katu\Tools\Validation\Validation;
@@ -40,9 +41,17 @@ abstract class EmailAddress extends \Katu\Models\Model
 		} else {
 			$output = $emailAddress->getInput();
 			if (!mb_strlen($output)) {
-				$validation->addError((new Error("Chybějící e-mailová adresa."))->addParam($emailAddress));
+				$validation->addError((new Error("Chybějící e-mailová adresa.", "MISSING_EMAIL_ADDRESS", ErrorVersionCollection::createFromArray([
+					"cs" => "Chybějící e-mailová adresa.",
+					"sk" => "Chýbajúca e-mailová adresa.",
+					"en" => "Missing email address.",
+				])))->addParam($emailAddress));
 			} elseif (!\Katu\Types\TEmailAddress::validateEmailAddress($output)) {
-				$validation->addError((new Error("Neplatná e-mailová adresa."))->addParam($emailAddress));
+				$validation->addError((new Error("Neplatná e-mailová adresa.", "INVALID_EMAIL_ADDRESS", ErrorVersionCollection::createFromArray([
+					"cs" => "Neplatná e-mailová adresa.",
+					"sk" => "Neplatná e-mailová adresa.",
+					"en" => "Invalid email address.",
+				])))->addParam($emailAddress));
 			} else {
 				$output = static::getOrCreate($output);
 				$validation->setResponse($output)->addParam($emailAddress->setOutput($output));

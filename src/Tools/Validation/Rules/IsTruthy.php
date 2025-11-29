@@ -3,6 +3,7 @@
 namespace Katu\Tools\Validation\Rules;
 
 use Katu\Errors\Error;
+use Katu\Errors\ErrorVersionCollection;
 use Katu\Tools\Validation\Param;
 use Katu\Tools\Validation\Rule;
 use Katu\Tools\Validation\Validation;
@@ -17,7 +18,12 @@ class IsTruthy extends Rule
 		if ($output === true) {
 			$validation->addParam($param->setOutput($output));
 		} else {
-			$validation->addError((new Error($this->getMessage()))->addParam($param));
+			$message = $this->getMessage() ?: "Hodnota musí být pravdivá.";
+			$validation->addError((new Error($message, "IS_NOT_TRUTHY", ErrorVersionCollection::createFromArray([
+				"cs" => $message ?: "Hodnota musí být pravdivá.",
+				"sk" => $message ?: "Hodnota musí byť pravdivá.",
+				"en" => $message ?: "Value must be truthy.",
+			])))->addParam($param));
 		}
 
 		return $validation;

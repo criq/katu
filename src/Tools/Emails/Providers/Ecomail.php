@@ -3,6 +3,7 @@
 namespace Katu\Tools\Emails\Providers;
 
 use Katu\Errors\Error;
+use Katu\Errors\ErrorVersionCollection;
 use Katu\Tools\Emails\Attachment;
 use Katu\Tools\Emails\Provider;
 use Katu\Tools\Emails\Request;
@@ -107,7 +108,11 @@ class Ecomail extends Provider
 				$response->setMessageId($apiResponse->results->id ?? null);
 			} else {
 				foreach (($apiResponse->errors ?? []) as $key => $error) {
-					$response->getErrors()->addError(new Error($error[0], $key));
+					$response->getErrors()->addError(new Error("Chyba při odesílání e-mailu přes Ecomail.", $key ?: "ECOMAIL_ERROR", ErrorVersionCollection::createFromArray([
+						"cs" => $error[0] ?: "Chyba při odesílání e-mailu přes Ecomail.",
+						"sk" => $error[0] ?: "Chyba pri odosielaní e-mailu cez Ecomail.",
+						"en" => $error[0] ?: "Error sending email via Ecomail.",
+					])));
 				}
 
 				// Insert contents of <title>.
@@ -115,7 +120,11 @@ class Ecomail extends Provider
 					try {
 						$title = trim(\Katu\Tools\DOM\DOM::crawlHTML($apiResponse)->filter("title")->text());
 						if ($title) {
-							$response->getErrors()->addError(new Error($title));
+							$response->getErrors()->addError(new Error("Chyba při odesílání e-mailu přes Ecomail.", "ECOMAIL_ERROR", ErrorVersionCollection::createFromArray([
+								"cs" => $title ?: "Chyba při odesílání e-mailu přes Ecomail.",
+								"sk" => $title ?: "Chyba pri odosielaní e-mailu cez Ecomail.",
+								"en" => $title ?: "Error sending email via Ecomail.",
+							])));
 						}
 					} catch (\Throwable $e) {
 						// Nevermind.
@@ -124,7 +133,11 @@ class Ecomail extends Provider
 
 				// Insert whole response.
 				if (!$response->getErrors()->hasErrors()) {
-					$response->getErrors()->addError(new Error((string)$apiResponse));
+					$response->getErrors()->addError(new Error("Chyba při odesílání e-mailu přes Ecomail.", "ECOMAIL_ERROR", ErrorVersionCollection::createFromArray([
+						"cs" => (string)$apiResponse ?: "Chyba při odesílání e-mailu přes Ecomail.",
+						"sk" => (string)$apiResponse ?: "Chyba pri odosielaní e-mailu cez Ecomail.",
+						"en" => (string)$apiResponse ?: "Error sending email via Ecomail.",
+					])));
 				}
 			}
 		} catch (\Throwable $e) {

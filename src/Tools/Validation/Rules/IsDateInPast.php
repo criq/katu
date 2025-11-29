@@ -3,6 +3,7 @@
 namespace Katu\Tools\Validation\Rules;
 
 use Katu\Errors\Error;
+use Katu\Errors\ErrorVersionCollection;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Validation\Param;
 use Katu\Tools\Validation\Rule;
@@ -21,9 +22,19 @@ class IsDateInPast extends Rule
 				false,
 			);
 			if (!strlen($output)) {
-				$validation->addError((new Error($this->getMessage()))->addParam($param));
+				$message = $this->getMessage() ?: "Neplatné datum.";
+				$validation->addError((new Error($message, "INVALID_DATE_FORMAT", ErrorVersionCollection::createFromArray([
+					"cs" => $message ?: "Neplatné datum.",
+					"sk" => $message ?: "Neplatný dátum.",
+					"en" => $message ?: "Invalid date format.",
+				])))->addParam($param));
 			} elseif ($output->isInFuture()) {
-				$validation->addError((new Error($this->getMessage()))->addParam($param));
+				$message = $this->getMessage() ?: "Datum je v budoucnosti.";
+				$validation->addError((new Error($message, "DATE_IN_FUTURE", ErrorVersionCollection::createFromArray([
+					"cs" => $message ?: "Datum je v budoucnosti.",
+					"sk" => $message ?: "Dátum je v budúcnosti.",
+					"en" => $message ?: "Date is in the future.",
+				])))->addParam($param));
 			} else {
 				$validation->addParam($param->setOutput($output));
 			}

@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Calendar;
 
+use Katu\Errors\ErrorVersionCollection;
 use Katu\Tools\Options\OptionCollection;
 use Katu\Tools\Rest\RestResponse;
 use Katu\Tools\Rest\RestResponseInterface;
@@ -40,14 +41,22 @@ class Interval implements RestResponseInterface
 
 		if (!trim($startParam)) {
 			$result->addError(
-				(new \Katu\Errors\Error("Chybějící začátek intervalu."))
+				(new \Katu\Errors\Error("Chybějící začátek intervalu.", "MISSING_INTERVAL_START", ErrorVersionCollection::createFromArray([
+					"cs" => "Chybějící začátek intervalu.",
+					"sk" => "Chýbajúci začiatok intervalu.",
+					"en" => "Missing interval start.",
+				])))
 					->addParam($startParam)
 			);
 		} else {
 			$start = $timeClass::createFromString($startParam);
 			if (!$start) {
 				$result->addError(
-					(new \Katu\Errors\Error("Neplatný začátek intervalu."))
+					(new \Katu\Errors\Error("Neplatný začátek intervalu.", "INVALID_INTERVAL_START", ErrorVersionCollection::createFromArray([
+						"cs" => "Neplatný začátek intervalu.",
+						"sk" => "Neplatný začiatok intervalu.",
+						"en" => "Invalid interval start.",
+					])))
 						->addParam($startParam)
 				);
 			}
@@ -57,7 +66,11 @@ class Interval implements RestResponseInterface
 			$end = $timeClass::createFromString($endParam);
 			if (!$end) {
 				$result->addError(
-					(new \Katu\Errors\Error("Neplatný konec intervalu."))
+					(new \Katu\Errors\Error("Neplatný konec intervalu.", "INVALID_INTERVAL_END", ErrorVersionCollection::createFromArray([
+						"cs" => "Neplatný konec intervalu.",
+						"sk" => "Neplatný koniec intervalu.",
+						"en" => "Invalid interval end.",
+					])))
 						->addParam($endParam)
 				);
 			}
@@ -69,7 +82,11 @@ class Interval implements RestResponseInterface
 
 		if ($start && $end && $start > $end) {
 			$result->addError(
-				(new \Katu\Errors\Error("Začátek intervalu je později než jeho konec."))
+				(new \Katu\Errors\Error("Začátek intervalu je později než jeho konec.", "INTERVAL_START_AFTER_END", ErrorVersionCollection::createFromArray([
+					"cs" => "Začátek intervalu je později než jeho konec.",
+					"sk" => "Začiatok intervalu je neskôr ako jeho koniec.",
+					"en" => "Interval start is after its end.",
+				])))
 					->addParam($startParam)
 					->addParam($endParam)
 			);

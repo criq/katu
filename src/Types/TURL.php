@@ -2,6 +2,7 @@
 
 namespace Katu\Types;
 
+use Katu\Errors\ErrorVersionCollection;
 use Katu\Models\Presets\User;
 
 class TURL
@@ -38,7 +39,11 @@ class TURL
 			$result[] = $param->setOutput($param->getInput());
 			$result->setResponse($param->getOutput());
 		} else {
-			$result->addError((new \Katu\Errors\Error("Invalid URL."))->addParam($param));
+			$result->addError((new \Katu\Errors\Error("Neplatná URL adresa.", "INVALID_URL", ErrorVersionCollection::createFromArray([
+				"cs" => "Neplatná URL adresa.",
+				"sk" => "Neplatná URL adresa.",
+				"en" => "Invalid URL.",
+			])))->addParam($param));
 		}
 
 		return $result;

@@ -3,6 +3,7 @@
 namespace Katu\Tools\Emails\Providers;
 
 use Katu\Errors\Error;
+use Katu\Errors\ErrorVersionCollection;
 use Katu\Tools\Emails\Attachment;
 use Katu\Tools\Emails\Provider;
 use Katu\Tools\Emails\Request;
@@ -170,7 +171,11 @@ class AmazonSES extends Provider
 
 			$response->setStatus(false);
 			$response->setException($e);
-			$response->getErrors()->addError(new Error($e->getMessage(), $e->getAwsErrorCode()));
+			$response->getErrors()->addError(new Error("Chyba při odesílání e-mailu přes Amazon SES.", $e->getAwsErrorCode() ?: "AMAZON_SES_ERROR", ErrorVersionCollection::createFromArray([
+				"cs" => $e->getMessage() ?: "Chyba při odesílání e-mailu přes Amazon SES.",
+				"sk" => $e->getMessage() ?: "Chyba pri odosielaní e-mailu cez Amazon SES.",
+				"en" => $e->getMessage() ?: "Error sending email via Amazon SES.",
+			])));
 		} catch (\Throwable $e) {
 			// Debug: Log any other errors
 			\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->log("error", "AmazonSES General Error: " . $e->getMessage());
@@ -178,7 +183,11 @@ class AmazonSES extends Provider
 
 			$response->setStatus(false);
 			$response->setException($e);
-			$response->getErrors()->addError(new Error($e->getMessage()));
+			$response->getErrors()->addError(new Error("Chyba při odesílání e-mailu přes Amazon SES.", "AMAZON_SES_ERROR", ErrorVersionCollection::createFromArray([
+				"cs" => $e->getMessage() ?: "Chyba při odesílání e-mailu přes Amazon SES.",
+				"sk" => $e->getMessage() ?: "Chyba pri odosielaní e-mailu cez Amazon SES.",
+				"en" => $e->getMessage() ?: "Error sending email via Amazon SES.",
+			])));
 		}
 
 		return $response;
