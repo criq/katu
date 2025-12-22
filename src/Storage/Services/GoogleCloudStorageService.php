@@ -86,6 +86,22 @@ class GoogleCloudStorageService extends StorageService
 		return new GoogleCloudStorageObject($this, $path);
 	}
 
+	/**
+	 * Write a file from a stream (memory-efficient for large files).
+	 *
+	 * @param string $path Destination path in the bucket
+	 * @param resource $stream A readable stream resource
+	 * @return GoogleCloudStorageObject
+	 */
+	public function writeStream(string $path, $stream): GoogleCloudStorageObject
+	{
+		$this->getBucket()->upload($stream, [
+			"name" => $path,
+		]);
+
+		return new GoogleCloudStorageObject($this, $path);
+	}
+
 	public function deleteByPath(string $path): bool
 	{
 		try {

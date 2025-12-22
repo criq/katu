@@ -16,6 +16,7 @@ abstract class StorageService
 	abstract public function getObjectIterator(?string $prefix = null): iterable;
 	abstract public function readPath(string $path): string;
 	abstract public function writePath(string $path, string $contents): StorageObject;
+	abstract public function writeStream(string $path, $stream): StorageObject;
 
 	public function getFingerprint(): string
 	{
@@ -38,5 +39,4 @@ abstract class StorageService
 	{
 		return new StorageObjectCollection(iterator_to_array($this->getObjectIterator($prefix)));
 	}
-
 }

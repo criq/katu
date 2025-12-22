@@ -116,6 +116,39 @@ class LocalStorageService extends StorageService
 		return new LocalStorageObject($this, $path);
 	}
 
+	/**
+	 * Write a file from a stream (memory-efficient for large files).
+	 *
+	 * @param string $path Destination path relative to service root
+	 * @param resource $stream A readable stream resource
+	 * @return LocalStorageObject
+	 */
+	public function writeStream(string $path, $stream): LocalStorageObject
+	{
+		$fullPath = $this->getFullPath($path);
+		$directory = dirname($fullPath);
+
+		if (!is_dir($directory)) {
+			mkdir($directory, 0755, true);
+		}
+
+		$destination = fopen($fullPath, "wb");
+		if ($destination === false) {
+			throw new \RuntimeException("Failed to open file for writing: {$path}");
+		}
+
+		try {
+			$bytesCopied = stream_copy_to_stream($stream, $destination);
+			if ($bytesCopied === false) {
+				throw new \RuntimeException("Failed to copy stream to file: {$path}");
+			}
+		} finally {
+			fclose($destination);
+		}
+
+		return new LocalStorageObject($this, $path);
+	}
+
 	public function deleteByPath(string $path): bool
 	{
 		$fullPath = $this->getFullPath($path);

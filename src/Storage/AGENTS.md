@@ -42,6 +42,7 @@ abstract public function getObjectByURI(string $uri): StorageObject
 abstract public function getObjectIterator(?string $prefix = null): iterable
 abstract public function readPath(string $path): string
 abstract public function writePath(string $path, string $contents): StorageObject
+abstract public function writeStream(string $path, $stream): StorageObject
 
 // Concrete methods:
 public function getObjects(?string $prefix = null): StorageObjectCollection
@@ -52,6 +53,7 @@ public function getIsWritable(): bool
 **Key Features:**
 - Manages storage backend connection
 - Provides iterator for listing objects (with optional prefix filter)
+- Stream-based uploads for memory-efficient large file handling
 - Path-based operations (read, write, delete)
 - URI compatibility checking and object creation
 - Flat prefix-based iteration (treats paths as prefixes, not hierarchical)
@@ -370,7 +372,21 @@ $object->delete();
 // Or: $service->deleteByPath("documents/file.txt");
 ```
 
-### 5.2. Listing Objects
+### 5.2. Stream-Based Uploads (Large Files)
+```php
+// Memory-efficient upload for large files
+$handle = fopen("/path/to/large-file.sql.gz", "rb");
+try {
+    $object = $service->writeStream("backups/database.sql.gz", $handle);
+} finally {
+    fclose($handle);
+}
+
+// Works with both local and cloud storage services
+// The file is streamed without loading entirely into memory
+```
+
+### 5.3. Listing Objects
 ```php
 // List all objects
 foreach ($service->getObjectIterator() as $object) {
@@ -392,7 +408,7 @@ foreach ($objects as $object) {
 }
 ```
 
-### 5.3. URI-Based Object Creation
+### 5.4. URI-Based Object Creation
 ```php
 use Katu\Storage\StorageServiceCollection;
 
@@ -411,7 +427,7 @@ if ($object) {
 }
 ```
 
-### 5.4. Streaming Large Files
+### 5.5. Streaming Large Files
 ```php
 // Memory-efficient streaming
 $stream = $object->getStream();
@@ -431,7 +447,7 @@ $stream->close();
 $response->getBody()->write($stream->getContents());
 ```
 
-### 5.5. Local File Access
+### 5.6. Local File Access
 ```php
 // Get local file (for GCS, downloads and caches)
 $file = $object->getFile();
@@ -441,7 +457,7 @@ $image = new \Katu\Tools\Images\Image($file);
 $content = $file->get();
 ```
 
-### 5.6. GCS-Specific Features
+### 5.7. GCS-Specific Features
 ```php
 // Check if object is public
 if ($object->getIsPublic()) {
@@ -457,7 +473,7 @@ $created = $object->getTimeCreated();  // Returns Time object or null
 $modified = $object->getTimeModified();  // Returns Time object or null
 ```
 
-### 5.7. Copy and Move Operations
+### 5.8. Copy and Move Operations
 ```php
 // Copy object to another service
 $localService = new LocalStorageService("/var/storage");
