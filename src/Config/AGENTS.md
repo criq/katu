@@ -98,15 +98,33 @@ public function getPlainPassword(): string
 public function getDatabase(): string
 public function getCharset(): ?string
 public function getIsProfiled(): bool
+public function getIsPersistent(): bool
+public function setIsPersistent(bool $value): DatabaseConnectionConfig
+public function getPdoOptions(): array
+public function setPdoOptions(array $options): DatabaseConnectionConfig
 public function getPDODSN(): string
 ```
 
 **Key Features:**
 - Secure password encryption
 - Connection profiling support
+- **Persistent connections enabled by default** (`isPersistent = true`)
+- Configurable PDO options for advanced customization
 - PDO DSN generation
 - Charset configuration
 - Connection title management
+
+**Persistent Connection Configuration:**
+```php
+// Disable persistent connections if needed:
+$config->setIsPersistent(false);
+
+// Add custom PDO options:
+$config->setPdoOptions([
+    \PDO::ATTR_TIMEOUT => 5,
+    \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+]);
+```
 
 ### 2.5. RouterConfig (`Katu\Config\RouterConfig`)
 **Location:** `RouterConfig.php`

@@ -53,12 +53,20 @@ public function getDumpDateCollection(): DumpDateCollection
 
 **Key Features:**
 - Connection pooling and singleton pattern
+- **Persistent connections enabled by default** for improved performance
+- Configurable PDO options via `DatabaseConnectionConfig`
 - Transaction support with automatic rollback
 - Table and view introspection
 - SQL mode management
 - Process monitoring
 - Query result caching with pickle system
 - Optimized connection pooling for improved performance
+
+**Default PDO Options:**
+- `PDO::ATTR_PERSISTENT => true` - Reuse connections across requests
+- `PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION` - Throw exceptions on errors
+- `PDO::ATTR_EMULATE_PREPARES => false` - Use native prepared statements
+- `PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC` - Return associative arrays
 
 ### 2.2. Query (`Katu\PDO\Query`)
 **Location:** `Query.php`
