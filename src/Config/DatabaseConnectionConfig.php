@@ -11,6 +11,8 @@ abstract class DatabaseConnectionConfig extends \Katu\Config\Config
 	protected $encryptedPassword;
 	protected $host;
 	protected $isProfiled = false;
+	protected $isPersistent = true;
+	protected $pdoOptions = [];
 	protected $title;
 	protected $user;
 
@@ -120,6 +122,30 @@ abstract class DatabaseConnectionConfig extends \Katu\Config\Config
 	public function getIsProfiled(): bool
 	{
 		return $this->isProfiled;
+	}
+
+	public function setIsPersistent(bool $value): DatabaseConnectionConfig
+	{
+		$this->isPersistent = $value;
+
+		return $this;
+	}
+
+	public function getIsPersistent(): bool
+	{
+		return $this->isPersistent;
+	}
+
+	public function setPdoOptions(array $options): DatabaseConnectionConfig
+	{
+		$this->pdoOptions = $options;
+
+		return $this;
+	}
+
+	public function getPdoOptions(): array
+	{
+		return $this->pdoOptions;
 	}
 
 	public function getPDODSN(): string

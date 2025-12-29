@@ -29,14 +29,27 @@ class Connection
 
 		$this->setConfig($config);
 
+		// Build PDO options with defaults for better performance.
+		$pdoOptions = array_replace([
+			\PDO::ATTR_PERSISTENT => $this->getConfig()->getIsPersistent(),
+			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+			\PDO::ATTR_EMULATE_PREPARES => false,
+			\PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+		], $this->getConfig()->getPdoOptions());
+
 		// Try to connect.
 		for ($i = 1; $i <= 3; $i++) {
 			try {
-				$this->setPdo(new \PDO($this->getConfig()->getPDODSN(), $this->getConfig()->getUser(), $this->getConfig()->getPlainPassword()));
+				$this->setPdo(new \PDO(
+					$this->getConfig()->getPDODSN(),
+					$this->getConfig()->getUser(),
+					$this->getConfig()->getPlainPassword(),
+					$pdoOptions
+				));
 				break;
 			} catch (\Throwable $e) {
 				if (strpos($e->getMessage(), "driver does not support setting attributes.")) {
-					$attributes = null;
+					$pdoOptions = [];
 				}
 			}
 		}
