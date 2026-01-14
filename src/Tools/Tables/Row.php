@@ -39,4 +39,14 @@ class Row
 
 		return $this;
 	}
+
+	public function getArray(): array
+	{
+		$array = [];
+		foreach ($this->getCells() as $cell) {
+			$array[$cell->getHeader()] = $cell->getValue();
+		}
+
+		return $array;
+	}
 }
