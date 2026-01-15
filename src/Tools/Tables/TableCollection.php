@@ -47,63 +47,63 @@ class TableCollection extends \ArrayObject
 		foreach ($files as $file) {
 			$mimeType = $file->getMime();
 			$fileName = $file->getBasename();
+			$extension = mb_strtolower($file->getExtension() ?: "");
 
-			switch ($mimeType) {
-				case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-					$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile((string)$file);
-					$spreadsheet = $reader->load((string)$file);
+			// Determine file type: check MIME type first, then fall back to extension
+			$isXlsx = ($mimeType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || $extension === "xlsx");
+			$isCsv = (in_array($mimeType, ["text/csv", "text/plain"], true) || $extension === "csv");
 
-					foreach ($spreadsheet->getAllSheets() as $worksheet) {
-						$table = (new Table($worksheet->getTitle()))
-							->setFilename($fileName)
-							;
+			if ($isXlsx) {
+				$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile((string)$file);
+				$spreadsheet = $reader->load((string)$file);
 
-						foreach ($worksheet->getRowIterator() as $row) {
-							foreach ($worksheet->getColumnIterator() as $column) {
-								$cell = $worksheet->getCell("{$column->getColumnIndex()}{$row->getRowIndex()}");
-								if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($cell)) {
-									$timestamp = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cell->getValue());
-									$dateTime = new Time("@{$timestamp}", new \DateTimeZone("Europe/Prague"));
-									$table[$row->getRowIndex()][$column->getColumnIndex()] = $dateTime->getDbDateTimeFormat();
-								} else {
-									$table[$row->getRowIndex()][$column->getColumnIndex()] = $cell->getCalculatedValue();
-								}
-							}
-						}
-
-						$res[] = $table;
-					}
-
-					break;
-				case "text/csv":
-					try {
-						$title = preg_replace("/_/", " ", pathinfo($fileName)["filename"]);
-					} catch (\Throwable $e) {
-						$title = $fileName;
-					}
-
-					$table = (new Table($title))
+				foreach ($spreadsheet->getAllSheets() as $worksheet) {
+					$table = (new Table($worksheet->getTitle()))
 						->setFilename($fileName)
 						;
 
-					$csv = \League\Csv\Reader::createFromPath((string)$file);
-					$csv->setDelimiter(",");
-
-					// Check column counts.
-					$counts = array_map("count", iterator_to_array($csv->getRecords()));
-					$averageCount = count($counts) ? array_sum($counts) / count($counts) : 0;
-					if ($averageCount == 1 || !is_int($averageCount)) {
-						$csv->setDelimiter(";");
-					}
-
-					$records = iterator_to_array($csv->getRecords());
-					foreach ($records as $index => $record) {
-						$table[$index + 1] = $record;
+					foreach ($worksheet->getRowIterator() as $row) {
+						foreach ($worksheet->getColumnIterator() as $column) {
+							$cell = $worksheet->getCell("{$column->getColumnIndex()}{$row->getRowIndex()}");
+							if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($cell)) {
+								$timestamp = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($cell->getValue());
+								$dateTime = new Time("@{$timestamp}", new \DateTimeZone("Europe/Prague"));
+								$table[$row->getRowIndex()][$column->getColumnIndex()] = $dateTime->getDbDateTimeFormat();
+							} else {
+								$table[$row->getRowIndex()][$column->getColumnIndex()] = $cell->getCalculatedValue();
+							}
+						}
 					}
 
 					$res[] = $table;
+				}
+			} elseif ($isCsv) {
+				try {
+					$title = preg_replace("/_/", " ", pathinfo($fileName)["filename"]);
+				} catch (\Throwable $e) {
+					$title = $fileName;
+				}
 
-					break;
+				$table = (new Table($title))
+					->setFilename($fileName)
+					;
+
+				$csv = \League\Csv\Reader::createFromPath((string)$file);
+				$csv->setDelimiter(",");
+
+				// Check column counts.
+				$counts = array_map("count", iterator_to_array($csv->getRecords()));
+				$averageCount = count($counts) ? array_sum($counts) / count($counts) : 0;
+				if ($averageCount == 1 || !is_int($averageCount)) {
+					$csv->setDelimiter(";");
+				}
+
+				$records = iterator_to_array($csv->getRecords());
+				foreach ($records as $index => $record) {
+					$table[$index + 1] = $record;
+				}
+
+				$res[] = $table;
 			}
 		}
 
