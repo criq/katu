@@ -2,6 +2,7 @@
 
 namespace Katu\Tools\Tables;
 
+use Katu\Files\FileCollection;
 use Katu\Files\UploadCollection;
 use Katu\Tools\Calendar\Time;
 
@@ -11,18 +12,50 @@ class TableCollection extends \ArrayObject
 	{
 		$res = new static;
 
+		// Process each upload individually to track which tables come from which upload
 		foreach ($uploads as $upload) {
-			switch ($upload->fileType) {
-				case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-					$file = \Katu\Files\File::createTemporaryWithExtension("xlsx");
-					$file->set($upload->getStream()->getContents());
+			$extension = $upload->getExtension() ?: (
+				$upload->fileType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ? "xlsx" : "csv"
+			);
 
-					$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file);
+			// Create temporary file from upload
+			$file = \Katu\Files\File::createTemporaryWithExtension($extension);
+			$file->set($upload->getStream()->getContents());
+
+			// Use createFromFiles to process this single file
+			$fileTables = static::createFromFiles([$file]);
+
+			// Update filenames to match original upload filename
+			foreach ($fileTables as $table) {
+				$table->setFilename($upload->fileName);
+				$res[] = $table;
+			}
+		}
+
+		return $res;
+	}
+
+	public static function createFromFiles($files): TableCollection
+	{
+		$res = new static;
+
+		// Convert to FileCollection if needed
+		if (is_array($files)) {
+			$files = new FileCollection($files);
+		}
+
+		foreach ($files as $file) {
+			$mimeType = $file->getMime();
+			$fileName = $file->getBasename();
+
+			switch ($mimeType) {
+				case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+					$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile((string)$file);
 					$spreadsheet = $reader->load((string)$file);
 
 					foreach ($spreadsheet->getAllSheets() as $worksheet) {
 						$table = (new Table($worksheet->getTitle()))
-							->setFilename($upload->fileName)
+							->setFilename($fileName)
 							;
 
 						foreach ($worksheet->getRowIterator() as $row) {
@@ -44,17 +77,14 @@ class TableCollection extends \ArrayObject
 					break;
 				case "text/csv":
 					try {
-						$title = preg_replace("/_/", " ", pathinfo($upload->fileName)["filename"]);
+						$title = preg_replace("/_/", " ", pathinfo($fileName)["filename"]);
 					} catch (\Throwable $e) {
-						$title = $upload->fileName;
+						$title = $fileName;
 					}
 
 					$table = (new Table($title))
-						->setFilename($upload->fileName)
+						->setFilename($fileName)
 						;
-
-					$file = \Katu\Files\File::createTemporaryWithExtension("csv");
-					$file->set($upload->getStream()->getContents());
 
 					$csv = \League\Csv\Reader::createFromPath((string)$file);
 					$csv->setDelimiter(",");
