@@ -40,6 +40,13 @@ class Table extends \ArrayObject
 		return $this->filename;
 	}
 
+	public function setHeaderRowIndex(?string $headerRowIndex): Table
+	{
+		$this->headerRowIndex = $headerRowIndex;
+
+		return $this;
+	}
+
 	public function getHeaderRowIndex(): ?string
 	{
 		return $this->headerRowIndex;
