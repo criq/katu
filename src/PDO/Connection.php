@@ -30,10 +30,12 @@ class Connection
 		$this->setConfig($config);
 
 		// Build PDO options with defaults for better performance.
+		// Note: EMULATE_PREPARES must be true to allow the same named parameter
+		// to appear multiple times in a query (e.g., when subqueries are reused).
 		$pdoOptions = array_replace([
 			\PDO::ATTR_PERSISTENT => $this->getConfig()->getIsPersistent(),
 			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-			\PDO::ATTR_EMULATE_PREPARES => false,
+			\PDO::ATTR_EMULATE_PREPARES => true,
 			\PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
 		], $this->getConfig()->getPdoOptions());
 
@@ -185,7 +187,13 @@ class Connection
 
 	public function select(\Sexy\Select $select, array $params = []): Query
 	{
-		$query = new Query($this, $select->getSql(), array_merge($select->getParams(), $params));
+		// Use a shared context for both SQL generation and param collection
+		// to ensure parameter names are consistent.
+		$context = [];
+		$sql = $select->getSql($context);
+		$selectParams = $context["params"] ?? [];
+
+		$query = new Query($this, $sql, array_merge($selectParams, $params));
 		if ($select->getPage()) {
 			$query->setPage($select->getPage());
 		}

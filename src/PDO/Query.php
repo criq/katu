@@ -117,14 +117,17 @@ class Query
 			$this->statement = $this->getConnection()->getPdo()->prepare($this->getSQL());
 
 			foreach ($this->getParams() as $name => $value) {
+				// PDO named parameters require the colon prefix
+				$paramName = ":" . ltrim($name, ":");
+
 				if (is_string($value)) {
-					$this->statement->bindValue($name, $value, \PDO::PARAM_STR);
+					$this->statement->bindValue($paramName, $value, \PDO::PARAM_STR);
 				} elseif (is_int($value)) {
-					$this->statement->bindValue($name, $value, \PDO::PARAM_INT);
+					$this->statement->bindValue($paramName, $value, \PDO::PARAM_INT);
 				} elseif (is_float($value)) {
-					$this->statement->bindValue($name, $value, \PDO::PARAM_STR);
+					$this->statement->bindValue($paramName, $value, \PDO::PARAM_STR);
 				} else {
-					$this->statement->bindValue($name, $value, \PDO::PARAM_STR);
+					$this->statement->bindValue($paramName, $value, \PDO::PARAM_STR);
 				}
 			}
 		}
@@ -260,7 +263,8 @@ class Query
 			}
 
 			// Items.
-			foreach ($this->getStatement()->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+			$rows = $this->getStatement()->fetchAll(\PDO::FETCH_ASSOC);
+			foreach ($rows as $row) {
 				$result->append($this->getFactory()->create($row));
 			}
 
