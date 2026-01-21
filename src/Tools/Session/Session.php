@@ -19,7 +19,7 @@ class Session
 		$class = \App\App::getContainer()->get(\Katu\Config\SessionConfig::class);
 		$sessionConfig = new $class;
 
-		return [
+		$options = [
 			"cookie_domain" => $cookieConfig->getDomain(),
 			"cookie_httponly" => $cookieConfig->getIsHTTPOnly(),
 			"cookie_lifetime" => $cookieConfig->getLifetime(),
@@ -27,11 +27,18 @@ class Session
 			"cookie_secure" => $cookieConfig->getIsSecure(),
 			"gc_maxlifetime" => $cookieConfig->getLifetime(),
 			"name" => $sessionConfig->getName(),
-			"save_path" => (string)static::getStorage()->getPath(),
 			"use_cookies" => true,
 			"use_only_cookies" => true,
 			"use_strict_mode" => true,
 		];
+
+		// Only set save_path for file-based sessions
+		// This allows php.ini to configure Redis or other session handlers
+		if (ini_get("session.save_handler") === "files") {
+			$options["save_path"] = (string)static::getStorage()->getPath();
+		}
+
+		return $options;
 	}
 
 	/****************************************************************************
