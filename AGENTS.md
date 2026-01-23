@@ -37,6 +37,8 @@ This document provides comprehensive technical documentation for the `criq/katu`
 - **Namespace:** `Katu\`
 - **Dependencies:** 30+ packages including Slim 4, Twig, Guzzle, Monolog, PHP-DI, etc.
 - **Recent Updates:** Enhanced security with improved JWT handling and password encoding, optimized database connection pooling, latest dependency versions, and various stability improvements
+  - Deprecated `Katu\Models\Model::upsert()` now uses `persist()`/`persistWithoutCallbacks()` instead of the deprecated `save*()` methods.
+  - `Katu\Exceptions\NoPrimaryKeyReturnedException` contains explicit `setContext()`/`getContext()` passthrough methods to satisfy static analysis tools that do not infer inherited methods reliably.
 
 ### 1.2. Core Architecture
 
