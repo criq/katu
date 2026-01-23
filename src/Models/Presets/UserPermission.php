@@ -3,12 +3,16 @@
 namespace Katu\Models\Presets;
 
 use App\Config\UserPermissionConfig;
+use Katu\Tools\Users\UserPermissionInterface;
 
-abstract class UserPermission extends \Katu\Models\Model
+/**
+ * @deprecated Use UserPermissionInterface instead. This class is kept for backward compatibility.
+ */
+abstract class UserPermission extends \Katu\Models\Model implements UserPermissionInterface
 {
 	const TABLE = "user_permissions";
 
-	public static function create(User $user, string $permission): UserPermission
+	public static function create(UserInterface $user, string $permission): UserPermissionInterface
 	{
 		if (!static::isValidPermission($permission)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid permission."))
@@ -23,7 +27,7 @@ abstract class UserPermission extends \Katu\Models\Model
 		]);
 	}
 
-	public static function make(User $user, string $permission): UserPermission
+	public static function make(UserInterface $user, string $permission): UserPermissionInterface
 	{
 		if (!static::isValidPermission($permission)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid permission."))
@@ -42,6 +46,13 @@ abstract class UserPermission extends \Katu\Models\Model
 	public static function getAvailable(): array
 	{
 		return (new UserPermissionConfig)->getPermissions();
+	}
+
+	public function getUser(): UserInterface
+	{
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
+
+		return $class::get($this->userId);
 	}
 
 	public static function isValidPermission(string $permission): bool

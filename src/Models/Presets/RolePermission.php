@@ -2,11 +2,16 @@
 
 namespace Katu\Models\Presets;
 
-abstract class RolePermission extends \Katu\Models\Model
+use Katu\Tools\Users\RolePermissionInterface;
+
+/**
+ * @deprecated Use RolePermissionInterface instead. This class is kept for backward compatibility.
+ */
+abstract class RolePermission extends \Katu\Models\Model implements RolePermissionInterface
 {
 	const TABLE = "role_permissions";
 
-	public static function create(Role $role, string $permission) : RolePermission
+	public static function create(RoleInterface $role, string $permission) : RolePermissionInterface
 	{
 		if (!static::isValidPermission($permission)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid permission."))
@@ -21,7 +26,7 @@ abstract class RolePermission extends \Katu\Models\Model
 		]);
 	}
 
-	public static function make(Role $role, string $permission) : RolePermission
+	public static function make(RoleInterface $role, string $permission) : RolePermissionInterface
 	{
 		if (!static::isValidPermission($permission)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid permission."))
@@ -35,6 +40,13 @@ abstract class RolePermission extends \Katu\Models\Model
 		], [
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
 		]);
+	}
+
+	public function getRole(): RoleInterface
+	{
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\Role::class);
+
+		return $class::get($this->roleId);
 	}
 
 	public static function isValidPermission($permission) : bool

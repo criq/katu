@@ -9,7 +9,10 @@ use Katu\Tools\Validation\Param;
 use Katu\Tools\Validation\Validation;
 use Katu\Types\TString;
 
-abstract class EmailAddress extends \Katu\Models\Model
+/**
+ * @deprecated Use EmailAddressInterface instead. This class is kept for backward compatibility.
+ */
+abstract class EmailAddress extends \Katu\Models\Model implements EmailAddressInterface
 {
 	const TABLE = "email_addresses";
 

@@ -2,6 +2,8 @@
 
 namespace Katu\Tools\Curl;
 
+use Katu\Tools\Users\UserInterface;
+
 class Exec
 {
 	public $isSilent = true;
@@ -15,31 +17,31 @@ class Exec
 		$this->url = $url;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->getCommand();
 	}
 
-	public function setMethod(string $method)
+	public function setMethod(string $method): Exec
 	{
 		$this->method = $method;
 
 		return $this;
 	}
 
-	public function setUser(\Katu\Models\Presets\User $user = null)
+	public function setUser(?UserInterface $user = null): Exec
 	{
 		$this->user = $user;
 
 		return $this;
 	}
 
-	public function getUser(): \Katu\Models\Presets\User
+	public function getUser(): ?UserInterface
 	{
 		return $this->user;
 	}
 
-	public function getCommand()
+	public function getCommand(): string
 	{
 		$segments = [
 			"curl",
@@ -52,7 +54,7 @@ class Exec
 		$segments[] = "--request " . $this->method;
 
 		if ($this->user) {
-			$segments[] = "--header \"Authorization: Bearer {$this->getUser()->getOrCreateSafeAccessToken()->getToken()}\"";
+			$segments[] = "--header \"Authorization: Bearer {$this->user->getOrCreateSafeAccessToken()->getToken()}\"";
 		}
 
 		if ($this->method == "GET") {
@@ -70,6 +72,9 @@ class Exec
 		return implode(" ", $segments);
 	}
 
+	/**
+	 * @return string|false
+	 */
 	public function exec()
 	{
 		return exec($this->getCommand());

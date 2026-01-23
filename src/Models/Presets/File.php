@@ -3,9 +3,13 @@
 namespace Katu\Models\Presets;
 
 use Katu\Tools\Random\Generator;
+use Katu\Tools\Users\UserInterface;
 use Katu\Types\TFileSize;
 
-abstract class File extends \Katu\Models\Model
+/**
+ * @deprecated Use FileInterface instead. This class is kept for backward compatibility.
+ */
+abstract class File extends \Katu\Models\Model implements FileInterface
 {
 	const TABLE = "files";
 
@@ -16,7 +20,7 @@ abstract class File extends \Katu\Models\Model
 	public $size;
 	public $type;
 
-	public static function create(\Katu\Models\Presets\User $user = null, string $path, string $fileName, string $fileType, int $fileSize): File
+	public static function create(?UserInterface $user = null, string $path, string $fileName, string $fileType, int $fileSize): FileInterface
 	{
 		return static::insert([
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
@@ -28,7 +32,7 @@ abstract class File extends \Katu\Models\Model
 		]);
 	}
 
-	public static function createFromFile(\Katu\Models\Presets\User $user = null, \Katu\Files\File $file): File
+	public static function createFromFile(?UserInterface $user = null, \Katu\Files\File $file): FileInterface
 	{
 		if (!$file->exists()) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
@@ -52,7 +56,7 @@ abstract class File extends \Katu\Models\Model
 		return static::create($user, $path, $file->getBasename(), $fileType, $fileSize);
 	}
 
-	public static function createFromUpload(\Katu\Models\Presets\User $user = null, \Katu\Files\Upload $upload): File
+	public static function createFromUpload(?UserInterface $user = null, \Katu\Files\Upload $upload): FileInterface
 	{
 		if (!$upload) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
@@ -77,7 +81,7 @@ abstract class File extends \Katu\Models\Model
 		return static::create($user, $path, $upload->getFileName(), $upload->getFileType(), $upload->getFileSize()->getInB()->getAmount());
 	}
 
-	public static function createFromURL(\Katu\Models\Presets\User $user = null, $url): File
+	public static function createFromURL(?UserInterface $user = null, $url): FileInterface
 	{
 		$url = new \Katu\Types\TURL($url);
 
@@ -182,7 +186,7 @@ abstract class File extends \Katu\Models\Model
 		return true;
 	}
 
-	public function attachTo(\Katu\Models\Presets\User $user = null, \Katu\Models\Model $object)
+	public function attachTo(?UserInterface $user = null, \Katu\Models\Model $object)
 	{
 		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
 

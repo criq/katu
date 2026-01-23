@@ -2,11 +2,16 @@
 
 namespace Katu\Models\Presets;
 
-abstract class UserLoginToken extends \Katu\Models\Model
+use Katu\Tools\Users\UserLoginTokenInterface;
+
+/**
+ * @deprecated Use UserLoginTokenInterface instead. This class is kept for backward compatibility.
+ */
+abstract class UserLoginToken extends \Katu\Models\Model implements UserLoginTokenInterface
 {
 	const TABLE = "user_login_tokens";
 
-	public static function create(User $user, int $timeout = 86400)
+	public static function create(UserInterface $user, int $timeout = 86400): UserLoginTokenInterface
 	{
 		return static::insert([
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
@@ -16,11 +21,18 @@ abstract class UserLoginToken extends \Katu\Models\Model
 		]);
 	}
 
-	public function getUser()
+	public function getUser(): UserInterface
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
 
 		return $class::get($this->userId);
+	}
+
+	public function setTimeUsed(?\Katu\Tools\Calendar\Time $time): UserLoginToken
+	{
+		$this->timeUsed = $time;
+
+		return $this;
 	}
 
 	public function isValid(): bool
@@ -28,10 +40,10 @@ abstract class UserLoginToken extends \Katu\Models\Model
 		return (new \Katu\Tools\Calendar\Time($this->timeExpires))->isInFuture() && !(new \Katu\Tools\Calendar\Time($this->timeUsed))->isValid();
 	}
 
-	public function expire()
+	public function expire(): bool
 	{
-		$this->timeUsed = new \Katu\Tools\Calendar\Time;
-		$this->save();
+		$this->setTimeUsed(new \Katu\Tools\Calendar\Time);
+		$this->persist();
 
 		return true;
 	}

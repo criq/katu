@@ -4,6 +4,9 @@ namespace Katu\Models\Presets;
 
 use Sexy\Sexy as SX;
 
+/**
+ * @deprecated This class is deprecated and will be removed in a future version.
+ */
 abstract class Geocode extends \Katu\Models\Model
 {
 	const TABLE = "geocodes";

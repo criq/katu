@@ -4,7 +4,10 @@ namespace Katu\Models\Presets;
 
 use Katu\Tools\Calendar\Time;
 
-abstract class Setting extends \Katu\Models\Model
+/**
+ * @deprecated Use SettingInterface instead. This class is kept for backward compatibility.
+ */
+abstract class Setting extends \Katu\Models\Model implements SettingInterface
 {
 	const TABLE = "settings";
 
@@ -26,14 +29,14 @@ abstract class Setting extends \Katu\Models\Model
 		return $settings;
 	}
 
-	public static function getOneByName(string $name): ?Setting
+	public static function getOneByName(string $name): ?SettingInterface
 	{
 		return static::getOneBy([
 			"name" => $name,
 		]);
 	}
 
-	public static function getOrCreate(?User $creator = null, string $name): Setting
+	public static function getOrCreate(?UserInterface $creator = null, string $name): SettingInterface
 	{
 		$setting = static::getOneByName($name);
 		if (!$setting) {
@@ -62,7 +65,7 @@ abstract class Setting extends \Katu\Models\Model
 		return $this;
 	}
 
-	public function setCreator(?User $creator): Setting
+	public function setCreator(?UserInterface $creator): Setting
 	{
 		$this->creatorId = $creator ? $creator->getId() : null;
 
@@ -121,7 +124,7 @@ abstract class Setting extends \Katu\Models\Model
 	/****************************************************************************
 	 * Permissions.
 	 */
-	public function userCanEdit(?User $user): bool
+	public function userCanEdit(?UserInterface $user): bool
 	{
 		try {
 			return $user->hasPermission("settings.edit");

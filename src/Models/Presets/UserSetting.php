@@ -2,11 +2,16 @@
 
 namespace Katu\Models\Presets;
 
-abstract class UserSetting extends \Katu\Models\Model
+use Katu\Tools\Users\UserSettingInterface;
+
+/**
+ * @deprecated Use UserSettingInterface instead. This class is kept for backward compatibility.
+ */
+abstract class UserSetting extends \Katu\Models\Model implements UserSettingInterface
 {
 	const TABLE = "user_settings";
 
-	public static function getOrCreate(User $user, string $name, $value = null): UserSetting
+	public static function getOrCreate(UserInterface $user, string $name, $value = null): UserSettingInterface
 	{
 		return static::upsert([
 			"userId" => $user->getId(),
@@ -31,5 +36,12 @@ abstract class UserSetting extends \Katu\Models\Model
 	public static function decodeValue($value)
 	{
 		return \Katu\Files\Formats\JSON::decodeAsArray($value);
+	}
+
+	public function getUser(): UserInterface
+	{
+		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
+
+		return $class::get($this->userId);
 	}
 }

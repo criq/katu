@@ -2,11 +2,16 @@
 
 namespace Katu\Models\Presets;
 
-abstract class UserService extends \Katu\Models\Model
+use Katu\Tools\Users\UserServiceInterface;
+
+/**
+ * @deprecated Use UserServiceInterface instead. This class is kept for backward compatibility.
+ */
+abstract class UserService extends \Katu\Models\Model implements UserServiceInterface
 {
 	const TABLE = "user_services";
 
-	public static function create(User $user, string $serviceName, string $serviceUserId): UserService
+	public static function create(UserInterface $user, string $serviceName, string $serviceUserId): UserServiceInterface
 	{
 		return static::insert([
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
@@ -29,7 +34,7 @@ abstract class UserService extends \Katu\Models\Model
 		return static::getByServiceAndId($serviceName, $serviceUserId)->getOne();
 	}
 
-	public function getUser(): User
+	public function getUser(): UserInterface
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
 

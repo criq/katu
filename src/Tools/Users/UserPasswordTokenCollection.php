@@ -1,6 +1,6 @@
 <?php
 
-namespace Katu\Models\Presets;
+namespace Katu\Tools\Users;
 
 class UserPasswordTokenCollection extends \ArrayObject
 {

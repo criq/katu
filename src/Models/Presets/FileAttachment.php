@@ -2,14 +2,16 @@
 
 namespace Katu\Models\Presets;
 
+use Katu\Tools\Users\UserInterface;
+
 /**
- * @deprecated
+ * @deprecated Use FileAttachmentInterface instead. This class is kept for backward compatibility.
  */
-abstract class FileAttachment extends \Katu\Models\Model
+abstract class FileAttachment extends \Katu\Models\Model implements FileAttachmentInterface
 {
 	const TABLE = "file_attachments";
 
-	public static function create(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment
+	public static function create(UserInterface $creator, \Katu\Models\Model $object, \Katu\Models\Presets\FileInterface $file) : FileAttachmentInterface
 	{
 		return static::insert([
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
@@ -20,7 +22,7 @@ abstract class FileAttachment extends \Katu\Models\Model
 		]);
 	}
 
-	public static function make(\Katu\Models\Presets\User $creator, \Katu\Models\Model $object, \Katu\Models\Presets\File $file) : FileAttachment
+	public static function make(UserInterface $creator, \Katu\Models\Model $object, \Katu\Models\Presets\FileInterface $file) : FileAttachmentInterface
 	{
 		return static::upsert([
 			"objectModel" => $object->getClass()->getName(),
@@ -37,7 +39,7 @@ abstract class FileAttachment extends \Katu\Models\Model
 		return $this->objectModel::get($this->objectId);
 	}
 
-	public function getFile()
+	public function getFile(): FileInterface
 	{
 		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
 

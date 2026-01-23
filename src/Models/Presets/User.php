@@ -6,11 +6,16 @@ use Katu\Tools\Calendar\Time;
 use Katu\Tools\Cookies\Cookie;
 use Katu\Tools\Security\EncodedPassword;
 use Katu\Tools\Security\PlainPassword;
+use Katu\Tools\Users\AccessTokenInterface;
+use Katu\Tools\Users\UserInterface;
 use Katu\Types\TIdentifier;
 use Psr\Http\Message\ServerRequestInterface;
 use Sexy\Sexy as SX;
 
-abstract class User extends \Katu\Models\Model
+/**
+ * @deprecated Use UserInterface instead. This class is kept for backward compatibility.
+ */
+abstract class User extends \Katu\Models\Model implements UserInterface
 {
 	const TABLE = "users";
 
@@ -26,7 +31,7 @@ abstract class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Create & Delete.
 	 */
-	public static function getOrCreateWithEmailAddress(\Katu\Models\Presets\EmailAddress $emailAddress): User
+	public static function getOrCreateWithEmailAddress(\Katu\Models\Presets\EmailAddressInterface $emailAddress): \Katu\Tools\Users\UserInterface
 	{
 		$user = static::getOneBy([
 			static::$columnNames["emailAddressId"] => $emailAddress->getId(),
@@ -42,7 +47,7 @@ abstract class User extends \Katu\Models\Model
 		return $user;
 	}
 
-	public static function createWithEmailAddress(\Katu\Models\Presets\EmailAddress $emailAddress): User
+	public static function createWithEmailAddress(\Katu\Models\Presets\EmailAddressInterface $emailAddress): \Katu\Tools\Users\UserInterface
 	{
 		if (static::getBy([
 			static::$columnNames["emailAddressId"] => $emailAddress->getId(),
@@ -58,7 +63,7 @@ abstract class User extends \Katu\Models\Model
 		]);
 	}
 
-	public static function getFromRequest(?ServerRequestInterface $request): ?User
+	public static function getFromRequest(?ServerRequestInterface $request): ?\Katu\Tools\Users\UserInterface
 	{
 		if ($request) {
 			$accessTokenClass = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
@@ -81,7 +86,7 @@ abstract class User extends \Katu\Models\Model
 	/****************************************************************************
 	 * Getters & Setters.
 	 */
-	public function setName(string $name): User
+	public function setName(string $name): \Katu\Tools\Users\UserInterface
 	{
 		$this->name = trim($name) ?: null;
 
@@ -93,7 +98,7 @@ abstract class User extends \Katu\Models\Model
 		return $this->name;
 	}
 
-	public function setEmailAddress(?EmailAddress $emailAddress = null): User
+	public function setEmailAddress(?\Katu\Models\Presets\EmailAddressInterface $emailAddress = null): \Katu\Tools\Users\UserInterface
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\EmailAddress::class);
 
@@ -117,14 +122,14 @@ abstract class User extends \Katu\Models\Model
 		return $this;
 	}
 
-	public function getEmailAddress(): ?EmailAddress
+	public function getEmailAddress(): ?\Katu\Models\Presets\EmailAddressInterface
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\EmailAddress::class);
 
 		return $class::get($this->{static::$columnNames["emailAddressId"]});
 	}
 
-	public function setPassword(?string $password): User
+	public function setPassword(?string $password): \Katu\Tools\Users\UserInterface
 	{
 		$this->password = $password;
 
@@ -160,14 +165,14 @@ abstract class User extends \Katu\Models\Model
 		return (bool)$this->getPassword();
 	}
 
-	public function createAccessToken(): AccessToken
+	public function createAccessToken(): AccessTokenInterface
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
 
 		return $class::create($this);
 	}
 
-	public function getOrCreateSafeAccessToken(): AccessToken
+	public function getOrCreateSafeAccessToken(): AccessTokenInterface
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\AccessToken::class);
 
@@ -264,7 +269,7 @@ abstract class User extends \Katu\Models\Model
 		return true;
 	}
 
-	public function hasRole(Role $role): bool
+	public function hasRole(RoleInterface $role): bool
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\UserRole::class);
 

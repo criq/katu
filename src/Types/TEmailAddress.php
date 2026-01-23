@@ -47,7 +47,7 @@ class TEmailAddress
 
 	public function setEmailAddress($emailAddress): TEmailAddress
 	{
-		if ($emailAddress instanceof \Katu\Models\Presets\EmailAddress) {
+		if ($emailAddress instanceof \Katu\Models\Presets\EmailAddressInterface) {
 			$emailAddress = $emailAddress->getEmailAddress();
 		}
 

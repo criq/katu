@@ -6,10 +6,14 @@ use Katu\Tools\Calendar\Seconds;
 use Katu\Tools\Calendar\Time;
 use Katu\Tools\Cookies\Cookie;
 use Katu\Tools\Cookies\CookieCollection;
+use Katu\Tools\Users\AccessTokenInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Sexy\Sexy as SX;
 
-abstract class AccessToken extends \Katu\Models\Model
+/**
+ * @deprecated Use AccessTokenInterface instead. This class is kept for backward compatibility.
+ */
+abstract class AccessToken extends \Katu\Models\Model implements AccessTokenInterface
 {
 	const EXPIRES = 86400 * 7;
 	const LENGTH = 128;
@@ -22,7 +26,7 @@ abstract class AccessToken extends \Katu\Models\Model
 	public $token;
 	public $userId;
 
-	public static function getValidFromRequest(ServerRequestInterface $request): ?AccessToken
+	public static function getValidFromRequest(ServerRequestInterface $request): ?AccessTokenInterface
 	{
 		$accessTokens = array_values(array_filter(array_filter(array_map(function (?string $string) {
 			return static::getFromString($string);
@@ -30,14 +34,14 @@ abstract class AccessToken extends \Katu\Models\Model
 			$request->getHeaderLine("Authorization"),
 			$request->getHeaderLine("X-Auth"),
 			CookieCollection::createFromRequest($request)->getCookieValue(static::getCookieName()),
-		])), function (AccessToken $accessToken) {
+		])), function (AccessTokenInterface $accessToken) {
 			return $accessToken->getIsValid();
 		}));
 
 		return $accessTokens[0] ?? null;
 	}
 
-	public static function getFromString(?string $string): ?AccessToken
+	public static function getFromString(?string $string): ?AccessTokenInterface
 	{
 		$string = preg_replace("/^(Bearer)\s+/", "", $string);
 
@@ -81,14 +85,14 @@ abstract class AccessToken extends \Katu\Models\Model
 		return new Time($this->timeExpires);
 	}
 
-	public function setUser(User $user): AccessToken
+	public function setUser(UserInterface $user): AccessToken
 	{
 		$this->userId = $user->getId();
 
 		return $this;
 	}
 
-	public function getUser(): User
+	public function getUser(): UserInterface
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
 
@@ -100,7 +104,7 @@ abstract class AccessToken extends \Katu\Models\Model
 		return \Katu\Tools\Random\Generator::getIdString(static::LENGTH);
 	}
 
-	public static function create(User $user): AccessToken
+	public static function create(UserInterface $user): AccessTokenInterface
 	{
 		$accessToken = new static;
 		$accessToken->setTimeCreated(new Time);
@@ -112,7 +116,7 @@ abstract class AccessToken extends \Katu\Models\Model
 		return $accessToken;
 	}
 
-	public static function getOrCreateSafe(User $user): AccessToken
+	public static function getOrCreateSafe(UserInterface $user): AccessTokenInterface
 	{
 		$sql = SX::select()
 			->setGetFoundRows(false)

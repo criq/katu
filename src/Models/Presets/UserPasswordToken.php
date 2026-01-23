@@ -3,8 +3,12 @@
 namespace Katu\Models\Presets;
 
 use Katu\Tools\Calendar\Time;
+use Katu\Tools\Users\UserPasswordTokenInterface;
 
-abstract class UserPasswordToken extends \Katu\Models\Model
+/**
+ * @deprecated Use UserPasswordTokenInterface instead. This class is kept for backward compatibility.
+ */
+abstract class UserPasswordToken extends \Katu\Models\Model implements UserPasswordTokenInterface
 {
 	const EXPIRES = "1 hour";
 	const TABLE = "user_password_tokens";
@@ -16,7 +20,7 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 	public $token;
 	public $userId;
 
-	public static function create(User $user): UserPasswordToken
+	public static function create(UserInterface $user): UserPasswordTokenInterface
 	{
 		$userPasswordToken = new static;
 		$userPasswordToken->setTimeCreated(new Time);
@@ -59,21 +63,21 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 		return $this->timeUsed ? new Time($this->timeUsed) : null;
 	}
 
-	public function setUser(User $user): UserPasswordToken
+	public function setUser(UserInterface $user): UserPasswordTokenInterface
 	{
 		$this->userId = $user->getId();
 
 		return $this;
 	}
 
-	public function getUser(): User
+	public function getUser(): UserInterface
 	{
 		$class = \App\App::getContainer()->get(\Katu\Models\Presets\User::class);
 
 		return $class::get($this->userId);
 	}
 
-	public function setToken(string $token): UserPasswordToken
+	public function setToken(string $token): UserPasswordTokenInterface
 	{
 		$this->token = $token;
 
@@ -100,7 +104,7 @@ abstract class UserPasswordToken extends \Katu\Models\Model
 		return $this->getTimeExpires()->isInFuture() && !$this->getTimeUsed();
 	}
 
-	public function expire(): UserPasswordToken
+	public function expire(): UserPasswordTokenInterface
 	{
 		$this->setTimeUsed(new Time);
 		$this->persist();

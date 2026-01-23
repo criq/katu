@@ -3,7 +3,7 @@
 namespace Katu\Types;
 
 use Katu\Errors\ErrorVersionCollection;
-use Katu\Models\Presets\User;
+use Katu\Tools\Users\UserInterface;
 
 class TURL
 {
@@ -251,7 +251,7 @@ class TURL
 		return $tmpFile;
 	}
 
-	public function getPingExec(string $method = "GET", ?User $user = null)
+	public function getPingExec(string $method = "GET", ?UserInterface $user = null)
 	{
 		return (new \Katu\Tools\Curl\Exec($this))
 			->setMethod($method)
@@ -259,7 +259,7 @@ class TURL
 			;
 	}
 
-	public function ping(string $method = "GET", ?User $user = null)
+	public function ping(string $method = "GET", ?UserInterface $user = null)
 	{
 		return $this->getPingExec($method, $user)->exec();
 	}

@@ -3,8 +3,12 @@
 namespace Katu\Models\Presets;
 
 use Katu\Tools\Calendar\Time;
+use Katu\Tools\Users\RoleInterface;
 
-abstract class Role extends \Katu\Models\Model
+/**
+ * @deprecated Use RoleInterface instead. This class is kept for backward compatibility.
+ */
+abstract class Role extends \Katu\Models\Model implements RoleInterface
 {
 	const TABLE = "roles";
 
@@ -69,7 +73,7 @@ abstract class Role extends \Katu\Models\Model
 
 	public function setName($name): Role
 	{
-		if (!static::sanitizeName($name, $this)) {
+		if (!static::sanitizeName($name)) {
 			throw (new \Katu\Exceptions\InputErrorException("Invalid name."))
 				->addErrorName("name")
 				;
@@ -110,7 +114,7 @@ abstract class Role extends \Katu\Models\Model
 		]);
 	}
 
-	public function getPermissions()
+	public function getPermissions(): array
 	{
 		return array_map(function ($rolePermission) {
 			return $rolePermission->permission;
@@ -143,7 +147,7 @@ abstract class Role extends \Katu\Models\Model
 	/****************************************************************************
 	 * Permissions.
 	 */
-	public function userCanView(?User $user): bool
+	public function userCanView(?UserInterface $user): bool
 	{
 		try {
 			return $user->hasPermission("roles.view");
@@ -152,7 +156,7 @@ abstract class Role extends \Katu\Models\Model
 		}
 	}
 
-	public function userCanEdit(?User $user): bool
+	public function userCanEdit(?UserInterface $user): bool
 	{
 		try {
 			return $user->hasPermission("roles.edit");
@@ -161,7 +165,7 @@ abstract class Role extends \Katu\Models\Model
 		}
 	}
 
-	public function userCanEditPermissions(?User $user): bool
+	public function userCanEditPermissions(?UserInterface $user): bool
 	{
 		try {
 			return $user->hasPermission("roles.editPermissions");
@@ -170,7 +174,7 @@ abstract class Role extends \Katu\Models\Model
 		}
 	}
 
-	public function userCanDelete(?User $user): bool
+	public function userCanDelete(?UserInterface $user): bool
 	{
 		try {
 			return $user->hasPermission("roles.delete");
