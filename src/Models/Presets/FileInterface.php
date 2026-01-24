@@ -2,6 +2,9 @@
 
 namespace Katu\Models\Presets;
 
+/**
+ * @deprecated
+ */
 interface FileInterface
 {
 	public function getId(): ?string;

@@ -9,7 +9,7 @@ use Katu\Types\TURL;
 
 class FileModel extends \Katu\Tools\Images\Source
 {
-	public function __construct(\Katu\Models\Presets\File $input)
+	public function __construct(\Katu\Models\Presets\FileInterface $input)
 	{
 		return parent::__construct($input);
 	}
@@ -24,7 +24,7 @@ class FileModel extends \Katu\Tools\Images\Source
 
 	public static function createFromPackage(Package $package): Source
 	{
-		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
+		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileInterface::class);
 
 		return new static($fileClass::get($package->getPayload()["fileId"]));
 	}
@@ -36,7 +36,8 @@ class FileModel extends \Katu\Tools\Images\Source
 
 	public function getExtension(): ?string
 	{
-		return $this->getInput()->getExtension();
+		$file = $this->getInput()->getFile();
+		return $file ? $file->getExtension() : null;
 	}
 
 	public function getURI(): string

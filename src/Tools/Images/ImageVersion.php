@@ -16,8 +16,8 @@ class ImageVersion implements RestResponseInterface
 
 	public function __construct(Image $image, Version $version)
 	{
-		$this->image = $image;
-		$this->version = $version;
+		$this->setImage($image);
+		$this->setVersion($version);
 	}
 
 	public function __toString(): string
@@ -25,9 +25,23 @@ class ImageVersion implements RestResponseInterface
 		return (string)$this->getURL();
 	}
 
+	public function setImage(Image $image): ImageVersion
+	{
+		$this->image = $image;
+
+		return $this;
+	}
+
 	public function getImage(): Image
 	{
 		return $this->image;
+	}
+
+	public function setVersion(Version $version): ImageVersion
+	{
+		$this->version = $version;
+
+		return $this;
 	}
 
 	public function getVersion(): Version
@@ -50,15 +64,34 @@ class ImageVersion implements RestResponseInterface
 
 	public function getExtension(): string
 	{
-		return $this->getVersion()->getExtension() ?: $this->getImage()->getSource()->getExtension();
+		$versionExtension = $this->getVersion()->getExtension();
+		if ($versionExtension) {
+			return $versionExtension;
+		}
+
+		$source = $this->getImage()->getSource();
+		if (!$source) {
+			return "";
+		}
+
+		return $source->getExtension();
 	}
 
 	public function getFile(): ?\Katu\Files\File
 	{
+		$source = $this->getImage()->getSource();
+		if (!$source) {
+			return null;
+		}
+
 		try {
 			$pathSegments = [];
 
-			$hash = $this->getImage()->getSource()->getHash();
+			$hash = $source->getHash();
+			if (!$hash) {
+				return null;
+			}
+
 			$pathSegments[] = substr($hash, 0, 2);
 			$pathSegments[] = substr($hash, 2, 2);
 			$pathSegments[] = substr($hash, 4, 2);
@@ -72,26 +105,53 @@ class ImageVersion implements RestResponseInterface
 		}
 	}
 
-	public function getVersionImage(): ?Image
+	public function getIsUsable(): bool
 	{
 		try {
-			if (!$this->getFile()->exists()) {
+			$file = $this->getFile();
+			if (!$file) {
+				return false;
+			}
+
+			return $file->exists();
+		} catch (\Throwable $e) {
+			return false;
+		}
+	}
+
+	public function getVersionImage(): ?Image
+	{
+		$file = $this->getFile();
+		if (!$file) {
+			return null;
+		}
+
+		try {
+			if (!$file->exists()) {
 				$interventionImage = $this->getImage()->getInterventionImage();
+				if (!$interventionImage) {
+					return null;
+				}
+
 				foreach ($this->getVersion()->getFilters() as $filter) {
 					$filter->apply($interventionImage);
 				}
 
-				$this->getFile()->getDir()->makeDir();
-				$this->getFile()->getDir()->chmod(0777);
-				$this->getFile()->touch();
+				$file->getDir()->makeDir();
+				$file->getDir()->chmod(0777);
+				$file->touch();
 
-				$interventionImage->save($this->getFile(), $this->getVersion()->getQuality());
+				$interventionImage->save($file, $this->getVersion()->getQuality());
 			}
 
-			return new Image($this->getFile());
+			if (!$file->exists()) {
+				return null;
+			}
+
+			return new Image($file);
 		} catch (\Throwable $e) {
 			\App\App::getLogger(new TIdentifier(__CLASS__, __METHOD__))->error($e, [
-				"file" => serialize($this->getFile()),
+				"file" => serialize($file),
 			]);
 
 			return null;
@@ -101,13 +161,14 @@ class ImageVersion implements RestResponseInterface
 	public function getMime(): ?string
 	{
 		try {
-			$file = $this->getFile();
-			if (!$file) {
+			if (!$this->getVersionImage()) {
 				return null;
 			}
 
-			// Ensure version image exists to get accurate MIME type
-			$this->getVersionImage();
+			$file = $this->getFile();
+			if (!$file || !$file->exists()) {
+				return null;
+			}
 
 			return $file->getMime();
 		} catch (\Throwable $e) {
@@ -122,7 +183,15 @@ class ImageVersion implements RestResponseInterface
 		try {
 			$this->getImage();
 
+			if (!$this->getVersionImage()) {
+				return null;
+			}
+
 			$file = $this->getFile();
+			if (!$file || !$file->exists()) {
+				return null;
+			}
+
 			$mime = $file->getMime();
 			$base64 = @base64_encode($file->get());
 
@@ -141,13 +210,23 @@ class ImageVersion implements RestResponseInterface
 	 */
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
+		$file = $this->getFile();
 		$versionImage = $this->getVersionImage();
+
+		$size = null;
+		if ($file && $file->exists()) {
+			try {
+				$size = $file->getSize()->getInB()->getAmount();
+			} catch (\Throwable $e) {
+				$size = null;
+			}
+		}
 
 		return new RestResponse([
 			"url" => (string)$this->getURL(),
 			"type" => $this->getMime(),
-			"extension" => $this->getVersion()->getExtension(),
-			"size" => $this->getFile()->getSize()->getInB()->getAmount(),
+			"extension" => $this->getExtension(),
+			"size" => $size,
 			"dimensions" => $versionImage ? $versionImage->getImageSize()->getRestResponse($request, $options) : null,
 		]);
 	}

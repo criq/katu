@@ -46,8 +46,12 @@ abstract class Source implements PackagedInterface
 		} elseif ($input instanceof \Katu\Types\TURL) {
 			return new Sources\URL($input);
 
-		// File model.
-		} elseif ($input instanceof \Katu\Models\Presets\File) {
+		// File interface.
+		/**
+		 * @deprecated This check is deprecated and will be removed in a future version.
+		 */
+		} elseif ($input instanceof \Katu\Models\Presets\FileInterface) {
+			trigger_error("Using FileInterface in Source::createFromInput() is deprecated and will be removed in a future version.", E_USER_DEPRECATED);
 			return new Sources\FileModel($input);
 
 		// String.

@@ -9,6 +9,13 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ImageVersionCollection extends \ArrayObject implements RestResponseInterface
 {
+	public function filterUsable(): ImageVersionCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (ImageVersion $imageVersion) {
+			return $imageVersion->getIsUsable();
+		})));
+	}
+
 	public function getAssoc(): ImageVersionCollection
 	{
 		return new static(array_combine(
@@ -21,8 +28,8 @@ class ImageVersionCollection extends \ArrayObject implements RestResponseInterfa
 
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		return new RestResponse(array_map(function (ImageVersion $imageVersion) use ($request, $options) {
+		return new RestResponse(array_values(array_filter(array_map(function (ImageVersion $imageVersion) use ($request, $options) {
 			return $imageVersion->getRestResponse($request, $options);
-		}, $this->getAssoc()->getArrayCopy()));
+		}, $this->filterUsable()->getAssoc()->getArrayCopy()))));
 	}
 }
