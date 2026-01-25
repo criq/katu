@@ -30,6 +30,6 @@ class ImageVersionCollection extends \ArrayObject implements RestResponseInterfa
 	{
 		return new RestResponse(array_map(function (ImageVersion $imageVersion) use ($request, $options) {
 			return $imageVersion->getRestResponse($request, $options);
-		}, $this->filterUsable()->getAssoc()->getArrayCopy()));
+		}, $this->getAssoc()->getArrayCopy()));
 	}
 }
