@@ -16,7 +16,6 @@ class Email
 	protected $html;
 	protected $isDispatchable;
 	protected $plain;
-	protected $providerConfigurations;
 	protected $recipients;
 	protected $recipientVariables;
 	protected $replyTo;
@@ -257,21 +256,6 @@ class Email
 		return $this;
 	}
 
-	public function getProviderConfigurations(): ProviderConfigurationCollection
-	{
-		if (is_null($this->providerConfigurations)) {
-			$this->providerConfigurations = new ProviderConfigurationCollection;
-		}
-
-		return $this->providerConfigurations;
-	}
-
-	public function addProviderConfiguration(ProviderConfiguration $providerConfiguration): Email
-	{
-		$this->getProviderConfigurations()[] = $providerConfiguration;
-
-		return $this;
-	}
 
 	protected function setIsDispatchable(bool $isDispatchable): Email
 	{
@@ -301,8 +285,8 @@ class Email
 		return clone $this;
 	}
 
-	public function dispatch(Provider $provider): ?Response
+	public function dispatch(TransactionalEmailServiceInterface $service): ?Response
 	{
-		return $provider->createRequest($this->getDispatchable())->createResponse();
+		return $service->dispatch($this->getDispatchable());
 	}
 }

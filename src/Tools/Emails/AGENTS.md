@@ -3,26 +3,26 @@
 > **Agent Protocol: Keep This Document Updated**
 > All agents are required to update this document with any new, relevant information discovered during their work. This includes, but is not limited to, changes in architecture, new dependencies, updated build processes, or newly established coding conventions. A well-maintained document ensures efficiency and prevents repeated discovery work.
 
-This document provides comprehensive technical documentation for the Email system in the KATU framework. The email system provides multi-provider email sending capabilities with advanced features like attachments, templates, and recipient variables.
+This document provides comprehensive technical documentation for the Email system in the KATU framework. The email system provides multi-service email sending capabilities with advanced features like attachments, templates, and recipient variables.
 
 ---
 
 ## 1. System Overview
 
 ### 1.1. Purpose
-- **Multi-Provider Support:** Amazon SES, SendGrid, Smartemailing, Ecomail
+- **Multi-Service Support:** Amazon SES, SendGrid, Smartemailing, Ecomail
 - **Email Composition:** HTML and plain text email creation
 - **Template System:** Dynamic email templates with variables
 - **Attachment Support:** File attachments with proper MIME handling
 - **Recipient Management:** Multiple recipients with individual variables
-- **Provider Abstraction:** Unified interface across different email providers
+- **Service Abstraction:** Unified interface across different email services
 
 ### 1.2. Architecture
-- **Core Classes:** `Email`, `Provider`, `Request`, `Response`
-- **Provider System:** Abstract provider with concrete implementations
+- **Core Classes:** `Email`, `Service`, `Request`, `Response`
+- **Service System:** Abstract service with concrete implementations
 - **Attachment System:** File attachment handling with storage integration
 - **Template Engine:** Variable substitution and template rendering
-- **Configuration:** Provider-specific configuration management
+- **Configuration:** Service-specific configuration management
 
 ---
 
@@ -55,10 +55,10 @@ public function dispatch(): Response
 - Custom headers
 - Reply-to addresses
 
-### 2.2. Provider (`Katu\Tools\Emails\Provider`)
-**Location:** `Provider.php`
+### 2.2. Service (`Katu\Tools\Emails\Service`)
+**Location:** `Service.php`
 
-Abstract base class for email providers:
+Abstract base class for email services:
 
 ```php
 // Key methods:
@@ -67,19 +67,19 @@ public function createRequest(Email $email): Request
 ```
 
 **Key Features:**
-- Provider abstraction
+- Service abstraction
 - Request/response pattern
-- Unified interface across providers
+- Unified interface across services
 
 ### 2.3. Request (`Katu\Tools\Emails\Request`)
 **Location:** `Request.php`
 
-Email request container for provider communication:
+Email request container for service communication:
 
 ```php
 // Key methods:
-public function __construct(Provider $provider, Email $email)
-public function getProvider(): Provider
+public function __construct(Service $service, Email $email)
+public function getService(): Service
 public function getEmail(): Email
 ```
 
@@ -98,16 +98,16 @@ public function getData(): ?array
 
 ---
 
-## 3. Email Providers
+## 3. Email Services
 
-### 3.1. Amazon SES (`Providers/AmazonSES.php`)
-**Location:** `Providers/AmazonSES.php`
+### 3.1. Amazon SES (`Services/AmazonSES.php`)
+**Location:** `Services/AmazonSES.php`
 
-Amazon Simple Email Service provider:
+Amazon Simple Email Service:
 
 ```php
 // Constructor
-$provider = new AmazonSES($accessKeyId, $secretAccessKey, $region, $configurationSetName);
+$service = new AmazonSES($accessKeyId, $secretAccessKey, $region, $configurationSetName);
 
 // Usage
 $email = new Email();
@@ -116,7 +116,7 @@ $email->setSubject("Test Email")
       ->addRecipient(new TEmailAddress("recipient@example.com"))
       ->setHTML("<h1>Hello World</h1>");
 
-$response = $provider->dispatch($provider->createRequest($email));
+$response = $service->dispatch($service->createRequest($email));
 ```
 
 **Key Features:**
@@ -126,14 +126,14 @@ $response = $provider->dispatch($provider->createRequest($email));
 - Attachment support
 - HTML and plain text content
 
-### 3.2. SendGrid (`Providers/SendGrid.php`)
-**Location:** `Providers/SendGrid.php`
+### 3.2. SendGrid (`Services/Sendgrid.php`)
+**Location:** `Services/Sendgrid.php`
 
-SendGrid email service provider:
+SendGrid email service:
 
 ```php
-$provider = new SendGrid($apiKey);
-$response = $provider->dispatch($provider->createRequest($email));
+$service = new Sendgrid($apiKey);
+$response = $service->dispatch($service->createRequest($email));
 ```
 
 **Key Features:**
@@ -142,14 +142,14 @@ $response = $provider->dispatch($provider->createRequest($email));
 - Advanced analytics
 - Delivery tracking
 
-### 3.3. Smartemailing (`Providers/Smartemailing.php`)
-**Location:** `Providers/Smartemailing.php`
+### 3.3. Smartemailing (`Services/Smartemailing.php`)
+**Location:** `Services/Smartemailing.php`
 
-Smartemailing service provider:
+Smartemailing service:
 
 ```php
-$provider = new Smartemailing($username, $apiKey);
-$response = $provider->dispatch($provider->createRequest($email));
+$service = new Smartemailing($username, $apiKey);
+$response = $service->dispatch($service->createRequest($email));
 ```
 
 **Key Features:**
@@ -157,14 +157,14 @@ $response = $provider->dispatch($provider->createRequest($email));
 - Marketing automation
 - Contact management
 
-### 3.4. Ecomail (`Providers/Ecomail.php`)
-**Location:** `Providers/Ecomail.php`
+### 3.4. Ecomail (`Services/Ecomail.php`)
+**Location:** `Services/Ecomail.php`
 
-Ecomail service provider:
+Ecomail service:
 
 ```php
-$provider = new Ecomail($apiKey);
-$response = $provider->dispatch($provider->createRequest($email));
+$service = new Ecomail($apiKey);
+$response = $service->dispatch($service->createRequest($email));
 ```
 
 **Key Features:**
@@ -225,11 +225,11 @@ $email->addRecipientVariable($recipientVar);
 ### 5.1. Basic Email Sending
 ```php
 use Katu\Tools\Emails\Email;
-use Katu\Tools\Emails\Providers\AmazonSES;
+use Katu\Tools\Emails\Services\AmazonSES;
 use Katu\Types\TEmailAddress;
 
-// Create provider
-$provider = new AmazonSES($accessKeyId, $secretAccessKey, $region);
+// Create service
+$service = new AmazonSES($accessKeyId, $secretAccessKey, $region);
 
 // Create email
 $email = new Email();
@@ -240,7 +240,7 @@ $email->setSubject("Welcome to Our Service")
       ->setPlain("Welcome! Thank you for joining us.");
 
 // Send email
-$response = $provider->dispatch($provider->createRequest($email));
+$response = $service->dispatch($service->createRequest($email));
 
 if ($response->isSuccess()) {
     echo "Email sent successfully!";
@@ -260,7 +260,7 @@ $attachment = new Attachment($fileEntity, "document.pdf");
 $email->addAttachment($attachment);
 
 // Send with attachment
-$response = $provider->dispatch($provider->createRequest($email));
+$response = $service->dispatch($service->createRequest($email));
 ```
 
 ### 5.3. Template Variables
@@ -329,14 +329,14 @@ $config->setSecretAccessKey($secretAccessKey);
 $config->setRegion($region);
 
 // Use configuration
-$provider = new AmazonSES($config);
+$service = new AmazonSES($config);
 ```
 
 ### 6.2. Configuration Collection
 ```php
-use Katu\Tools\Emails\ProviderConfigurationCollection;
+use Katu\Tools\Emails\ServiceConfigurationCollection;
 
-$configs = new ProviderConfigurationCollection();
+$configs = new ServiceConfigurationCollection();
 $configs[] = $amazonSESConfig;
 $configs[] = $sendGridConfig;
 ```
@@ -365,7 +365,7 @@ $email->setReplyTo(new TEmailAddress("support@example.com", "Support Team"));
 ```php
 // Check if email is ready to send
 if ($email->isDispatchable()) {
-    $response = $provider->dispatch($provider->createRequest($email));
+    $response = $service->dispatch($service->createRequest($email));
 }
 ```
 
@@ -375,7 +375,7 @@ if ($email->isDispatchable()) {
 
 ### 8.1. Response Handling
 ```php
-$response = $provider->dispatch($provider->createRequest($email));
+$response = $service->dispatch($service->createRequest($email));
 
 if (!$response->isSuccess()) {
     // Handle error
@@ -387,13 +387,13 @@ if (!$response->isSuccess()) {
 }
 ```
 
-### 8.2. Provider-Specific Errors
+### 8.2. Service-Specific Errors
 ```php
 try {
-    $response = $provider->dispatch($provider->createRequest($email));
+    $response = $service->dispatch($service->createRequest($email));
 } catch (Exception $e) {
     // Handle provider-specific exceptions
-    error_log("Provider error: " . $e->getMessage());
+    error_log("Service error: " . $e->getMessage());
 }
 ```
 
@@ -407,8 +407,8 @@ try {
 - Test emails across different clients
 - Keep subject lines concise and descriptive
 
-### 9.2. Provider Selection
-- Choose provider based on volume and requirements
+### 9.2. Service Selection
+- Choose service based on volume and requirements
 - Use Amazon SES for high-volume transactional emails
 - Use SendGrid for marketing emails with analytics
 - Consider provider-specific features and limitations
@@ -435,7 +435,7 @@ class NotificationController extends Controller
 {
     public function sendWelcomeEmail(User $user): ResponseInterface
     {
-        $provider = new AmazonSES($this->getSESConfig());
+        $service = new AmazonSES($this->getSESConfig());
 
         $email = new Email();
         $email->setSubject("Welcome to Our Service")
@@ -443,7 +443,7 @@ class NotificationController extends Controller
               ->addRecipient(new TEmailAddress($user->email))
               ->setHTML($this->renderWelcomeTemplate($user));
 
-        $response = $provider->dispatch($provider->createRequest($email));
+        $response = $service->dispatch($service->createRequest($email));
 
         if ($response->isSuccess()) {
             return $this->successResponse("Email sent successfully");
@@ -492,22 +492,22 @@ $email->setTo("user@example.com")
           "activation_url" => "https://example.com/activate/123"
       ]);
 
-$provider = new SendGridProvider($apiKey);
-$provider->send($email);
+$service = new Sendgrid($apiKey);
+$service->dispatch($service->createRequest($email));
 ```
 
 ### 11.2. Bulk Email Pattern
 ```php
 // Bulk email sending with rate limiting
 $users = User::getBy(["newsletter" => true]);
-$provider = new SendGridProvider($apiKey);
+$service = new Sendgrid($apiKey);
 
 foreach ($users as $user) {
     $email = new Email();
     $email->setTo($user->email)
           ->setTemplate("newsletter.twig", ["user" => $user]);
 
-    $provider->send($email);
+    $service->dispatch($service->createRequest($email));
 
     // Rate limiting
     usleep(100000); // 100ms delay
@@ -527,7 +527,7 @@ $file = new File("invoices/invoice_12345.pdf");
 $attachment = new Attachment($file);
 $email->addAttachment($attachment);
 
-$provider->send($email);
+$service->dispatch($service->createRequest($email));
 ```
 
 ---
@@ -535,7 +535,7 @@ $provider->send($email);
 ## 12. Troubleshooting
 
 ### 12.1. Common Issues
-- **Authentication Errors:** Check provider credentials and permissions
+- **Authentication Errors:** Check service credentials and permissions
 - **Attachment Issues:** Verify file paths and storage entity setup
 - **Template Variables:** Ensure variable names match template placeholders
 - **Provider Limits:** Check sending quotas and rate limits

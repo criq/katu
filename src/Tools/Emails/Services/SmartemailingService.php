@@ -1,25 +1,100 @@
 <?php
 
-namespace Katu\Tools\Emails\Providers;
+namespace Katu\Tools\Emails\Services;
 
 use Katu\Tools\Emails\Attachment;
-use Katu\Tools\Emails\Provider;
 use Katu\Tools\Emails\Request;
 use Katu\Tools\Emails\Response;
+use Katu\Tools\Emails\TransactionalEmailServiceInterface;
+use Katu\Tools\Emails\Email;
 use Katu\Types\TEmailAddress;
 
-class Smartemailing extends Provider
+class SmartemailingService implements TransactionalEmailServiceInterface
 {
 	protected $username;
 	protected $key;
+	protected $config;
 
-	public function __construct(string $username, string $key)
+	public function __construct(string $username = "", string $key = "")
 	{
-		$this->setUsername($username);
-		$this->setKey($key);
+		if (mb_strlen($username) && mb_strlen($key)) {
+			$this->setUsername($username);
+			$this->setKey($key);
+		}
 	}
 
-	public function setUsername(string $username): Smartemailing
+	public function getCode(): string
+	{
+		return "SMARTEMAILING";
+	}
+
+	public function getTitle(): string
+	{
+		return "Smartemailing";
+	}
+
+	public function getDescription(): ?string
+	{
+		return "Smartemailing služba pro odesílání transakčních e-mailů";
+	}
+
+	public function setConfigFromSecret(string $secret): ?array
+	{
+		// Smartemailing expects JSON with: username, key
+		$value = trim($secret);
+		if (!mb_strlen($value)) {
+			return null;
+		}
+
+		// Try to parse as JSON first
+		$decoded = json_decode($value, true);
+		if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+			// Validate required fields
+			if (isset($decoded["username"]) && isset($decoded["key"])) {
+				return [
+					"username" => $decoded["username"],
+					"key" => $decoded["key"],
+				];
+			}
+		}
+
+		// If not JSON, try colon-separated format: "username:key"
+		if (strpos($value, ":") !== false) {
+			$parts = explode(":", $value, 2);
+			if (count($parts) === 2 && mb_strlen(trim($parts[0])) && mb_strlen(trim($parts[1]))) {
+				return [
+					"username" => trim($parts[0]),
+					"key" => trim($parts[1]),
+				];
+			}
+		}
+
+		// Invalid format
+		return null;
+	}
+
+	public function setConfig(?array $config): SmartemailingService
+	{
+		$this->config = $config;
+		// Update username and key from config if available
+		if ($config) {
+			if (isset($config["username"])) {
+				$this->setUsername($config["username"]);
+			}
+			if (isset($config["key"])) {
+				$this->setKey($config["key"]);
+			}
+		}
+
+		return $this;
+	}
+
+	public function getConfig(): ?array
+	{
+		return $this->config;
+	}
+
+	public function setUsername(string $username): SmartemailingService
 	{
 		$this->username = $username;
 
@@ -31,7 +106,7 @@ class Smartemailing extends Provider
 		return $this->username;
 	}
 
-	public function setKey(string $key): Smartemailing
+	public function setKey(string $key): SmartemailingService
 	{
 		$this->key = $key;
 
@@ -58,12 +133,8 @@ class Smartemailing extends Provider
 
 		$payload["tag"] = "";
 
-		$configuration = $email->getProviderConfigurations()->getSmartemailingConfiguration();
-
 		if ($email->getTemplate()) {
 			$payload["email_id"] = $email->getTemplate();
-		} elseif ($configuration->getTemplate()) {
-			$payload["email_id"] = $configuration->getTemplate();
 		} else {
 			$payload["message_contents"]["subject"] = $email->getSubject();
 			$payload["message_contents"]["html_body"] = $email->getResolvedHTML();
@@ -95,8 +166,9 @@ class Smartemailing extends Provider
 		return $payload;
 	}
 
-	public function dispatch(Request $request): Response
+	public function dispatch(Email $email): Response
 	{
+		$request = new Request($this, $email);
 		$response = new Response($request);
 
 		try {

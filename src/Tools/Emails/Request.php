@@ -4,25 +4,25 @@ namespace Katu\Tools\Emails;
 
 class Request
 {
-	protected $provider;
+	protected $service;
 	protected $email;
 
-	public function __construct(Provider $provider, Email $email)
+	public function __construct(TransactionalEmailServiceInterface $service, Email $email)
 	{
-		$this->setProvider($provider);
+		$this->setService($service);
 		$this->setEmail($email);
 	}
 
-	public function setProvider(Provider $provider): Request
+	public function setService(TransactionalEmailServiceInterface $service): Request
 	{
-		$this->provider = $provider;
+		$this->service = $service;
 
 		return $this;
 	}
 
-	public function getProvider(): Provider
+	public function getService(): TransactionalEmailServiceInterface
 	{
-		return $this->provider;
+		return $this->service;
 	}
 
 	public function setEmail(Email $email): Request
@@ -43,6 +43,6 @@ class Request
 
 	public function createResponse(): Response
 	{
-		return $this->getProvider()->dispatch($this);
+		return $this->getService()->dispatch($this->getEmail());
 	}
 }

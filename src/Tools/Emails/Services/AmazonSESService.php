@@ -1,36 +1,103 @@
 <?php
 
-namespace Katu\Tools\Emails\Providers;
+namespace Katu\Tools\Emails\Services;
 
 use Katu\Errors\Error;
 use Katu\Errors\ErrorVersionCollection;
 use Katu\Tools\Emails\Attachment;
-use Katu\Tools\Emails\Provider;
 use Katu\Tools\Emails\Request;
 use Katu\Tools\Emails\Response;
+use Katu\Tools\Emails\TransactionalEmailServiceInterface;
+use Katu\Tools\Emails\Email;
+use Katu\Tools\Services\Service;
+use Katu\Tools\Services\ServiceInterface;
 use Katu\Types\TEmailAddress;
 use Katu\Types\TIdentifier;
 
-class AmazonSES extends Provider
+class AmazonSESService extends Service implements TransactionalEmailServiceInterface
 {
 	protected $sesClient;
 	protected $configurationSetName;
 
-	public function __construct(string $accessKeyId, string $secretAccessKey, string $region = "us-east-1", ?string $configurationSetName = null)
+	public function __construct(string $accessKeyId = "", string $secretAccessKey = "", string $region = "us-east-1", ?string $configurationSetName = null)
 	{
-		$this->sesClient = new \Aws\Ses\SesClient([
-			"version" => "latest",
-			"region"  => $region,
-			"credentials" => [
-				"key"    => $accessKeyId,
-				"secret" => $secretAccessKey,
-			],
-		]);
+		if (mb_strlen($accessKeyId) && mb_strlen($secretAccessKey)) {
+			$this->sesClient = new \Aws\Ses\SesClient([
+				"version" => "latest",
+				"region"  => $region,
+				"credentials" => [
+					"key" => $accessKeyId,
+					"secret" => $secretAccessKey,
+				],
+			]);
 
-		$this->setConfigurationSetName($configurationSetName);
+			$this->setConfigurationSetName($configurationSetName);
+		}
 	}
 
-	public function setConfigurationSetName(?string $configurationSetName): AmazonSES
+	public function getCode(): string
+	{
+		return "AMAZONSES";
+	}
+
+	public function getTitle(): string
+	{
+		return "Amazon SES";
+	}
+
+	public function getDescription(): ?string
+	{
+		return "Amazon Simple Email Service pro odesílání transakčních e-mailů";
+	}
+
+	public function setConfigFromSecret(string $secret): ?array
+	{
+		// AmazonSES expects JSON with: accessKeyId, secretAccessKey, region (optional), configurationSetName (optional)
+		$value = trim($secret);
+		if (!mb_strlen($value)) {
+			return null;
+		}
+
+		// Try to parse as JSON first
+		$decoded = json_decode($value, true);
+		if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+			// Validate required fields
+			if (isset($decoded["accessKeyId"]) && isset($decoded["secretAccessKey"])) {
+				return [
+					"accessKeyId" => $decoded["accessKeyId"],
+					"secretAccessKey" => $decoded["secretAccessKey"],
+					"region" => $decoded["region"] ?? "us-east-1",
+					"configurationSetName" => $decoded["configurationSetName"] ?? null,
+				];
+			}
+		}
+
+		// If not JSON, assume it's a single access key (legacy format - not recommended)
+		// Return null to indicate invalid format
+		return null;
+	}
+
+	public function setConfig(?array $config): ServiceInterface
+	{
+		parent::setConfig($config);
+		// Reinitialize SES client if config is available
+		if ($config && isset($config["accessKeyId"]) && isset($config["secretAccessKey"])) {
+			$this->sesClient = new \Aws\Ses\SesClient([
+				"version" => "latest",
+				"region"  => $config["region"] ?? "us-east-1",
+				"credentials" => [
+					"key" => $config["accessKeyId"],
+					"secret" => $config["secretAccessKey"],
+				],
+			]);
+
+			$this->setConfigurationSetName($config["configurationSetName"] ?? null);
+		}
+
+		return $this;
+	}
+
+	public function setConfigurationSetName(?string $configurationSetName): AmazonSESService
 	{
 		$this->configurationSetName = $configurationSetName;
 
@@ -42,12 +109,12 @@ class AmazonSES extends Provider
 		return $this->configurationSetName;
 	}
 
-	public function dispatch(Request $request): Response
+	public function dispatch(Email $email): Response
 	{
+		$request = new Request($this, $email);
 		$response = new Response($request);
 
 		try {
-			$email = $request->getEmail();
 
 			// Debug: Log the configuration set name value
 			$configSetName = $this->getConfigurationSetName();

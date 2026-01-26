@@ -1,36 +1,104 @@
 <?php
 
-namespace Katu\Tools\Emails\Providers;
+namespace Katu\Tools\Emails\Services;
 
 use Katu\Errors\Error;
 use Katu\Errors\ErrorVersionCollection;
 use Katu\Tools\Emails\Attachment;
-use Katu\Tools\Emails\Provider;
 use Katu\Tools\Emails\Request;
 use Katu\Tools\Emails\Response;
 use Katu\Tools\Emails\Variable;
+use Katu\Tools\Emails\TransactionalEmailServiceInterface;
+use Katu\Tools\Emails\Email;
 use Katu\Types\TEmailAddress;
 use Katu\Types\TURL;
 
-class Ecomail extends Provider
+class EcomailService implements TransactionalEmailServiceInterface
 {
 	protected $key;
+	protected $config;
 
-	public function __construct(string $key)
+	public function __construct(string $key = "")
 	{
-		$this->setKey($key);
+		if (mb_strlen($key)) {
+			$this->setKey($key);
+		}
 	}
 
-	public function setKey(string $key): Ecomail
+	public function getCode(): string
 	{
-		$this->key = $key;
+		return "ECOMAIL";
+	}
+
+	public function getTitle(): string
+	{
+		return "Ecomail";
+	}
+
+	public function getDescription(): ?string
+	{
+		return "Ecomail služba pro odesílání transakčních e-mailů";
+	}
+
+	public function getProviderClass(): string
+	{
+		return self::class;
+	}
+
+	public function setConfigFromSecret(string $secret): ?array
+	{
+		$value = trim($secret);
+		if (!mb_strlen($value)) {
+			return null;
+		}
+
+		// Try to parse as JSON first
+		$decoded = json_decode($value, true);
+		if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+			// If it's valid JSON with apiKey, use it
+			if (isset($decoded["apiKey"])) {
+				return [
+					"apiKey" => $decoded["apiKey"],
+				];
+			}
+		}
+
+		// Otherwise, treat as plain API key
+		return [
+			"apiKey" => $value,
+		];
+	}
+
+	public function setConfig(?array $config): EcomailService
+	{
+		$this->config = $config;
 
 		return $this;
 	}
 
-	public function getKey(): string
+	public function getConfig(): ?array
 	{
-		return $this->key;
+		return $this->config;
+	}
+
+	public function setKey(string $key): TransactionalEmailServiceInterface
+	{
+		$this->key = $key;
+		// Also update config for consistency
+		$config = $this->getConfig() ?? [];
+		$config["apiKey"] = $key;
+		$this->setConfig($config);
+
+		return $this;
+	}
+
+	public function getKey(): ?string
+	{
+		// Return key from property first, then from config
+		if ($this->key !== null) {
+			return $this->key;
+		}
+		return $this->getConfig()["apiKey"] ?? null;
 	}
 
 	public function getPayload(Request $request): array
@@ -87,8 +155,9 @@ class Ecomail extends Provider
 			;
 	}
 
-	public function dispatch(Request $request): Response
+	public function dispatch(Email $email): Response
 	{
+		$request = new Request($this, $email);
 		$response = new Response($request);
 
 		try {

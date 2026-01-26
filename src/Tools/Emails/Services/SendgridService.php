@@ -1,32 +1,80 @@
 <?php
 
-namespace Katu\Tools\Emails\Providers;
+namespace Katu\Tools\Emails\Services;
 
 use Katu\Tools\Emails\Attachment;
-use Katu\Tools\Emails\Provider;
 use Katu\Tools\Emails\Request;
 use Katu\Tools\Emails\Response;
+use Katu\Tools\Emails\TransactionalEmailServiceInterface;
+use Katu\Tools\Emails\Email;
 use Katu\Types\TEmailAddress;
 
-class Sendgrid extends Provider
+class SendgridService implements TransactionalEmailServiceInterface
 {
 	protected $key;
+	protected $config;
 
-	public function __construct(string $key)
+	public function __construct(string $key = "")
 	{
-		$this->setKey($key);
+		if (mb_strlen($key)) {
+			$this->setKey($key);
+		}
 	}
 
-	public function setKey(string $key): Sendgrid
+	public function getCode(): string
+	{
+		return "SENDGRID";
+	}
+
+	public function getTitle(): string
+	{
+		return "Sendgrid";
+	}
+
+	public function getDescription(): ?string
+	{
+		return "Sendgrid služba pro odesílání transakčních e-mailů";
+	}
+
+	public function setConfigFromSecret(string $secret): ?array
+	{
+		// Sendgrid uses plain API key, wrap it in apiKey
+		$value = trim($secret);
+		return mb_strlen($value) ? [
+			"apiKey" => $value,
+		] : null;
+	}
+
+	public function setConfig(?array $config): SendgridService
+	{
+		$this->config = $config;
+		// Update key from config if available
+		if (isset($config["apiKey"])) {
+			$this->setKey($config["apiKey"]);
+		}
+
+		return $this;
+	}
+
+	public function getConfig(): ?array
+	{
+		return $this->config;
+	}
+
+	public function setKey(string $key): SendgridService
 	{
 		$this->key = $key;
+		// Also update config for consistency
+		$config = $this->getConfig() ?? [];
+		$config["apiKey"] = $key;
+		$this->setConfig($config);
 
 		return $this;
 	}
 
 	public function getKey(): string
 	{
-		return $this->key;
+		return $this->key ?? ($this->getConfig()["apiKey"] ?? "");
 	}
 
 	public function getPayload(Request $request): \SendGrid\Mail\Mail
@@ -62,8 +110,9 @@ class Sendgrid extends Provider
 		return $payload;
 	}
 
-	public function dispatch(Request $request): Response
+	public function dispatch(Email $email): Response
 	{
+		$request = new Request($this, $email);
 		$response = new Response($request);
 
 		try {
