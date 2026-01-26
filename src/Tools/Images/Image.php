@@ -65,6 +65,25 @@ class Image implements RestResponseInterface, PackagedInterface
 		return $this->source;
 	}
 
+	public function getIsUsable(): bool
+	{
+		try {
+			$source = $this->getSource();
+			if (!$source) {
+				return false;
+			}
+
+			$file = $source->getLocalFile();
+			if (!$file) {
+				return false;
+			}
+
+			return $file->exists();
+		} catch (\Throwable $e) {
+			return false;
+		}
+	}
+
 	public function getImageVersion($version): ?ImageVersion
 	{
 		if ($version instanceof Code) {
@@ -93,6 +112,10 @@ class Image implements RestResponseInterface, PackagedInterface
 
 	public function getInterventionImage(): ?\Intervention\Image\Image
 	{
+		if (!$this->getIsUsable()) {
+			return null;
+		}
+
 		return \Intervention\Image\ImageManagerStatic::make((string)$this->getSource()->getLocalFile());
 	}
 

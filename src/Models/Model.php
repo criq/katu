@@ -3,6 +3,8 @@
 namespace Katu\Models;
 
 use App\Models\Users\User;
+use Katu\Models\Presets\FileAttachmentInterface;
+use Katu\Models\Presets\FileInterface;
 use Katu\PDO\Column;
 use Katu\Tools\Options\Option;
 use Katu\Tools\Options\OptionCollection;
@@ -222,14 +224,22 @@ class Model extends Base
 				$object->$name = $value;
 			}
 			if ($saveWithCallback) {
-				$object->saveWithCallback();
+				$object->persist();
 			} else {
-				$object->saveWithoutCallback();
+				$object->persistWithoutCallbacks();
 			}
 		} else {
 			$params = array_merge((array)$getByParams, (array)$insertParams, (array)$updateParams);
 
-			$object = static::insert($params, $saveWithCallback);
+			$object = new static;
+			foreach ((array)$params as $name => $value) {
+				$object->$name = $value;
+			}
+			if ($saveWithCallback) {
+				$object->persist();
+			} else {
+				$object->persistWithoutCallbacks();
+			}
 		}
 
 		return $object;
@@ -275,9 +285,10 @@ class Model extends Base
 	public function saveWithCallback(): Model
 	{
 		return $this
-			->beforeUpdateCallback()
+			->beforePersistCallback()
+			->beforeAnyCallback()
 			->saveWithoutCallback()
-			->afterUpdateCallback()
+			->afterPersistCallback()
 			->afterAnyCallback()
 			;
 	}
@@ -470,9 +481,12 @@ class Model extends Base
 	/****************************************************************************
 	 * FileAttachments.
 	 */
+	/**
+	 * @deprecated
+	 */
 	public function getFileAttachments()
 	{
-		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
+		$fileAttachmentClass = \App\App::getContainer()->get(FileAttachmentInterface::class);
 
 		$sql = SX::select()
 			->select($fileAttachmentClass::getTable())
@@ -484,10 +498,13 @@ class Model extends Base
 		return $fileAttachmentClass::getBySQL($sql);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function getImageFileAttachments()
 	{
-		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
-		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
+		$fileClass = \App\App::getContainer()->get(FileInterface::class);
+		$fileAttachmentClass = \App\App::getContainer()->get(FileAttachmentInterface::class);
 
 		$sql = SX::select()
 			->select($fileAttachmentClass::getTable())
@@ -501,10 +518,13 @@ class Model extends Base
 		return $fileAttachmentClass::getBySQL($sql);
 	}
 
-	public function getImageFile(): ?\Katu\Models\Presets\File
+	/**
+	 * @deprecated
+	 */
+	public function getImageFile(): ?FileInterface
 	{
-		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
-		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
+		$fileClass = \App\App::getContainer()->get(FileInterface::class);
+		$fileAttachmentClass = \App\App::getContainer()->get(FileAttachmentInterface::class);
 
 		$sql = SX::select()
 			->setGetFoundRows(false)
@@ -520,10 +540,13 @@ class Model extends Base
 		return $fileClass::getBySQL($sql)->getOne();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function refreshFileAttachmentsFromFileIds(User $user, ?array $fileIds)
 	{
-		$fileClass = \App\App::getContainer()->get(\Katu\Models\Presets\File::class);
-		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
+		$fileClass = \App\App::getContainer()->get(FileInterface::class);
+		$fileAttachmentClass = \App\App::getContainer()->get(FileAttachmentInterface::class);
 
 		foreach ($this->getFileAttachments() as $fileAttachment) {
 			$fileAttachment->delete();

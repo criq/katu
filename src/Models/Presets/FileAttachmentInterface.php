@@ -2,6 +2,9 @@
 
 namespace Katu\Models\Presets;
 
+/**
+ * @deprecated
+ */
 interface FileAttachmentInterface
 {
 	public function getId(): ?string;

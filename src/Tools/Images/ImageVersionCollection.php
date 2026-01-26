@@ -9,6 +9,13 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ImageVersionCollection extends \ArrayObject implements RestResponseInterface
 {
+	public function filterUsable(): ImageVersionCollection
+	{
+		return new static(array_values(array_filter($this->getArrayCopy(), function (ImageVersion $imageVersion) {
+			return $imageVersion->getIsUsable();
+		})));
+	}
+
 	public function getAssoc(): ImageVersionCollection
 	{
 		return new static(array_combine(
