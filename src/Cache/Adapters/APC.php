@@ -63,7 +63,7 @@ class APC implements \Katu\Cache\Adapter
 				} catch (\Throwable $e) {
 					\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 
-					\apcu_delete($identifier);
+					\apcu_delete((string) $identifier);
 				}
 			}
 		}
@@ -75,7 +75,7 @@ class APC implements \Katu\Cache\Adapter
 	{
 		try {
 			if (static::isSupported()) {
-				\apcu_delete($identifier);
+				\apcu_delete((string)$identifier);
 
 				return true;
 			}
