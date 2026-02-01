@@ -170,29 +170,33 @@ class GoogleCloudStorageObject extends StorageObject
 		return $this->getIsPublic() ? new TURL("https://storage.googleapis.com/{$this->getStorageObjectInfo()["bucket"]}/{$name}") : null;
 	}
 
-	public function getFile(): \Katu\Files\File
+	public function getFile(): ?\Katu\Files\File
 	{
 		if ($this->localFile !== null && $this->localFile->exists()) {
 			return $this->localFile;
 		}
 
-		$bucket = $this->getStorageObjectInfo()["bucket"];
-		$path = $this->getPath();
-		$cachedFile = new \Katu\Files\File(\App\App::getTemporaryDir(), "storage-cache", $bucket, $path);
+		try {
+			$bucket = $this->getStorageObjectInfo()["bucket"];
+			$path = $this->getPath();
+			$cachedFile = new \Katu\Files\File(\App\App::getTemporaryDir(), "storage-cache", $bucket, $path);
 
-		// Ensure directory exists
-		$dir = dirname($cachedFile->getPath());
-		if (!is_dir($dir)) {
-			mkdir($dir, 0755, true);
+			// Ensure directory exists
+			$dir = dirname($cachedFile->getPath());
+			if (!is_dir($dir)) {
+				mkdir($dir, 0755, true);
+			}
+
+			// Download and cache the file
+			$contents = $this->read();
+			$cachedFile->set($contents);
+
+			$this->localFile = $cachedFile;
+
+			return $this->localFile;
+		} catch (\Throwable $e) {
+			return null;
 		}
-
-		// Download and cache the file
-		$contents = $this->read();
-		$cachedFile->set($contents);
-
-		$this->localFile = $cachedFile;
-
-		return $this->localFile;
 	}
 
 	public function getStream(): StreamInterface

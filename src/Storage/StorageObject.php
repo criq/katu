@@ -15,7 +15,7 @@ abstract class StorageObject
 	abstract public function copyTo(StorageService $destinationService, string $destinationPath): StorageObject;
 	abstract public function delete(): bool;
 	abstract public function exists(): bool;
-	abstract public function getFile(): \Katu\Files\File;
+	abstract public function getFile(): ?\Katu\Files\File;
 	abstract public function getSize(): TFileSize;
 	abstract public function getStream(): StreamInterface;
 	abstract public function getTimeCreated(): ?Time;

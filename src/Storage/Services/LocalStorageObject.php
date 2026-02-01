@@ -123,7 +123,7 @@ class LocalStorageObject extends StorageObject
 		return new TFileSize(filesize($fullPath));
 	}
 
-	public function getFile(): \Katu\Files\File
+	public function getFile(): ?\Katu\Files\File
 	{
 		$service = $this->getService();
 		if (!$service instanceof LocalStorageService) {
