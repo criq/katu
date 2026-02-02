@@ -7,6 +7,7 @@ use Katu\Tools\Calendar\Time;
 use Katu\Tools\Cookies\Cookie;
 use Katu\Tools\Cookies\CookieCollection;
 use Katu\Tools\Users\AccessTokenInterface;
+use Katu\Tools\Users\UserInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Sexy\Sexy as SX;
 
