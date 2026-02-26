@@ -13,6 +13,7 @@ class General
 	protected $identifier;
 	protected $memoryKey;
 	protected $timeout;
+	protected static $availableAdapters;
 
 	public function __construct(TIdentifier $identifier, ?Timeout $timeout = null, ?callable $callback = null)
 	{
@@ -78,12 +79,16 @@ class General
 
 	public static function getAvailableAdapters(): AdapterCollection
 	{
-		return new AdapterCollection([
-			new Adapters\Redis,
-			new Adapters\Memcached,
-			new Adapters\APC,
-			new Adapters\File,
-		]);
+		if (!static::$availableAdapters) {
+			static::$availableAdapters = new AdapterCollection([
+				new Adapters\Redis,
+				new Adapters\Memcached,
+				new Adapters\APC,
+				new Adapters\File,
+			]);
+		}
+
+		return static::$availableAdapters;
 	}
 
 	public function setAdapters(AdapterCollection $adapters): General
