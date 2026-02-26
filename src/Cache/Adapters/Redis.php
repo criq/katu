@@ -13,14 +13,7 @@ class Redis implements \Katu\Cache\Adapter
 	public static function createClient(): ?\Predis\Client
 	{
 		try {
-			$client = new \Predis\Client([
-				"scheme" => "tcp",
-				"host" => \App\App::getRedisConfig()->getHost(),
-				"port" => \App\App::getRedisConfig()->getPort(),
-			]);
-			$client->connect();
-
-			return $client;
+			return \App\Classes\Redis::getInstance();
 		} catch (\Throwable $e) {
 			return null;
 		}
