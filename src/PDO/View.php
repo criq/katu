@@ -12,7 +12,7 @@ class View extends Table
 		$sql = " SHOW CREATE TABLE {$this->getName()} ";
 		$res = $this->getConnection()->createQuery($sql)->getResult();
 
-		return $res[0]["Create View"];
+		return (string) ($res[0]["Create View"] ?? "");
 	}
 
 	public function getSourceTables(): array
