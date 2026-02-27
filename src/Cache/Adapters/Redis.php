@@ -8,18 +8,12 @@ use Katu\Types\TIdentifier;
 class Redis implements \Katu\Cache\Adapter
 {
 	protected static $instance;
+	protected static $supported;
 
 	public static function createClient(): ?\Predis\Client
 	{
 		try {
-			$client = new \Predis\Client([
-				"scheme" => "tcp",
-				"host" => \App\App::getRedisConfig()->getHost(),
-				"port" => \App\App::getRedisConfig()->getPort(),
-			]);
-			$client->connect();
-
-			return $client;
+			return \App\Classes\Redis::getInstance();
 		} catch (\Throwable $e) {
 			return null;
 		}
@@ -27,9 +21,16 @@ class Redis implements \Katu\Cache\Adapter
 
 	public static function isSupported(): bool
 	{
-		$client = static::createClient();
+		if (is_null(static::$supported)) {
+			try {
+				$client = static::getInstance();
+				static::$supported = $client ? $client->isConnected() : false;
+			} catch (\Throwable $e) {
+				static::$supported = false;
+			}
+		}
 
-		return $client ? $client->isConnected() : false;
+		return static::$supported;
 	}
 
 	public static function isMemory(): bool

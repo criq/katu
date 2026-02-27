@@ -173,8 +173,7 @@ class TIdentifier implements PackagedInterface
 	public function getNamespacedKey(): string
 	{
 		return implode(":", [
-			\Katu\Config\Env::getPlatform(),
-			\Katu\Config\Env::getVersion(),
+			\App\App::getAppConfig()->getEnvironment(),
 			$this->getKey(),
 		]);
 	}

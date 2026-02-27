@@ -10,6 +10,8 @@ use Katu\Types\TIdentifier;
 
 class SecretManagerConfig extends \Katu\Config\Config
 {
+	protected static $secretCache = [];
+
 	protected $serviceAccountFile;
 	protected $projectId;
 	protected $client;
@@ -45,7 +47,13 @@ class SecretManagerConfig extends \Katu\Config\Config
 
 	public function getSecret(string $name, string $version = "latest"): string
 	{
-		return (new \Katu\Cache\General(new TIdentifier(__CLASS__, __FUNCTION__, $name, $version), new Timeout("1 day"), function () use ($name, $version) {
+		$cacheKey = "{$name}:{$version}";
+
+		if (array_key_exists($cacheKey, static::$secretCache)) {
+			return static::$secretCache[$cacheKey];
+		}
+
+		$result = (new \Katu\Cache\General(new TIdentifier(__CLASS__, __FUNCTION__, $name, $version), new Timeout("1 day"), function () use ($name, $version) {
 			try {
 				$client = $this->getClient();
 
@@ -60,10 +68,18 @@ class SecretManagerConfig extends \Katu\Config\Config
 				return null;
 			}
 		}))->getResult();
+
+		static::$secretCache[$cacheKey] = $result;
+
+		return $result;
 	}
 
 	public function setSecret(string $name, string $value): string
 	{
+		unset(static::$secretCache["{$name}:latest"]);
+
+		(new \Katu\Cache\General(new TIdentifier(__CLASS__, "getSecret", $name, "latest"), new Timeout("1 day")))->clear();
+
 		$secretName = $this->getClient()->secretName($this->getProjectId(), $name);
 
 		try {
