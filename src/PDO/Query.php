@@ -194,6 +194,23 @@ class Query
 				$error = Exception::createFromErrorInfo($statement->errorInfo());
 			}
 
+			// MySQL server has gone away — reconnect and retry once.
+			if ($error->getCode() == 2006) {
+				$this->getConnection()->reconnect();
+				$this->statement = null;
+				$statement = $this->getStatement();
+
+				try {
+					$stopwatch = new \Katu\Tools\Profiler\Stopwatch;
+					$statement->execute();
+					$this->setDuration(new Seconds($stopwatch->getDuration()));
+				} catch (\Throwable $e) {
+					// Nevermind.
+				} finally {
+					$error = Exception::createFromErrorInfo($statement->errorInfo());
+				}
+			}
+
 			if ($error->getCode() == 1146 && preg_match("/Table \'(.+)\.(?<tableName>.+)\' doesn\'t exist/", $error->getMessage(), $match)) {
 				// Create the table.
 				$sqlFile = new \Katu\Files\File(__DIR__, "..", "Tools", "SQL", "{$match["tableName"]}.create.sql");

@@ -124,6 +124,36 @@ class Connection
 		return static::$connections[$title];
 	}
 
+	public function reconnect(): Connection
+	{
+		$pdoOptions = array_replace([
+			\PDO::ATTR_PERSISTENT => $this->getConfig()->getIsPersistent(),
+			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+			\PDO::ATTR_EMULATE_PREPARES => true,
+			\PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+		], $this->getConfig()->getPdoOptions());
+
+		for ($i = 1; $i <= 3; $i++) {
+			try {
+				$this->setPdo(new \PDO(
+					$this->getConfig()->getPDODSN(),
+					$this->getConfig()->getUser(),
+					$this->getConfig()->getPlainPassword(),
+					$pdoOptions
+				));
+				break;
+			} catch (\Throwable $e) {
+				if (strpos($e->getMessage(), "driver does not support setting attributes.")) {
+					$pdoOptions = [];
+				}
+			}
+		}
+
+		static::$connections[$this->getTitle()] = $this;
+
+		return $this;
+	}
+
 	public function tableExists(Name $tableName): bool
 	{
 		return in_array($tableName, $this->getTableNames());
