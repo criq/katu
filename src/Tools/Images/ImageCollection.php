@@ -6,9 +6,7 @@ class ImageCollection extends \ArrayObject
 {
 	public function getFirst(): ?Image
 	{
-		$items = $this->getArrayCopy();
-
-		return reset($items) ?: null;
+		return array_values($this->getArrayCopy())[0] ?? null;
 	}
 
 	public function filterUsable(): ImageCollection
