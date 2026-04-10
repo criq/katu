@@ -203,6 +203,9 @@ class Time extends \DateTime
 		return (float)$micro;
 	}
 
+	/**
+	 * Unix time as float seconds (including microseconds). Used by {@see \Katu\Tools\Profiler\Stopwatch}.
+	 */
 	public static function getMicrotime(): float
 	{
 		list($micro, $timestamp) = explode(" ", microtime(false));

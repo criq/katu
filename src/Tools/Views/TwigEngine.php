@@ -3,6 +3,7 @@
 namespace Katu\Tools\Views;
 
 use Katu\Tools\Cookies\CookieCollection;
+use Katu\Tools\Profile\ProfilerTwigExtension;
 use Katu\Tools\Session\Session;
 use Katu\Types\TClass;
 use Katu\Types\TIdentifier;
@@ -222,6 +223,8 @@ abstract class TwigEngine implements ViewEngineInterface
 
 			return null;
 		}));
+
+		$twig->addExtension(new ProfilerTwigExtension());
 
 		return $twig;
 	}
