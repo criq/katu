@@ -4,12 +4,16 @@ namespace Katu\Tools\Profile;
 
 use Katu\Tools\Calendar\Seconds;
 use Katu\Tools\Profiler\Stopwatch;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 /**
  * Multi-lap wall-clock profiler. Uses {@see Stopwatch} resolution and {@see Seconds} for durations.
  *
  * Use {@see ProfilerContext} so controllers, models, and Twig (via {@see ProfilerTwigExtension}) share one instance per request.
- * For output, prefer {@see ProfilerLocalLogger} (local file/stderr) instead of cloud-backed application loggers so logging does not distort timings.
+ * For output, {@see ProfilerLocalLogger} avoids any I/O while the request is still being measured. To ship the same line to a
+ * PSR-3 / Monolog stack (e.g. Cloud Logging), call {@see self::logToPsrLogger()} once after all laps are recorded so network I/O
+ * does not affect measured segments.
  */
 class Profiler
 {
@@ -126,6 +130,16 @@ class Profiler
 		$parts[] = "total=" . round($this->getElapsed()->getValue(), 4) . "s";
 
 		return "[" . $title . "] " . implode(" ", $parts);
+	}
+
+	/**
+	 * Single PSR-3 log entry with the formatted lap summary. Intended for one call at request/CLI end, after profiling is finished.
+	 */
+	public function logToPsrLogger(LoggerInterface $logger, string $title = "profile", string $level = LogLevel::INFO): void
+	{
+		$logger->log($level, $this->format($title), [
+			"katu_profiler" => true,
+		]);
 	}
 
 	protected function nanoDeltaToSeconds(float $nanoDelta): Seconds

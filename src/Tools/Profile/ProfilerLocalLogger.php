@@ -3,7 +3,10 @@
 namespace Katu\Tools\Profile;
 
 /**
- * Append-only local sink for profiler output. Does not use application loggers (no cloud, no Monolog stack).
+ * Append-only local sink for profiler output (no Monolog / cloud handlers).
+ *
+ * Use this when you want zero extra I/O during the request. For a single export after all laps exist, {@see Profiler::logToPsrLogger()}
+ * with the app logger is fine and will reach Cloud Logging when configured.
  *
  * Default path: sys_get_temp_dir()/katu-profiler.log. Use {@see createForStderr()} for Docker/CLI.
  */
