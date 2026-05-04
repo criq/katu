@@ -116,7 +116,13 @@ class Image implements RestResponseInterface, PackagedInterface
 			return null;
 		}
 
-		return \Intervention\Image\ImageManagerStatic::make((string)$this->getSource()->getLocalFile());
+		try {
+			return \Intervention\Image\ImageManagerStatic::make((string)$this->getSource()->getLocalFile());
+		} catch (\Intervention\Image\Exception\NotReadableException $e) {
+			return null;
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	public function getPixel(): Image
@@ -135,10 +141,14 @@ class Image implements RestResponseInterface, PackagedInterface
 
 	public function getTemporaryFile(): \Katu\Files\File
 	{
+		$interventionImage = $this->getInterventionImage();
+		if (!$interventionImage) {
+			throw new \RuntimeException("Image is not readable.");
+		}
+
 		$file = \Katu\Files\File::createTemporaryWithExtension("png");
 		$file->touch();
 
-		$interventionImage = $this->getInterventionImage();
 		$interventionImage->save($file);
 
 		return $file;
@@ -150,6 +160,9 @@ class Image implements RestResponseInterface, PackagedInterface
 		\Katu\Tools\System\Memory::setLimit(\Katu\Types\TFileSize::createFromShorthand("2G"));
 
 		$interventionImage = $this->getInterventionImage();
+		if (!$interventionImage) {
+			return [];
+		}
 
 		$array = [];
 		for ($x = 0; $x < $interventionImage->width(); $x++) {
@@ -169,18 +182,27 @@ class Image implements RestResponseInterface, PackagedInterface
 	public function getImageSize(): ?TImageSize
 	{
 		$interventionImage = $this->getInterventionImage();
+		if (!$interventionImage) {
+			return null;
+		}
 
 		return new \Katu\Types\TImageSize($interventionImage->width(), $interventionImage->height());
 	}
 
 	public function getMime(): ?string
 	{
-		return $this->getInterventionImage()->mime;
+		$interventionImage = $this->getInterventionImage();
+
+		return $interventionImage ? $interventionImage->mime : null;
 	}
 
 	public function getEmbedSrc(): ?string
 	{
 		$mime = $this->getMime();
+		if (!$mime) {
+			return null;
+		}
+
 		$file = $this->getTemporaryFile();
 		$base64 = base64_encode($file->get());
 		$file->delete();

@@ -222,12 +222,20 @@ class ImageVersion implements RestResponseInterface
 			}
 		}
 
+		$dimensions = null;
+		if ($versionImage) {
+			$imageSize = $versionImage->getImageSize();
+			if ($imageSize) {
+				$dimensions = $imageSize->getRestResponse($request, $options);
+			}
+		}
+
 		return new RestResponse([
 			"url" => (string)$this->getURL(),
 			"type" => $this->getMime(),
 			"extension" => $this->getExtension(),
 			"size" => $size,
-			"dimensions" => $versionImage ? $versionImage->getImageSize()->getRestResponse($request, $options) : null,
+			"dimensions" => $dimensions,
 		]);
 	}
 }
