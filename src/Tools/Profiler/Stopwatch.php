@@ -25,21 +25,21 @@ class Stopwatch
 		return (string)$this->getDuration();
 	}
 
-	public static function getCurrentMictorime(): float
+	public static function getCurrentNanoseconds(): float
 	{
 		return (float)(\Katu\Tools\Calendar\Time::getMicrotime() * static::FACTOR_NANO);
 	}
 
 	public function start(): Stopwatch
 	{
-		$this->start = static::getCurrentMictorime();
+		$this->start = static::getCurrentNanoseconds();
 
 		return $this;
 	}
 
 	public function finish(): Stopwatch
 	{
-		$this->finish = static::getCurrentMictorime();
+		$this->finish = static::getCurrentNanoseconds();
 		$this->duration = $this->getDuration();
 
 		return $this;
@@ -57,7 +57,7 @@ class Stopwatch
 
 	public function getNanoValues(): array
 	{
-		return [$this->getStart(), $this->getFinish() ?: static::getCurrentMictorime()];
+		return [$this->getStart(), $this->getFinish() ?: static::getCurrentNanoseconds()];
 	}
 
 	public function getSeconds(): Seconds

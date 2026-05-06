@@ -45,7 +45,7 @@ class SecretManagerConfig extends \Katu\Config\Config
 		return $this->client;
 	}
 
-	public function getSecret(string $name, string $version = "latest"): string
+	public function getSecret(string $name, string $version = "latest"): ?string
 	{
 		$cacheKey = "{$name}:{$version}";
 
