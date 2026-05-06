@@ -371,22 +371,9 @@ abstract class User extends \Katu\Models\Model implements UserInterface
 		});
 	}
 
-	public function hasPermission(): bool
+	public function hasPermission(string $permission): bool
 	{
-		$args = func_get_args();
-		$permissions = is_string($args[0]) ? [$args[0]] : $args[0];
-		$any = isset($args[1]) ? $args[1] : false;
-
-		$status = [];
-		foreach ((array)$permissions as $permission) {
-			$status[$permission] = in_array($permission, $this->getResolvedPermissions());
-		}
-
-		if ($any) {
-			return in_array(true, $status);
-		}
-
-		return !in_array(false, $status);
+		return in_array($permission, $this->getResolvedPermissions(), true);
 	}
 
 	public function hasRolePermission(string $permission): bool

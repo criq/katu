@@ -13,6 +13,6 @@ interface UserInterface
 	public function setEmailAddress(?EmailAddressInterface $emailAddress): UserInterface;
 	public function getPassword(): ?string;
 	public function setPassword(?string $password): UserInterface;
-	public function hasPermission(): bool;
+	public function hasPermission(string $permission): bool;
 	public function getOrCreateSafeAccessToken(): AccessTokenInterface;
 }
