@@ -34,6 +34,27 @@ abstract class Job implements PackagedInterface
 	protected $timeout;
 	protected $total;
 
+	/**
+	 * Process-wide bypass for the load-average gate in {@see self::run()}.
+	 *
+	 * Set to true by interactive runners (e.g. the `jobs:run` CLI command in v2's
+	 * `RunFromCLI`) so manual runs don't get rejected by the per-job
+	 * {@see self::getMaxLoadAverage()} cap, which subclasses sometimes override
+	 * with a hard-coded constant that masks {@see self::setMaxLoadAverage()}.
+	 * Cron / scheduled runs leave this flag at false so the cap still applies.
+	 */
+	protected static $ignoreMaxLoadAverage = false;
+
+	public static function setIgnoreMaxLoadAverage(bool $ignore): void
+	{
+		self::$ignoreMaxLoadAverage = $ignore;
+	}
+
+	public static function getIgnoreMaxLoadAverage(): bool
+	{
+		return self::$ignoreMaxLoadAverage;
+	}
+
 	public function __construct(array $args = [])
 	{
 		$this->setArgs($args);
@@ -250,10 +271,11 @@ abstract class Job implements PackagedInterface
 				return false;
 			}
 
-			// Check max load average.
+			// Check max load average. Bypass when running in DEVELOPMENT or when an
+			// interactive runner has set the process-wide ignore flag (e.g. `jobs:run`).
 			$maxLoadAverage = $this->getMaxLoadAverage();
 			$loadAverage = \Katu\Tools\System\System::getLoadAveragePerCpu()[0];
-			if (!(new AppConfig)->getIsEnvironment("DEVELOPMENT") && $maxLoadAverage && $loadAverage >= $maxLoadAverage) {
+			if (!self::$ignoreMaxLoadAverage && !(new AppConfig)->getIsEnvironment("DEVELOPMENT") && $maxLoadAverage && $loadAverage >= $maxLoadAverage) {
 				$message = "Load average {$loadAverage} above {$maxLoadAverage}.";
 				$logger->notice($message);
 				$this->outputLine($message);
