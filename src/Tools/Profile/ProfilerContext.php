@@ -16,6 +16,11 @@ class ProfilerContext
 	public static function set(?Profiler $profiler)
 	{
 		self::$profiler = $profiler;
+		if ($profiler) {
+			ProfilerSqlLog::enable();
+		} else {
+			ProfilerSqlLog::reset();
+		}
 	}
 
 	public static function get(): ?Profiler
@@ -26,6 +31,7 @@ class ProfilerContext
 	public static function clear()
 	{
 		self::$profiler = null;
+		ProfilerSqlLog::reset();
 	}
 
 	public static function isActive()

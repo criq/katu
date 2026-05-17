@@ -245,6 +245,12 @@ class Query
 				$file->append("{$duration}\t{$sql}\n");
 			}
 
+			if (\Katu\Tools\Profile\ProfilerContext::isActive()) {
+				$sql = trim($this->getStatementDump()->getSentSQL() ?: $this->statement->queryString);
+				$durationSeconds = $this->getDuration() ? $this->getDuration()->getValue() : 0.0;
+				\Katu\Tools\Profile\ProfilerSqlLog::record($this->getConnection()->getTitle(), $sql, $durationSeconds);
+			}
+
 			// Found rows.
 			try {
 				if (mb_strpos($statement->queryString, "SQL_CALC_FOUND_ROWS") !== false) {
