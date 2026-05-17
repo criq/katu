@@ -210,32 +210,50 @@ class ImageVersion implements RestResponseInterface
 	 */
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		$file = $this->getFile();
-		$versionImage = $this->getVersionImage();
+		$extension = (string) $this->getExtension();
 
-		$size = null;
-		if ($file && $file->exists()) {
+		$data = [
+			"url" => (string) $this->getURL(),
+			"type" => $extension !== "" ? "image/{$extension}" : null,
+			"extension" => $extension,
+		];
+
+		if (!$this->shouldOmitSizeAndDimensionsInRestResponse($options)) {
+			$file = $this->getFile();
+			if ($file) {
+				$data["size"] = $file->exists() ? $file->getSize()->getInB()->getAmount() : null;
+			}
+
+			$versionImage = null;
+
 			try {
-				$size = $file->getSize()->getInB()->getAmount();
+				$versionImage = $this->getVersionImage();
 			} catch (\Throwable $e) {
-				$size = null;
+				\App\App::getLogger(new TIdentifier(__CLASS__, __FUNCTION__))->error($e);
 			}
+
+			$data["dimensions"] = $versionImage
+				? [
+					"width" => $versionImage->getWidth(),
+					"height" => $versionImage->getHeight(),
+				]
+				: null;
 		}
 
-		$dimensions = null;
-		if ($versionImage) {
-			$imageSize = $versionImage->getImageSize();
-			if ($imageSize) {
-				$dimensions = $imageSize->getRestResponse($request, $options);
-			}
+		return new RestResponse($data);
+	}
+
+	protected function shouldOmitSizeAndDimensionsInRestResponse(?OptionCollection $options): bool
+	{
+		if (!$options) {
+			return false;
 		}
 
-		return new RestResponse([
-			"url" => (string)$this->getURL(),
-			"type" => $this->getMime(),
-			"extension" => $this->getExtension(),
-			"size" => $size,
-			"dimensions" => $dimensions,
-		]);
+		$flag = $options->getValue("DISABLE_IMAGE_VERSION_SIZE_AND_DIMENSIONS");
+		if ($flag === null) {
+			return false;
+		}
+
+		return in_array(mb_strtolower((string) $flag), ["1", "true", "yes", "on"], true);
 	}
 }

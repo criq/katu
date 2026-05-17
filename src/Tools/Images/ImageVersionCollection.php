@@ -28,8 +28,14 @@ class ImageVersionCollection extends \ArrayObject implements RestResponseInterfa
 
 	public function getRestResponse(?ServerRequestInterface $request = null, ?OptionCollection $options = null): RestResponse
 	{
-		return new RestResponse(array_map(function (ImageVersion $imageVersion) use ($request, $options) {
-			return $imageVersion->getRestResponse($request, $options);
-		}, $this->getAssoc()->getArrayCopy()));
+		$payload = [];
+		foreach ($this->getAssoc() as $code => $imageVersion) {
+			$versionPayload = $imageVersion->getRestResponse($request, $options)->getPayload();
+			if (is_array($versionPayload) && ($versionPayload["url"] ?? "") !== "") {
+				$payload[$code] = $versionPayload;
+			}
+		}
+
+		return new RestResponse($payload);
 	}
 }
