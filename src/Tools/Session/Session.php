@@ -6,9 +6,16 @@ class Session
 {
 	public function __construct()
 	{
-		if (!session_id()) {
-			session_start($this->getOptions());
+		if (session_id()) {
+			return;
 		}
+
+		// PHPUnit, CLI jobs, and other non-HTTP SAPI paths may have output before Twig renders.
+		if (headers_sent()) {
+			return;
+		}
+
+		session_start($this->getOptions());
 	}
 
 	public function getOptions(): array
