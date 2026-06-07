@@ -16,7 +16,8 @@ class IsPositiveFloat extends Rule
 
 		$output = (new \Katu\Types\TString(trim($param)))->getAsFloatIfNumeric();
 		if (strlen($output)) {
-			if (filter_var($output, FILTER_VALIDATE_FLOAT) === false) {
+			$floatVal = filter_var((string)$output, FILTER_VALIDATE_FLOAT);
+			if ($floatVal === false) {
 				$message = $this->getMessage() ?: "Hodnota musí být kladné desetinné číslo.";
 				$validation->addError((new Error($message, "IS_NOT_POSITIVE_FLOAT", ErrorVersionCollection::createFromArray([
 					"cs" => $message ?: "Hodnota musí být kladné desetinné číslo.",
@@ -24,7 +25,7 @@ class IsPositiveFloat extends Rule
 					"en" => $message ?: "Value must be a positive float.",
 				])))->addParam($param));
 			} else {
-				if ($output <= 0) {
+				if ($floatVal <= 0) {
 					$message = $this->getMessage() ?: "Hodnota musí být kladné desetinné číslo.";
 					$validation->addError((new Error($message, "IS_NOT_POSITIVE_FLOAT", ErrorVersionCollection::createFromArray([
 						"cs" => $message ?: "Hodnota musí být kladné desetinné číslo.",
@@ -32,7 +33,7 @@ class IsPositiveFloat extends Rule
 						"en" => $message ?: "Value must be a positive float.",
 					])))->addParam($param));
 				} else {
-					$validation->addParam($param->setOutput($output));
+					$validation->addParam($param->setOutput($floatVal));
 				}
 			}
 		}

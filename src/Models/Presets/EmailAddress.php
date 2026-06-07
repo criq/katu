@@ -121,4 +121,14 @@ abstract class EmailAddress extends \Katu\Models\Model implements EmailAddressIn
 	{
 		return $this->getEmailAddress();
 	}
+
+	public function getIsConfirmed(): bool
+	{
+		return false;
+	}
+
+	public function setIsConfirmed(bool $isConfirmed): EmailAddressInterface
+	{
+		return $this;
+	}
 }

@@ -16,7 +16,8 @@ class IsInteger extends Rule
 
 		$output = (new \Katu\Types\TString(trim($param)))->getAsFloatIfNumeric();
 		if (strlen($output)) {
-			if (filter_var($output, FILTER_VALIDATE_INT) === false) {
+			$intVal = filter_var((string)$output, FILTER_VALIDATE_INT);
+			if ($intVal === false) {
 				$message = $this->getMessage() ?: "Hodnota musí být celé číslo.";
 				$validation->addError((new Error($message, "IS_NOT_INTEGER", ErrorVersionCollection::createFromArray([
 					"cs" => $message ?: "Hodnota musí být celé číslo.",
@@ -24,7 +25,7 @@ class IsInteger extends Rule
 					"en" => $message ?: "Value must be an integer.",
 				])))->addParam($param));
 			} else {
-				$validation->addParam($param->setOutput($output));
+				$validation->addParam($param->setOutput($intVal));
 			}
 		}
 

@@ -16,7 +16,8 @@ class IsPositiveInt extends Rule
 
 		$output = (new \Katu\Types\TString(trim($param)))->getAsFloatIfNumeric();
 		if (strlen($output)) {
-			if (filter_var($output, FILTER_VALIDATE_INT) === false) {
+			$intVal = filter_var((string)$output, FILTER_VALIDATE_INT);
+			if ($intVal === false) {
 				$message = $this->getMessage() ?: "Hodnota musí být kladné celé číslo.";
 				$validation->addError((new Error($message, "IS_NOT_POSITIVE_INT", ErrorVersionCollection::createFromArray([
 					"cs" => $message ?: "Hodnota musí být kladné celé číslo.",
@@ -24,7 +25,7 @@ class IsPositiveInt extends Rule
 					"en" => $message ?: "Value must be a positive integer.",
 				])))->addParam($param));
 			} else {
-				if ($output <= 0) {
+				if ($intVal <= 0) {
 					$message = $this->getMessage() ?: "Hodnota musí být kladné celé číslo.";
 					$validation->addError((new Error($message, "IS_NOT_POSITIVE_INT", ErrorVersionCollection::createFromArray([
 						"cs" => $message ?: "Hodnota musí být kladné celé číslo.",
@@ -32,7 +33,7 @@ class IsPositiveInt extends Rule
 						"en" => $message ?: "Value must be a positive integer.",
 					])))->addParam($param));
 				} else {
-					$validation->addParam($param->setOutput($output));
+					$validation->addParam($param->setOutput($intVal));
 				}
 			}
 		}
