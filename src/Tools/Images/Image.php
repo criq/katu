@@ -189,6 +189,26 @@ class Image implements RestResponseInterface, PackagedInterface
 		return new \Katu\Types\TImageSize($interventionImage->width(), $interventionImage->height());
 	}
 
+	public function getWidth(): ?int
+	{
+		$imageSize = $this->getImageSize();
+		if (!$imageSize) {
+			return null;
+		}
+
+		return $imageSize->x;
+	}
+
+	public function getHeight(): ?int
+	{
+		$imageSize = $this->getImageSize();
+		if (!$imageSize) {
+			return null;
+		}
+
+		return $imageSize->y;
+	}
+
 	public function getMime(): ?string
 	{
 		$interventionImage = $this->getInterventionImage();
