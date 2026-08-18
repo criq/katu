@@ -39,7 +39,7 @@ class ParamCollection extends \ArrayObject implements PackagedInterface, RestRes
 	/****************************************************************************
 	 * Offset.
 	 */
-	public function offsetSet($key, $value)
+	public function offsetSet($key, $value): void
 	{
 		parent::offsetSet($key ?: $value->getKey(), $value);
 	}

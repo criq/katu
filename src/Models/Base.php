@@ -10,6 +10,34 @@ abstract class Base
 	const DATABASE = "app";
 	const TABLE = "";
 
+	/**
+	 * Values for columns that are not declared as class properties.
+	 * Avoids PHP 8.2+ "Creation of dynamic property" on PDO hydration.
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $_undeclaredProperties = [];
+
+	public function __set(string $name, mixed $value): void
+	{
+		$this->_undeclaredProperties[$name] = $value;
+	}
+
+	public function __get(string $name): mixed
+	{
+		return $this->_undeclaredProperties[$name] ?? null;
+	}
+
+	public function __isset(string $name): bool
+	{
+		return isset($this->_undeclaredProperties[$name]);
+	}
+
+	public function __unset(string $name): void
+	{
+		unset($this->_undeclaredProperties[$name]);
+	}
+
 	public static function createFromArray(array $array): Base
 	{
 		$object = new static;

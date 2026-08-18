@@ -42,16 +42,16 @@ class FloatSortable extends Sortable
 	{
 		if (is_infinite($this->getSource())) {
 			return implode(".", [
-				str_repeat(9, $this->getPrecision()),
-				str_repeat(9, $this->getPrecision()),
+				str_repeat("9", $this->getPrecision()),
+				str_repeat("9", $this->getPrecision()),
 			]);
 		}
 
-		list($a, $b) = array_pad(explode(".", $this->getSource()), 2, null);
+		list($a, $b) = array_pad(explode(".", (string)$this->getSource()), 2, "0");
 
 		return implode(".", [
-			str_pad($a, $this->getPrecision(), 0, \STR_PAD_LEFT),
-			str_pad($b, $this->getPrecision(), 0, \STR_PAD_RIGHT),
+			str_pad((string)$a, $this->getPrecision(), "0", \STR_PAD_LEFT),
+			str_pad((string)$b, $this->getPrecision(), "0", \STR_PAD_RIGHT),
 		]);
 	}
 }

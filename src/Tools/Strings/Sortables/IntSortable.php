@@ -32,9 +32,9 @@ class IntSortable extends Sortable
 	public function getSortable(): string
 	{
 		if (is_infinite($this->getSource())) {
-			return str_repeat(9, $this->getPrecision());
+			return str_repeat("9", $this->getPrecision());
 		}
 
-		return str_pad($this->getSource(), $this->getPrecision(), 0, \STR_PAD_LEFT);
+		return str_pad((string)$this->getSource(), $this->getPrecision(), "0", \STR_PAD_LEFT);
 	}
 }

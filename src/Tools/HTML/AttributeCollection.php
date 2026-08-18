@@ -22,7 +22,7 @@ class AttributeCollection extends \ArrayObject implements HTMLInterface
 		}, $this->sort()->getArrayCopy())));
 	}
 
-	public function offsetSet($key, $value)
+	public function offsetSet($key, $value): void
 	{
 		parent::offsetSet($value->getName(), $value);
 	}

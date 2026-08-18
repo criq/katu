@@ -31,6 +31,6 @@ class BoolSortable extends Sortable
 
 	public function getSortable(): string
 	{
-		return str_pad($this->getSource() ? 0 : 1, $this->getPrecision(), 0, \STR_PAD_LEFT);
+		return str_pad($this->getSource() ? "0" : "1", $this->getPrecision(), "0", \STR_PAD_LEFT);
 	}
 }

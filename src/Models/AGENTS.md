@@ -36,8 +36,19 @@ This document provides comprehensive technical documentation for the Model syste
 
 Abstract base class for all models:
 
+**Key Features:**
+- Database connection management
+- Table and column introspection
+- Query building with Sexy ORM
+- Result factory integration
+- Transaction support
+- Array-to-object conversion
+- PHP 8.2+ undeclared columns: `__set` / `__get` on `Base` store properties that are not declared on the subclass (PDO hydration via `ClassFactory`). Declared public properties still take precedence. `getColumnValues()` reads `$this->{$column}` so undeclared columns persist.
+
 ```php
 // Key methods:
+public function __set(string $name, mixed $value): void
+public function __get(string $name): mixed
 public static function createFromArray(array $array): Base
 public static function getConnection(): \Katu\PDO\Connection
 public static function getTable(): \Katu\PDO\Table
@@ -48,14 +59,6 @@ public static function getOneBy(?array $where = [], $orderBy = null)
 public static function getAll($orderBy = null)
 public static function transaction()
 ```
-
-**Key Features:**
-- Database connection management
-- Table and column introspection
-- Query building with Sexy ORM
-- Result factory integration
-- Transaction support
-- Array-to-object conversion
 
 ### 2.2. Model (`Katu\Models\Model`)
 **Location:** `Model.php`

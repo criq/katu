@@ -13,11 +13,15 @@ class Time extends \DateTime
 			$time = $time->format("r");
 		}
 
+		if ($time === null) {
+			$time = "now";
+		}
+
 		if (!$timezone) {
 			$timezone = $this->getLocalTimeZone();
 		}
 
-		return parent::__construct($time, $timezone);
+		parent::__construct($time, $timezone);
 	}
 
 	public function __toString(): string
@@ -25,11 +29,7 @@ class Time extends \DateTime
 		return $this->getDbDateTimeFormat();
 	}
 
-	/**
-	 * @param int|float $timestamp
-	 * @return static
-	 */
-	public static function createFromTimestamp($timestamp): \DateTime
+	public static function createFromTimestamp(int|float $timestamp): static
 	{
 		$timeClass = \App\App::getContainer()->get(\Katu\Tools\Calendar\Time::class);
 

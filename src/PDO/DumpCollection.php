@@ -68,27 +68,27 @@ class DumpCollection extends \ArrayObject
 	/****************************************************************************
 	 * Iterator.
 	 */
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->iteratorPosition = 0;
 	}
 
-	public function current()
+	public function current(): mixed
 	{
 		return $this->dumps[$this->iteratorPosition];
 	}
 
-	public function key()
+	public function key(): mixed
 	{
 		return $this->iteratorPosition;
 	}
 
-	public function next()
+	public function next(): void
 	{
 		++$this->iteratorPosition;
 	}
 
-	public function valid()
+	public function valid(): bool
 	{
 		return isset($this->dumps[$this->iteratorPosition]);
 	}

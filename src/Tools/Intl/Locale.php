@@ -46,7 +46,7 @@ class Locale
 	{
 		if (is_float($preference) || is_int($preference)) {
 			$this->preference = (float)$preference;
-		} elseif (preg_match("/^q=(?<preference>.+)$/", $preference, $match)) {
+		} elseif (is_string($preference) && preg_match("/^q=(?<preference>.+)$/", $preference, $match)) {
 			$this->preference = (float)$match["preference"];
 		} else {
 			$this->preference = null;

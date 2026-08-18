@@ -4,7 +4,7 @@ namespace Katu\Tools\Tables;
 
 class RowCollection extends \ArrayObject
 {
-	public function offsetSet($key, $value)
+	public function offsetSet($key, $value): void
 	{
 		parent::offsetSet($value->getIndex(), $value);
 	}

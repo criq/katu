@@ -13,7 +13,7 @@ class DiskSpaceCollection extends \ArrayObject
 		}
 	}
 
-	public function offsetSet($key, $value)
+	public function offsetSet($key, $value): void
 	{
 		parent::offsetSet($value->getMount(), $value);
 	}

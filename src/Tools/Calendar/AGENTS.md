@@ -37,7 +37,7 @@ Extended DateTime class with additional functionality:
 // Key methods:
 public function __construct($time = null, ?\DateTimeZone $timezone = null)
 public function __toString(): string
-public static function createFromTimestamp($timestamp): \DateTime
+public static function createFromTimestamp(int|float $timestamp): static
 public static function createFromDateTime(\DateTime $dateTime): Time
 public static function createFromString(?string $string, bool $timeRequired): ?Time
 public function getDbDateTimeFormat(): string

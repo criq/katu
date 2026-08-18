@@ -70,7 +70,7 @@ class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Co
 	/****************************************************************************
 	 * ArrayAccess.
 	 */
-	public function offsetSet($offset, $value)
+	public function offsetSet($offset, $value): void
 	{
 		if (is_null($offset)) {
 			$this->storage[] = $value;
@@ -79,17 +79,17 @@ class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Co
 		}
 	}
 
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return isset($this->storage[$offset]);
 	}
 
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		unset($this->storage[$offset]);
 	}
 
-	public function offsetGet($offset)
+	public function offsetGet($offset): mixed
 	{
 		return isset($this->storage[$offset]) ? $this->storage[$offset] : null;
 	}
@@ -97,27 +97,27 @@ class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Co
 	/****************************************************************************
 	 * Iterator.
 	 */
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->iteratorPosition = 0;
 	}
 
-	public function current()
+	public function current(): mixed
 	{
 		return $this->storage[$this->iteratorPosition];
 	}
 
-	public function key()
+	public function key(): mixed
 	{
 		return $this->iteratorPosition;
 	}
 
-	public function next()
+	public function next(): void
 	{
 		++$this->iteratorPosition;
 	}
 
-	public function valid()
+	public function valid(): bool
 	{
 		return isset($this->storage[$this->iteratorPosition]);
 	}
@@ -125,7 +125,7 @@ class ExceptionCollection extends Exception implements ArrayAccess, Iterator, Co
 	/****************************************************************************
 	 * Countable.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return count($this->storage);
 	}
