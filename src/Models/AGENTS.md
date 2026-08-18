@@ -43,7 +43,7 @@ Abstract base class for all models:
 - Result factory integration
 - Transaction support
 - Array-to-object conversion
-- PHP 8.2+ undeclared columns: `__set` / `__get` on `Base` store properties that are not declared on the subclass (PDO hydration via `ClassFactory`). Declared public properties still take precedence. `getColumnValues()` reads `$this->{$column}` so undeclared columns persist.
+- PHP 8.2+ undeclared columns: `__set` / `__get` on `Base` store properties that are not declared on the subclass (PDO hydration via `ClassFactory`). Declared public properties still take precedence. `getColumnValues()` reads `$this->{$column}` so undeclared columns persist. Apps migrating from katu 4: [`MIGRATION-4-TO-8.md`](../../MIGRATION-4-TO-8.md).
 
 ```php
 // Key methods:

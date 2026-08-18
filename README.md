@@ -23,6 +23,9 @@ A comprehensive PHP framework built on Slim 4, providing MVC architecture, datab
 - [Best Practices](#best-practices)
 - [Examples](#examples)
 - [Contributing](#contributing)
+- [Migrating from 4.x](MIGRATION-4-TO-8.md)
+
+**Upgrading from 4.x (PHP 7.4) to 8.x (PHP 8.4):** see [`MIGRATION-4-TO-8.md`](MIGRATION-4-TO-8.md). Keep that file updated when tagging 8.x.
 
 ## Overview
 
@@ -34,13 +37,13 @@ KATU is a modern PHP framework that extends Slim 4 with additional functionality
 - **PSR Compliance**: PSR-4 autoloading, PSR-7 HTTP messages, PSR-3 logging
 - **Extensive Utilities**: Calendar, validation, HTML generation, file management, and more
 - **Security Features**: JWT handling, password encoding, encryption
-- **Modern PHP**: Optimized for PHP 7.4+ with enhanced PSR compliance
+- **Modern PHP**: 8.x requires PHP 8.4+. 4.x stays 7.4.
 
 ## Installation
 
 ### Requirements
 
-- PHP 7.4 or higher
+- PHP 8.4 or higher for **8.x** (`"php": ">=8.4"`). **4.x** remains PHP 7.4.
 - Composer
 - MySQL/PostgreSQL database (optional)
 

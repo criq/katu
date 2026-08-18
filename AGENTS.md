@@ -2,6 +2,8 @@
 
 > **Agent Protocol: Keep This Document Updated**
 > All agents are required to update this document with any new, relevant information discovered during their work. This includes, but is not limited to, changes in architecture, new dependencies, updated build processes, or newly established coding conventions. A well-maintained document ensures efficiency and prevents repeated discovery work.
+>
+> **4.x → 8.x upgrades:** also update [`MIGRATION-4-TO-8.md`](MIGRATION-4-TO-8.md) (tag changelog + the matching section). That file is what other codebases read.
 
 This document provides comprehensive technical documentation for the `criq/katu` library used in the v2 application. KATU is a custom PHP framework that provides MVC architecture, database abstraction, routing, and extensive utility classes.
 
@@ -32,7 +34,8 @@ This document provides comprehensive technical documentation for the `criq/katu`
 
 - **Name:** `criq/katu`
 - **Type:** Custom PHP framework library
-- **Version:** 8.x (`8.20260818.1` — PHP 8.4+; 4.x stays PHP 7.4)
+- **Version:** 8.x (`8.20260818.2` — PHP 8.4+; 4.x stays PHP 7.4)
+- **Upgrade from 4.x:** [`MIGRATION-4-TO-8.md`](MIGRATION-4-TO-8.md)
 - **Location:** `vendor/criq/katu/`
 - **Namespace:** `Katu\`
 - **Dependencies:** 30+ packages including Slim 4, Twig, Guzzle, Monolog, PHP-DI, etc.
@@ -1010,19 +1013,16 @@ return $response->getStream();
 
 ## 15. Migration Notes
 
+**Canonical guide:** [`MIGRATION-4-TO-8.md`](MIGRATION-4-TO-8.md) (katu **4.x / PHP 7.4** → **8.x / PHP 8.4**). Keep that file updated when tagging 8.x.
+
 ### 15.1. Version Compatibility
 
 - KATU **8.x** requires PHP **8.4+**. **4.x** stays PHP 7.4 (no dual support in 8.x).
-- Slim 4 compatibility
-- PSR-7 compliance
-- Modern PHP features usage
+- Slim 4, PHP-DI 6, Twig 1/2 (`twig/extensions` still blocks Twig 3).
 
-### 15.2. Breaking Changes
+### 15.2. Breaking Changes (summary)
 
-- Method signature changes in major versions
-- Configuration class structure updates
-- Database connection handling improvements
-- Exception hierarchy changes
+See the migration doc. Highlights: dropped `jwage/easy-csv` and `ralouphie/mimey`; `FILTER_UNSAFE_RAW`; explicit nullable signatures; ArrayAccess/Iterator return types; `Time::createFromTimestamp(): static`; `Base` `__set`/`__get` for undeclared hydrated columns.
 
 ---
 
@@ -1031,6 +1031,7 @@ return $response->getStream();
 ### 16.1. Core Framework Documentation
 
 - **`AGENTS.md`** - This main framework documentation
+- **`MIGRATION-4-TO-8.md`** - Upgrade from katu 4.x (PHP 7.4) to 8.x (PHP 8.4)
 
 ### 16.2. Framework Tools Documentation
 
