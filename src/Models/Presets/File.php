@@ -20,7 +20,7 @@ abstract class File extends \Katu\Models\Model implements FileInterface
 	public $size;
 	public $type;
 
-	public static function create(?UserInterface $user = null, string $path, string $fileName, string $fileType, int $fileSize): FileInterface
+	public static function create(?UserInterface $user, string $path, string $fileName, string $fileType, int $fileSize): FileInterface
 	{
 		return static::insert([
 			"timeCreated" => new \Katu\Tools\Calendar\Time,
@@ -32,7 +32,7 @@ abstract class File extends \Katu\Models\Model implements FileInterface
 		]);
 	}
 
-	public static function createFromFile(?UserInterface $user = null, \Katu\Files\File $file): FileInterface
+	public static function createFromFile(?UserInterface $user, \Katu\Files\File $file): FileInterface
 	{
 		if (!$file->exists()) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
@@ -56,7 +56,7 @@ abstract class File extends \Katu\Models\Model implements FileInterface
 		return static::create($user, $path, $file->getBasename(), $fileType, $fileSize);
 	}
 
-	public static function createFromUpload(?UserInterface $user = null, \Katu\Files\Upload $upload): FileInterface
+	public static function createFromUpload(?UserInterface $user, \Katu\Files\Upload $upload): FileInterface
 	{
 		if (!$upload) {
 			throw new \Katu\Exceptions\InputErrorException("Invalid upload.");
@@ -81,7 +81,7 @@ abstract class File extends \Katu\Models\Model implements FileInterface
 		return static::create($user, $path, $upload->getFileName(), $upload->getFileType(), $upload->getFileSize()->getInB()->getAmount());
 	}
 
-	public static function createFromURL(?UserInterface $user = null, $url): FileInterface
+	public static function createFromURL(?UserInterface $user, $url): FileInterface
 	{
 		$url = new \Katu\Types\TURL($url);
 
@@ -186,7 +186,7 @@ abstract class File extends \Katu\Models\Model implements FileInterface
 		return true;
 	}
 
-	public function attachTo(?UserInterface $user = null, \Katu\Models\Model $object)
+	public function attachTo(?UserInterface $user, \Katu\Models\Model $object)
 	{
 		$fileAttachmentClass = \App\App::getContainer()->get(\Katu\Models\Presets\FileAttachment::class);
 

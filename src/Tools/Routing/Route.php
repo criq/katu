@@ -12,7 +12,7 @@ class Route
 	protected $name;
 	protected $pattern;
 
-	public function __construct(string $pattern, $callback, array $methods = null)
+	public function __construct(string $pattern, $callback, ?array $methods = null)
 	{
 		$this->setPattern($pattern);
 		$this->setCallback($callback);

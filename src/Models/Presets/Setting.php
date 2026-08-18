@@ -36,7 +36,7 @@ abstract class Setting extends \Katu\Models\Model implements SettingInterface
 		]);
 	}
 
-	public static function getOrCreate(?UserInterface $creator = null, string $name): SettingInterface
+	public static function getOrCreate(?UserInterface $creator, string $name): SettingInterface
 	{
 		$setting = static::getOneByName($name);
 		if (!$setting) {

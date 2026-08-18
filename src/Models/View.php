@@ -527,7 +527,7 @@ abstract class View extends Base
 		}, get_declared_classes())));
 	}
 
-	public static function cacheAndMaterializeAll(int $limit = null)
+	public static function cacheAndMaterializeAll(?int $limit = null)
 	{
 		$processed = 0;
 
