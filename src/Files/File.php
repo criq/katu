@@ -109,7 +109,7 @@ class File
 	{
 		try {
 			$publicDir = \App\App::getPublicDir();
-			$publicPath = realpath(new static(\App\App::getBaseDir(), $publicDir));
+			$publicPath = realpath((string) new static(\App\App::getBaseDir(), $publicDir));
 			if (preg_match("/^" . preg_quote($publicPath, "/") . "(.*)$/", (string)$this->getPath(), $match)) {
 				return new TURL(implode("/", array_map(function ($i) {
 					return trim($i, "/");

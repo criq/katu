@@ -37,22 +37,22 @@ class ColumnDescription
 		} elseif (preg_match("/^(?<type>char|varchar)\((?<length>[0-9]+)\)/", $response["Type"], $match)) {
 			$object->type = (string)$match["type"];
 			$object->length = (int)$match["length"];
-			$object->filter = FILTER_SANITIZE_STRING;
+			$object->filter = FILTER_UNSAFE_RAW;
 		} elseif (preg_match("/^(?<type>text|mediumtext|longtext)/", $response["Type"], $match)) {
 			$object->type = (string)$match["type"];
-			$object->filter = FILTER_SANITIZE_STRING;
+			$object->filter = FILTER_UNSAFE_RAW;
 		} elseif (preg_match("/^(?<type>enum)\((?<options>.*)\)/", $response["Type"], $match)) {
 			$object->type = "enum";
 			$object->options = array_map(function ($i) {
 				return (string)trim($i, "\"");
 			}, explode(",", $match["options"]));
-			$object->filter = FILTER_SANITIZE_STRING;
+			$object->filter = FILTER_UNSAFE_RAW;
 		} elseif (preg_match("/^(?<type>datetime|date)/", $response["Type"], $match)) {
 			$object->type = $match["type"];
-			$object->filter = FILTER_SANITIZE_STRING;
+			$object->filter = FILTER_UNSAFE_RAW;
 		} elseif (preg_match("/^(?<type>timestamp)/", $response["Type"], $match)) {
 			$object->type = $match["type"];
-			$object->filter = FILTER_SANITIZE_STRING;
+			$object->filter = FILTER_UNSAFE_RAW;
 		}
 
 		$object->key = (string) ($response["Key"]);

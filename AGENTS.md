@@ -47,7 +47,7 @@ This document provides comprehensive technical documentation for the `criq/katu`
 - **Database ORM:** Custom ORM with Sexy query builder
 - **PSR Compliance:** PSR-4 autoloading, PSR-7 HTTP messages, PSR-3 logging
 - **Framework Integration:** Built on Slim 4 with Twig templating
-- **Modern PHP:** Optimized for PHP 7.4+ features with enhanced PSR compliance
+- **Modern PHP:** Requires **PHP 8.4+** (`composer.json` `"php": ">=8.4"`). Runtime compatibility only — do not rewrite to `match` / enums / property promotion in the same tag as the 8.4 bump (ID-1033).
 
 ---
 
@@ -892,12 +892,10 @@ class ExampleConfig extends \Katu\Config\Config
 
 ### 11.6. Data Processing
 
-- `league/csv` - CSV processing
-- `jwage/easy-csv` - Easy CSV handling
+- `league/csv` - CSV processing (`jwage/easy-csv` dropped: PHP `^7.2` only, unused)
 - `league/color-extractor` - Color extraction
 - `mischiefcollective/colorjizz` - Color manipulation
 - `michelf/php-markdown` - Markdown processing
-- `ralouphie/mimey` - MIME type detection
 
 ### 11.7. Development & Testing
 
@@ -1014,7 +1012,7 @@ return $response->getStream();
 
 ### 15.1. Version Compatibility
 
-- KATU 4.x requires PHP 7.4+
+- KATU 4.x requires PHP **8.4+** (from ID-1033; previously 7.4)
 - Slim 4 compatibility
 - PSR-7 compliance
 - Modern PHP features usage
