@@ -32,7 +32,7 @@ This document provides comprehensive technical documentation for the `criq/katu`
 
 - **Name:** `criq/katu`
 - **Type:** Custom PHP framework library
-- **Version:** 4.x (latest: 4.20251007.1)
+- **Version:** 8.x (`8.20260818.1` — PHP 8.4+; 4.x stays PHP 7.4)
 - **Location:** `vendor/criq/katu/`
 - **Namespace:** `Katu\`
 - **Dependencies:** 30+ packages including Slim 4, Twig, Guzzle, Monolog, PHP-DI, etc.
@@ -1012,7 +1012,7 @@ return $response->getStream();
 
 ### 15.1. Version Compatibility
 
-- KATU 4.x requires PHP **8.4+** (from ID-1033; previously 7.4)
+- KATU **8.x** requires PHP **8.4+**. **4.x** stays PHP 7.4 (no dual support in 8.x).
 - Slim 4 compatibility
 - PSR-7 compliance
 - Modern PHP features usage
