@@ -79,6 +79,7 @@ composer update criq/katu criq/sexy criq/fatty criq/effekt criq/fono criq/naam c
 |---------|----------------------|-------------|
 | `jwage/easy-csv` | `^7.2` only | Use `league/csv` (already a katu require) or drop usage |
 | `ralouphie/mimey` | no PHP 8 | Use another MIME helper; katu `File` no longer depends on it |
+| `mandrill/mandrill` | abandoned (Bitbucket dist 404) | Unused leftover; mailers are SES / Sendgrid / Ecomail / Smartemailing. Do not replace with `mailchimp/transactional` unless you still send via Mandrill |
 
 If **your app** required those only transitively, `composer prohibits php 8.4.0` should clear after the katu 8 bump. If you required them directly, replace or drop them in the app.
 
@@ -199,6 +200,7 @@ Add a row when you tag 8.x. Newest first.
 
 | Tag | Date | Breaking / migrate notes |
 |-----|------|--------------------------|
+| **8.20260818.4** | 2026-08-18 | Drop unused abandoned `mandrill/mandrill` (no katu mailer used it; Bitbucket dist 404) |
 | **8.20260818.3** | 2026-08-18 | Added this file (`MIGRATION-4-TO-8.md`). No runtime change. |
 | **8.20260818.2** | 2026-08-18 | `Time` DateTime LSP + null constructor; ArrayAccess/Iterator return types; `Base::__set`/`__get` for undeclared columns; Locale `preg_match` only on strings; Sortable `str_pad` strings |
 | **8.20260818.1** | 2026-08-18 | First 8.x: `php >=8.4`; drop easy-csv + mimey; `FILTER_UNSAFE_RAW`; `realpath((string) File)`; explicit nullable signatures |

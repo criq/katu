@@ -18,7 +18,6 @@
 		"lcobucci/jwt": "@stable",
 		"league/color-extractor": "@stable",
 		"league/csv": "@stable",
-		"mandrill/mandrill": "@stable",
 		"michelf/php-markdown": "@stable",
 		"mischiefcollective/colorjizz": "@stable",
 		"monolog/monolog": "@stable",

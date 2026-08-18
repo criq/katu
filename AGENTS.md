@@ -34,7 +34,7 @@ This document provides comprehensive technical documentation for the `criq/katu`
 
 - **Name:** `criq/katu`
 - **Type:** Custom PHP framework library
-- **Version:** 8.x (`8.20260818.2` — PHP 8.4+; 4.x stays PHP 7.4)
+- **Version:** 8.x (`8.20260818.4` — PHP 8.4+; 4.x stays PHP 7.4)
 - **Upgrade from 4.x:** [`MIGRATION-4-TO-8.md`](MIGRATION-4-TO-8.md)
 - **Location:** `vendor/criq/katu/`
 - **Namespace:** `Katu\`
@@ -884,7 +884,6 @@ class ExampleConfig extends \Katu\Config\Config
 - `google/apiclient` - Google API client
 - `google/cloud` - Google Cloud services
 - `sendgrid/sendgrid` - SendGrid email service
-- `mandrill/mandrill` - Mandrill email service
 
 ### 11.5. Security & Authentication
 
