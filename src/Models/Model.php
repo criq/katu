@@ -258,7 +258,7 @@ class Model extends Base
 		$plainColumnsNames = static::getTable()->getColumnNames()->getPlain();
 
 		$values = [];
-		foreach (get_object_vars($this) as $name => $value) {
+		foreach (array_merge(get_object_vars($this), $this->_undeclaredProperties) as $name => $value) {
 			if (in_array($name, $plainColumnsNames) && $name != $this->getIdColumn()->getName()->getPlain()) {
 				$values[$name] = $value;
 			}

@@ -137,7 +137,9 @@ Assigning an **undeclared** public property is deprecated. PDO hydration used to
 
 You do **not** need `#[AllowDynamicProperties]` on every model. Prefer declaring real columns as `public $foo` with `@var` anyway.
 
-`get_object_vars($model)` does **not** include the undeclared bag. Use `$model->columnName` or `getColumnValues()`. The deprecated `saveWithoutCallback()` path still uses `get_object_vars` filtered by table columns — prefer `persist()` / `persistWithoutCallbacks()`.
+`get_object_vars($model)` does **not** include the undeclared bag. Use `$model->columnName` or `getColumnValues()`. Prefer `persist()` / `persistWithoutCallbacks()` over the deprecated `save()` path.
+
+**katu 8.20260826.1+** merges `$_undeclaredProperties` into `saveWithoutCallback()` so legacy `save()` writes undeclared columns again; new code should still prefer `persist()`.
 
 ### `FILTER_SANITIZE_STRING`
 
