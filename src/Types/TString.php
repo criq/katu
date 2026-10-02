@@ -116,6 +116,8 @@ class TString implements \Stringable
 		$string = strtr($this, [
 			"á" => "a",
 			"Á" => "A",
+			"ä" => "a",
+			"Ä" => "A",
 			"č" => "c",
 			"Č" => "C",
 			"ď" => "d",
@@ -126,10 +128,18 @@ class TString implements \Stringable
 			"Ě" => "E",
 			"í" => "i",
 			"Í" => "I",
+			"ĺ" => "l",
+			"Ĺ" => "L",
+			"ľ" => "l",
+			"Ľ" => "L",
 			"ň" => "n",
 			"Ň" => "N",
 			"ó" => "o",
 			"Ó" => "O",
+			"ô" => "o",
+			"Ô" => "O",
+			"ŕ" => "r",
+			"Ŕ" => "R",
 			"ř" => "r",
 			"Ř" => "R",
 			"š" => "s",
@@ -153,7 +163,9 @@ class TString implements \Stringable
 	{
 		$string = (string)(new TString($this->string))->getWithNormalizedSpaces()->getTrimmed();
 		$string = mb_strtolower($string);
-		$string = (new static($string))->getWithAccentsRemoved();
+		// Prefer Unicode ASCII fold (covers SK ľ/ĺ/ŕ/ô/ä and other Latin diacritics);
+		// the strtr map in getWithAccentsRemoved is Czech-oriented and incomplete for SK.
+		$string = mb_strtolower((string)(new static($string))->getWithoutDiacritics());
 
 		// Remove non-word characters.
 		$string = preg_replace("/\s+/", "_", $string);
