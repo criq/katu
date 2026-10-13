@@ -62,7 +62,7 @@ class GoogleCloudStorageObject extends StorageObject
 
 	public function getURI(): string
 	{
-		return "gcs://{$this->getService()->getName()}/{$this->getPath()}";
+		return "gs://{$this->getService()->getName()}/{$this->getPath()}";
 	}
 
 	public function getType(): ?string

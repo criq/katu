@@ -616,11 +616,11 @@ class CustomStorageService extends StorageService
 - **Prefix-Based:** Paths treated as flat prefixes (no true directory hierarchy in GCS)
 
 ### 8.2. URI Format
-- **Scheme:** `local://` or `gcs://`
+- **Scheme:** `local://` or `gs://` (canonical GCS; Google CLI/Console style)
 - **Path:** Relative path from service root
-- **GCS:** Includes bucket name: `gcs://bucket-name/path/to/file.txt`
+- **GCS:** Includes bucket name: `gs://bucket-name/path/to/file.txt`
 - **Local:** Direct path: `local://path/to/file.txt`
-- **GoogleCloudStorageService** accepts **`gcs://` only** (rejects legacy `gs://` and GCS REST API URLs — ID-441)
+- **GoogleCloudStorageService** writes **`gs://`**; still **reads** legacy **`gcs://`** stored URIs (ID-441)
 
 ### 8.3. Examples
 ```
