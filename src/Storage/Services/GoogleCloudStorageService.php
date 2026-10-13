@@ -114,14 +114,13 @@ class GoogleCloudStorageService extends StorageService
 
 	public function getIsCompatibleWithURI(string $uri): bool
 	{
-		if (strpos($uri, "gcs://") !== 0) {
+		// Canonical scheme is gs:// (Google Cloud CLI / Console). Legacy gcs:// is still accepted for older stored URIs.
+		$pathAfterScheme = $this->removeSchemeFromURI($uri);
+		if ($pathAfterScheme === null) {
 			return false;
 		}
 
-		// Extract bucket name from URI: gcs://bucket/path/to/file
-		$pathAfterScheme = substr($uri, 6);
 		$firstSlashPos = strpos($pathAfterScheme, "/");
-
 		if ($firstSlashPos === false) {
 			$bucketName = $pathAfterScheme;
 		} else {
@@ -133,19 +132,32 @@ class GoogleCloudStorageService extends StorageService
 
 	public function extractPathFromURI(string $uri): string
 	{
-		if (strpos($uri, "gcs://") !== 0) {
-			throw new \InvalidArgumentException("URI must start with \"gcs://\"");
+		$pathAfterScheme = $this->removeSchemeFromURI($uri);
+		if ($pathAfterScheme === null) {
+			throw new \InvalidArgumentException("URI must start with \"gs://\" or legacy \"gcs://\"");
 		}
 
-		// Extract path from URI: gcs://bucket/path/to/file
-		$pathAfterScheme = substr($uri, 6);
 		$firstSlashPos = strpos($pathAfterScheme, "/");
-
 		if ($firstSlashPos === false) {
 			throw new \InvalidArgumentException("URI must include a path after bucket name");
 		}
 
 		return substr($pathAfterScheme, $firstSlashPos + 1);
+	}
+
+	/**
+	 * @return string|null Path after scheme (bucket/…), or null when the scheme is not gs:// / gcs://
+	 */
+	private function removeSchemeFromURI(string $uri): ?string
+	{
+		if (strpos($uri, "gs://") === 0) {
+			return substr($uri, 5);
+		}
+		if (strpos($uri, "gcs://") === 0) {
+			return substr($uri, 6);
+		}
+
+		return null;
 	}
 
 	public function getObjectByURI(string $uri): GoogleCloudStorageObject
