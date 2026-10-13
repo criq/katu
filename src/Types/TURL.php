@@ -123,6 +123,25 @@ class TURL
 		return $parts["scheme"] . "://" . $parts["host"];
 	}
 
+	/**
+	 * Path + optional query string, without scheme/host (e.g. "/suroviny/mrkev" or "/recepty/foo?x=1").
+	 */
+	public function getPathWithQuery(): string
+	{
+		$parts = $this->getParts();
+		$path = $parts["path"] ?? null;
+		if ($path === null || $path === "") {
+			$path = "/";
+		}
+
+		$query = $parts["query"] ?? [];
+		if ($query) {
+			return $path . "?" . http_build_query($query);
+		}
+
+		return $path;
+	}
+
 	public function get2ndLevelDomain(): string
 	{
 		$parsed = parse_url($this->value);
